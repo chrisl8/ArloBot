@@ -1,0 +1,7 @@
+set(_CATKIN_CURRENT_PACKAGE "arlobot_bringup")
+set(arlobot_bringup_MAINTAINER "Hoopy Frood <hoopy@ekpyroticfrood.net>")
+set(arlobot_bringup_DEPRECATED "")
+set(arlobot_bringup_VERSION "0.1.0")
+set(arlobot_bringup_BUILD_DEPENDS )
+set(arlobot_bringup_RUN_DEPENDS "zeroconf_avahi" "yocs_cmd_vel_mux" "arlobot_description" "robot_state_publisher" "robot_pose_ekf" "diagnostic_aggregator" "openni_launch" "rocon_app_manager" "depthimage_to_laserscan")
+set(arlobot_bringup_BUILDTOOL_DEPENDS "catkin")

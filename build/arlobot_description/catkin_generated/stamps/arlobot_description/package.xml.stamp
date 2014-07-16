@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package>
+  <name>arlobot_description</name>
+  <version>0.0.0</version>
+  <description>
+    The arlobot_description package provides a complete 3D model of the ArloBot for simulation and visualization.
+  </description>
+  <maintainer email="hoopy@ekpyroticfrood.net">Hoopy Frood</maintainer>
+  <license>BSD</license>
+  <!-- <url type="website">http://wiki.ros.org/activitybot</url> -->
+  <author email="hoopy@ekpyroticfrood.net">Hoopy Frood</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>urdf</build_depend>
+  <build_depend>xacro</build_depend>
+
+  <run_depend>urdf</run_depend>
+  <run_depend>xacro</run_depend>
+</package>

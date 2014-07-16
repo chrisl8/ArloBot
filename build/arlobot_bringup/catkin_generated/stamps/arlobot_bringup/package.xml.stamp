@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package>
+  <name>arlobot_bringup</name>
+  <version>0.1.0</version>
+  <description>
+     arlobot_bringup provides roslaunch scripts for starting the ArloBot base functionality.
+     This is based off of the turtlebot_bringup package, though somewhat consolidated.
+  </description>
+  <maintainer email="hoopy@ekpyroticfrood.net">Hoopy Frood</maintainer>
+  <license>BSD</license>
+  <!-- <url type="website">http://wiki.ros.org/arlobot</url> -->
+  <author email="hoopy@ekpyroticfrood.net">Hoopy Frood</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>zeroconf_avahi</run_depend>
+  <run_depend>yocs_cmd_vel_mux</run_depend>
+  <run_depend>arlobot_description</run_depend>
+  <run_depend>robot_state_publisher</run_depend>
+  <run_depend>robot_pose_ekf</run_depend>
+  <run_depend>diagnostic_aggregator</run_depend>
+  <run_depend>openni_launch</run_depend>
+  <run_depend>rocon_app_manager</run_depend>
+  <run_depend>depthimage_to_laserscan</run_depend>
+</package>

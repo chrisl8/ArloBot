@@ -1,0 +1,8 @@
+prefix=/home/clofland/arlobot/install
+
+Name: arlobot_description
+Description: Description of arlobot_description
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/clofland/arlobot/install/lib 
+Requires: 

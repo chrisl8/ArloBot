@@ -1,0 +1,8 @@
+prefix=/home/clofland/arlobot/install
+
+Name: arlobot_bringup
+Description: Description of arlobot_bringup
+Version: 0.1.0
+Cflags: 
+Libs: -L/home/clofland/arlobot/install/lib 
+Requires: 
