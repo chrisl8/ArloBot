@@ -1,0 +1,38 @@
+<!--
+  Create's implementation of turtlebot's mobile base.
+
+  TODO: redirect cmd_vel_mux/output to wherever create base is listening.
+ -->
+<launch>
+  <!-- Turtlebot Driver -->
+  <node pkg="arlobot_bringup" type="propellerbot_node.py" name="arlobot" respawn="true" args="--respawnable">
+    <param name="bonus" value="false" />
+    <param name="update_rate" value="30.0" />
+    <param name="port" value="/dev/ttyUSB0" />
+    <remap from="cmd_vel" to="mobile_base/commands/velocity" />
+    <remap from="arlobot/sensor_state" to="mobile_base/sensors/core" />
+    <remap from="imu/data" to="mobile_base/sensors/imu_data" />
+    <remap from="imu/raw" to="mobile_base/sensors/imu_data_raw" />
+    <rosparam file="$(find arlobot_bringup)/param/encoders.yaml" command="load" />
+  </node>
+
+  <!-- The odometry estimator -->
+  <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
+    <remap from="imu_data" to="mobile_base/sensors/imu_data"/>
+    <remap from="robot_pose_ekf/odom" to="odom_combined"/>
+    <param name="freq" value="10.0"/>
+    <param name="sensor_timeout" value="1.0"/>
+    <param name="publish_tf" value="true"/>
+    <param name="odom_used" value="true"/>
+    <param name="imu_used" value="false"/>
+    <param name="vo_used" value="false"/>
+    <param name="output_frame" value="odom"/>
+  </node>
+
+  <!-- velocity commands multiplexer -->
+  <node pkg="nodelet" type="nodelet" name="mobile_base_nodelet_manager" args="manager"/>
+  <node pkg="nodelet" type="nodelet" name="cmd_vel_mux" args="load yocs_cmd_vel_mux/CmdVelMuxNodelet mobile_base_nodelet_manager">
+    <param name="yaml_cfg_file" value="$(find arlobot_bringup)/param/mux.yaml"/>
+    <remap from="cmd_vel_mux/output" to="mobile_base/commands/velocity"/>
+  </node>
+</launch>
