@@ -1,7 +1,0 @@
-set(_CATKIN_CURRENT_PACKAGE "arlobot_description")
-set(arlobot_description_MAINTAINER "Hoopy Frood <hoopy@ekpyroticfrood.net>")
-set(arlobot_description_DEPRECATED "")
-set(arlobot_description_VERSION "0.0.0")
-set(arlobot_description_BUILD_DEPENDS "urdf" "xacro")
-set(arlobot_description_RUN_DEPENDS "urdf" "xacro")
-set(arlobot_description_BUILDTOOL_DEPENDS "catkin")
