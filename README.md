@@ -30,7 +30,7 @@ roslaunch arlobot_bringup 3dsensor.launch
 <GUI based Terminal>
 roslaunch arlobot_bringup view_robot.launch
 
-Gmapping Demo:
+Gmapping Demo (SLAM Map building):
 http://wiki.ros.org/turtlebot_navigation/Tutorials/Build%20a%20map%20with%20SLAM
 roslaunch arlobot_bringup minimal.launch
 <New Terminal>
@@ -41,5 +41,18 @@ roslaunch arlobot_bringup gmapping_demo.launch
 roslaunch turtlebot_rviz_launchers view_navigation.launch
 When you are done, save your map!
 rosrun map_server map_saver -f /tmp/my_map
+
+AMCL (Navigating the map we built above:
+http://wiki.ros.org/turtlebot_navigation/Tutorials/Autonomously%20navigate%20in%20a%20known%20map
+roslaunch arlobot_bringup minimal.launch
+<New Terminal>
+roslaunch turtlebot_navigation amcl_demo.launch map_file:=/tmp/my_map.yaml
+<GUI based Terminal>
+roslaunch turtlebot_rviz_launchers view_navigation.launch --screen
+NOTE: This is still in progress, it works with simple paths, but also seems quite willing to plow into a wall and spin its wheels desperately against a wall, even though the 3D camera should be telling it that it is smakc against a wall.
+I need to see if there are settings to change for this,
+see if thare are updates to Navigation in Indigo,
+and set up my PING/IR sensors to provide Navigation input,
+and code on the Propeller to provide override fail safe when the PING/IR detect obects within 6 inches.
 ```
 Please report an issue for any problems or if you need me to clarify anything!
