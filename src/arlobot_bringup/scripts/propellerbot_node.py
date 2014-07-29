@@ -1,37 +1,23 @@
 #!/usr/bin/env python
-'''
-This is a copy of PropellerComm.py adapted to replace turtlebot_node
-in the turtlebot stack.
-This is a copy of arduino.py by Dr. Rainer Hessmer
-https://code.google.com/p/drh-robotics-ros/
-Edited and stripped down for my use. All brilliance contained herein is credited
-to Dr. Rainer Hessmer, and all mistakes and poor code are my own.
-
-  Copyright (c) 2011 Dr. Rainer Hessmer.  All right reserved.
-  Borrowed heavily from Mike Feguson's ArbotiX base_controller.py code.
-
-  Redistribution and use in source and binary forms, with or without
-  modification, are permitted provided that the following conditions are met:
-      * Redistributions of source code must retain the above copyright
-        notice, this list of conditions and the following disclaimer.
-      * Redistributions in binary form must reproduce the above copyright
-        notice, this list of conditions and the following disclaimer in the
-        documentation and/or other materials provided with the distribution.
-      * Neither the name of the Vanadium Labs LLC nor the names of its 
-        contributors may be used to endorse or promote products derived 
-        from this software without specific prior written permission.
-  
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  DISCLAIMED. IN NO EVENT SHALL VANADIUM LABS BE LIABLE FOR ANY DIRECT, INDIRECT,
-  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
-  OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-  OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-'''
+# Software License Agreement (BSD License)
+#
+#Derived from \opt\ros\hydro\lib\create_node\turtlebot_node.py
+#This is based on turtlebot_node adapted to run on a Propeller Activity Board based ArloBot
+#Originally this contained all of the output of the turtlebot_node.py program
+#so that it could be dropped directly into the Turtlebot stack and run as is.
+#
+#Over time though the code has been stripped and specialized for my robot's needs.
+#
+#When upgrading to new versions of ROS,
+#or when attempting to integrate new TurtleBot functions,
+#please look at and compare \opt\ros\hydro\lib\create_node\turtlebot_node.py
+#to the new version and to this code to see what you may need to add/improve/replace
+#to make things work.
+#
+#Special thinks to arduino.py by Dr. Rainer Hessmer
+#https://code.google.com/p/drh-robotics-ros/
+#Much of my code below is based on or copied from his work.
+#
 # NOTE: This script REQUIRES parameters to be loaded from param/encoders.yaml!
 #import roslib; roslib.load_manifest('activitybot') # http://wiki.ros.org/roslib
 import rospy
@@ -476,6 +462,9 @@ class PropellerComm(object):
         self._SerialDataGateway.Stop()
         
     def _HandleVelocityCommand(self, twistCommand): # This is Propeller specific
+        # NOTE: turtlebot_node has a lot of code under its cmd_vel function to deal with maximum and minimu speeds.
+        # These may be worth taking a look at if we find ourselves having problems at the edge of our speed ranges.
+        # Also note that some of that code may have to be put int Propeller code, not here.
         """ Handle movement requests. """
         v = twistCommand.linear.x        # m/s
         omega = twistCommand.angular.z      # rad/s

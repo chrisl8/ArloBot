@@ -90,8 +90,9 @@ int main() {
     
     // For Debugging without ROS:
     /*
-    trackWidth = 0.1058; // http://learn.parallax.com/activitybot/calculating-angles-rotation
-    distancePerCount = 0.00325;
+    // See encoders.yaml for most up to date values
+    trackWidth = 0.403000; // from measurement and then testing
+    distancePerCount = 0.006760; // http://forums.parallax.com/showthread.php/154274-The-quot-Artist-quot-robot?p=1271544&viewfull=1#post1271544
     robotInitialized = 1;
     */
     // Comment out above lines for use with ROS
@@ -190,6 +191,11 @@ int main() {
 				expectedRightSpeed = expectedRightSpeed / distancePerCount;
 
 				drive_speed(expectedLeftSpeed, expectedRightSpeed);
+                // Should this use drive_rampStep instead? Allowing the robot to ramp up/down to the requested speed?
+                // The repeated "twist" statements provide the required "loop".
+                // NOTE: drive_setRampStep can be used to adjust the ramp rate.
+                // NOTE: DO NOT use drive_ramp, as this will stall the program until the requested speed is reached!
+                // Which is NOT what we want, since we may want to change the requested speed before we even reach it. ;)
 			}
 		}
 		pause(10); // Maximum read frequency. TODO: Is this required? Is it the right length?
