@@ -20,7 +20,7 @@ http://wiki.ros.org/turtlebot/Tutorials/hydro/Installation
 Depending on what you want to do there are different ways to "bring up" the robot.  These are the "recipes" that are well tested so far:
 
 NOTE: These all assume the basics are already set up in .bashrc for your robot!
-
+```
 Basic TeleOp with 3D sensor use:
 roslaunch arlobot_bringup minimal.launch
 <New Terminal>
@@ -41,5 +41,5 @@ roslaunch arlobot_bringup gmapping_demo.launch
 roslaunch turtlebot_rviz_launchers view_navigation.launch
 When you are done, save your map!
 rosrun map_server map_saver -f /tmp/my_map
-
+```
 Please report an issue for any problems or if you need me to clarify anything!
