@@ -29,6 +29,13 @@ roslaunch turtlebot_teleop keyboard_teleop.launch
 roslaunch arlobot_bringup 3dsensor.launch
 <GUI based Terminal>
 roslaunch arlobot_bringup view_robot.launch
+Tests from this setup:
+  Set your Global Options->Fixed Frame to "odom
+    Drive and see if the robot appears to move properly on the grid.
+  Turn on LaserScan and set the Decay Time to 650
+    Move around, spin in circles and see if you get a reasonable picture of the room.
+  Turn Laser Scan and turn on Registered DepthCloud to see if you get a proper depth set picture of the room.
+  
 
 Gmapping Demo (SLAM Map building):
 http://wiki.ros.org/turtlebot_navigation/Tutorials/Build%20a%20map%20with%20SLAM
