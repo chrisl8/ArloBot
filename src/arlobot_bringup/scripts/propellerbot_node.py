@@ -225,13 +225,17 @@ class PropellerComm(object):
             if (lineParts[0] == 'i'):
                 self._InitializeDriveGeometry()
                 return
+            # Accept debug messages from Propeller for testing
+            if (lineParts[0] == 'd'):
+                rospy.loginfo("Propeller: " + line)
+                return
 
     def _BroadcastOdometryInfo(self, lineParts):
         # This broadcasts ALL info from the Propeller based robot every time data comes in
         partsCount = len(lineParts)
 
         #rospy.logwarn(partsCount)
-        if (partsCount  < 8): # Just discard short lines, increment this as lines get longer
+        if (partsCount  != 8): # Just discard short/long lines, increment this as lines get longer
             pass
         
         try:

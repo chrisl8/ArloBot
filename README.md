@@ -21,6 +21,17 @@ Depending on what you want to do there are different ways to "bring up" the robo
 
 NOTE: These all assume the basics are already set up in .bashrc for your robot!
 ```
+A good way to test your Propeller code is to run:
+miniterm.py  /dev/ttyUSB0 115200
+It will reset the Prop board and then start spitting out:
+i 0
+This tells you to initialize it, just send it:
+d,0.403000,0.006760
+and then it should start sending odometry info in the form of:
+o       0.000   0.000   0.000   0.000   0.000   0.000   174
+The last number is the distance from the front PING sensor.
+If you want to get really fancy you can send it twist commands from the terminal
+
 Basic TeleOp with 3D sensor use:
 roslaunch arlobot_bringup minimal.launch
 <New Terminal>

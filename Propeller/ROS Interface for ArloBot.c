@@ -16,6 +16,9 @@
  */
 
 #include "simpletools.h"
+#include "mcp3208.h" // MCP3208 8 Chanel ADC
+// Add adcDCpropab.h if you want to use the ADC built into the Activity Board
+//#include "adcDCpropab.h"                      // Include adcDCpropab http://learn.parallax.com/propeller-c-simple-circuits/measure-volts
 #include "fdserial.h"
 #include "ping.h"                             // Include ping header
 /*
@@ -25,6 +28,8 @@ http://www.parallax.com/news/2013-12-23/run-activitybot-c-code-arlo
 http://forums.parallax.com/showthread.php/152636-Run-ActivityBot-C-Code-in-the-Arlo!?p=1230592&posted=1#post1230592
 */
 #include "arlodrive.h"
+
+static int abd_speedLimit = 100; // 100 is default in arlodrive, but we may change it.
 
 fdserial *term;
 
@@ -47,13 +52,21 @@ void displayTicks();
 void broadcastOdometry(void *par); // Use a cog to broadcast Odometry to ROS continuously
 static int fstack[256]; // If things get weird make this number bigger!
 
-// for Ping Sensors
-// Name them based on the center of the direction
-// in which they point in radians
-// (radians because that is what sensor_msgs/LaserScan uses)
-static int pingRange0 = 0;
+// for Proximity (PING & IR) Sensors
+int pingArray[6];
+int irArray[6];
 void pollPingSensors(void *par); // Use a cog to fill range variables with ping distances
-static int pstack[256]; // If things get weird make this number bigger!
+static int pstack[128]; // If things get weird make this number bigger!
+const int MCP3208_dinoutPIN = 3;
+const int MCP3208_clkPIN = 4;
+const int MCP3208_csPIN = 2;
+const float referenceVoltage = 5.0; // MCP3208 reference voltage setting. I use 5.0v for the 5.0v IR sensors from Parallax
+const int IRsamples = 10;
+const int numberOfIRonMC3208 = 6; // Number of IR Sensors on the MCP3208 ADC to read
+const int firtPINGsensorPIN = 5; // Which pin the first PING sensor is on
+const int numberOfPINGsensors = 6; // Number of PING sensors, we assume the are consecutive
+int mcp3208_IR_cm(int); // Function to get distance in CM from IR sensor using MCP3208
+//int adc_IR_cm(int); // Function to get distance in CM from IR sensor using Activty Board built in ADC
 
 // For Gyroscope - Declare everything globally
 unsigned char i2cAddr = 0x69;       //I2C Gyro address
@@ -78,6 +91,15 @@ i2c *bus;                           //Declare I2C bus
 void pollGyro(void *par); // Use a cog to fill range variables with ping distances
 static int gyrostack[256]; // If things get weird make this number bigger!
 
+// For "Safety Override"
+static int safeToProceed = 0;
+// Cog
+void safetyOverride(void *par); // Use a cog to squelch incoming commands and perform safety procedures like halting, backing off, avoiding cliffs, calling for help, etc.
+// This can use proximity sensors to detect obstacles (including people) and cliffs
+// This can use the gyro to detect tipping
+// This can use the gyro to detect significant heading errors due to slipping wheels when an obstacle is encountered or high centered
+static int safetyOverrideStack[128]; // If things get weird make this number bigger!
+
 int main() {
 
 	simpleterm_close(); // Close simplex serial terminal
@@ -89,12 +111,12 @@ int main() {
 	int robotInitialized = 0; // Do not compute odometry until we have the trackWidth and distancePerCount
     
     // For Debugging without ROS:
-    /*
     // See encoders.yaml for most up to date values
+
     trackWidth = 0.403000; // from measurement and then testing
     distancePerCount = 0.006760; // http://forums.parallax.com/showthread.php/154274-The-quot-Artist-quot-robot?p=1271544&viewfull=1#post1271544
     robotInitialized = 1;
-    */
+
     // Comment out above lines for use with ROS
     
 	while (robotInitialized == 0) {
@@ -130,7 +152,7 @@ int main() {
 	cogstart(&pollPingSensors, NULL, pstack, sizeof pstack);
 
     // Initialize Gyro in the main program
-  bus = i2c_newbus(5, 4, 0);        //New I2C bus SCL = P5, SDA = P4
+  bus = i2c_newbus(1, 0, 0);        //New I2C bus SCL = Pin 1, SDA = Pin 0
   int n;
   n = i2c_out(bus, i2cAddr, ctrl3, 1, &cfg3, 1);
   n += i2c_out(bus, i2cAddr, ctrl4, 1, &cfg4, 1);
@@ -139,16 +161,23 @@ int main() {
   if(n != 9)
   {
     print("Bytes should be 9, but was %d,", n);
-    while(1);
+    while(1); // This should just TELL ROS that there is no gyro available instead of stalling the program,
+    // TODO:
+    // OR have ROS tell us if we HAVE a gyro and only start this if we think we do.
+    // That way the program works with or without a gyro
   }
   // Start Gyro polling in another cog  
 	cogstart(&pollGyro, NULL, gyrostack, sizeof gyrostack);
-
+    
 	// Now initialize the Motors
 	// abdrive settings:
 	drive_speed(0, 0);                     // Start servos/encoders cog
+    drive_setMaxSpeed(abd_speedLimit);
 	//drive_setRampStep(10);              // Set ramping at 10 ticks/sec per 20 ms
 	// TODO Do we need to adjust ramping? Perhaps this should be something we can modify on the ROS side and send?
+
+    // Start safetyOverride cog: (AFTER the Motors are initialized!)
+  cogstart(&safetyOverride, NULL, safetyOverrideStack, sizeof safetyOverrideStack);
 
 	// Start the Odometry broadcast cog
 	cogstart(&broadcastOdometry, NULL, fstack, sizeof fstack);
@@ -183,14 +212,92 @@ int main() {
 				CommandedVelocity = strtod(token, &unconverted);
 				token = strtok(NULL, delimiter);
 				CommandedAngularVelocity = strtod(token, &unconverted);
-				double angularVelocityOffset = 0.5 * CommandedAngularVelocity * trackWidth;
+				double angularVelocityOffset = CommandedAngularVelocity * (trackWidth * 0.5);
+                /* From turtlebot_node.py, note the * 1000 is to convert to mm, but we did that in the trackWidth variable
+                ts  = msg.linear.x * 1000 # m -> mm
+                tw  = msg.angular.z  * (robot_types.ROBOT_TYPES[self.robot_type].wheel_separation / 2) * 1000 
+                # Prevent saturation at max wheel speed when a compound command is sent.
+                if ts > 0:
+                    ts = min(ts,   MAX_WHEEL_SPEED - abs(tw))
+                else:
+                    ts = max(ts, -(MAX_WHEEL_SPEED - abs(tw)))
+                self.req_cmd_vel = int(ts - tw), int(ts + tw)
+                */
+                
+                // u = - 0.546009/154.096313 (Writing to serial port: s,0.519,2.594)
+                // distancePerCount = 0.006760 Arlobot default currently
+                
+                // Prevent saturation at max wheel speed when a compound command is sent.
+                if (CommandedVelocity > 0) {
+                    if ((abd_speedLimit * distancePerCount) - fabs(angularVelocityOffset) < CommandedVelocity)
+                        CommandedVelocity = (abd_speedLimit * distancePerCount) - fabs(angularVelocityOffset);
+                } else {
+                    if (-((abd_speedLimit * distancePerCount) - fabs(angularVelocityOffset)) > CommandedVelocity)
+                        CommandedVelocity = -((abd_speedLimit * distancePerCount) - fabs(angularVelocityOffset));
+                    }
+                    
 				double expectedLeftSpeed = CommandedVelocity - angularVelocityOffset;
 				double expectedRightSpeed = CommandedVelocity + angularVelocityOffset;
 
 				expectedLeftSpeed = expectedLeftSpeed / distancePerCount;
 				expectedRightSpeed = expectedRightSpeed / distancePerCount;
+                
+                /* Speed normalization:
+                What if the calculated speed is above the max speed in arlodrive.c?
+                Then it will set the speed to the max,
+                but then our left/right ratio will be wrong, say it was supposed to be 15/110,
+                and max was 100, it turns into 15/100!
+                From arlodrive.c:
+                int abd_speedLimit = 100;
+                static int encoderFeedback = 1;
+                
+                void drive_setMaxSpeed(int maxTicksPerSec) {
+                      abd_speedLimit = maxTicksPerSec;
+                    }
+                ...
+                void set_drive_speed(int left, int right) {
+                  if(encoderFeedback) {
+                        if(left > abd_speedLimit) left = abd_speedLimit;
+                        if(left < -abd_speedLimit) left = -abd_speedLimit;
+                        if(right > abd_speedLimit) right = abd_speedLimit;
+                        if(right < -abd_speedLimit) right = -abd_speedLimit;
+                      }
+                      ...
+                
+                So clearly we need to "normalize" the speed so that if one number is truncated,
+                the other is brought down the same amount, in order to accomplish the same turn
+                ratio at a slower speed!
+                Especially if the max speed is variable based on parameters within this code,
+                such as proximity to walls, etc.
+                
+                First I want to know what typical numbers are here without normalization.
+                roslaunch turtlebot_teleop keyboard_teleop.launch
+                "currently:      speed 0.2       turn 1"
+                Here is what I get when I press this key and hold it until it maxes out:
+                (Note that it does "ramp up")
+                i = 29.585800/29.585800
+                , = -29.585800/-29.585800
+                j = -29.807693/29.807693
+                l = 29.807693/-29.807693
+                u = -0.221893/59.393490
+                o = 59.393490/-0.221893
+                m = 0.221893/-59.393490
+                . = -59.393490/+0.221893
+                q a few times to get:
+                "currently:      speed 0.51874849202     turn 2.5937424601"
+                i = 76.775146
+                u = - 0.546009/154.096313 (Writing to serial port: s,0.519,2.594)
+                
+                Note these settings:
+                 /turtlebot_teleop_keyboard/scale_angular: 1.5
+                 /turtlebot_teleop_keyboard/scale_linear: 0.5
+                */
+                
+                // For debugging: Note, this will cause trouble because of collisions on access to the serial port with broadcastOdometry
+                //dprint(term, "d\t%f\t%f\n", expectedLeftSpeed, expectedRightSpeed);
 
-				drive_speed(expectedLeftSpeed, expectedRightSpeed);
+				if (safeToProceed == 1)
+                    drive_speed(expectedLeftSpeed, expectedRightSpeed);
                 // Should this use drive_rampStep instead? Allowing the robot to ramp up/down to the requested speed?
                 // The repeated "twist" statements provide the required "loop".
                 // NOTE: drive_setRampStep can be used to adjust the ramp rate.
@@ -253,7 +360,19 @@ void displayTicks(void) {
 	double Omega = ((speedRight * distancePerCount) - (speedLeft * distancePerCount)) / trackWidth;
 
 	// Odometry for ROS
-    dprint(term, "o\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%d\n", X, Y, Heading, gyroHeading, V, Omega, pingRange0);
+    dprint(term, "o\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%d\n", X, Y, Heading, gyroHeading, V, Omega, pingArray[2]);
+    // For Debugging in Terminal mode
+    int i;
+    for( i=0; i < numberOfPINGsensors; i++ ) {
+        dprint(term, "PING %d: %d%c\n", firtPINGsensorPIN + i, pingArray[i], CLREOL);
+        }
+    // Walk IR Array to find blocked paths and halt immediately
+    for (i = 0; i < numberOfIRonMC3208; i++) {
+        dprint(term, "IR   %d: %d%c\n", i, irArray[i], CLREOL);
+        }
+    dprint(term, "safeToProceed: %d%c\n", safeToProceed, CLREOL);
+    putChar(HOME);                            // Cursor -> top-left "home"
+
 }
 
 volatile int abd_speedL;
@@ -268,18 +387,88 @@ void drive_getSpeedCalc(int *left, int *right) {
 */
 
 void pollPingSensors(void *par) {
-      while(1)                                    // Repeat indefinitely
-  {
-    pingRange0 = ping_cm(8);                 // Get cm distance from Ping)))
-    pause(200);                               // Wait 1/5 second
-    /*
-    http://forums.parallax.com/showthread.php/111215-multiple-pings?highlight=ping+round+trip+time
-"The echos from one PING could confuse the others if they were operating simultaneously. You really need to trigger only one at a time and allow a little time for the echos to die down before triggering another PING even if they're facing in completely different directions.
-I don't know what would be ideal for a delay, but the maximum sound round-trip time window for the PING))) is 18.5ms and I'd wait several times that, maybe 50 to 100ms."
-    */
-  }
 
+    // For Activity Board built in ADC
+  //adc_init(21, 20, 19, 18);                   // CS=21, SCL=20, DO=19, DI=18 // Same on all Activity Boards, actually printed on the board!
+
+  float adc_0v, adc_1v;
+  int adc_0cm, adc_1cm;
+
+    const int betweenSensorPollDelay = 100; // Time to wait between firing PING sensors to avoid interferance
+
+  while(1)                                    // Repeat indefinitely
+  {
+    int i, j;
+    for( i=0; i < numberOfPINGsensors; i++ ) {
+    pingArray[i] = ping_cm(firtPINGsensorPIN + i);
+    //dprint(term, "d\t%d\t%d\n", firtPINGsensorPIN + i, pingArray[i]); // For debugging, will collide with Odometry output sometimes
+    // Check IR sensors on MCP3208
+    for (j = 0; j < numberOfIRonMC3208; j++) {
+    irArray[j] = mcp3208_IR_cm(j);
+    }
+    //pause(betweenSensorPollDelay);
+    }
+    /* http://forums.parallax.com/showthread.php/111215-multiple-pings?highlight=ping+round+trip+time
+    "The echos from one PING could confuse the others if they were operating simultaneously. You really need to trigger only one at a time and allow a little time for the echos to die down before triggering another PING even if they're facing in completely different directions.
+    I don't know what would be ideal for a delay, but the maximum sound round-trip time window for the PING))) is 18.5ms and I'd wait several times that, maybe 50 to 100ms."
+    */
+    
+    // Check buit in ADC
+    /*
+    for (i=0;i<numberOfIRonADC;i++) {
+      int adc_cm = adc_IR_cm(i);
+      if(adc_cm > 87) {
+        print("ADC %d:     Out of Range%c\n", i, CLREOL);
+      } else {
+        print("ADC %d:     %3dcm %2.1fin%c\n", i, adc_cm, adc_cm * 0.393701, CLREOL);
+      }
+    }
+    */
+
+  }
 }
+
+int mcp3208_IR_cm(int channel) {
+
+  	int i, j, k = 0, goodSamples = 0;
+	for (i=0;i<IRsamples;i++) {
+    //adc0 = readADC(0, 1, 2, 3); // Pull 1 reading
+    j = readADC(channel, MCP3208_dinoutPIN, MCP3208_clkPIN, MCP3208_csPIN);
+    if(j > 324) { // Anything lower is probably beyond the sensor's range
+      k = k + j;
+      goodSamples = goodSamples + 1;
+    }
+  }
+  int mcp3208reading = 300; // Set devault to 300, Consider 300, aka. 88cm Out of Range! (Anything over 80 really)
+  if(goodSamples > 0) {
+    mcp3208reading  = k/goodSamples;
+  }
+  float mcp3208volts = (float)mcp3208reading * referenceVoltage / 4096.0;
+  int mcp3208cm = 27.86 * pow(mcp3208volts, -1.15); // https://www.tindie.com/products/upgradeindustries/sharp-10-80cm-infrared-distance-sensor-gp2y0a21yk0f/
+  return(mcp3208cm);
+}
+
+// For ADC built into Activity Board
+/*
+int adc_IR_cm(int channel) {
+// http://www.parallax.com/sites/default/files/downloads/28995-Sharp-IR-Datasheet.pdf
+  	int i, goodSamples = 0;
+   float j, k = 0.0;
+	for (i=0;i<IRsamples;i++) {
+    j = adc_volts(channel);                        // Check A/D 0
+    if(j > 0.395507813) { // Anything lower is probably beyond the sensor's range
+      k = k + j;
+      goodSamples = goodSamples + 1;
+    }
+  }
+  float ADCreading = 0.366210938; // Set default to 0.366210938 (same as 300 from MCP3208), Consider 0.366210938, aka. 88cm Out of Range! (Anything over 80 really)
+  if(goodSamples > 0) {
+    ADCreading = k/goodSamples;
+  }
+  int adc_cm = 27.86 * pow(ADCreading, -1.15); // https://www.tindie.com/products/upgradeindustries/sharp-10-80cm-infrared-distance-sensor-gp2y0a21yk0f/
+  return(adc_cm);
+}
+*/
 
 void pollGyro(void *par) {
 while(1) {
@@ -330,4 +519,39 @@ while(1) {
     
     //pause(250); // Pause between reads, or do we need this? Should we read faster? The !ready loop should handle the Gyro's frequency right?
 }
+}
+
+void safetyOverride(void *par) {
+while(1) {
+    int i, blocked = 0;
+    // Walk PING Array to find blocked paths and halt immediately
+    for( i=0; i < numberOfPINGsensors - 1; i++ ) { // -1 to ignore the one in back for now.
+        if(pingArray[i] < 16) {
+            blocked = 1; // Use this to give the "all clear" later if it never gets set
+            safeToProceed = 0; // Prevent main thread from setting any drive_speed
+        }
+    }
+    
+    // Walk IR Array to find blocked paths and halt immediately
+        // Check IR sensors on MCP3208
+    for (i = 0; i < numberOfIRonMC3208 - 1; i++) { // -1 to ignore the one in back for now.
+        if(irArray[i] < 16) {
+            blocked = 1; // Use this to give the "all clear" later if it never gets set
+            safeToProceed = 0; // Prevent main thread from setting any drive_speed
+        }
+    }
+    
+    // If NO sensors are blocked, give the all clear!
+    if(blocked == 0) {
+        if(safeToProceed == 0) {// If it WAS unsafe before
+            drive_speed(0,0); // return to stopped before giving control back to main thread
+            }
+        safeToProceed = 1;
+    } else {
+        drive_speed(-5,-5); // back off slowly until we are clear. This needs more smarts.
+    }
+
+    pause(10); // TODO: Do we need this? Does running a cog "full speed" have any down sides?
+
+        }
 }

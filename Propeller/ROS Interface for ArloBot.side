@@ -1,4 +1,4 @@
-ROS Interface for ActivityBot.c
+ROS Interface for ArloBot.c
 >compiler=C
 >memtype=cmm main ram compact
 >optimize=-Os
