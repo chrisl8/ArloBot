@@ -11,10 +11,11 @@ Basic usage instructions:
 First build your ArloBot!
 Second get the SimpleIDE installed on a computer and load the code from the Propeller folder into your Activity Board. You can do this from Windows or Linux. I find it handy to have SimpleIDE running on my ROS laptop on board the Arlo though to make code updates easy.
 
-Third, install ROS Hydro on a Ubuntu laptop that can connect via USB to your Activity Board:
-http://wiki.ros.org/hydro/Installation/Ubuntu
+Third, install ROS Indigo on a Ubuntu laptop that can connect via USB to your Activity Board:
+http://wiki.ros.org/indigo/Installation/Ubuntu
 You will also need the Turtlebot packages, as I use that code when I can:
-http://wiki.ros.org/turtlebot/Tutorials/hydro/Installation
+http://wiki.ros.org/turtlebot/Tutorials/indigo/Installation
+NOTE: At this time Indigo Turtlebot has to be installed from source. If you have trouble doing that let me know and I will post my personal "how to" on installing Turtlebot from source to make this work.
 
 
 Depending on what you want to do there are different ways to "bring up" the robot.  These are the "recipes" that are well tested so far:
