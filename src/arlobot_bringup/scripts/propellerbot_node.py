@@ -14,7 +14,7 @@
 #to the new version and to this code to see what you may need to add/improve/replace
 #to make things work.
 #
-#Special thinks to arduino.py by Dr. Rainer Hessmer
+#Special thanks to arduino.py by Dr. Rainer Hessmer
 #https://code.google.com/p/drh-robotics-ros/
 #Much of my code below is based on or copied from his work.
 #
@@ -56,40 +56,36 @@ class PropellerComm(object):
     #CONTROLLER_IS_READY = 2; # Not used in ArloBot
 
     def __init__(self, port="/dev/ttyUSB0", baudrate=115200):
+        # Code Not used by ArloBot
         '''
         Initializes the receiver class. 
         port: The serial port to listen to.
         baudrate: Baud rate for the serial communication
-        '''
 
-        #self.default_port = '/dev/ttyUSB0' # Not used in ArloBot
-        #self.default_update_rate = 30.0 # Not used in ArloBot
+        self.default_port = '/dev/ttyUSB0'
+        self.default_update_rate = 30.0
 
-        # Not used in ArloBot
-        '''
         self.robot = Turtlebot()
         self.sensor_handler = None
         self.sensor_state = TurtlebotSensorState()
         self.req_cmd_vel = None
 
         rospy.init_node('turtlebot')
-        '''
-        self._init_params()
-        #self._init_pubsub() # Not used in ArloBot
-        
-        #self._pos2d = Pose2D() # 2D pose for odometry # Not used in ArloBot
 
-        # Not used in ArloBot
-        '''
+        self._init_params()
+        self._init_pubsub()
+        
+        self._pos2d = Pose2D() # 2D pose for odometry
+
         self._diagnostics = TurtlebotDiagnostics()
         if self.has_gyro:
             from create_node.gyro import TurtlebotGyro
             self._gyro = TurtlebotGyro()
         else:
             self._gyro = None
-        '''
             
-        #dynamic_reconfigure.server.Server(TurtleBotConfig, self.reconfigure)
+        dynamic_reconfigure.server.Server(TurtleBotConfig, self.reconfigure)
+        '''
 
         self._Counter = 0 # For Propeller code's _HandleReceivedLine and _WriteSerial
 
@@ -128,28 +124,27 @@ class PropellerComm(object):
         self._SerialDataGateway = SerialDataGateway(port, baudRate,  self._HandleReceivedLine)
 
     def _init_params(self):
-        #self.port = rospy.get_param('~port', '')
-        #self.baudRate = rospy.get_param('~baudRate', 0)
-        #self.baudrate = rospy.get_param('~baudrate', self.default_baudrate) # From TurtleBot
-        #self.robot_type = rospy.get_param('~robot_type', 'create')
-        #self.update_rate = rospy.get_param('~update_rate', self.default_update_rate)
-        #self.drive_mode = rospy.get_param('~drive_mode', 'twist')
-        #self.has_gyro = rospy.get_param('~has_gyro', False) # Not sure if this does anything anymore
-        #self.odom_angular_scale_correction = rospy.get_param('~odom_angular_scale_correction', 1.0)
-        #self.odom_linear_scale_correction = rospy.get_param('~odom_linear_scale_correction', 1.0)
-        #self.cmd_vel_timeout = rospy.Duration(rospy.get_param('~cmd_vel_timeout', 0.6))
-        #self.stop_motors_on_bump = rospy.get_param('~stop_motors_on_bump', True)
-        #self.min_abs_yaw_vel = rospy.get_param('~min_abs_yaw_vel', None)
-        #self.max_abs_yaw_vel = rospy.get_param('~max_abs_yaw_vel', None)
-        #self.publish_tf = rospy.get_param('~publish_tf', False)
+        self.port = rospy.get_param('~port', '')
+        self.baudrate = rospy.get_param('~baudrate', self.default_baudrate) # From TurtleBot
+        self.robot_type = rospy.get_param('~robot_type', 'create')
+        self.update_rate = rospy.get_param('~update_rate', self.default_update_rate)
+        self.drive_mode = rospy.get_param('~drive_mode', 'twist')
+        self.has_gyro = rospy.get_param('~has_gyro', False) # Not sure if this does anything anymore
+        self.odom_angular_scale_correction = rospy.get_param('~odom_angular_scale_correction', 1.0)
+        self.odom_linear_scale_correction = rospy.get_param('~odom_linear_scale_correction', 1.0)
+        self.cmd_vel_timeout = rospy.Duration(rospy.get_param('~cmd_vel_timeout', 0.6))
+        self.stop_motors_on_bump = rospy.get_param('~stop_motors_on_bump', True)
+        self.min_abs_yaw_vel = rospy.get_param('~min_abs_yaw_vel', None)
+        self.max_abs_yaw_vel = rospy.get_param('~max_abs_yaw_vel', None)
+        self.publish_tf = rospy.get_param('~publish_tf', False)
         self.odom_frame = rospy.get_param('~odom_frame', 'odom')
         self.base_frame = rospy.get_param('~base_frame', 'base_footprint')
-        #self.operate_mode = rospy.get_param('~operation_mode', 3)
+        self.operate_mode = rospy.get_param('~operation_mode', 3)
 
-        #rospy.loginfo("serial port: %s"%(self.port))
-        #rospy.loginfo("update_rate: %s"%(self.update_rate))
-        #rospy.loginfo("drive mode: %s"%(self.drive_mode))
-        #rospy.loginfo("has gyro: %s"%(self.has_gyro))
+        rospy.loginfo("serial port: %s"%(self.port))
+        rospy.loginfo("update_rate: %s"%(self.update_rate))
+        rospy.loginfo("drive mode: %s"%(self.drive_mode))
+        rospy.loginfo("has gyro: %s"%(self.has_gyro))
 
     def _init_pubsub(self):
         # Instead of publishing a stream of pointless transforms,
@@ -162,10 +157,9 @@ class PropellerComm(object):
         # This is the Turtlebot node instance, the Propeller code uses another line above.
         #self.odom_pub = rospy.Publisher('odom', Odometry)
 
-        # Not used by Arlo
-        #self.sensor_state_pub = rospy.Publisher('~sensor_state', TurtlebotSensorState)
-        #self.operating_mode_srv = rospy.Service('~set_operation_mode', SetTurtlebotMode, self.set_operation_mode)
-        #self.digital_output_srv = rospy.Service('~set_digital_outputs', SetDigitalOutputs, self.set_digital_outputs)
+        self.sensor_state_pub = rospy.Publisher('~sensor_state', TurtlebotSensorState)
+        self.operating_mode_srv = rospy.Service('~set_operation_mode', SetTurtlebotMode, self.set_operation_mode)
+        self.digital_output_srv = rospy.Service('~set_digital_outputs', SetDigitalOutputs, self.set_digital_outputs)
 
         self.transform_broadcaster = None
         if self.publish_tf:
