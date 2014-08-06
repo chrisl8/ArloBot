@@ -61,7 +61,7 @@ const int MCP3208_dinoutPIN = 3;
 const int MCP3208_clkPIN = 4;
 const int MCP3208_csPIN = 2;
 const float referenceVoltage = 5.0; // MCP3208 reference voltage setting. I use 5.0v for the 5.0v IR sensors from Parallax
-const int IRsamples = 10;
+const int IRsamples = 3;
 const int numberOfIRonMC3208 = 6; // Number of IR Sensors on the MCP3208 ADC to read
 const int firtPINGsensorPIN = 5; // Which pin the first PING sensor is on
 const int numberOfPINGsensors = 6; // Number of PING sensors, we assume the are consecutive
@@ -93,6 +93,8 @@ static int gyrostack[256]; // If things get weird make this number bigger!
 
 // For "Safety Override"
 static int safeToProceed = 0;
+const int startSlowDownDistance = 30;
+const int haltDistance = 10;
 // Cog
 void safetyOverride(void *par); // Use a cog to squelch incoming commands and perform safety procedures like halting, backing off, avoiding cliffs, calling for help, etc.
 // This can use proximity sensors to detect obstacles (including people) and cliffs
@@ -362,16 +364,17 @@ void displayTicks(void) {
 	// Odometry for ROS
     dprint(term, "o\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%d\n", X, Y, Heading, gyroHeading, V, Omega, pingArray[2]);
     // For Debugging in Terminal mode
+    /*
+    dprint(term, "Debug:%c\n", CLREOL);
     int i;
     for( i=0; i < numberOfPINGsensors; i++ ) {
-        dprint(term, "PING %d: %d%c\n", firtPINGsensorPIN + i, pingArray[i], CLREOL);
+        dprint(term, "Sensor %d: %d %d%c\n", i, pingArray[i], irArray[i], CLREOL);
         }
-    // Walk IR Array to find blocked paths and halt immediately
-    for (i = 0; i < numberOfIRonMC3208; i++) {
-        dprint(term, "IR   %d: %d%c\n", i, irArray[i], CLREOL);
-        }
-    dprint(term, "safeToProceed: %d%c\n", safeToProceed, CLREOL);
-    putChar(HOME);                            // Cursor -> top-left "home"
+    dprint(term, "safeToProceed: %d abd_speedLimit: %d%c\n", safeToProceed, abd_speedLimit, CLREOL);
+    dprint(term, "X: %.3f Y: %.3f V: %.3f Omega: %.3f%c\n", X, Y, V, Omega, CLREOL);
+    dprint(term, "Heading: %.3f gyroHeading: %.3f%c\n", X, Y, CLREOL);
+    dprint(term, "%c", HOME);                            // Cursor -> top-left "home"
+    */
 
 }
 
@@ -406,25 +409,7 @@ void pollPingSensors(void *par) {
     for (j = 0; j < numberOfIRonMC3208; j++) {
     irArray[j] = mcp3208_IR_cm(j);
     }
-    //pause(betweenSensorPollDelay);
     }
-    /* http://forums.parallax.com/showthread.php/111215-multiple-pings?highlight=ping+round+trip+time
-    "The echos from one PING could confuse the others if they were operating simultaneously. You really need to trigger only one at a time and allow a little time for the echos to die down before triggering another PING even if they're facing in completely different directions.
-    I don't know what would be ideal for a delay, but the maximum sound round-trip time window for the PING))) is 18.5ms and I'd wait several times that, maybe 50 to 100ms."
-    */
-    
-    // Check buit in ADC
-    /*
-    for (i=0;i<numberOfIRonADC;i++) {
-      int adc_cm = adc_IR_cm(i);
-      if(adc_cm > 87) {
-        print("ADC %d:     Out of Range%c\n", i, CLREOL);
-      } else {
-        print("ADC %d:     %3dcm %2.1fin%c\n", i, adc_cm, adc_cm * 0.393701, CLREOL);
-      }
-    }
-    */
-
   }
 }
 
@@ -520,25 +505,45 @@ while(1) {
     //pause(250); // Pause between reads, or do we need this? Should we read faster? The !ready loop should handle the Gyro's frequency right?
 }
 }
+//startSlowDownDistance = 30;
+//haltDistance = 10;
 
 void safetyOverride(void *par) {
 while(1) {
-    int i, blocked = 0;
+    int i, blocked = 0, minDistance = 255;
     // Walk PING Array to find blocked paths and halt immediately
     for( i=0; i < numberOfPINGsensors - 1; i++ ) { // -1 to ignore the one in back for now.
-        if(pingArray[i] < 16) {
+      if(pingArray[i] < startSlowDownDistance) {
+        if(pingArray[i] < minDistance)
+          minDistance = pingArray[i];
+        if(pingArray[i] < haltDistance) {
             blocked = 1; // Use this to give the "all clear" later if it never gets set
             safeToProceed = 0; // Prevent main thread from setting any drive_speed
         }
+      }
     }
     
     // Walk IR Array to find blocked paths and halt immediately
         // Check IR sensors on MCP3208
     for (i = 0; i < numberOfIRonMC3208 - 1; i++) { // -1 to ignore the one in back for now.
-        if(irArray[i] < 16) {
+      if(irArray[i] < startSlowDownDistance) {
+        if(irArray[i] < minDistance)
+          minDistance = irArray[i];
+        if(irArray[i] < haltDistance) {
             blocked = 1; // Use this to give the "all clear" later if it never gets set
             safeToProceed = 0; // Prevent main thread from setting any drive_speed
         }
+      }
+    }
+
+    // Reduce speed when we are close to an obstruction
+    if( minDistance < startSlowDownDistance ) {
+      abd_speedLimit = (minDistance - haltDistance) * (100 / (startSlowDownDistance - haltDistance));
+      if(abd_speedLimit < 5)
+        abd_speedLimit = 5;
+      //TODO: We need to set a minimum, as it is it can get close to or even hit 0!
+    } else {
+      abd_speedLimit = 100;
     }
     
     // If NO sensors are blocked, give the all clear!
@@ -548,7 +553,7 @@ while(1) {
             }
         safeToProceed = 1;
     } else {
-        drive_speed(-5,-5); // back off slowly until we are clear. This needs more smarts.
+        drive_speed(-10,-10); // back off slowly until we are clear. This needs more smarts.
     }
 
     pause(10); // TODO: Do we need this? Does running a cog "full speed" have any down sides?

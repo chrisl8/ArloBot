@@ -10,6 +10,7 @@
  *       Version 0.2
  *       Increased all "delay(10)" statments to "delay(15)"
  *       Because 10 is too short for waitcnt.
+ *       COMMENTED OUT all delay entries, because in CMM on Propeller they are not even needed.
  */
 
 #include <propeller.h>
@@ -138,7 +139,7 @@ int readADC(int channel, int dinout, int clk, int cs)
 	pinLow(clk);
 
 	pinLow(cs);  	// Active chip select by setting pin low
-	delay(15);
+	//delay(15);
 
 	// Sending configuration to device
 	setup = channel | 0b11000;
@@ -149,7 +150,7 @@ int readADC(int channel, int dinout, int clk, int cs)
 		else
 			pinLow(dinout); // is MSB != 0
 		setup <<= 1;  // shift left
-		delay(15);
+		//delay(15);
 	}
 
 	pinPulseHL(clk, 10, 10); //Empty clock, for sampling
@@ -166,7 +167,7 @@ int readADC(int channel, int dinout, int clk, int cs)
 		// Shifting bit to left, to make room for current one...
 		AdcResult<<=1;
 		AdcResult=AdcResult | (pinRead(dinout) & 0x01);
-		delay(15);
+		//delay(15);
 	}
 	pinHigh(cs);
 	return(AdcResult);
