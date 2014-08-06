@@ -98,15 +98,15 @@ class PropellerComm(object):
         # subscriptions
         rospy.Subscriber("cmd_vel", Twist, self._HandleVelocityCommand) # Is this line or the below bad redundancy?
         rospy.Subscriber("cmd_vel_mux/input/teleop", Twist, self._HandleVelocityCommand) # IS this line or the above bad redundancy?
-        self._SerialPublisher = rospy.Publisher('serial', String)
+        self._SerialPublisher = rospy.Publisher('serial', String, queue_size=10)
 
         # The Odometry Transform is done in/with the robot_pose_ekf now
         self._OdometryTransformBroadcaster = tf.TransformBroadcaster() # REMOVE this line if you use robot_pose_ekf
-        self._OdometryPublisher = rospy.Publisher("odom", Odometry)
+        self._OdometryPublisher = rospy.Publisher("odom", Odometry, queue_size=10)
 
         # We don't need to broadcast a transform, as it is static and contained within the URDF files
         #self._SonarTransformBroadcaster = tf.TransformBroadcaster()
-        self._SonarPublisher = rospy.Publisher("sonar_scan", LaserScan)
+        self._SonarPublisher = rospy.Publisher("sonar_scan", LaserScan, queue_size=10)
         
         # Gyro Publisher
         # Based on code in TurtleBot source:
