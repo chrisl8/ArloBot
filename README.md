@@ -15,13 +15,13 @@ You will also need the Turtlebot packages, as I use that code when I can:
 http://wiki.ros.org/turtlebot/Tutorials/indigo/Installation
 NOTE: At this time Indigo Turtlebot has to be installed from source. If you have trouble doing that let me know and I will post my personal "how to" on installing Turtlebot from source to make this work.
 4. Grab this code and put it on both your laptop and workstation:
-'''
+```
 cd
 git clone git@github.com:chrisl8/ArloBot.git arlobot
 cd ~/arlobot
 source ~/turtlebot/devel/setup.bash
 catkin_make
-'''
+```
 5. Depending on what you want to do there are different ways to "bring up" the robot.  These are the "recipes" that are well tested so far:
 
 ```
