@@ -41,6 +41,7 @@ source ~/arlobot/devel/setup.bash
 cd ~/arlobot/
 ```
 Which makes it easy to just start running ROS commands as soon as I log in.
+
 6. Depending on what you want to do there are different ways to "bring up" the robot.  These are the "recipes" that are well tested so far:
 
 ```
