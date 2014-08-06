@@ -19,11 +19,10 @@
 #Much of my code below is based on or copied from his work.
 #
 # NOTE: This script REQUIRES parameters to be loaded from param/encoders.yaml!
-#import roslib; roslib.load_manifest('activitybot') # http://wiki.ros.org/roslib
+#import roslib; roslib.load_manifest('arlobot') # http://wiki.ros.org/roslib
 import rospy
 import tf
-import math
-from math import sin, cos, pi
+from math import sin, cos
 import sys
 
 from geometry_msgs.msg import Quaternion
@@ -32,10 +31,9 @@ from sensor_msgs.msg import LaserScan
 #from sensor_msgs.msg import Imu
 from nav_msgs.msg import Odometry
 from std_msgs.msg import String
-#from activitybot.srv import *
-#from activitybot.msg import *
 
-#for Turtlebot stack from turtlebot_node.py
+#for Turtlebot stack from turtlebot_node.py NOT used in ArloBot
+'''
 from create_driver import Turtlebot, MAX_WHEEL_SPEED, DriverError
 from create_node.msg import TurtlebotSensorState, Drive, Turtle
 from create_node.srv import SetTurtlebotMode,SetTurtlebotModeResponse, SetDigitalOutputs, SetDigitalOutputsResponse
@@ -45,6 +43,7 @@ from sensor_msgs.msg import JointState
 import dynamic_reconfigure.server
 from create_node.cfg import TurtleBotConfig
 import create_node.robot_types as robot_types
+'''
 
 from SerialDataGateway import SerialDataGateway
 
@@ -53,8 +52,8 @@ class PropellerComm(object):
     Helper class for communicating with a Propeller board over serial port
     '''
 
-    #CONTROLLER_INITIALIZING = 1;
-    #CONTROLLER_IS_READY = 2;
+    #CONTROLLER_INITIALIZING = 1; # Not used in ArloBot
+    #CONTROLLER_IS_READY = 2; # Not used in ArloBot
 
     def __init__(self, port="/dev/ttyUSB0", baudrate=115200):
         '''
@@ -63,44 +62,47 @@ class PropellerComm(object):
         baudrate: Baud rate for the serial communication
         '''
 
-        self.default_port = '/dev/ttyUSB0' # Note that the Propeller board must be plugged in BEFORE anything else to secure ttyUSB0
-        #self.default_update_rate = 30.0
+        #self.default_port = '/dev/ttyUSB0' # Not used in ArloBot
+        #self.default_update_rate = 30.0 # Not used in ArloBot
 
+        # Not used in ArloBot
+        '''
         self.robot = Turtlebot()
         self.sensor_handler = None
         self.sensor_state = TurtlebotSensorState()
         self.req_cmd_vel = None
 
         rospy.init_node('turtlebot')
+        '''
         self._init_params()
-        self._init_pubsub()
+        #self._init_pubsub() # Not used in ArloBot
         
-        self._pos2d = Pose2D() # 2D pose for odometry
+        #self._pos2d = Pose2D() # 2D pose for odometry # Not used in ArloBot
 
+        # Not used in ArloBot
+        '''
         self._diagnostics = TurtlebotDiagnostics()
         if self.has_gyro:
             from create_node.gyro import TurtlebotGyro
             self._gyro = TurtlebotGyro()
         else:
             self._gyro = None
+        '''
             
         #dynamic_reconfigure.server.Server(TurtleBotConfig, self.reconfigure)
 
-        self._Counter = 0
+        self._Counter = 0 # For Propeller code's _HandleReceivedLine and _WriteSerial
 
-        rospy.init_node('turtlebot')
-
-        port = rospy.get_param("~port", "")
-        baudRate = int(rospy.get_param("~baudRate", 0))
-
-        rospy.loginfo("Starting with serial port: " + port + ", baud rate: " + str(baudRate))
+        #rospy.init_node('turtlebot')
+        rospy.init_node('arlobot')
 
         # subscriptions
         rospy.Subscriber("cmd_vel", Twist, self._HandleVelocityCommand) # Is this line or the below bad redundancy?
         rospy.Subscriber("cmd_vel_mux/input/teleop", Twist, self._HandleVelocityCommand) # IS this line or the above bad redundancy?
         self._SerialPublisher = rospy.Publisher('serial', String, queue_size=10)
 
-        # The Odometry Transform is done in/with the robot_pose_ekf now
+        # IF the Odometry Transform is done in/with the robot_pose_ekf don't publish it,
+        # but we are not using robot_pose_ekf, because it does nothing for us if you don't have a full IMU!
         self._OdometryTransformBroadcaster = tf.TransformBroadcaster() # REMOVE this line if you use robot_pose_ekf
         self._OdometryPublisher = rospy.Publisher("odom", Odometry, queue_size=10)
 
@@ -119,30 +121,35 @@ class PropellerComm(object):
         #self.imu_pub = rospy.Publisher('imu/data', Imu)
         #self.imu_pub_raw = rospy.Publisher('imu/raw', Imu)
 
+        port = rospy.get_param("~port", "/dev/ttyUSB0")
+        baudRate = int(rospy.get_param("~baudRate", 115200))
+
+        rospy.loginfo("Starting with serial port: " + port + ", baud rate: " + str(baudRate))
         self._SerialDataGateway = SerialDataGateway(port, baudRate,  self._HandleReceivedLine)
 
     def _init_params(self):
-        self.port = rospy.get_param('~port', self.default_port)
-        self.robot_type = rospy.get_param('~robot_type', 'create')
-        #self.baudrate = rospy.get_param('~baudrate', self.default_baudrate)
+        #self.port = rospy.get_param('~port', '')
+        #self.baudRate = rospy.get_param('~baudRate', 0)
+        #self.baudrate = rospy.get_param('~baudrate', self.default_baudrate) # From TurtleBot
+        #self.robot_type = rospy.get_param('~robot_type', 'create')
         #self.update_rate = rospy.get_param('~update_rate', self.default_update_rate)
-        self.drive_mode = rospy.get_param('~drive_mode', 'twist')
-        self.has_gyro = rospy.get_param('~has_gyro', False) # Not sure if this does anything anymore
-        self.odom_angular_scale_correction = rospy.get_param('~odom_angular_scale_correction', 1.0)
-        self.odom_linear_scale_correction = rospy.get_param('~odom_linear_scale_correction', 1.0)
-        self.cmd_vel_timeout = rospy.Duration(rospy.get_param('~cmd_vel_timeout', 0.6))
-        self.stop_motors_on_bump = rospy.get_param('~stop_motors_on_bump', True)
-        self.min_abs_yaw_vel = rospy.get_param('~min_abs_yaw_vel', None)
-        self.max_abs_yaw_vel = rospy.get_param('~max_abs_yaw_vel', None)
-        self.publish_tf = rospy.get_param('~publish_tf', False)
+        #self.drive_mode = rospy.get_param('~drive_mode', 'twist')
+        #self.has_gyro = rospy.get_param('~has_gyro', False) # Not sure if this does anything anymore
+        #self.odom_angular_scale_correction = rospy.get_param('~odom_angular_scale_correction', 1.0)
+        #self.odom_linear_scale_correction = rospy.get_param('~odom_linear_scale_correction', 1.0)
+        #self.cmd_vel_timeout = rospy.Duration(rospy.get_param('~cmd_vel_timeout', 0.6))
+        #self.stop_motors_on_bump = rospy.get_param('~stop_motors_on_bump', True)
+        #self.min_abs_yaw_vel = rospy.get_param('~min_abs_yaw_vel', None)
+        #self.max_abs_yaw_vel = rospy.get_param('~max_abs_yaw_vel', None)
+        #self.publish_tf = rospy.get_param('~publish_tf', False)
         self.odom_frame = rospy.get_param('~odom_frame', 'odom')
         self.base_frame = rospy.get_param('~base_frame', 'base_footprint')
-        self.operate_mode = rospy.get_param('~operation_mode', 3)
+        #self.operate_mode = rospy.get_param('~operation_mode', 3)
 
-        rospy.loginfo("serial port: %s"%(self.port))
+        #rospy.loginfo("serial port: %s"%(self.port))
         #rospy.loginfo("update_rate: %s"%(self.update_rate))
-        rospy.loginfo("drive mode: %s"%(self.drive_mode))
-        rospy.loginfo("has gyro: %s"%(self.has_gyro))
+        #rospy.loginfo("drive mode: %s"%(self.drive_mode))
+        #rospy.loginfo("has gyro: %s"%(self.has_gyro))
 
     def _init_pubsub(self):
         # Instead of publishing a stream of pointless transforms,
@@ -155,9 +162,10 @@ class PropellerComm(object):
         # This is the Turtlebot node instance, the Propeller code uses another line above.
         #self.odom_pub = rospy.Publisher('odom', Odometry)
 
-        self.sensor_state_pub = rospy.Publisher('~sensor_state', TurtlebotSensorState)
-        self.operating_mode_srv = rospy.Service('~set_operation_mode', SetTurtlebotMode, self.set_operation_mode)
-        self.digital_output_srv = rospy.Service('~set_digital_outputs', SetDigitalOutputs, self.set_digital_outputs)
+        # Not used by Arlo
+        #self.sensor_state_pub = rospy.Publisher('~sensor_state', TurtlebotSensorState)
+        #self.operating_mode_srv = rospy.Service('~set_operation_mode', SetTurtlebotMode, self.set_operation_mode)
+        #self.digital_output_srv = rospy.Service('~set_digital_outputs', SetDigitalOutputs, self.set_digital_outputs)
 
         self.transform_broadcaster = None
         if self.publish_tf:
@@ -466,15 +474,14 @@ class PropellerComm(object):
         self._SerialDataGateway.Stop()
         
     def _HandleVelocityCommand(self, twistCommand): # This is Propeller specific
-        # NOTE: turtlebot_node has a lot of code under its cmd_vel function to deal with maximum and minimu speeds.
-        # These may be worth taking a look at if we find ourselves having problems at the edge of our speed ranges.
-        # Also note that some of that code may have to be put int Propeller code, not here.
+        # NOTE: turtlebot_node has a lot of code under its cmd_vel function to deal with maximum and minimum speeds,
+        # which are dealt with in ArloBot on the Activity Board itself in the Propeller code.
         """ Handle movement requests. """
         v = twistCommand.linear.x        # m/s
         omega = twistCommand.angular.z      # rad/s
-        rospy.logdebug("Handling twist command: " + str(v) + "," + str(omega))
+        #rospy.logdebug("Handling twist command: " + str(v) + "," + str(omega))
         message = 's,%.3f,%.3f\r' % (v, omega)
-        rospy.logdebug("Sending speed command message: " + message)
+        #rospy.logdebug("Sending speed command message: " + message)
         self._WriteSerial(message)
 
     def _InitializeDriveGeometry(self): # This is Propeller specific
@@ -487,7 +494,7 @@ class PropellerComm(object):
         #trackWidthParts = self._GetBaseAndExponent(trackWidth)
 
         message = 'd,%f,%f\r' % (trackWidth, distancePerCount)
-        rospy.logdebug("Sending drive geometry params message: " + message)
+        #rospy.logdebug("Sending drive geometry params message: " + message)
         self._WriteSerial(message)
 
 if __name__ == '__main__':
