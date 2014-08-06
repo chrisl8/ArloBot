@@ -4,24 +4,46 @@ ArloBot Package for ROS
 This is my attempt to build a Package for the Robot Operating System (ROS) http://www.ros.org/ to work with the Parallax Propeller based ArloBot:
 http://www.parallax.com/product/arlo-robotic-platform-system
 
-Please note that you will also need the code to run on your Propeller board. This is stored in the Propeller folder. Hopefully catkin won't mind too much?
+Please note that you will also need the code to run on your Propeller board. This is stored in the Propeller folder.
 
-Basic usage instructions:
-
-First build your ArloBot!
-Second get the SimpleIDE installed on a computer and load the code from the Propeller folder into your Activity Board. You can do this from Windows or Linux. I find it handy to have SimpleIDE running on my ROS laptop on board the Arlo though to make code updates easy.
-
-Third, install ROS Indigo on a Ubuntu laptop that can connect via USB to your Activity Board:
+## Basic usage instructions: ##
+1. Build your ArloBot!
+2. Get the SimpleIDE installed on a computer and load the code from the Propeller folder into your Activity Board. You can do this from Windows or Linux. I find it handy to have SimpleIDE running on my ROS laptop on board the Arlo though to make code updates easy.
+3. Install ROS Indigo on a Ubuntu laptop that can connect via USB to your Activity Board:
 http://wiki.ros.org/indigo/Installation/Ubuntu
 You will also need the Turtlebot packages, as I use that code when I can:
 http://wiki.ros.org/turtlebot/Tutorials/indigo/Installation
 NOTE: At this time Indigo Turtlebot has to be installed from source. If you have trouble doing that let me know and I will post my personal "how to" on installing Turtlebot from source to make this work.
+4. Grab this code and put it on both your laptop and workstation:
+'''
+cd
+git clone git@github.com:chrisl8/ArloBot.git arlobot
+cd ~/arlobot
+source ~/turtlebot/devel/setup.bash
+catkin_make
+'''
+5. Depending on what you want to do there are different ways to "bring up" the robot.  These are the "recipes" that are well tested so far:
 
-
-Depending on what you want to do there are different ways to "bring up" the robot.  These are the "recipes" that are well tested so far:
-
-NOTE: These all assume the basics are already set up in .bashrc for your robot!
 ```
+I use a "Workstation" for anything that needs a GUI, and I use SSH to connect to the laptop and run anything that does not.
+My "Workstation" is an Oracle VirtualBox installation of Ubuntu, which I find works great for RVIZ on my Windows desktop.
+
+I have these lines at the end of the .bashrc file on my "Workstation":
+export ROS_MASTER_URI=http://192.168.1.106:11311 # Set to laptop IP
+export ROS_HOSTNAME=192.168.1.107 # Set to THIS machine's IP
+export ROSLAUNCH_SSH_UNKNOWN=1
+source ~/arlobot/devel/setup.bash
+cd ~/arlobot/
+
+and these lines at the end of the .bashrc on the laptop on the ArloBot:
+export ROS_MASTER_URI=http://192.168.1.106:11311 # Set to laptop IP
+export ROS_HOSTNAME=192.168.1.106 # Set to THIS machine's IP
+export ROSLAUNCH_SSH_UNKNOWN=1
+source ~/arlobot/devel/setup.bash
+cd ~/arlobot/
+
+Which makes it easy to get going right away.
+
 A good way to test your Propeller code is to run:
 miniterm.py  /dev/ttyUSB0 115200
 It will reset the Prop board and then start spitting out:
@@ -46,7 +68,7 @@ Tests from this setup:
     Drive and see if the robot appears to move properly on the grid.
   Turn on LaserScan and set the Decay Time to 650
     Move around, spin in circles and see if you get a reasonable picture of the room.
-  Turn Laser Scan and turn on Registered DepthCloud to see if you get a proper depth set picture of the room.
+  Turn off Laser Scan and turn on Registered DepthCloud to see if you get a picture of the room overlaied properly onto the 3D virtual world in RVIZ.
   
 
 Gmapping Demo (SLAM Map building):
@@ -72,6 +94,6 @@ NOTE: This is still in progress, it works with simple paths, but also seems quit
 I need to see if there are settings to change for this,
 see if thare are updates to Navigation in Indigo,
 and set up my PING/IR sensors to provide Navigation input,
-and code on the Propeller to provide override fail safe when the PING/IR detect obects within 6 inches.
+and code on the Propeller to provide override fail safe when the PING/IR detect obects that the Kinect/Xtion miss due to its height.
 ```
 Please report an issue for any problems or if you need me to clarify anything!
