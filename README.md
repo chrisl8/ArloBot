@@ -9,6 +9,8 @@ Please note that you will also need the code to run on your Propeller board. Thi
 ## Basic usage instructions: ##
 1. Build your ArloBot!
 2. Get the SimpleIDE installed on a computer and load the code from the Propeller folder into your Activity Board. You can do this from Windows or Linux. I find it handy to have SimpleIDE running on my ROS laptop on board the Arlo though to make code updates easy.
+3. Install Ubuntu on a laptop to ride on the ArloBot, and optionally also on a "workstation." I use a "Workstation" for anything that needs a GUI, and I use SSH to connect to the laptop and run anything that does not.
+My "Workstation" is an Oracle VirtualBox installation of Ubuntu, which I find works great for RVIZ on my Windows desktop.
 3. Install ROS Indigo on a Ubuntu laptop that can connect via USB to your Activity Board:
 http://wiki.ros.org/indigo/Installation/Ubuntu
 You will also need the Turtlebot packages, as I use that code when I can:
@@ -22,28 +24,26 @@ cd ~/arlobot
 source ~/turtlebot/devel/setup.bash
 catkin_make
 ```
-5. Depending on what you want to do there are different ways to "bring up" the robot.  These are the "recipes" that are well tested so far:
-
+5. Set up your ROS environment. There are several commands that you have to run every time you start a terminal session to run ROS. What I do is put them into the .bashrc file in my home folder. I have these lines at the end of the .bashrc file on my "Workstation":
 ```
-I use a "Workstation" for anything that needs a GUI, and I use SSH to connect to the laptop and run anything that does not.
-My "Workstation" is an Oracle VirtualBox installation of Ubuntu, which I find works great for RVIZ on my Windows desktop.
-
-I have these lines at the end of the .bashrc file on my "Workstation":
 export ROS_MASTER_URI=http://192.168.1.106:11311 # Set to laptop IP
 export ROS_HOSTNAME=192.168.1.107 # Set to THIS machine's IP
 export ROSLAUNCH_SSH_UNKNOWN=1
 source ~/arlobot/devel/setup.bash
 cd ~/arlobot/
-
+```
 and these lines at the end of the .bashrc on the laptop on the ArloBot:
+```
 export ROS_MASTER_URI=http://192.168.1.106:11311 # Set to laptop IP
 export ROS_HOSTNAME=192.168.1.106 # Set to THIS machine's IP
 export ROSLAUNCH_SSH_UNKNOWN=1
 source ~/arlobot/devel/setup.bash
 cd ~/arlobot/
+```
+Which makes it easy to just start running ROS commands as soon as I log in.
+6. Depending on what you want to do there are different ways to "bring up" the robot.  These are the "recipes" that are well tested so far:
 
-Which makes it easy to get going right away.
-
+```
 A good way to test your Propeller code is to run:
 miniterm.py  /dev/ttyUSB0 115200
 It will reset the Prop board and then start spitting out:
