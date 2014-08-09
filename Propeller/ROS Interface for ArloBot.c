@@ -93,8 +93,7 @@ static int gyrostack[256]; // If things get weird make this number bigger!
 
 // For "Safety Override"
 static int safeToProceed = 0;
-const int startSlowDownDistance = 30;
-const int haltDistance = 10;
+
 // Cog
 void safetyOverride(void *par); // Use a cog to squelch incoming commands and perform safety procedures like halting, backing off, avoiding cliffs, calling for help, etc.
 // This can use proximity sensors to detect obstacles (including people) and cliffs
@@ -364,7 +363,7 @@ void displayTicks(void) {
 	// Odometry for ROS
     dprint(term, "o\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%d\n", X, Y, Heading, gyroHeading, V, Omega, pingArray[2]);
     // For Debugging in Terminal mode
-    /*
+/*
     dprint(term, "Debug:%c\n", CLREOL);
     int i;
     for( i=0; i < numberOfPINGsensors; i++ ) {
@@ -374,8 +373,7 @@ void displayTicks(void) {
     dprint(term, "X: %.3f Y: %.3f V: %.3f Omega: %.3f%c\n", X, Y, V, Omega, CLREOL);
     dprint(term, "Heading: %.3f gyroHeading: %.3f%c\n", X, Y, CLREOL);
     dprint(term, "%c", HOME);                            // Cursor -> top-left "home"
-    */
-
+*/
 }
 
 volatile int abd_speedL;
@@ -505,8 +503,10 @@ while(1) {
     //pause(250); // Pause between reads, or do we need this? Should we read faster? The !ready loop should handle the Gyro's frequency right?
 }
 }
-//startSlowDownDistance = 30;
-//haltDistance = 10;
+
+const int startSlowDownDistance = 70;
+const int IRstartSlowDownDistance = 30; // Because IR is jumpy at long distances
+const int haltDistance = 10;
 
 void safetyOverride(void *par) {
 while(1) {
@@ -526,7 +526,7 @@ while(1) {
     // Walk IR Array to find blocked paths and halt immediately
         // Check IR sensors on MCP3208
     for (i = 0; i < numberOfIRonMC3208 - 1; i++) { // -1 to ignore the one in back for now.
-      if(irArray[i] < startSlowDownDistance) {
+      if(irArray[i] < IRstartSlowDownDistance) {
         if(irArray[i] < minDistance)
           minDistance = irArray[i];
         if(irArray[i] < haltDistance) {
@@ -537,11 +537,34 @@ while(1) {
     }
 
     // Reduce speed when we are close to an obstruction
+    // TODO: This needs some smoothing, to avoid random and rapid jumps between speeds, although it
+    // may be that sometimes a jump is needed, it just needs to stand the test of time.
+    /*
+    Ideas:
+    1. A counter that requires a given speed to be arrived at X times before it is implemented.
+    2. Same, but only for wide changes.
+    3. A system by which it only changes X per round, so it has to change slowly, not rapidly
+    Have to test each to see how it deals with sudden obstacles in the way,
+    and with normal driving.
+    */
     if( minDistance < startSlowDownDistance ) {
-      abd_speedLimit = (minDistance - haltDistance) * (100 / (startSlowDownDistance - haltDistance));
-      if(abd_speedLimit < 5)
+      int new_abd_speedLimit = (minDistance - haltDistance) * (100 / (startSlowDownDistance - haltDistance));
+      if(new_abd_speedLimit < 5) {
         abd_speedLimit = 5;
-      //TODO: We need to set a minimum, as it is it can get close to or even hit 0!
+      } else if(new_abd_speedLimit > 100) {
+        abd_speedLimit = 100;
+      } else {
+        /* Only increment by 1 per iteration to smooth out transitions,
+           and noise. Maximum transition speed is the pause at the bottom
+           of this cog function * the transition amount.
+        */
+        
+        if(new_abd_speedLimit > abd_speedLimit) {
+            abd_speedLimit = abd_speedLimit + 1;
+        } else if(new_abd_speedLimit < abd_speedLimit) {
+            abd_speedLimit = abd_speedLimit -1;
+        }
+      }
     } else {
       abd_speedLimit = 100;
     }
@@ -553,10 +576,21 @@ while(1) {
             }
         safeToProceed = 1;
     } else {
+        /* At this point we are blocked, so it is OK to take over control
+           of the robot (safeToProceed == 0, so the main thread won't do anything),
+           and it is safe to do work ignoring the need to slow down or stop
+           because we know our position pretty well.
+           HOWEVER, you will have to RECHECK distances yourself if you are going to move
+           in this program location.
+        */
         drive_speed(-10,-10); // back off slowly until we are clear. This needs more smarts.
     }
 
-    pause(10); // TODO: Do we need this? Does running a cog "full speed" have any down sides?
+    pause(1); // This throttles the transition speed of everything in this cog.
+    /* Imagine the functions here, and how many times they have to iterate to achieve
+       a given setting, and multiple it by this to determine the maximum transition
+       speed.
+    */
 
         }
 }

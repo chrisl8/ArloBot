@@ -59,7 +59,7 @@ If you want to get really fancy you can send it twist commands from the terminal
 Basic TeleOp with 3D sensor use:
 roslaunch arlobot_bringup minimal.launch
 <New Terminal>
-roslaunch turtlebot_teleop keyboard_teleop.launch
+roslaunch arlobot_bringup keyboard_teleop.launch
 <New Terminal>
 roslaunch arlobot_bringup 3dsensor.launch
 <GUI based Terminal>
