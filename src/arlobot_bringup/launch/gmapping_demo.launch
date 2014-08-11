@@ -1,4 +1,6 @@
 <launch>
+  <!-- https://github.com/ros-planning/navigation/issues/206 -->
+  <rosparam command="delete" ns="move_base" />
   <include file="$(find arlobot_bringup)/launch/3dsensor.launch">
     <arg name="rgb_processing" value="false" />
     <arg name="depth_registration" value="false" />
@@ -9,7 +11,7 @@
     <arg name="scan_topic" value="/scan" />
   </include>
 
-  <include file="$(find turtlebot_navigation)/launch/includes/gmapping.launch.xml"/>
+  <include file="$(find arlobot_bringup)/launch/includes/gmapping.launch.xml"/>
 
   <include file="$(find turtlebot_navigation)/launch/includes/move_base.launch.xml"/>
 

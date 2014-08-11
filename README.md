@@ -76,19 +76,19 @@ Gmapping Demo (SLAM Map building):
 http://wiki.ros.org/turtlebot_navigation/Tutorials/Build%20a%20map%20with%20SLAM
 roslaunch arlobot_bringup minimal.launch
 <New Terminal>
-roslaunch turtlebot_teleop keyboard_teleop.launch
+roslaunch arlobot_bringup keyboard_teleop.launch
 <New Terminal>
 roslaunch arlobot_bringup gmapping_demo.launch
 <GUI based Terminal>
 roslaunch turtlebot_rviz_launchers view_navigation.launch
 When you are done, save your map!
-rosrun map_server map_saver -f /tmp/my_map
+rosrun map_server map_saver -f ~/rosmaps/my_map1
 
 AMCL (Navigating the map we built above:
 http://wiki.ros.org/turtlebot_navigation/Tutorials/Autonomously%20navigate%20in%20a%20known%20map
 roslaunch arlobot_bringup minimal.launch
 <New Terminal>
-roslaunch turtlebot_navigation amcl_demo.launch map_file:=/tmp/my_map.yaml
+roslaunch turtlebot_navigation amcl_demo.launch map_file:=~/rosmaps/my_map1.yaml
 <GUI based Terminal>
 roslaunch turtlebot_rviz_launchers view_navigation.launch --screen
 NOTE: This is still in progress, it works with simple paths, but also seems quite willing to plow into a wall and spin its wheels desperately against a wall, even though the 3D camera should be telling it that it is smakc against a wall.

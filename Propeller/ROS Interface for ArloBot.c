@@ -92,7 +92,7 @@ void pollGyro(void *par); // Use a cog to fill range variables with ping distanc
 static int gyrostack[256]; // If things get weird make this number bigger!
 
 // For "Safety Override"
-static int safeToProceed = 0;
+static int safeToProceed = 0, safeToRecede = 0, Escaping = 0;
 
 // Cog
 void safetyOverride(void *par); // Use a cog to squelch incoming commands and perform safety procedures like halting, backing off, avoiding cliffs, calling for help, etc.
@@ -296,9 +296,17 @@ int main() {
                 
                 // For debugging: Note, this will cause trouble because of collisions on access to the serial port with broadcastOdometry
                 //dprint(term, "d\t%f\t%f\n", expectedLeftSpeed, expectedRightSpeed);
-
-				if (safeToProceed == 1)
-                    drive_speed(expectedLeftSpeed, expectedRightSpeed);
+                if (Escaping == 0) { // Don't fight with the Propeller escape code!
+                    if (CommandedVelocity > 0 && safeToProceed == 1) {
+                        //drive_speed(expectedLeftSpeed, expectedRightSpeed);
+                        drive_rampStep(expectedLeftSpeed, expectedRightSpeed);
+                    } else if (CommandedVelocity < 0 && safeToRecede == 1) {
+                        drive_rampStep(expectedLeftSpeed, expectedRightSpeed);
+                    } else if (CommandedVelocity == 0) {
+                        // Rotate in place even if we are too close? Is thsi safe?!
+                        drive_rampStep(expectedLeftSpeed, expectedRightSpeed);
+                    }
+                }
                 // Should this use drive_rampStep instead? Allowing the robot to ramp up/down to the requested speed?
                 // The repeated "twist" statements provide the required "loop".
                 // NOTE: drive_setRampStep can be used to adjust the ramp rate.
@@ -361,7 +369,11 @@ void displayTicks(void) {
 	double Omega = ((speedRight * distancePerCount) - (speedLeft * distancePerCount)) / trackWidth;
 
 	// Odometry for ROS
-    dprint(term, "o\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%d\n", X, Y, Heading, gyroHeading, V, Omega, pingArray[2]);
+    int fakeLaser = 255;
+    if(irArray[2] < 30) {
+        fakeLaser = irArray[2];
+    }
+    dprint(term, "o\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%d\n", X, Y, Heading, gyroHeading, V, Omega, fakeLaser);
     // For Debugging in Terminal mode
 /*
     dprint(term, "Debug:%c\n", CLREOL);
@@ -370,8 +382,10 @@ void displayTicks(void) {
         dprint(term, "Sensor %d: %d %d%c\n", i, pingArray[i], irArray[i], CLREOL);
         }
     dprint(term, "safeToProceed: %d abd_speedLimit: %d%c\n", safeToProceed, abd_speedLimit, CLREOL);
+    dprint(term, "safeToRecede: %d Escaping: %d%c\n", safeToRecede, Escaping, CLREOL);
     dprint(term, "X: %.3f Y: %.3f V: %.3f Omega: %.3f%c\n", X, Y, V, Omega, CLREOL);
     dprint(term, "Heading: %.3f gyroHeading: %.3f%c\n", X, Y, CLREOL);
+    dprint(term, "Rear = %d", numberOfPINGsensors - 1);
     dprint(term, "%c", HOME);                            // Cursor -> top-left "home"
 */
 }
@@ -512,7 +526,7 @@ void safetyOverride(void *par) {
 while(1) {
     int i, blocked = 0, minDistance = 255;
     // Walk PING Array to find blocked paths and halt immediately
-    for( i=0; i < numberOfPINGsensors - 1; i++ ) { // -1 to ignore the one in back for now.
+    for( i=0; i < numberOfPINGsensors - 1; i++ ) { // -1 to ignore the one in back.
       if(pingArray[i] < startSlowDownDistance) {
         if(pingArray[i] < minDistance)
           minDistance = pingArray[i];
@@ -534,6 +548,15 @@ while(1) {
             safeToProceed = 0; // Prevent main thread from setting any drive_speed
         }
       }
+    }
+    
+    // Check rear Sensor and just don't reverse, no escaping yet.
+    if(pingArray[numberOfPINGsensors - 1] < haltDistance) {
+        safeToRecede = 0;
+    } else if(irArray[numberOfIRonMC3208 - 1] < haltDistance) {
+        safeToRecede = 0;
+    } else {
+        safeToRecede = 1;
     }
 
     // Reduce speed when we are close to an obstruction
@@ -571,11 +594,13 @@ while(1) {
     
     // If NO sensors are blocked, give the all clear!
     if(blocked == 0) {
-        if(safeToProceed == 0) {// If it WAS unsafe before
+        if(Escaping == 1) {// If it WAS unsafe before
             drive_speed(0,0); // return to stopped before giving control back to main thread
             }
         safeToProceed = 1;
+        Escaping = 0; // Have fun!
     } else {
+        Escaping = 1; // This will stop main thread from driving the motors.
         /* At this point we are blocked, so it is OK to take over control
            of the robot (safeToProceed == 0, so the main thread won't do anything),
            and it is safe to do work ignoring the need to slow down or stop
@@ -583,7 +608,11 @@ while(1) {
            HOWEVER, you will have to RECHECK distances yourself if you are going to move
            in this program location.
         */
-        drive_speed(-10,-10); // back off slowly until we are clear. This needs more smarts.
+        if (safeToRecede == 1) {
+            drive_speed(-10,-10); // back off slowly until we are clear. This needs more smarts.
+        } else {
+            drive_speed(0,0);
+        }
     }
 
     pause(1); // This throttles the transition speed of everything in this cog.
