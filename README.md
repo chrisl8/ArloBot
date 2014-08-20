@@ -46,7 +46,7 @@ Which makes it easy to just start running ROS commands as soon as I log in.
 
 ```
 A good way to test your Propeller code is to run:
-miniterm.py  /dev/ttyUSB0 115200
+miniterm.py  /dev/ttyUSB1 115200
 It will reset the Prop board and then start spitting out:
 i 0
 This tells you to initialize it, just send it:
