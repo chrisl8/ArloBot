@@ -1,4 +1,4 @@
-port: /dev/ttyUSB0
+port: /dev/ttyUSB1
 baudRate: 115200
 # trackwidth [m], distancePerCount [m]
 # http://learn.parallax.com/activitybot/calculating-angles-rotation
