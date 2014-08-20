@@ -36,6 +36,7 @@ class SerialDataGateway(object):
 		self._KeepRunning = True
 		self._ReceiverThread = threading.Thread(target=self._Listen)
 		self._ReceiverThread.setDaemon(True)
+		self.Break() # Reset Propeller board at startup to make sure it is in a stable state.
 		self._ReceiverThread.start()
 
 	def Stop(self):
@@ -56,10 +57,13 @@ class SerialDataGateway(object):
 				stringIO = StringIO()
 			else:
 				stringIO.write(data)
+                
+	def Break(self): # This can be used to reset the Propeller board
+		self._Serial.sendBreak()
 
 	def Write(self, data):
-		info = "Writing to serial port: %s" %data
-		rospy.loginfo(info)
+		#info = "Writing to serial port: %s" %data
+		#rospy.loginfo(info)
 		self._Serial.write(data)
 
 	if __name__ == '__main__':
