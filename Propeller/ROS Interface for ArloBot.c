@@ -30,6 +30,7 @@ http://forums.parallax.com/showthread.php/152636-Run-ActivityBot-C-Code-in-the-A
 #include "arlodrive.h"
 
 static int abd_speedLimit = 100; // 100 is default in arlodrive, but we may change it.
+static int abdR_speedLimit = 100;
 
 fdserial *term;
 
@@ -43,7 +44,7 @@ const char delimiter[2] = ","; // Delimiter character for incoming messages from
 // For Odometry
 int ticksLeft, ticksRight, ticksLeftOld, ticksRightOld;
 static double Heading = 0.0, X = 0.0, Y = 0.0;
-static int speedLeft, speedRight;
+static int speedLeft, speedRight, throttleStatus = 0;
 
 void getTicks();
 void displayTicks();
@@ -55,16 +56,10 @@ static int fstack[256]; // If things get weird make this number bigger!
 // for Proximity (PING & IR) Sensors
 int pingArray[6];
 int irArray[6];
+const int numberOfIRonMC3208 = 6; // Number of IR Sensors on the MCP3208 ADC to read
+const int numberOfPINGsensors = 6; // Number of PING sensors, we assume the are consecutive
 void pollPingSensors(void *par); // Use a cog to fill range variables with ping distances
 static int pstack[128]; // If things get weird make this number bigger!
-const int MCP3208_dinoutPIN = 3;
-const int MCP3208_clkPIN = 4;
-const int MCP3208_csPIN = 2;
-const float referenceVoltage = 5.0; // MCP3208 reference voltage setting. I use 5.0v for the 5.0v IR sensors from Parallax
-const int IRsamples = 3;
-const int numberOfIRonMC3208 = 6; // Number of IR Sensors on the MCP3208 ADC to read
-const int firtPINGsensorPIN = 5; // Which pin the first PING sensor is on
-const int numberOfPINGsensors = 6; // Number of PING sensors, we assume the are consecutive
 int mcp3208_IR_cm(int); // Function to get distance in CM from IR sensor using MCP3208
 //int adc_IR_cm(int); // Function to get distance in CM from IR sensor using Activty Board built in ADC
 
@@ -89,7 +84,7 @@ static double gyroHeading = 0.0;
 i2c *bus;                           //Declare I2C bus
 // Create a cog for polling the Gyro
 void pollGyro(void *par); // Use a cog to fill range variables with ping distances
-static int gyrostack[256]; // If things get weird make this number bigger!
+static int gyrostack[128]; // If things get weird make this number bigger!
 
 // For "Safety Override"
 static int safeToProceed = 0, safeToRecede = 0, Escaping = 0;
@@ -145,7 +140,7 @@ int main() {
 					robotInitialized = 1;
 			}
 		} else {
-			pause(500); // Longer pauses when robot is uninitialized
+			pause(1000); // Longer pauses when robot is uninitialized
 		}
 	}
     
@@ -233,8 +228,8 @@ int main() {
                     if ((abd_speedLimit * distancePerCount) - fabs(angularVelocityOffset) < CommandedVelocity)
                         CommandedVelocity = (abd_speedLimit * distancePerCount) - fabs(angularVelocityOffset);
                 } else {
-                    if (-((abd_speedLimit * distancePerCount) - fabs(angularVelocityOffset)) > CommandedVelocity)
-                        CommandedVelocity = -((abd_speedLimit * distancePerCount) - fabs(angularVelocityOffset));
+                    if (-((abdR_speedLimit * distancePerCount) - fabs(angularVelocityOffset)) > CommandedVelocity)
+                        CommandedVelocity = -((abdR_speedLimit * distancePerCount) - fabs(angularVelocityOffset));
                     }
                     
 				double expectedLeftSpeed = CommandedVelocity - angularVelocityOffset;
@@ -374,6 +369,17 @@ void displayTicks(void) {
         fakeLaser = irArray[2];
     }
     dprint(term, "o\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%d\n", X, Y, Heading, gyroHeading, V, Omega, fakeLaser);
+    throttleStatus = throttleStatus + 1;
+    if(throttleStatus > 9) {
+       dprint(term, "s");
+       int i;
+       for( i=0; i < numberOfPINGsensors; i++ ) {
+        dprint(term, "\t%d\t%d", pingArray[i], irArray[i]);
+        }
+        dprint(term, "\n");
+        throttleStatus = 0;
+    }
+    
     // For Debugging in Terminal mode
 /*
     dprint(term, "Debug:%c\n", CLREOL);
@@ -402,44 +408,28 @@ void drive_getSpeedCalc(int *left, int *right) {
 */
 
 void pollPingSensors(void *par) {
+const int numberOfIRonMC3208 = 6; // Number of IR Sensors on the MCP3208 ADC to read
+const int firtPINGsensorPIN = 5; // Which pin the first PING sensor is on
+const int numberOfPINGsensors = 6; // Number of PING sensors, we assume the are consecutive
 
-    // For Activity Board built in ADC
-  //adc_init(21, 20, 19, 18);                   // CS=21, SCL=20, DO=19, DI=18 // Same on all Activity Boards, actually printed on the board!
-
-  float adc_0v, adc_1v;
-  int adc_0cm, adc_1cm;
-
-    const int betweenSensorPollDelay = 100; // Time to wait between firing PING sensors to avoid interferance
-
-  while(1)                                    // Repeat indefinitely
+ while(1)                                    // Repeat indefinitely
   {
-    int i, j;
-    for( i=0; i < numberOfPINGsensors; i++ ) {
-    pingArray[i] = ping_cm(firtPINGsensorPIN + i);
-    //dprint(term, "d\t%d\t%d\n", firtPINGsensorPIN + i, pingArray[i]); // For debugging, will collide with Odometry output sometimes
-    // Check IR sensors on MCP3208
-    for (j = 0; j < numberOfIRonMC3208; j++) {
-    irArray[j] = mcp3208_IR_cm(j);
-    }
+    for(int i=0; i < numberOfPINGsensors; i++ ) {
+        pingArray[i] = ping_cm(firtPINGsensorPIN + i);
+       // Check IR sensors on MCP3208
+       //for (int j=0; j < numberOfIRonMC3208; j++) {
+          irArray[i] = mcp3208_IR_cm(i);
+        //}
     }
   }
 }
 
 int mcp3208_IR_cm(int channel) {
-
-  	int i, j, k = 0, goodSamples = 0;
-	for (i=0;i<IRsamples;i++) {
-    //adc0 = readADC(0, 1, 2, 3); // Pull 1 reading
-    j = readADC(channel, MCP3208_dinoutPIN, MCP3208_clkPIN, MCP3208_csPIN);
-    if(j > 324) { // Anything lower is probably beyond the sensor's range
-      k = k + j;
-      goodSamples = goodSamples + 1;
-    }
-  }
-  int mcp3208reading = 300; // Set devault to 300, Consider 300, aka. 88cm Out of Range! (Anything over 80 really)
-  if(goodSamples > 0) {
-    mcp3208reading  = k/goodSamples;
-  }
+const int MCP3208_dinoutPIN = 3;
+const int MCP3208_clkPIN = 4;
+const int MCP3208_csPIN = 2;
+const float referenceVoltage = 5.0; // MCP3208 reference voltage setting. I use 5.0v for the 5.0v IR sensors from Parallax
+  int mcp3208reading  = readADC(channel, MCP3208_dinoutPIN, MCP3208_clkPIN, MCP3208_csPIN);
   float mcp3208volts = (float)mcp3208reading * referenceVoltage / 4096.0;
   int mcp3208cm = 27.86 * pow(mcp3208volts, -1.15); // https://www.tindie.com/products/upgradeindustries/sharp-10-80cm-infrared-distance-sensor-gp2y0a21yk0f/
   return(mcp3208cm);
@@ -519,7 +509,7 @@ while(1) {
 }
 
 const int startSlowDownDistance = 70;
-const int IRstartSlowDownDistance = 30; // Because IR is jumpy at long distances
+const int IRstartSlowDownDistance = 60; // Because IR is jumpy at long distances
 const int haltDistance = 10;
 
 void safetyOverride(void *par) {
@@ -558,6 +548,17 @@ while(1) {
     } else {
         safeToRecede = 1;
     }
+    
+    // Set backup speed limit
+    int minRDistance = 255;
+      if(pingArray[numberOfPINGsensors - 1] < startSlowDownDistance) {
+          minRDistance = pingArray[numberOfPINGsensors - 1];
+          }
+      if(irArray[numberOfIRonMC3208 - 1] < IRstartSlowDownDistance) {
+        if(irArray[numberOfIRonMC3208 - 1] < minRDistance) {
+          minRDistance = irArray[numberOfIRonMC3208 - 1];
+          }
+      }
 
     // Reduce speed when we are close to an obstruction
     // TODO: This needs some smoothing, to avoid random and rapid jumps between speeds, although it
@@ -571,27 +572,47 @@ while(1) {
     and with normal driving.
     */
     if( minDistance < startSlowDownDistance ) {
+      // Set based on percentage of range
       int new_abd_speedLimit = (minDistance - haltDistance) * (100 / (startSlowDownDistance - haltDistance));
+      // Limit maximum and minimum speed.
       if(new_abd_speedLimit < 5) {
-        abd_speedLimit = 5;
+        new_abd_speedLimit = 5;
       } else if(new_abd_speedLimit > 100) {
-        abd_speedLimit = 100;
-      } else {
-        /* Only increment by 1 per iteration to smooth out transitions,
-           and noise. Maximum transition speed is the pause at the bottom
-           of this cog function * the transition amount.
-        */
-        
-        if(new_abd_speedLimit > abd_speedLimit) {
+        new_abd_speedLimit = 100;
+      }
+      
+      // Ramp and limit affect of random hits
+      if(new_abd_speedLimit > abd_speedLimit) {
             abd_speedLimit = abd_speedLimit + 1;
         } else if(new_abd_speedLimit < abd_speedLimit) {
             abd_speedLimit = abd_speedLimit -1;
         }
-      }
     } else {
-      abd_speedLimit = 100;
+      abd_speedLimit = 100; // Full speed if all is well, let speed ramping deal with the sudden increase
     }
     
+    // Same for reverse speed limit
+    //abdR_speedLimit = 100;
+    if( minRDistance < startSlowDownDistance ) {
+      // Set based on percentage of range
+      int newRLimit = (minRDistance - haltDistance) * (100 / (startSlowDownDistance - haltDistance));
+      // Limit maximum and minimum speed.
+      if(newRLimit < 5) {
+        newRLimit = 5;
+      } else if(newRLimit > 100) {
+        newRLimit = 100;
+      }
+
+      // Ramp and limit affect of random hits
+        if(newRLimit > abdR_speedLimit) {
+            abdR_speedLimit = abdR_speedLimit + 1;
+        } else if(newRLimit < abdR_speedLimit) {
+            abdR_speedLimit = abdR_speedLimit -1;
+        }
+    } else {
+      abdR_speedLimit = 100; // Full speed if all is well, let speed ramping deal with the sudden increase
+    }
+
     // If NO sensors are blocked, give the all clear!
     if(blocked == 0) {
         if(Escaping == 1) {// If it WAS unsafe before
@@ -617,7 +638,7 @@ while(1) {
 
     pause(1); // This throttles the transition speed of everything in this cog.
     /* Imagine the functions here, and how many times they have to iterate to achieve
-       a given setting, and multiple it by this to determine the maximum transition
+       a given setting, and multiply it by this to determine the maximum transition
        speed.
     */
 
