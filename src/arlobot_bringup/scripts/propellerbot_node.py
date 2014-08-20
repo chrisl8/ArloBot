@@ -108,7 +108,8 @@ class PropellerComm(object):
 
         # We don't need to broadcast a transform, as it is static and contained within the URDF files
         #self._SonarTransformBroadcaster = tf.TransformBroadcaster()
-        self._SonarPublisher = rospy.Publisher("sonar_scan", LaserScan, queue_size=10)
+        self._UltraSonicPublisher = rospy.Publisher("ultrasonic_scan", LaserScan, queue_size=10)
+        self._InfraredPublisher = rospy.Publisher("infrared_scan", LaserScan, queue_size=10)
         
         # Gyro Publisher
         # Based on code in TurtleBot source:
@@ -400,6 +401,14 @@ class PropellerComm(object):
 
             # Fake laser from "PING" Ultrasonic Sensor input:
             # http://wiki.ros.org/navigation/Tutorials/RobotSetup/TF
+            '''
+            The purpose of this is two fold:
+            1. It REALLY helps adjusting values in the Propeller and ROS when I can visualize the sensor output in RVIZ!
+                For this purpose, a lot of the parameters are a matter of personal taste. Whatever makes it easiest to visualize is best.
+            2. I want to allow AMCL to use this data to avoid obstacles that the Kinect/Xtion miss.
+                For the second purpose, some of the parameters here may need to be tweaked, to adjust how large an object looks to AMCL.
+            Note that we should also adjust the distance at which AMCL takes this data into account either here or elsewhere.
+            '''
             # Transform: http://wiki.ros.org/tf/Tutorials/Writing%20a%20tf%20broadcaster%20%28Python%29
             '''
             # We don't need to broadcast a transform,
@@ -413,51 +422,114 @@ class PropellerComm(object):
                 )
                 '''
             # Some help: http://books.google.com/books?id=2ZL9AAAAQBAJ&pg=PT396&lpg=PT396&dq=fake+LaserScan+message&source=bl&ots=VJMfSYXApG&sig=s2YgiHTA3i1OjVyPxp2aAslkW_Y&hl=en&sa=X&ei=B_vDU-LkIoef8AHsooHICA&ved=0CG0Q6AEwCQ#v=onepage&q=fake%20LaserScan%20message&f=false
+            # Question: I'm doing this all in degrees and then converting to Radians later. Is there any way to do this in Radians? I just don't know how to create and fill an array with "Radians" since they are not rational numbers, but multiples of PI. Thus the degrees
             num_readings = 360 # How about 1 per degree?
             laser_frequency = 100 # I'm not sure how to decide what to use here.
             #ranges = [1] * num_readings # Fill array with fake "1" readings for testing
-            ranges = [0] * num_readings # Fill array with 0 and then overlap with real readings
+            PINGranges = [0] * num_readings # Fill array with 0 and then overlap with real readings
+            IRranges = [0] * num_readings # Fill array with 0 and then overlap with real readings
             
-            pingRange0 = int(lineParts[7]) / 100.0
-            ranges[0] = pingRange0
-            ranges[1] = pingRange0
-            ranges[2] = pingRange0
-            ranges[3] = pingRange0
-            ranges[4] = pingRange0
-            ranges[5] = pingRange0
-            ranges[359] = pingRange0
-            ranges[358] = pingRange0
-            ranges[357] = pingRange0
-            ranges[356] = pingRange0
-            ranges[355] = pingRange0
-            # Is there a more concise way to code that array fill?
+            '''
+            Note that sensors 0 and 4 are easily adjusted, and at the moment actually point inboard of where their neighbors point!
+            I'm not 100% sure how to visualize this. It works better in the Propeller for obstacle avoidance, but it
+            doesn't seem ideal for ROS.
+            Some experimenting will be required.
+            '''
+            # TODO: Tweak this value based on real measurements! Use both IR and PING sensors.
+            sensorOffset = 0.22545 # The offset between the pretend sensor location in the URDF and real location needs to be added to these values. This may need to be tweaked.
+            pingRange0 = (int(lineParts[7]) / 100.0) + sensorOffset # Convert cm to meters and add offset
+            irRange0 = (int(lineParts[8]) / 100.0) + sensorOffset # Convert cm to meters and add offset
+            pingRange1 = (int(lineParts[9]) / 100.0) + sensorOffset
+            irRange1 = (int(lineParts[10]) / 100.0) + sensorOffset
+            pingRange2 = (int(lineParts[11]) / 100.0) + sensorOffset # Center forward sensor.
+            irRange2 = (int(lineParts[12]) / 100.0) + sensorOffset # Center forward sensor.
+            pingRange3 = (int(lineParts[13]) / 100.0) + sensorOffset
+            irRange3 = (int(lineParts[14]) / 100.0) + sensorOffset
+            pingRange4 = (int(lineParts[15]) / 100.0) + sensorOffset
+            irRange4 = (int(lineParts[16]) / 100.0) + sensorOffset
+            pingRange5 = (int(lineParts[17]) / 100.0) + sensorOffset # Rear sensor, note these numbers can change if you add more sensors!
+            irRange5 = (int(lineParts[18]) / 100.0) + sensorOffset # Rear sensor, note these numbers can change if you add more sensors!
+            # I'm going to start by just kind of "filling in" the area with the data and then adjust based on experimentation.
+            '''
+            The sensors are 11cm from center to center at the front of the base plate.
+            The radius of the base plate is 22.545 cm
+            = 28 degree difference (http://ostermiller.org/calc/triangle.html)
+            '''
+            sensorSeperation = 28
+            sensorSpread = 10 # This is how wide of an arc (in degrees) to paint for each "hit"
+            '''
+            NOTE:
+            This assumes that things get bigger as they are further away. This is true of the PING's area, and while it may or may not be true of the object the PING sees, we have no way of knowing if the object fills the ping's entire field of view or only a small part of it, a "hit" is a "hit".
+            However for the IR sensor, the objects are points, that are the same size regardless of distance, so we are clearly inflating them.
+            '''
+            
+            for x in range(180 - sensorSpread / 2, 180 + sensorSpread / 2):
+                PINGranges[x] = pingRange5 # Rear Sensor
+                IRranges[x] = irRange5 # Rear Sensor
+
+            for x in range((360 - sensorSeperation * 2) - sensorSpread / 2, (360 - sensorSeperation * 2) + sensorSpread / 2):
+                PINGranges[x] = pingRange4
+                IRranges[x] = irRange4
+
+            for x in range((360 - sensorSeperation) - sensorSpread / 2, (360 - sensorSeperation) + sensorSpread / 2):
+                PINGranges[x] = pingRange3
+                IRranges[x] = irRange3
+
+            for x in range(360 - sensorSpread / 2, 360):
+                PINGranges[x] = pingRange2
+                IRranges[x] = irRange2
+            # Crosses center line
+            for x in range(0, sensorSpread /2):
+                PINGranges[x] = pingRange2
+                IRranges[x] = irRange2
+            
+            for x in range(sensorSeperation - sensorSpread / 2, sensorSeperation + sensorSpread / 2):
+                PINGranges[x] = pingRange1
+                IRranges[x] = irRange1
+            
+            for x in range((sensorSeperation * 2) - sensorSpread / 2, (sensorSeperation * 2) + sensorSpread / 2):
+                PINGranges[x] = pingRange0
+                IRranges[x] = irRange0
+
             # LaserScan: http://docs.ros.org/api/sensor_msgs/html/msg/LaserScan.html
-            sonar_scan = LaserScan()
-            sonar_scan.header.stamp = rosNow
-            sonar_scan.header.frame_id = "ping_sensor_array"
+            ultrasonic_scan = LaserScan()
+            infrared_scan = LaserScan()
+            ultrasonic_scan.header.stamp = rosNow
+            infrared_scan.header.stamp = rosNow
+            ultrasonic_scan.header.frame_id = "ping_sensor_array"
+            infrared_scan.header.frame_id = "ir_sensor_array"
             # For example:
             #scan.angle_min = -45 * M_PI / 180; // -45 degree
             #scan.angle_max = 45 * M_PI / 180;   // 45 degree
             # if you want to receive a full 360 degrees scan, you should try setting min_angle to -pi/2 and max_angle to 3/2 * pi.
             # Radians: http://en.wikipedia.org/wiki/Radian#Advantages_of_measuring_in_radians
-            sonar_scan.angle_min = 0
-            sonar_scan.angle_max = 2 * 3.14159 # Full circle
-            sonar_scan.scan_time = 1 # I think this is only really applied for 3D scanning
+            ultrasonic_scan.angle_min = 0
+            infrared_scan.angle_min = 0
+            ultrasonic_scan.angle_max = 2 * 3.14159 # Full circle
+            infrared_scan.angle_max = 2 * 3.14159 # Full circle
+            ultrasonic_scan.scan_time = 1 # I think this is only really applied for 3D scanning
+            infrared_scan.scan_time = 1 # I think this is only really applied for 3D scanning
             # Make sure the part you divide by num_readings is the same as your angle_max!
             # Might even make sense to use a variable here?
-            sonar_scan.angle_increment = (2 * 3.14) / num_readings
-            sonar_scan.time_increment = (1 / laser_frequency) / (num_readings)
+            ultrasonic_scan.angle_increment = (2 * 3.14) / num_readings
+            infrared_scan.angle_increment = (2 * 3.14) / num_readings
+            ultrasonic_scan.time_increment = (1 / laser_frequency) / (num_readings)
+            infrared_scan.time_increment = (1 / laser_frequency) / (num_readings)
             # From: http://www.parallax.com/product/28015
             # Range: approximately 1 inch to 10 feet (2 cm to 3 m)
             # This should be adjusted based on the imaginary distance between the actual laser
-            # and the laser location in the URDF file. Or else the adjustment somewhere else?
-            sonar_scan.range_min = 0.02 # in Meters Distances below this number will be ignored
-            sonar_scan.range_max = 3 # in Meters Distances above this will be ignored
-            sonar_scan.ranges = ranges
+            # and the laser location in the URDF file.
+            ultrasonic_scan.range_min = 0.02 # in Meters Distances below this number will be ignored REMEMBER the offset!
+            infrared_scan.range_min = 0.02 # in Meters Distances below this number will be ignored REMEMBER the offset!
+            ultrasonic_scan.range_max = 3 # in Meters Distances above this will be ignored
+            infrared_scan.range_max = 3 # in Meters Distances above this will be ignored
+            ultrasonic_scan.ranges = PINGranges
+            infrared_scan.ranges = IRranges
             # "intensity" is a value specific to each laser scanner model.
             # It can safely be ignored
             
-            self._SonarPublisher.publish(sonar_scan)
+            self._UltraSonicPublisher.publish(ultrasonic_scan)
+            self._InfraredPublisher.publish(infrared_scan)
 
         except:
             rospy.logwarn("Unexpected error:" + str(sys.exc_info()[0]))

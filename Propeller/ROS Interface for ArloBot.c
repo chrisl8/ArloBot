@@ -341,17 +341,43 @@ void displayTicks(void) {
 	double Omega = ((speedRight * distancePerCount) - (speedLeft * distancePerCount)) / trackWidth;
 
 	// Odometry for ROS
-    int fakeLaser = 255;
+    /*int fakeLaser = 255;
     if(irArray[2] < 30) {
         fakeLaser = irArray[2];
-    }
-    //TODO: Replace fakeLaser with ALL IR and PING sensor data!
-    dprint(term, "o\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%d\n", X, Y, Heading, gyroHeading, V, Omega, fakeLaser);
+    }*/
+    /*
+    I am going to try to send ALL of the proximity data (IR and PING sensors) to ROS
+    over the "odometry" line, since it is real time data which is just as important
+    as the odometry, and it seems like it would be faster to send and deal with one packet
+    per cycle rather than two.
+    
+    In the propeller node I will convert this to fake laser data.
+    I have two goals here:
+    1. I want to be able to visualize in RVIZ what the sensors are reporting. This with debugging
+    situations where the robot gets stalled in doorways and such due to odd sensor readings from angled
+    surfaces near the sides.
+    2. I also want to use at least some of this for obstacle avoidance in AMCL.
+    Note that I do not think that IR and PING data will be useful for gmapping, although it is possible.
+    It is just too granular and non specific. It would be nice to be able to use the PING (UltraSonic) data
+    to deal with mirrors and targets below the Kinect/Xtion, but I'm not sure how practical that is.
+    */
+    dprint(term, "o\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f", X, Y, Heading, gyroHeading, V, Omega);
+       for(int i=0; i < numberOfPINGsensors; i++ ) { // Loop through all of the sensors
+        dprint(term, "\t%d\t%d", pingArray[i], irArray[i]);
+        }
+        dprint(term, "\n"); // Close line with a return.
     
     // Send a regular "status" update to ROS including information that does not need to be refreshed as often as the odometry.
     // NOTE: Right now this is just the PING and IR data, so this will go away when that data is sent with the odometry.
     // at which point I don't know if this will ever be needed again or not?
-    // TODO: We could include values like: safeToProceed, abd_speedLimit, safeToReced, Escaping, etc.
+    // TODO: We could include values like:
+    /*
+    safeToProceed
+    safeToRecede
+    Escaping
+    abd_speedLimit
+    abdR_speedLimit
+    */
     throttleStatus = throttleStatus + 1;
     if(throttleStatus > 9) {
        dprint(term, "s");

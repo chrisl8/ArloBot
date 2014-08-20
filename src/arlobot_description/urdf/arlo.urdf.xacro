@@ -278,13 +278,35 @@
 	    <axis xyz="0 1 0"/>
 	  </joint>
 	
+        <!-- This pretends to be in the center in order to aid in calculating degrees from multiple sensors on one fake laser scan -->
 	  <joint name="ping_array_joint" type="fixed">
-	    <origin xyz="0.18745 0 0.03695" rpy="0 0 0" />
+	    <origin xyz="0 0 0.03695" rpy="0 0 0" />
 	    <parent link="base_link" />
 	    <child link="ping_sensor_array" />
 	  </joint>
 	
 	  <link name="ping_sensor_array">
+	    <visual>
+	      <geometry>
+	        <box size="0.0174 0.06 0.0644" />
+	      </geometry>
+	    </visual>
+	    <inertial>
+	      <mass value="0.001" />
+	      <origin xyz="0 0 0" />
+	      <inertia ixx="0.0001" ixy="0.0" ixz="0.0"
+	        iyy="0.0001" iyz="0.0"
+	        izz="0.0001" />
+	    </inertial>
+	  </link>
+
+	  <joint name="ir_array_joint" type="fixed">
+	    <origin xyz="0 0 0.03695" rpy="0 0 0" />
+	    <parent link="base_link" />
+	    <child link="ir_sensor_array" />
+	  </joint>
+
+	  <link name="ir_sensor_array">
 	    <visual>
 	      <geometry>
 	        <box size="0.0174 0.06 0.0644" />
