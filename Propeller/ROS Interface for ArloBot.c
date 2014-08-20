@@ -15,6 +15,22 @@
  See "Serial Testing for ROS ActivityBot 1-4" (which are not on GitHub) for previous versions and explanations.
  */
 
+/* SimpleIDE Options
+ * Everything here is the default for a new SimpleIDE project except for "Enable Pruning."
+ * Project Options:
+ * Board Type: ACTIVITYBOARD
+ * Compiler Type: C - This is C code
+ * Memory Model: CMM Main RAM Compact - My code does not fit into LMM, and there is no LMM version of arlodrive.h
+ * Optimization: -Os Size - When I change this to "Speed" I get strange behavior.
+ * Compiler:
+ * CHECK - 32bit Double
+ * CHECK - Enable Pruning - This does not make much difference, but a little.
+ * Other Compiler Options: -std=c99 - this is part of the default SimpleIDE New project
+ * Linker:
+ * CHECK - Math lib - required for floating point math!
+ * nothing else checked or added under the Linker tab.
+ */
+
 #include "simpletools.h"
 #include "mcp3208.h" // MCP3208 8 Chanel ADC
 // Add adcDCpropab.h if you want to use the ADC built into the Activity Board
@@ -34,7 +50,7 @@ static int abdR_speedLimit = 100;
 
 fdserial *term;
 
-// Robot description: We will get this from ROS so that it is easier to tweak between runs without reloading the AB EEPROM.
+// Robot description: We will get this from ROS so that it is easier to tweak between runs without reloading the Propeller EEPROM.
 // http://learn.parallax.com/activitybot/calculating-angles-rotation
 static double distancePerCount = 0.0; // See encoders.yaml to set or change this value
 static double trackWidth = 0.0; // See encoders.yaml to set or change this value
@@ -56,8 +72,9 @@ static int fstack[256]; // If things get weird make this number bigger!
 // for Proximity (PING & IR) Sensors
 int pingArray[6];
 int irArray[6];
-const int numberOfIRonMC3208 = 6; // Number of IR Sensors on the MCP3208 ADC to read
-const int numberOfPINGsensors = 6; // Number of PING sensors, we assume the are consecutive
+const int numberOfIRonMC3208 = 6; // Number of IR Sensors on the MCP3208 ADC to read TODO: Should this be in encoders.yaml and sent over by ROS?
+const int numberOfPINGsensors = 6; // Number of PING sensors, we assume the are consecutive TODO: Should this be in encoders.yaml and sent over by ROS?
+const int firtPINGsensorPIN = 5; // Which pin the first PING sensor is on TODO: Should this be in encoders.yaml and sent over by ROS?
 void pollPingSensors(void *par); // Use a cog to fill range variables with ping distances
 static int pstack[128]; // If things get weird make this number bigger!
 int mcp3208_IR_cm(int); // Function to get distance in CM from IR sensor using MCP3208
@@ -170,7 +187,7 @@ int main() {
 	drive_speed(0, 0);                     // Start servos/encoders cog
     drive_setMaxSpeed(abd_speedLimit);
 	//drive_setRampStep(10);              // Set ramping at 10 ticks/sec per 20 ms
-	// TODO Do we need to adjust ramping? Perhaps this should be something we can modify on the ROS side and send?
+	// TODO: Do we need to adjust ramping? Perhaps this should be something we can modify on the ROS side and send?
 
     // Start safetyOverride cog: (AFTER the Motors are initialized!)
   cogstart(&safetyOverride, NULL, safetyOverrideStack, sizeof safetyOverrideStack);
@@ -187,7 +204,6 @@ int main() {
 
 		/* TODO:
 		 1. Should there should be code here to stop the motors if we go too long with no input from ROS?
-		 2. There should be a way to reset the odometry to 0 remotely, for when we pick up the robot and start over, so we don't have to press the reset button on the AB every time.
 		 */
 
 		if (fdserial_rxReady(term) != 0) { // Non blocking check for data in the input buffer
@@ -209,21 +225,36 @@ int main() {
 				token = strtok(NULL, delimiter);
 				CommandedAngularVelocity = strtod(token, &unconverted);
 				double angularVelocityOffset = CommandedAngularVelocity * (trackWidth * 0.5);
-                /* From turtlebot_node.py, note the * 1000 is to convert to mm, but we did that in the trackWidth variable
-                ts  = msg.linear.x * 1000 # m -> mm
-                tw  = msg.angular.z  * (robot_types.ROBOT_TYPES[self.robot_type].wheel_separation / 2) * 1000 
-                # Prevent saturation at max wheel speed when a compound command is sent.
-                if ts > 0:
-                    ts = min(ts,   MAX_WHEEL_SPEED - abs(tw))
-                else:
-                    ts = max(ts, -(MAX_WHEEL_SPEED - abs(tw)))
-                self.req_cmd_vel = int(ts - tw), int(ts + tw)
-                */
-                
-                // u = - 0.546009/154.096313 (Writing to serial port: s,0.519,2.594)
-                // distancePerCount = 0.006760 Arlobot default currently
                 
                 // Prevent saturation at max wheel speed when a compound command is sent.
+                /* Without this, if your max speed is 50, and ROS asks us to set one wheel
+                   at 50 and the other at 100, we will end up with both at 50
+                   changing a turn into a straight line!
+                   This is because arlodrive.c just cuts off each wheel at the set max speed
+                   with no regard for the expected left to right wheel speed ratio.
+                   Here is the code from arlodrive.c:
+                    int abd_speedLimit = 100;
+                    static int encoderFeedback = 1;
+                    
+                    void drive_setMaxSpeed(int maxTicksPerSec) {
+                          abd_speedLimit = maxTicksPerSec;
+                        }
+                    ...
+                    void set_drive_speed(int left, int right) {
+                      if(encoderFeedback) {
+                            if(left > abd_speedLimit) left = abd_speedLimit;
+                            if(left < -abd_speedLimit) left = -abd_speedLimit;
+                            if(right > abd_speedLimit) right = abd_speedLimit;
+                            if(right < -abd_speedLimit) right = -abd_speedLimit;
+                          }
+                          ...
+                    
+                    So clearly we need to "normalize" the speed so that if one number is truncated,
+                    the other is brought down the same amount, in order to accomplish the same turn
+                    ratio at a slower speed!
+                    Especially if the max speed is variable based on parameters within this code,
+                    such as proximity to walls, etc.
+                */
                 if (CommandedVelocity > 0) {
                     if ((abd_speedLimit * distancePerCount) - fabs(angularVelocityOffset) < CommandedVelocity)
                         CommandedVelocity = (abd_speedLimit * distancePerCount) - fabs(angularVelocityOffset);
@@ -238,59 +269,6 @@ int main() {
 				expectedLeftSpeed = expectedLeftSpeed / distancePerCount;
 				expectedRightSpeed = expectedRightSpeed / distancePerCount;
                 
-                /* Speed normalization:
-                What if the calculated speed is above the max speed in arlodrive.c?
-                Then it will set the speed to the max,
-                but then our left/right ratio will be wrong, say it was supposed to be 15/110,
-                and max was 100, it turns into 15/100!
-                From arlodrive.c:
-                int abd_speedLimit = 100;
-                static int encoderFeedback = 1;
-                
-                void drive_setMaxSpeed(int maxTicksPerSec) {
-                      abd_speedLimit = maxTicksPerSec;
-                    }
-                ...
-                void set_drive_speed(int left, int right) {
-                  if(encoderFeedback) {
-                        if(left > abd_speedLimit) left = abd_speedLimit;
-                        if(left < -abd_speedLimit) left = -abd_speedLimit;
-                        if(right > abd_speedLimit) right = abd_speedLimit;
-                        if(right < -abd_speedLimit) right = -abd_speedLimit;
-                      }
-                      ...
-                
-                So clearly we need to "normalize" the speed so that if one number is truncated,
-                the other is brought down the same amount, in order to accomplish the same turn
-                ratio at a slower speed!
-                Especially if the max speed is variable based on parameters within this code,
-                such as proximity to walls, etc.
-                
-                First I want to know what typical numbers are here without normalization.
-                roslaunch turtlebot_teleop keyboard_teleop.launch
-                "currently:      speed 0.2       turn 1"
-                Here is what I get when I press this key and hold it until it maxes out:
-                (Note that it does "ramp up")
-                i = 29.585800/29.585800
-                , = -29.585800/-29.585800
-                j = -29.807693/29.807693
-                l = 29.807693/-29.807693
-                u = -0.221893/59.393490
-                o = 59.393490/-0.221893
-                m = 0.221893/-59.393490
-                . = -59.393490/+0.221893
-                q a few times to get:
-                "currently:      speed 0.51874849202     turn 2.5937424601"
-                i = 76.775146
-                u = - 0.546009/154.096313 (Writing to serial port: s,0.519,2.594)
-                
-                Note these settings:
-                 /turtlebot_teleop_keyboard/scale_angular: 1.5
-                 /turtlebot_teleop_keyboard/scale_linear: 0.5
-                */
-                
-                // For debugging: Note, this will cause trouble because of collisions on access to the serial port with broadcastOdometry
-                //dprint(term, "d\t%f\t%f\n", expectedLeftSpeed, expectedRightSpeed);
                 if (Escaping == 0) { // Don't fight with the Propeller escape code!
                     if (CommandedVelocity > 0 && safeToProceed == 1) {
                         //drive_speed(expectedLeftSpeed, expectedRightSpeed);
@@ -298,15 +276,14 @@ int main() {
                     } else if (CommandedVelocity < 0 && safeToRecede == 1) {
                         drive_rampStep(expectedLeftSpeed, expectedRightSpeed);
                     } else if (CommandedVelocity == 0) {
-                        // Rotate in place even if we are too close? Is thsi safe?!
+                        // Rotate in place even if we are too close? Is this safe?!
                         drive_rampStep(expectedLeftSpeed, expectedRightSpeed);
                     }
                 }
-                // Should this use drive_rampStep instead? Allowing the robot to ramp up/down to the requested speed?
-                // The repeated "twist" statements provide the required "loop".
                 // NOTE: drive_setRampStep can be used to adjust the ramp rate.
                 // NOTE: DO NOT use drive_ramp, as this will stall the program until the requested speed is reached!
                 // Which is NOT what we want, since we may want to change the requested speed before we even reach it. ;)
+                // The repeated "twist" statements provide the required "loop".
 			}
 		}
 		pause(10); // Maximum read frequency. TODO: Is this required? Is it the right length?
@@ -368,7 +345,13 @@ void displayTicks(void) {
     if(irArray[2] < 30) {
         fakeLaser = irArray[2];
     }
+    //TODO: Replace fakeLaser with ALL IR and PING sensor data!
     dprint(term, "o\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%d\n", X, Y, Heading, gyroHeading, V, Omega, fakeLaser);
+    
+    // Send a regular "status" update to ROS including information that does not need to be refreshed as often as the odometry.
+    // NOTE: Right now this is just the PING and IR data, so this will go away when that data is sent with the odometry.
+    // at which point I don't know if this will ever be needed again or not?
+    // TODO: We could include values like: safeToProceed, abd_speedLimit, safeToReced, Escaping, etc.
     throttleStatus = throttleStatus + 1;
     if(throttleStatus > 9) {
        dprint(term, "s");
@@ -379,21 +362,6 @@ void displayTicks(void) {
         dprint(term, "\n");
         throttleStatus = 0;
     }
-    
-    // For Debugging in Terminal mode
-/*
-    dprint(term, "Debug:%c\n", CLREOL);
-    int i;
-    for( i=0; i < numberOfPINGsensors; i++ ) {
-        dprint(term, "Sensor %d: %d %d%c\n", i, pingArray[i], irArray[i], CLREOL);
-        }
-    dprint(term, "safeToProceed: %d abd_speedLimit: %d%c\n", safeToProceed, abd_speedLimit, CLREOL);
-    dprint(term, "safeToRecede: %d Escaping: %d%c\n", safeToRecede, Escaping, CLREOL);
-    dprint(term, "X: %.3f Y: %.3f V: %.3f Omega: %.3f%c\n", X, Y, V, Omega, CLREOL);
-    dprint(term, "Heading: %.3f gyroHeading: %.3f%c\n", X, Y, CLREOL);
-    dprint(term, "Rear = %d", numberOfPINGsensors - 1);
-    dprint(term, "%c", HOME);                            // Cursor -> top-left "home"
-*/
 }
 
 volatile int abd_speedL;
@@ -408,15 +376,11 @@ void drive_getSpeedCalc(int *left, int *right) {
 */
 
 void pollPingSensors(void *par) {
-const int numberOfIRonMC3208 = 6; // Number of IR Sensors on the MCP3208 ADC to read
-const int firtPINGsensorPIN = 5; // Which pin the first PING sensor is on
-const int numberOfPINGsensors = 6; // Number of PING sensors, we assume the are consecutive
-
  while(1)                                    // Repeat indefinitely
   {
     for(int i=0; i < numberOfPINGsensors; i++ ) {
         pingArray[i] = ping_cm(firtPINGsensorPIN + i);
-       // Check IR sensors on MCP3208
+       // Check IR sensors on MCP3208 - Just checking 1 at a time instead of all each time. This works better!
        //for (int j=0; j < numberOfIRonMC3208; j++) {
           irArray[i] = mcp3208_IR_cm(i);
         //}
@@ -561,8 +525,6 @@ while(1) {
       }
 
     // Reduce speed when we are close to an obstruction
-    // TODO: This needs some smoothing, to avoid random and rapid jumps between speeds, although it
-    // may be that sometimes a jump is needed, it just needs to stand the test of time.
     /*
     Ideas:
     1. A counter that requires a given speed to be arrived at X times before it is implemented.
@@ -588,10 +550,11 @@ while(1) {
             abd_speedLimit = abd_speedLimit -1;
         }
     } else {
-      abd_speedLimit = 100; // Full speed if all is well, let speed ramping deal with the sudden increase
+      abd_speedLimit = 100; // Full speed if all is well, let the built in speed ramping of drive_rampStep deal with the sudden increase
     }
     
     // Same for reverse speed limit
+    // TODO: This code should probably be some sort of function instead of a cut and paste :)
     //abdR_speedLimit = 100;
     if( minRDistance < startSlowDownDistance ) {
       // Set based on percentage of range
@@ -610,7 +573,7 @@ while(1) {
             abdR_speedLimit = abdR_speedLimit -1;
         }
     } else {
-      abdR_speedLimit = 100; // Full speed if all is well, let speed ramping deal with the sudden increase
+      abdR_speedLimit = 100; // Full speed if all is well, let the built in speed ramping of drive_rampStep deal with the sudden increase
     }
 
     // If NO sensors are blocked, give the all clear!
