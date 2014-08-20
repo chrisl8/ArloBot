@@ -108,11 +108,11 @@ int main() {
     
     // For Debugging without ROS:
     // See encoders.yaml for most up to date values
-
+/*
     trackWidth = 0.403000; // from measurement and then testing
     distancePerCount = 0.006760; // http://forums.parallax.com/showthread.php/154274-The-quot-Artist-quot-robot?p=1271544&viewfull=1#post1271544
     robotInitialized = 1;
-
+*/
     // Comment out above lines for use with ROS
     
 	while (robotInitialized == 0) {
