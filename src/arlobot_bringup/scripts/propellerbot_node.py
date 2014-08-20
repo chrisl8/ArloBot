@@ -32,6 +32,9 @@ from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 from std_msgs.msg import String
 
+#For USB relay board
+from pylibftdi import BitBangDevice
+
 #for Turtlebot stack from turtlebot_node.py NOT used in ArloBot
 '''
 from create_driver import Turtlebot, MAX_WHEEL_SPEED, DriverError
@@ -88,6 +91,7 @@ class PropellerComm(object):
         '''
 
         self._Counter = 0 # For Propeller code's _HandleReceivedLine and _WriteSerial
+        self._motorsOn = 0 # Set to 1 when Propeller Activity Board is properly initialized
 
         #rospy.init_node('turtlebot')
         rospy.init_node('arlobot')
@@ -222,13 +226,16 @@ class PropellerComm(object):
         if (len(line) > 0):
             lineParts = line.split('\t')
             if (lineParts[0] == 'o'):
-                self._BroadcastOdometryInfo(lineParts)
-                return
+                if (self._motorsOn == 1):
+                    self._BroadcastOdometryInfo(lineParts)
+                    return
+                else:
+                    self._StartMotors()
+                    return
             if (lineParts[0] == 'i'):
                 self._InitializeDriveGeometry()
                 return
-            # Accept debug messages from Propeller for testing
-            if (lineParts[0] == 'd'):
+            if (lineParts[0] == 's'): # Arlo Status info, such as sensors.
                 rospy.loginfo("Propeller: " + line)
                 return
 
@@ -462,9 +469,30 @@ class PropellerComm(object):
     def Start(self):
         rospy.logdebug("Starting")
         self._SerialDataGateway.Start()
+        # Do not put anything here, it won't get run until the SerialDataGateway is stopped.
 
     def Stop(self):
         rospy.logdebug("Stopping")
+        # Use USB Relay module to shut off motors!
+        # For SainSmart 8 port USB model
+        class relay(dict):
+            address = {
+                "1":"1",
+                "2":"2",
+                "3":"4",
+                "4":"8",
+                "5":"10",
+                "6":"20",
+                "7":"40",
+                "8":"80",
+                "all":"FF"
+                }
+        leftMotorRelay = "6"
+        rightMotorRelay = "2"
+        # Shut off the motors
+        BitBangDevice("A9026EI5").port &= ~int(relay.address[leftMotorRelay], 16)
+        BitBangDevice("A9026EI5").port &= ~int(relay.address[rightMotorRelay], 16)
+        #self._SerialDataGateway.Break() # Reset the propeller board # Actually the board resets when you close the serial port!
         self._SerialDataGateway.Stop()
         
     def _HandleVelocityCommand(self, twistCommand): # This is Propeller specific
@@ -490,14 +518,37 @@ class PropellerComm(object):
         message = 'd,%f,%f\r' % (trackWidth, distancePerCount)
         #rospy.logdebug("Sending drive geometry params message: " + message)
         self._WriteSerial(message)
+        
+    def _StartMotors(self):
+        # Start Motors
+        # For SainSmart 8 port USB model
+        class relay(dict):
+            address = {
+                "1":"1",
+                "2":"2",
+                "3":"4",
+                "4":"8",
+                "5":"10",
+                "6":"20",
+                "7":"40",
+                "8":"80",
+                "all":"FF"
+                }
+        leftMotorRelay = "6"
+        rightMotorRelay = "2"
+        BitBangDevice("A9026EI5").port |= int(relay.address[leftMotorRelay], 16)
+        BitBangDevice("A9026EI5").port |= int(relay.address[rightMotorRelay], 16)
+        self._motorsOn = 1
 
 if __name__ == '__main__':
     propellercomm = PropellerComm()
+    rospy.on_shutdown(propellercomm.Stop)
     try:
         propellercomm.Start()
         rospy.spin()
 
     except rospy.ROSInterruptException:
         propellercomm.Stop()
+    
 
 
