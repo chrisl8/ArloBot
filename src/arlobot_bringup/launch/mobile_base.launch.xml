@@ -8,7 +8,6 @@
   <node pkg="arlobot_bringup" type="propellerbot_node.py" name="arlobot" respawn="true" args="--respawnable">
     <param name="bonus" value="false" />
     <param name="update_rate" value="30.0" />
-    <param name="port" value="/dev/ttyUSB0" />
     <remap from="cmd_vel" to="mobile_base/commands/velocity" />
     <remap from="arlobot/sensor_state" to="mobile_base/sensors/core" />
     <remap from="imu/data" to="mobile_base/sensors/imu_data" />
