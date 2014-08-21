@@ -368,25 +368,10 @@ void displayTicks(void) {
         dprint(term, "\n"); // Close line with a return.
     
     // Send a regular "status" update to ROS including information that does not need to be refreshed as often as the odometry.
-    // NOTE: Right now this is just the PING and IR data, so this will go away when that data is sent with the odometry.
-    // at which point I don't know if this will ever be needed again or not?
-    // TODO: We could include values like:
-    /*
-    safeToProceed
-    safeToRecede
-    Escaping
-    abd_speedLimit
-    abdR_speedLimit
-    */
     throttleStatus = throttleStatus + 1;
     if(throttleStatus > 9) {
-       dprint(term, "s");
-       int i;
-       for( i=0; i < numberOfPINGsensors; i++ ) {
-        dprint(term, "\t%d\t%d", pingArray[i], irArray[i]);
-        }
-        dprint(term, "\n");
-        throttleStatus = 0;
+       dprint(term, "s\t%d\t%d\t%d\t%d\t%d\n", safeToProceed, safeToRecede, Escaping, abd_speedLimit, abdR_speedLimit);
+       throttleStatus = 0;
     }
 }
 
