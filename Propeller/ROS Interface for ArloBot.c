@@ -186,7 +186,7 @@ int main() {
 	// abdrive settings:
 	drive_speed(0, 0);                     // Start servos/encoders cog
     drive_setMaxSpeed(abd_speedLimit);
-	//drive_setRampStep(10);              // Set ramping at 10 ticks/sec per 20 ms
+	drive_setRampStep(3);              // Set ramping speed
 	// TODO: Do we need to adjust ramping? Perhaps this should be something we can modify on the ROS side and send?
 
     // Start safetyOverride cog: (AFTER the Motors are initialized!)
@@ -483,21 +483,27 @@ while(1) {
 }
 }
 
-const int startSlowDownDistance = 70;
-const int IRstartSlowDownDistance = 60; // Because IR is jumpy at long distances
-const int haltDistance = 10;
+const int maxDistance = 70;
+const int IRMaxDistance = 60; // Because IR is less reliable at long distances
+const int haltDistance[6] = { 5, 10, 12, 10, 5, 12 };
+const int minimumSpeed = 10;
 
 void safetyOverride(void *par) {
+// Each sensor needs to have its own response because of their various angles. We cannot use the same distance response for each, and we may want different max speeds and escape sequences.
+int startSlowDownDistance[6] = { 10, 40, maxDistance, 40, 10, maxDistance };
+int IRstartSlowDownDistance[6] = { 10, 40, IRMaxDistance, 40, 10, IRMaxDistance };
 while(1) {
+    int blockedSensor[6] = { 0 };
     int i, blocked = 0, minDistance = 255;
     // Walk PING Array to find blocked paths and halt immediately
     for( i=0; i < numberOfPINGsensors - 1; i++ ) { // -1 to ignore the one in back.
-      if(pingArray[i] < startSlowDownDistance) {
+      if(pingArray[i] < startSlowDownDistance[i]) {
         if(pingArray[i] < minDistance)
           minDistance = pingArray[i];
-        if(pingArray[i] < haltDistance) {
+        if(pingArray[i] < haltDistance[i]) {
             blocked = 1; // Use this to give the "all clear" later if it never gets set
             safeToProceed = 0; // Prevent main thread from setting any drive_speed
+            blockedSensor[i] = 1; // Keep track of which sensors are blocked for intelligent escape sequences.
         }
       }
     }
@@ -505,20 +511,21 @@ while(1) {
     // Walk IR Array to find blocked paths and halt immediately
         // Check IR sensors on MCP3208
     for (i = 0; i < numberOfIRonMC3208 - 1; i++) { // -1 to ignore the one in back for now.
-      if(irArray[i] < IRstartSlowDownDistance) {
+      if(irArray[i] < IRstartSlowDownDistance[i]) {
         if(irArray[i] < minDistance)
           minDistance = irArray[i];
-        if(irArray[i] < haltDistance) {
+        if(irArray[i] < haltDistance[i]) {
             blocked = 1; // Use this to give the "all clear" later if it never gets set
             safeToProceed = 0; // Prevent main thread from setting any drive_speed
+            blockedSensor[i] = 1; // Keep track of which sensors are blocked for intelligent escape sequences.
         }
       }
     }
     
     // Check rear Sensor and just don't reverse, no escaping yet.
-    if(pingArray[numberOfPINGsensors - 1] < haltDistance) {
+    if(pingArray[numberOfPINGsensors - 1] < haltDistance[numberOfPINGsensors - 1]) {
         safeToRecede = 0;
-    } else if(irArray[numberOfIRonMC3208 - 1] < haltDistance) {
+    } else if(irArray[numberOfIRonMC3208 - 1] < haltDistance[numberOfPINGsensors - 1]) {
         safeToRecede = 0;
     } else {
         safeToRecede = 1;
@@ -526,10 +533,10 @@ while(1) {
     
     // Set backup speed limit
     int minRDistance = 255;
-      if(pingArray[numberOfPINGsensors - 1] < startSlowDownDistance) {
+      if(pingArray[numberOfPINGsensors - 1] < startSlowDownDistance[numberOfPINGsensors - 1]) {
           minRDistance = pingArray[numberOfPINGsensors - 1];
           }
-      if(irArray[numberOfIRonMC3208 - 1] < IRstartSlowDownDistance) {
+      if(irArray[numberOfIRonMC3208 - 1] < IRstartSlowDownDistance[numberOfPINGsensors - 1]) {
         if(irArray[numberOfIRonMC3208 - 1] < minRDistance) {
           minRDistance = irArray[numberOfIRonMC3208 - 1];
           }
@@ -544,12 +551,12 @@ while(1) {
     Have to test each to see how it deals with sudden obstacles in the way,
     and with normal driving.
     */
-    if( minDistance < startSlowDownDistance ) {
+    if( minDistance < maxDistance ) {
       // Set based on percentage of range
-      int new_abd_speedLimit = (minDistance - haltDistance) * (100 / (startSlowDownDistance - haltDistance));
+      int new_abd_speedLimit = (minDistance - haltDistance[1]) * (100 / (maxDistance - haltDistance[1]));
       // Limit maximum and minimum speed.
-      if(new_abd_speedLimit < 5) {
-        new_abd_speedLimit = 5;
+      if(new_abd_speedLimit < minimumSpeed) {
+        new_abd_speedLimit = minimumSpeed;
       } else if(new_abd_speedLimit > 100) {
         new_abd_speedLimit = 100;
       }
@@ -567,12 +574,12 @@ while(1) {
     // Same for reverse speed limit
     // TODO: This code should probably be some sort of function instead of a cut and paste :)
     //abdR_speedLimit = 100;
-    if( minRDistance < startSlowDownDistance ) {
+    if( minRDistance < maxDistance ) {
       // Set based on percentage of range
-      int newRLimit = (minRDistance - haltDistance) * (100 / (startSlowDownDistance - haltDistance));
+      int newRLimit = (minRDistance - haltDistance[1]) * (100 / (maxDistance - haltDistance[1]));
       // Limit maximum and minimum speed.
-      if(newRLimit < 5) {
-        newRLimit = 5;
+      if(newRLimit < minimumSpeed) {
+        newRLimit = minimumSpeed;
       } else if(newRLimit > 100) {
         newRLimit = 100;
       }
@@ -604,7 +611,20 @@ while(1) {
            in this program location.
         */
         if (safeToRecede == 1) {
-            drive_speed(-10,-10); // back off slowly until we are clear. This needs more smarts.
+            // NOTE: This might cause a wiggle :)
+            // TODO: Might need to add a pause on some of these to give them more time and avoid back and forthing with no progress.
+            if(blockedSensor[2] == 1) {
+                drive_speed(-minimumSpeed, -minimumSpeed); // back off slowly until we are clear. This needs more smarts.
+            // Question: Should 0 and 4 have priority or 1 and 3?
+            } else if(blockedSensor[1] == 1) { // block on sensor left of center
+                drive_speed(-minimumSpeed, -(minimumSpeed * 2)); // Curve out to the right
+            } else if(blockedSensor[3] == 1) { // blocked on sensor right of center
+                drive_speed(-(minimumSpeed * 2), -minimumSpeed); // Curve out to the left
+            } else if(blockedSensor[0] == 1) { // Blocked on far left side or near wall
+                drive_speed(0, -minimumSpeed); // Turn out to the right slowly
+            } else if(blockedSensor[4] == 1) { // Blocked on far right side or near wall
+                drive_speed(-minimumSpeed, 0); // Turn out to the left slowly
+            }
         } else {
             drive_speed(0,0);
         }

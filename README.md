@@ -76,9 +76,9 @@ Gmapping Demo (SLAM Map building):
 http://wiki.ros.org/turtlebot_navigation/Tutorials/Build%20a%20map%20with%20SLAM
 roslaunch arlobot_bringup minimal.launch
 <New Terminal>
-roslaunch arlobot_bringup keyboard_teleop.launch
-<New Terminal>
 roslaunch arlobot_bringup gmapping_demo.launch
+<New Terminal>
+roslaunch arlobot_bringup keyboard_teleop.launch
 <GUI based Terminal>
 roslaunch turtlebot_rviz_launchers view_navigation.launch
 When you are done, save your map!
