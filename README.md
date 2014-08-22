@@ -88,7 +88,7 @@ AMCL (Navigating the map we built above:
 http://wiki.ros.org/turtlebot_navigation/Tutorials/Autonomously%20navigate%20in%20a%20known%20map
 roslaunch arlobot_bringup minimal.launch
 <New Terminal>
-roslaunch turtlebot_navigation amcl_demo.launch map_file:=~/rosmaps/my_map1.yaml
+roslaunch arlobot_bringup amcl_demo.launch map_file:=~/rosmaps/my_map1.yaml
 <GUI based Terminal>
 roslaunch turtlebot_rviz_launchers view_navigation.launch --screen
 NOTE: This is still in progress, it works with simple paths, but also seems quite willing to plow into a wall and spin its wheels desperately against a wall, even though the 3D camera should be telling it that it is smakc against a wall.
