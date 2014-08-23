@@ -272,14 +272,17 @@ int main() {
                 if (Escaping == 0) { // Don't fight with the Propeller escape code!
                     if (CommandedVelocity > 0 && safeToProceed == 1) {
                         //drive_speed(expectedLeftSpeed, expectedRightSpeed);
-                        drive_rampStep(expectedLeftSpeed, expectedRightSpeed);
+                        drive_speed(expectedLeftSpeed, expectedRightSpeed);
                     } else if (CommandedVelocity < 0 && safeToRecede == 1) {
-                        drive_rampStep(expectedLeftSpeed, expectedRightSpeed);
+                        drive_speed(expectedLeftSpeed, expectedRightSpeed);
                     } else if (CommandedVelocity == 0) {
                         // Rotate in place even if we are too close? Is this safe?!
-                        drive_rampStep(expectedLeftSpeed, expectedRightSpeed);
+                        drive_speed(expectedLeftSpeed, expectedRightSpeed);
                     }
                 }
+                // Using drive_rampStep does not appear to work with AMCL. It expects the robot to do what it is told, and
+                // this doesn't give later commands Especially the command to slow to 0! The drive is left creepign after AMCL
+                // tells it to stop!
                 // NOTE: drive_setRampStep can be used to adjust the ramp rate.
                 // NOTE: DO NOT use drive_ramp, as this will stall the program until the requested speed is reached!
                 // Which is NOT what we want, since we may want to change the requested speed before we even reach it. ;)
