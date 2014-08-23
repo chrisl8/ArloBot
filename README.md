@@ -1,6 +1,9 @@
 ArloBot Package for ROS
 ===========================
 
+Here is a demonstration video of this code on my ArloBot:
+http://youtu.be/7qJaA6K_WPE
+
 This is my attempt to build a Package for the Robot Operating System (ROS) http://www.ros.org/ to work with the Parallax Propeller based ArloBot:
 http://www.parallax.com/product/arlo-robotic-platform-system
 
