@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package>
+  <name>arlobot_rviz_launchers</name>
+  <version>0.1.0</version>
+  <description>
+     arlobot_rviz_launchers is a copy of turtlebot_rviz_launchers modified for use on the Parallax ArloBot
+     NOTE: It may not contain all of the files from turtlebot_rviz_launchers, only those that I was
+     not able to directly source from the turtlebot package in my program.
+  </description>
+  <maintainer email="hoopy@ekpyroticfrood.net">Hoopy Frood</maintainer>
+  <license>BSD</license>
+  <url type="website">https://github.com/chrisl8/ArloBot</url>
+  <author email="hoopy@ekpyroticfrood.net">Hoopy Frood</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>joint_state_publisher</run_depend>
+  <run_depend>rviz</run_depend>
+  <run_depend>turtlebot_bringup</run_depend>
+</package>

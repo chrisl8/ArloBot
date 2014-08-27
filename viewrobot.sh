@@ -1,2 +1,2 @@
-roslaunch arlobot_bringup view_robot.launch
+roslaunch arlobot_rviz_launchers view_robot.launch
 

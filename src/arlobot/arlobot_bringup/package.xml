@@ -8,7 +8,7 @@
   </description>
   <maintainer email="hoopy@ekpyroticfrood.net">Hoopy Frood</maintainer>
   <license>BSD</license>
-  <!-- <url type="website">http://wiki.ros.org/arlobot</url> -->
+  <url type="website">https://github.com/chrisl8/ArloBot</url>
   <author email="hoopy@ekpyroticfrood.net">Hoopy Frood</author>
 
   <buildtool_depend>catkin</buildtool_depend>

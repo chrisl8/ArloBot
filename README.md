@@ -55,18 +55,18 @@ i 0
 This tells you to initialize it, just send it:
 d,0.403000,0.006760
 and then it should start sending odometry info in the form of:
-o       0.000   0.000   0.000   0.000   0.000   0.000   174
-The last number is the distance from the front PING sensor.
-If you want to get really fancy you can send it twist commands from the terminal
+o       0.000   0.000   0.000   0.000   0.000   0.000   7       19      84      23      142     1249    227     13      143     60      9       7
+The last 12 numbers are the distances from the PING and InfraRed sensors, they should change as you move around the ArloBot.
+If you want to get really fancy you can send it twist commands from the terminal.
 
 Basic TeleOp with 3D sensor use:
 roslaunch arlobot_bringup minimal.launch
 <New Terminal>
-roslaunch arlobot_bringup keyboard_teleop.launch
+roslaunch arlobot_teleop keyboard_teleop.launch
 <New Terminal>
-roslaunch arlobot_bringup 3dsensor.launch
+roslaunch turtlebot_bringup 3dsensor.launch
 <GUI based Terminal>
-roslaunch arlobot_bringup view_robot.launch
+roslaunch arlobot_rviz_launchers view_robot.launch
 Tests from this setup:
   Set your Global Options->Fixed Frame to "odom
     Drive and see if the robot appears to move properly on the grid.
@@ -79,9 +79,9 @@ Gmapping Demo (SLAM Map building):
 http://wiki.ros.org/turtlebot_navigation/Tutorials/Build%20a%20map%20with%20SLAM
 roslaunch arlobot_bringup minimal.launch
 <New Terminal>
-roslaunch arlobot_bringup gmapping_demo.launch
+roslaunch arlobot_navigation gmapping_demo.launch
 <New Terminal>
-roslaunch arlobot_bringup keyboard_teleop.launch
+roslaunch arlobot_teleop keyboard_teleop.launch
 <GUI based Terminal>
 roslaunch turtlebot_rviz_launchers view_navigation.launch
 When you are done, save your map!
@@ -91,13 +91,9 @@ AMCL (Navigating the map we built above:
 http://wiki.ros.org/turtlebot_navigation/Tutorials/Autonomously%20navigate%20in%20a%20known%20map
 roslaunch arlobot_bringup minimal.launch
 <New Terminal>
-roslaunch arlobot_bringup amcl_demo.launch map_file:=~/rosmaps/my_map1.yaml
+roslaunch arlobot_navigation amcl_demo.launch map_file:=~/rosmaps/my_map1.yaml
 <GUI based Terminal>
 roslaunch turtlebot_rviz_launchers view_navigation.launch --screen
-NOTE: This is still in progress, it works with simple paths, but also seems quite willing to plow into a wall and spin its wheels desperately against a wall, even though the 3D camera should be telling it that it is smakc against a wall.
-I need to see if there are settings to change for this,
-see if thare are updates to Navigation in Indigo,
-and set up my PING/IR sensors to provide Navigation input,
-and code on the Propeller to provide override fail safe when the PING/IR detect obects that the Kinect/Xtion miss due to its height.
+NOTE: This is still in progress. It works pretty well, but needs a little tweaking.
 ```
 Please report an issue for any problems or if you need me to clarify anything!

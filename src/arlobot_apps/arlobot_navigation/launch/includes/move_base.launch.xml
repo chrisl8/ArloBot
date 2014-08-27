@@ -16,7 +16,7 @@
     <rosparam file="$(find turtlebot_navigation)/param/dwa_local_planner_params.yaml" command="load" />
     <rosparam file="$(find turtlebot_navigation)/param/move_base_params.yaml" command="load" />
 
-	<remap from="cmd_vel" to="/cmd_vel_mux/input/navi"/>
+    <remap from="cmd_vel" to="navigation_velocity_smoother/raw_cmd_vel"/>
     <remap from="odom" to="$(arg odom_topic)"/>
   </node>
 </launch>
