@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 # Software License Agreement (BSD License)
 #
+# Author: Chris L8 https://github.com/chrisl8
+# URL: https://github.com/chrisl8/ArloBot
+#
 #Derived from \opt\ros\hydro\lib\create_node\turtlebot_node.py
 #This is based on turtlebot_node adapted to run on a Propeller Activity Board based ArloBot
-#Originally this contained all of the output of the turtlebot_node.py program
-#so that it could be dropped directly into the Turtlebot stack and run as is.
-#
-#Over time though the code has been stripped and specialized for my robot's needs.
 #
 #When upgrading to new versions of ROS,
 #or when attempting to integrate new TurtleBot functions,
-#please look at and compare \opt\ros\hydro\lib\create_node\turtlebot_node.py
-#to the new version and to this code to see what you may need to add/improve/replace
+#please look at and compare turtlebot_node.py to the new version
+#to see what you may need to add/improve/replace
 #to make things work.
 #
 #Special thanks to arduino.py by Dr. Rainer Hessmer
@@ -35,19 +34,6 @@ from std_msgs.msg import String
 #For USB relay board
 from pylibftdi import BitBangDevice
 
-#for Turtlebot stack from turtlebot_node.py NOT used in ArloBot
-'''
-from create_driver import Turtlebot, MAX_WHEEL_SPEED, DriverError
-from create_node.msg import TurtlebotSensorState, Drive, Turtle
-from create_node.srv import SetTurtlebotMode,SetTurtlebotModeResponse, SetDigitalOutputs, SetDigitalOutputsResponse
-from create_node.diagnostics import TurtlebotDiagnostics
-from geometry_msgs.msg import Point, Pose, Pose2D, PoseWithCovariance, TwistWithCovariance, Vector3
-from sensor_msgs.msg import JointState
-import dynamic_reconfigure.server
-from create_node.cfg import TurtleBotConfig
-import create_node.robot_types as robot_types
-'''
-
 from SerialDataGateway import SerialDataGateway
 
 class PropellerComm(object):
@@ -55,40 +41,7 @@ class PropellerComm(object):
     Helper class for communicating with a Propeller board over serial port
     '''
 
-    #CONTROLLER_INITIALIZING = 1; # Not used in ArloBot
-    #CONTROLLER_IS_READY = 2; # Not used in ArloBot
-
     def __init__(self, port="/dev/ttyUSB0", baudrate=115200):
-        # Code Not used by ArloBot
-        '''
-        Initializes the receiver class. 
-        port: The serial port to listen to.
-        baudrate: Baud rate for the serial communication
-
-        self.default_port = '/dev/ttyUSB0'
-        self.default_update_rate = 30.0
-
-        self.robot = Turtlebot()
-        self.sensor_handler = None
-        self.sensor_state = TurtlebotSensorState()
-        self.req_cmd_vel = None
-
-        rospy.init_node('turtlebot')
-
-        self._init_params()
-        self._init_pubsub()
-        
-        self._pos2d = Pose2D() # 2D pose for odometry
-
-        self._diagnostics = TurtlebotDiagnostics()
-        if self.has_gyro:
-            from create_node.gyro import TurtlebotGyro
-            self._gyro = TurtlebotGyro()
-        else:
-            self._gyro = None
-            
-        dynamic_reconfigure.server.Server(TurtleBotConfig, self.reconfigure)
-        '''
 
         self._Counter = 0 # For Propeller code's _HandleReceivedLine and _WriteSerial
         self._motorsOn = 0 # Set to 1 when Propeller Activity Board is properly initialized
@@ -111,17 +64,6 @@ class PropellerComm(object):
         self._UltraSonicPublisher = rospy.Publisher("ultrasonic_scan", LaserScan, queue_size=10)
         self._InfraredPublisher = rospy.Publisher("infrared_scan", LaserScan, queue_size=10)
         
-        # Gyro Publisher
-        # Based on code in TurtleBot source:
-        # ~/turtlebot/src/turtlebot_create/create_node/src/create_node/gyro.py
-        #self._ImuPublisher = rospy.Publisher("imu/data", Imu)
-        #self.imu_data = Imu(header=rospy.Header(frame_id="gyro_link"))
-        #self.imu_data.orientation_covariance = [1e6, 0, 0, 0, 1e6, 0, 0, 0, 1e-6]
-        #self.imu_data.angular_velocity_covariance = [1e6, 0, 0, 0, 1e6, 0, 0, 0, 1e-6]
-        #self.imu_data.linear_acceleration_covariance = [-1,0,0,0,0,0,0,0,0]
-        #self.imu_pub = rospy.Publisher('imu/data', Imu)
-        #self.imu_pub_raw = rospy.Publisher('imu/raw', Imu)
-
         port = rospy.get_param("~port", "/dev/ttyUSB0")
         baudRate = int(rospy.get_param("~baudRate", 115200))
 
@@ -319,69 +261,6 @@ class PropellerComm(object):
                                      '''
 
             self._OdometryPublisher.publish(odometry)
-
-            #"IMU" data from Gyro
-            '''
-            # Based on code in TurtleBot source:
-            # ~/turtlebot/src/turtlebot_create/create_node/src/create_node/gyro.py
-            # It may make more sense to compute some of this on the Propeller board,
-            # but for now I'm just trying to follow the TurtleBot Create code as beast I can
-            current_time = rosNow
-            #dt = (current_time - last_time).to_sec()
-            #past_orientation = self.orientation
-            #self.imu_data.header.stamp =  sensor_state.header.stamp
-            #self.imu_data.angular_velocity.z  = (float(sensor_state.user_analog_input)-self.cal_offset)/self.cal_offset*self.gyro_measurement_range*(math.pi/180.0)*self.gyro_scale_correction
-            #sign change
-            #self.imu_data.angular_velocity.z = -1.0*self.imu_data.angular_velocity.z
-            #self.orientation += self.imu_data.angular_velocity.z * dt
-            #print orientation
-            #(self.imu_data.orientation.x, self.imu_data.orientation.y, self.imu_data.orientation.z, self.imu_data.orientation.w) = PyKDL.Rotation.RotZ(self.orientation).GetQuaternion()
-            #self.imu_data = odom.twist.twist = Twist(Vector3(d/dt, 0, 0), Vector3(0, 0, angle/dt))
-            #self.imu_pub.publish(self.imu_data)
-
-            #self.imu_data.header.stamp =  sensor_state.header.stamp
-            #self.imu_data.angular_velocity.z  = (float(sensor_state.user_analog_input)/self.gyro_measurement_range*(math.pi/180.0)*self.gyro_scale_correction)
-            #sign change
-            #self.imu_data.angular_velocity.z = -1.0*self.imu_data.angular_velocity.z
-            #raw_orientation = past_orientation + self.imu_data.angular_velocity.z * dt
-            #print orientation
-            #(self.imu_data.orientation.x, self.imu_data.orientation.y, self.imu_data.orientation.z, self.imu_data.orientation.w) = PyKDL.Rotation.RotZ(raw_orientation).GetQuaternion()
-            #self.imu_pub_raw.publish(self.imu_data)
-            last_time = current_time
-            
-            imu = Imu()
-            
-            imu.orientation_covariance = [1e6, 0, 0, 0, 1e6, 0, 0, 0, 1e-6] # From Turtlebot, probably wrong.
-            # You CANNOT set the orientation_covariance to -1, 0, ..., else you get this error:
-            #[ERROR] [1405831732.096853617]: Covariance specified for measurement on topic imu is zero
-            # The TurtleBot Create builds this in Python, but I'm not sure if I can or want to build orientation
-            # myself? Does the  Gyro give this?
-            #imu.orientation_covariance = [-1,0,0,0,0,0,0,0,0] # This should indicate no data for this matrix
-            imu.angular_velocity_covariance = [1e6, 0, 0, 0, 1e6, 0, 0, 0, 1e-6] # From Turtlebot, probably wrong.
-            #imu.angular_velocity_covariance = [-1,0,0,0,0,0,0,0,0] # This should indicate no data for this matrix
-            imu.linear_acceleration_covariance = [-1,0,0,0,0,0,0,0,0] # This should indicate no data for this matrix
-            
-            #imu.orientation_covariance = [999999 , 0 , 0, 0, 9999999, 0, 0, 0, 999999]
-            #imu.angular_velocity_covariance = [9999, 0 , 0, 0 , 99999, 0, 0 , 0 , 0.02]
-            #imu.linear_acceleration_covariance = [0.2 , 0 , 0, 0 , 0.2, 0, 0 , 0 , 0.2]
-
-            imu.linear_acceleration.x = 0
-            imu.linear_acceleration.y = 0
-            imu.linear_acceleration.z = 0
-            imu.angular_velocity.x = float(lineParts[7]) / 57.2957795130824
-            imu.angular_velocity.y = float(lineParts[8]) / 57.2957795130824
-            imu.angular_velocity.z = float(lineParts[9]) / 57.2957795130824
-            imu.orientation.x = 0
-            imu.orientation.y = 0
-            imu.orientation.z = 0
-            imu.orientation.w = 1.0
-            
-            #imu.header.stamp = rospy.Time.now()
-            imu.header.stamp = rosNow
-            imu.header.frame_id = "gyro_link"
-            #imu.header.frame_id = 'base_link'
-            self._ImuPublisher.publish(imu)
-            '''
 
             # Joint State for Turtlebot stack
             # Note without this transform publisher the wheels will

@@ -1,18 +1,24 @@
 /*
- ActivityBot (AB) code to connect to Dr. Rainer Hessmer's
- ROS with Arduino project: https://code.google.com/p/drh-robotics-ros/
- This code is largely a sloppy "conversion" of Dr. Hessmer's robot.pde for the Arduino:
- https://code.google.com/p/drh-robotics-ros/source/browse/trunk/Arduino/Robot/Robot.pde
- Dr. Hessmer's blog explaining how his code and robot works is here:
- http://www.hessmer.org/blog/2010/11/21/sending-data-from-arduino-to-ros/
+ This is the code to run on a Parallax Propeller based Activity Board
+ in order to interface ROS with an ArloBot.
+ 
+ Author: Chris L8 https://github.com/chrisl8
+ URL: https://github.com/chrisl8/ArloBot
+ 
+ The ROS Node for this code is called propellerbot_node.py
+ and can be found in the arlobot_bringup package from the above URL.
+ 
+ Special thanks to Dr. Rainer Hessmer. Much of this code is based on his work at
+ https://code.google.com/p/drh-robotics-ros/
 
  Please also see these sites which helped me tremendously with the formulas:
  http://www.seattlerobotics.org/encoder/200610/article3/IMU%20Odometry,%20by%20David%20Anderson.htm
  http://webdelcire.com/wordpress/archives/527
+
  And of course the entire point of this is to interface with ROS, so read about everything ROS here:
  http://wiki.ros.org/
+
  All code here heavily borrowed from everywhere code can be found! :)
- See "Serial Testing for ROS ActivityBot 1-4" (which are not on GitHub) for previous versions and explanations.
  */
 
 /* SimpleIDE Options
