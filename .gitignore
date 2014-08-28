@@ -1,5 +1,5 @@
 *.pyc
-/Propeller/cmm/
+/Propeller\ C\ Code\ for\ ArloBot/cmm/
 /bin
 /docs
 /lib
