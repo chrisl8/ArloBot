@@ -19,6 +19,7 @@
 #
 # NOTE: This script REQUIRES parameters to be loaded from param/encoders.yaml!
 #import roslib; roslib.load_manifest('arlobot') # http://wiki.ros.org/roslib
+
 import rospy
 import tf
 from math import sin, cos
@@ -27,7 +28,6 @@ import sys
 from geometry_msgs.msg import Quaternion
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
-#from sensor_msgs.msg import Imu
 from nav_msgs.msg import Odometry
 from std_msgs.msg import String
 
@@ -44,7 +44,7 @@ class PropellerComm(object):
     def __init__(self, port="/dev/ttyUSB0", baudrate=115200):
 
         self._Counter = 0 # For Propeller code's _HandleReceivedLine and _WriteSerial
-        self._motorsOn = 0 # Set to 1 when Propeller Activity Board is properly initialized
+        self._motorsOn = 0 # Set to 1 if the motors are on, used with USB Relay Control board
 
         #rospy.init_node('turtlebot')
         rospy.init_node('arlobot')
@@ -54,7 +54,7 @@ class PropellerComm(object):
         rospy.Subscriber("cmd_vel_mux/input/teleop", Twist, self._HandleVelocityCommand) # IS this line or the above bad redundancy?
         self._SerialPublisher = rospy.Publisher('serial', String, queue_size=10)
 
-        # IF the Odometry Transform is done in/with the robot_pose_ekf don't publish it,
+        # IF the Odometry Transform is done with the robot_pose_ekf do not publish it,
         # but we are not using robot_pose_ekf, because it does nothing for us if you don't have a full IMU!
         self._OdometryTransformBroadcaster = tf.TransformBroadcaster() # REMOVE this line if you use robot_pose_ekf
         self._OdometryPublisher = rospy.Publisher("odom", Odometry, queue_size=10)
@@ -69,96 +69,6 @@ class PropellerComm(object):
 
         rospy.loginfo("Starting with serial port: " + port + ", baud rate: " + str(baudRate))
         self._SerialDataGateway = SerialDataGateway(port, baudRate,  self._HandleReceivedLine)
-
-    def _init_params(self):
-        self.port = rospy.get_param('~port', '')
-        self.baudrate = rospy.get_param('~baudrate', self.default_baudrate) # From TurtleBot
-        self.robot_type = rospy.get_param('~robot_type', 'create')
-        self.update_rate = rospy.get_param('~update_rate', self.default_update_rate)
-        self.drive_mode = rospy.get_param('~drive_mode', 'twist')
-        self.has_gyro = rospy.get_param('~has_gyro', False) # Not sure if this does anything anymore
-        self.odom_angular_scale_correction = rospy.get_param('~odom_angular_scale_correction', 1.0)
-        self.odom_linear_scale_correction = rospy.get_param('~odom_linear_scale_correction', 1.0)
-        self.cmd_vel_timeout = rospy.Duration(rospy.get_param('~cmd_vel_timeout', 0.6))
-        self.stop_motors_on_bump = rospy.get_param('~stop_motors_on_bump', True)
-        self.min_abs_yaw_vel = rospy.get_param('~min_abs_yaw_vel', None)
-        self.max_abs_yaw_vel = rospy.get_param('~max_abs_yaw_vel', None)
-        self.publish_tf = rospy.get_param('~publish_tf', False)
-        self.odom_frame = rospy.get_param('~odom_frame', 'odom')
-        self.base_frame = rospy.get_param('~base_frame', 'base_footprint')
-        self.operate_mode = rospy.get_param('~operation_mode', 3)
-
-        rospy.loginfo("serial port: %s"%(self.port))
-        rospy.loginfo("update_rate: %s"%(self.update_rate))
-        rospy.loginfo("drive mode: %s"%(self.drive_mode))
-        rospy.loginfo("has gyro: %s"%(self.has_gyro))
-
-    def _init_pubsub(self):
-        # Instead of publishing a stream of pointless transforms,
-        # How about if I just make the joint static in the URDF?
-        # create.urdf.xacro:
-        # <joint name="right_wheel_joint" type="fixed">
-        # NOTE This may prevent Gazebo from working with this model
-        #self.joint_states_pub = rospy.Publisher('joint_states', JointState)
-
-        # This is the Turtlebot node instance, the Propeller code uses another line above.
-        #self.odom_pub = rospy.Publisher('odom', Odometry)
-
-        self.sensor_state_pub = rospy.Publisher('~sensor_state', TurtlebotSensorState)
-        self.operating_mode_srv = rospy.Service('~set_operation_mode', SetTurtlebotMode, self.set_operation_mode)
-        self.digital_output_srv = rospy.Service('~set_digital_outputs', SetDigitalOutputs, self.set_digital_outputs)
-
-        self.transform_broadcaster = None
-        if self.publish_tf:
-            self.transform_broadcaster = tf.TransformBroadcaster()
-
-    def set_operation_mode(self,req):
-        if not self.robot.sci:
-            rospy.logwarn("Create : robot not connected yet, sci not available")
-            return SetTurtlebotModeResponse(False)
-
-        self.operate_mode = req.mode
-
-        if req.mode == 1: #passive
-            self._robot_run_passive()
-        elif req.mode == 2: #safe
-            self._robot_run_safe()
-        elif req.mode == 3: #full
-            self._robot_run_full()
-        else:
-            rospy.logerr("Requested an invalid mode.")
-            return SetTurtlebotModeResponse(False)
-        return SetTurtlebotModeResponse(True)
-
-    def _set_digital_outputs(self, outputs):
-        assert len(outputs) == 3, 'Expecting 3 output states.'
-        byte = 0
-        for output, state in enumerate(outputs):
-            byte += (2 ** output) * int(state)
-        self.robot.set_digital_outputs(byte)
-        self.sensor_state.user_digital_outputs = byte
-
-    def set_digital_outputs(self,req):
-        if not self.robot.sci:
-            raise Exception("Robot not connected, SCI not available")
-            
-        outputs = [req.digital_out_0,req.digital_out_1, req.digital_out_2]
-        self._set_digital_outputs(outputs)
-        return SetDigitalOutputsResponse(True)
-
-    def reconfigure(self, config, level):
-        #self.update_rate = config['update_rate']
-        self.drive_mode = config['drive_mode']
-        self.has_gyro = config['has_gyro']
-        if self.has_gyro:
-            self._gyro.reconfigure(config, level)
-        self.odom_angular_scale_correction = config['odom_angular_scale_correction']
-        self.odom_linear_scale_correction = config['odom_linear_scale_correction']
-        self.cmd_vel_timeout = rospy.Duration(config['cmd_vel_timeout'])
-        self.stop_motors_on_bump = config['stop_motors_on_bump']
-        self.min_abs_yaw_vel = config['min_abs_yaw_vel']
-        self.max_abs_yaw_vel = config['max_abs_yaw_vel']
-        return config
 
     def _HandleReceivedLine(self,  line): # This is Propeller specific
         self._Counter = self._Counter + 1
@@ -213,7 +123,7 @@ class PropellerComm(object):
             # First, we'll publish the transform from frame odom to frame base_link over tf
             # Note that sendTransform requires that 'to' is passed in before 'from' while
             # the TransformListener' lookupTransform function expects 'from' first followed by 'to'.
-            #This transform conflicts with transforms built into the Turtle stack
+            # This transform conflicts with transforms built into the Turtle stack
             # http://wiki.ros.org/tf/Tutorials/Writing%20a%20tf%20broadcaster%20%28Python%29
             # This is done in/with the robot_pose_ekf because it can integrate IMU/gyro data
             # using an "extended Kalman filter"
@@ -226,7 +136,7 @@ class PropellerComm(object):
                 "odom"
                 )
 
-            # next, we'll publish the odometry message over ROS
+            # next, we will publish the odometry message over ROS
             odometry = Odometry()
             odometry.header.frame_id = "odom"
             odometry.header.stamp = rosNow
@@ -240,10 +150,9 @@ class PropellerComm(object):
             odometry.twist.twist.linear.y = 0
             odometry.twist.twist.angular.z = omega
 
-            #for Turtlebot stack from turtlebot_node.py
-            # robot_pose_ekf needs these covariances and we may need to adjust them?
+            # robot_pose_ekf needs these covariances and we may need to adjust them.
             # From: ~/turtlebot/src/turtlebot_create/create_node/src/create_node/covariances.py
-            # This is not needed if not using robot_pose_ekf
+            # However, this is not needed because we are not using robot_pose_ekf
             '''
             odometry.pose.covariance = [1e-3, 0, 0, 0, 0, 0,
                                     0, 1e-3, 0, 0, 0, 0,
@@ -278,7 +187,7 @@ class PropellerComm(object):
             self.joint_states_pub.publish(js)
             '''
 
-            # Fake laser from "PING" Ultrasonic Sensor input:
+            # Fake laser from "PING" Ultrasonic Sensor and IR Distance Sensor input:
             # http://wiki.ros.org/navigation/Tutorials/RobotSetup/TF
             '''
             The purpose of this is two fold:
@@ -290,8 +199,8 @@ class PropellerComm(object):
             '''
             # Transform: http://wiki.ros.org/tf/Tutorials/Writing%20a%20tf%20broadcaster%20%28Python%29
             '''
-            # We don't need to broadcast a transform,
-                as it is static and contained within the URDF files
+            We do not need to broadcast a transform,
+            because it is static and contained within the URDF files now.
             self._SonarTransformBroadcaster.sendTransform(
                 (0.1, 0.0, 0.2), 
                 (0, 0, 0, 1),
@@ -308,12 +217,7 @@ class PropellerComm(object):
             PINGranges = [0] * num_readings # Fill array with 0 and then overlap with real readings
             IRranges = [0] * num_readings # Fill array with 0 and then overlap with real readings
             
-            '''
-            Note that sensors 0 and 4 are easily adjusted, and at the moment actually point inboard of where their neighbors point!
-            I'm not 100% sure how to visualize this. It works better in the Propeller for obstacle avoidance, but it
-            doesn't seem ideal for ROS.
-            Some experimenting will be required.
-            '''
+            # Note that sensor orientation is important here! If you have a different number or aim them differently this will not work!
             # TODO: Tweak this value based on real measurements! Use both IR and PING sensors.
             sensorOffset = 0.22545 # The offset between the pretend sensor location in the URDF and real location needs to be added to these values. This may need to be tweaked.
             pingRange0 = (int(lineParts[7]) / 100.0) + sensorOffset # Convert cm to meters and add offset
@@ -338,8 +242,11 @@ class PropellerComm(object):
             sensorSpread = 10 # This is how wide of an arc (in degrees) to paint for each "hit"
             '''
             NOTE:
-            This assumes that things get bigger as they are further away. This is true of the PING's area, and while it may or may not be true of the object the PING sees, we have no way of knowing if the object fills the ping's entire field of view or only a small part of it, a "hit" is a "hit".
-            However for the IR sensor, the objects are points, that are the same size regardless of distance, so we are clearly inflating them.
+            This assumes that things get bigger as they are further away. This is true of the PING's area,
+            and while it may or may not be true of the object the PING sees, we have no way of knowing if
+            the object fills the ping's entire field of view or only a small part of it, a "hit" is a "hit".
+            However for the IR sensor, the objects are points, that are the same size regardless of distance,
+            so we are clearly inflating them here.
             '''
             
             for x in range(180 - sensorSpread / 2, 180 + sensorSpread / 2):

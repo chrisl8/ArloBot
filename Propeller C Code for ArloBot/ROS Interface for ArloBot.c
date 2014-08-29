@@ -160,8 +160,14 @@ int main() {
 */
     // Comment out above lines for use with ROS
     
+    // For PIRsensor
+    int PIRhitCounter = 0;
+    int personThreshhold = 15; // Must get more than this number of hits before we call it a person.
+    int personDetected = 0;
+    
+    // Preinitialized loop
 	while (robotInitialized == 0) {
-		dprint(term, "i\t0\n"); // Request Robot distancePerCount and trackWidth NOTE: Python code cannot deal with a line with no divider characters on it.
+		dprint(term, "i\t%d\n", personDetected); // Request Robot distancePerCount and trackWidth NOTE: Python code cannot deal with a line with no divider characters on it.
 		pause(10); // Give ROS time to respond, but not too much or we bump into other stuff that may be coming in from ROS.
 		if (fdserial_rxReady(term) != 0) { // Non blocking check for data in the input buffer
 			char buf[20]; // A Buffer long enough to hold the longest line ROS may send.
@@ -185,7 +191,25 @@ int main() {
 					robotInitialized = 1;
 			}
 		} else {
-			pause(1000); // Longer pauses when robot is uninitialized
+            if(hasPIR == 1) {
+                for(int i=0; i < 5; i++ ) { // 5 x 200ms pause = 1000 between updates
+                    int PIRstate = input(PIRpin); // Check sensor (1) motion, (0) no motion
+                    // Count positive hits and make a call:
+                    if(PIRstate == 0) {
+                      PIRhitCounter = 0;
+                    } else {
+                      PIRhitCounter++; // Increment on each positive hit
+                    }
+                    if(PIRhitCounter > personThreshhold) {
+                      personDetected = 1;
+                    } else {
+                      personDetected = 0;
+                    }
+                    pause(200); // Pause 1/5 second before repeat
+                  }
+            } else {
+                pause(1000); // Longer pauses when robot is uninitialized
+            }
 		}
 	}
     
