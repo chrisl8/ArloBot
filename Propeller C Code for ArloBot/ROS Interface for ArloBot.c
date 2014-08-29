@@ -173,7 +173,7 @@ int main() {
 			char buf[20]; // A Buffer long enough to hold the longest line ROS may send.
 			int count = 0;
 			while (count < 20) {
-				buf[count] = readChar(term);
+				buf[count] = fdserial_rxTime(term, 100); // fdserial_rxTime will time out. Otherwise a spurious character on the line will cause us to get stuck forever
 				if (buf[count] == '\r' || buf[count] == '\n')
 					break;
 				count++;
