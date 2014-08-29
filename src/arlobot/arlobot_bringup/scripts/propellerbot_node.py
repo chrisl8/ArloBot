@@ -83,7 +83,7 @@ class PropellerComm(object):
                     self._BroadcastOdometryInfo(lineParts)
                     return
                 else:
-                    self._StartMotors()
+                    self._SwitchMotors("on")
                     return
             if (lineParts[0] == 'i'):
                 self._InitializeDriveGeometry()
@@ -331,25 +331,7 @@ class PropellerComm(object):
 
     def Stop(self):
         rospy.logdebug("Stopping")
-        # Use USB Relay module to shut off motors!
-        # For SainSmart 8 port USB model
-        class relay(dict):
-            address = {
-                "1":"1",
-                "2":"2",
-                "3":"4",
-                "4":"8",
-                "5":"10",
-                "6":"20",
-                "7":"40",
-                "8":"80",
-                "all":"FF"
-                }
-        leftMotorRelay = "6"
-        rightMotorRelay = "2"
-        # Shut off the motors
-        BitBangDevice("A9026EI5").port &= ~int(relay.address[leftMotorRelay], 16)
-        BitBangDevice("A9026EI5").port &= ~int(relay.address[rightMotorRelay], 16)
+        self._SwitchMotors("off")
         #self._SerialDataGateway.Break() # Reset the propeller board # Actually the board resets when you close the serial port!
         self._SerialDataGateway.Stop()
         
@@ -377,26 +359,41 @@ class PropellerComm(object):
         #rospy.logdebug("Sending drive geometry params message: " + message)
         self._WriteSerial(message)
         
-    def _StartMotors(self):
-        # Start Motors
-        # For SainSmart 8 port USB model
-        class relay(dict):
-            address = {
-                "1":"1",
-                "2":"2",
-                "3":"4",
-                "4":"8",
-                "5":"10",
-                "6":"20",
-                "7":"40",
-                "8":"80",
-                "all":"FF"
-                }
-        leftMotorRelay = "6"
-        rightMotorRelay = "2"
-        BitBangDevice("A9026EI5").port |= int(relay.address[leftMotorRelay], 16)
-        BitBangDevice("A9026EI5").port |= int(relay.address[rightMotorRelay], 16)
-        self._motorsOn = 1
+    def _SwitchMotors(self, state):
+        relayExists = rospy.get_param("~usbRelayInstalled", False)
+        if relayExists:
+            # Start Motors
+            # For SainSmart 8 port USB model http://www.sainsmart.com/sainsmart-4-channel-12-v-usb-relay-board-module-controller-for-automation-robotics-1.html
+            # Note that this is specific to this model, if you want me to code for various models let me know and I can work with you to expand the code
+            # to cover more models and add ROS parameters for picking your model.
+            class relay(dict):
+                address = {
+                    "1":"1",
+                    "2":"2",
+                    "3":"4",
+                    "4":"8",
+                    "5":"10",
+                    "6":"20",
+                    "7":"40",
+                    "8":"80",
+                    "all":"FF"
+                    }
+            relaySerialNumber = rospy.get_param("~usbRelaySerialNumber", "")
+            leftMotorRelay = rospy.get_param("~usbLeftMotorRelay", "")
+            rightMotorRelay = rospy.get_param("~usbRightMotorRelay", "")
+            if state == "on":
+                BitBangDevice(relaySerialNumber).port |= int(relay.address[leftMotorRelay], 16)
+                BitBangDevice(relaySerialNumber).port |= int(relay.address[rightMotorRelay], 16)
+                self._motorsOn = 1
+            elif state == "off":
+                BitBangDevice(relaySerialNumber).port &= ~int(relay.address[leftMotorRelay], 16)
+                BitBangDevice(relaySerialNumber).port &= ~int(relay.address[rightMotorRelay], 16)
+                self._motorsOn = 0
+        else: # If no automated motor control exists, just set the state blindly.
+            if state == "on":
+                self._motorsOn = 1
+            elif state == "off":
+                self._motorsOn = 0
 
 if __name__ == '__main__':
     propellercomm = PropellerComm()

@@ -5,3 +5,15 @@ baudRate: 115200
 # Distance Per Tick for Arlo: http://forums.parallax.com/showthread.php/154274-The-quot-Artist-quot-robot?p=1271544&viewfull=1#post1271544
 # Track Width for Arlo is from measurement and then testing
 driveGeometry: {trackWidth: 0.403, distancePerCount: 0.00676}
+# Set usbRelayInstalled to False if you do not have a USB Relay installed to turn your motors on and off,
+# In which case it will be assumed they are always on, or at least that you turn them on by hand
+# This is the board I use: http://www.sainsmart.com/sainsmart-4-channel-12-v-usb-relay-board-module-controller-for-automation-robotics-1.html
+# and there are several other models that should all work. File an issue if you need me to help modify the program to include your board
+usbRelayInstalled: True
+# The other usbRelay... settings do not matter if usbRelayInstalled is False
+# Get this serial number running ~/arlobot/src/arlobot/arlobot_bringup/scripts/drcontrol.py -l
+usbRelaySerialNumber: "A9026EI5"
+# You can connect the motors to any relay you want, and just put them here.
+# I use 6 and 2 based on the wiring location and that those two do not cycle when the laptop boots
+usbLeftMotorRelay: "6"
+usbRightMotorRelay: "2"

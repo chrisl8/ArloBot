@@ -9,6 +9,12 @@ http://www.parallax.com/product/arlo-robotic-platform-system
 
 Please note that you will also need the code to run on your Propeller board. This is stored in the Propeller folder.
 
+Please adjust settings for your robot in:
+
+    ~/arlobot/src/arlobot/arlobot_bringup/param/encoders.yaml
+
+Before running this code!
+
 ## Basic usage instructions: ##
 1. Build your ArloBot!
 2. Get the SimpleIDE installed on a computer and load the code from the Propeller folder into your Activity Board. You can do this from Windows or Linux. I find it handy to have SimpleIDE running on my ROS laptop on board the Arlo though to make code updates easy.
