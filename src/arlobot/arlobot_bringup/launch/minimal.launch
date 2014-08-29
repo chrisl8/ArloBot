@@ -27,6 +27,6 @@
   </node>
 -->
 
-  <include file="$(find arlobot_bringup)/launch/mobile_base.launch.xml">
-  </include>
+  <include file="$(find arlobot_bringup)/launch/mobile_base.launch.xml" />
+  <include file="$(find arlobot_safety)/launch/arlobot_safety.launch" />
 </launch>

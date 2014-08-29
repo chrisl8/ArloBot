@@ -170,9 +170,9 @@ int main() {
 		dprint(term, "i\t%d\n", personDetected); // Request Robot distancePerCount and trackWidth NOTE: Python code cannot deal with a line with no divider characters on it.
 		pause(10); // Give ROS time to respond, but not too much or we bump into other stuff that may be coming in from ROS.
 		if (fdserial_rxReady(term) != 0) { // Non blocking check for data in the input buffer
-			char buf[20]; // A Buffer long enough to hold the longest line ROS may send.
+			char buf[51]; // A Buffer long enough to hold the longest line ROS may send.
 			int count = 0;
-			while (count < 20) {
+			while (count < 51) {
 				buf[count] = fdserial_rxTime(term, 100); // fdserial_rxTime will time out. Otherwise a spurious character on the line will cause us to get stuck forever
 				if (buf[count] == '\r' || buf[count] == '\n')
 					break;
@@ -187,6 +187,14 @@ int main() {
 				trackWidth = strtod(token, &unconverted);
 				token = strtok(NULL, delimiter);
 				distancePerCount = strtod(token, &unconverted);
+				token = strtok(NULL, delimiter);
+                // Set initial location from ROS, in case we want to recover our last location!
+                X = strtod(token, &unconverted);
+				token = strtok(NULL, delimiter);
+                Y = strtod(token, &unconverted);
+				token = strtok(NULL, delimiter);
+                Heading = strtod(token, &unconverted);
+                gyroHeading = Heading;
 				if (trackWidth > 0.0 && distancePerCount > 0.0)
 					robotInitialized = 1;
 			}

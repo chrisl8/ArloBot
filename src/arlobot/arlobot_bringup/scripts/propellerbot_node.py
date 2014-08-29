@@ -47,6 +47,11 @@ class PropellerComm(object):
         self._Counter = 0 # For Propeller code's _HandleReceivedLine and _WriteSerial
         self._motorsOn = 0 # Set to 1 if the motors are on, used with USB Relay Control board
         self._SafeToOperate = 0 # Use arlobot_safety to set this
+        # Store last x, y and heading for reuse when we reset
+        self.lastX = 0.0
+        self.lastY = 0.0
+        self.lastHeading = 0.0
+
 
         rospy.init_node('arlobot')
 
@@ -82,13 +87,9 @@ class PropellerComm(object):
 
         if (len(line) > 0):
             lineParts = line.split('\t')
-            if (lineParts[0] == 'o'):
-                if self._motorsOn == 1:
-                    self._BroadcastOdometryInfo(lineParts)
-                    return
-                elif self._SafeToOperate == 1: # Only turn on motors if it is safe to operate
-                    self._SwitchMotors("on")
-                    return
+            if (lineParts[0] == 'o'): # We should broadcast the odometry no matter what. Even if the motors are off, or location is useful!
+                self._BroadcastOdometryInfo(lineParts)
+                return
             if (lineParts[0] == 'i'):
                 self._InitializeDriveGeometry(lineParts)
                 return
@@ -103,9 +104,17 @@ class PropellerComm(object):
             self._SafeToOperate = 0
             if self._motorsOn == 1:
                 self._SwitchMotors("off")
+                # Reset the propeller board, otherwise there are problems if you bring up the motors again while it has been operating
+                self._SerialDataGateway.Stop()
+                self._SerialDataGateway.Start()
+                # TODO: There is probably a better way, but this seems to work.
             rospy.logdebug("Stopping")
 
     def _BroadcastOdometryInfo(self, lineParts):
+        # If we got this far, we can assume that the Propeller board is initialized and the motors should be on.
+        # The _SwitchMotors() function will deal with the _SafeToOparete issue
+        if self._motorsOn == 0:
+            self._SwitchMotors("on")
         # This broadcasts ALL info from the Propeller based robot every time data comes in
         partsCount = len(lineParts)
 
@@ -117,8 +126,7 @@ class PropellerComm(object):
             x = float(lineParts[1])
             y = float(lineParts[2])
             # 3 is odom based heading and 4 is gyro based
-            # If there is some way to "integrate" these, go for it!
-            theta = float(lineParts[3]) # Using odom on Arlo for now to see if it works OK
+            theta = float(lineParts[3]) # On ArloBot odometry derived heading works best.
             
             vx = float(lineParts[5])
             omega = float(lineParts[6])
@@ -162,6 +170,11 @@ class PropellerComm(object):
             odometry.twist.twist.linear.x = vx
             odometry.twist.twist.linear.y = 0
             odometry.twist.twist.angular.z = omega
+            
+            # Save last X, Y and Heading for reuse if we have to reset:
+            self.lastX = x
+            self.lastY = y
+            self.lastHeading = theta
 
             # robot_pose_ekf needs these covariances and we may need to adjust them.
             # From: ~/turtlebot/src/turtlebot_create/create_node/src/create_node/covariances.py
@@ -345,7 +358,6 @@ class PropellerComm(object):
     def Stop(self):
         rospy.logdebug("Stopping")
         self._SwitchMotors("off")
-        #self._SerialDataGateway.Break() # Reset the propeller board # Actually the board resets when you close the serial port!
         self._SerialDataGateway.Stop()
         
     def _HandleVelocityCommand(self, twistCommand): # This is Propeller specific
@@ -367,8 +379,8 @@ class PropellerComm(object):
         if self._SafeToOperate:
             trackWidth = rospy.get_param("~driveGeometry/trackWidth", "0")
             distancePerCount = rospy.get_param("~driveGeometry/distancePerCount", "0")
-            message = 'd,%f,%f\r' % (trackWidth, distancePerCount)
-            #rospy.logdebug("Sending drive geometry params message: " + message)
+            message = 'd,%f,%f,%f,%f,%f\r' % (trackWidth, distancePerCount, self.lastX, self.lastY, self.lastHeading)
+            rospy.logdebug("Sending drive geometry params message: " + message)
             self._WriteSerial(message)
         else:
             rospy.loginfo(lineParts[1])
@@ -395,7 +407,7 @@ class PropellerComm(object):
             relaySerialNumber = rospy.get_param("~usbRelaySerialNumber", "")
             leftMotorRelay = rospy.get_param("~usbLeftMotorRelay", "")
             rightMotorRelay = rospy.get_param("~usbRightMotorRelay", "")
-            if state == "on":
+            if state == "on" and self._SafeToOperate == 1:
                 BitBangDevice(relaySerialNumber).port |= int(relay.address[leftMotorRelay], 16)
                 BitBangDevice(relaySerialNumber).port |= int(relay.address[rightMotorRelay], 16)
                 self._motorsOn = 1
