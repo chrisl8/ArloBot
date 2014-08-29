@@ -30,6 +30,7 @@ from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 from std_msgs.msg import String
+from std_msgs.msg import Bool
 
 #For USB relay board
 from pylibftdi import BitBangDevice
@@ -45,13 +46,16 @@ class PropellerComm(object):
 
         self._Counter = 0 # For Propeller code's _HandleReceivedLine and _WriteSerial
         self._motorsOn = 0 # Set to 1 if the motors are on, used with USB Relay Control board
+        self._SafeToOperate = 0 # Use arlobot_safety to set this
 
-        #rospy.init_node('turtlebot')
         rospy.init_node('arlobot')
 
-        # subscriptions
+        # Subscriptions
         rospy.Subscriber("cmd_vel", Twist, self._HandleVelocityCommand) # Is this line or the below bad redundancy?
         rospy.Subscriber("cmd_vel_mux/input/teleop", Twist, self._HandleVelocityCommand) # IS this line or the above bad redundancy?
+        rospy.Subscriber("arlobot_safety/safeToGo", Bool, self._SafetyShutdown) # Safty Shutdown
+
+        # Publishers
         self._SerialPublisher = rospy.Publisher('serial', String, queue_size=10)
 
         # IF the Odometry Transform is done with the robot_pose_ekf do not publish it,
@@ -79,18 +83,27 @@ class PropellerComm(object):
         if (len(line) > 0):
             lineParts = line.split('\t')
             if (lineParts[0] == 'o'):
-                if (self._motorsOn == 1):
+                if self._motorsOn == 1:
                     self._BroadcastOdometryInfo(lineParts)
                     return
-                else:
+                elif self._SafeToOperate == 1: # Only turn on motors if it is safe to operate
                     self._SwitchMotors("on")
                     return
             if (lineParts[0] == 'i'):
-                self._InitializeDriveGeometry()
+                self._InitializeDriveGeometry(lineParts)
                 return
             if (lineParts[0] == 's'): # Arlo Status info, such as sensors.
                 rospy.loginfo("Propeller: " + line)
                 return
+                
+    def _SafetyShutdown(self, safe):
+        if safe.data:
+            self._SafeToOperate = 1
+        else:
+            self._SafeToOperate = 0
+            if self._motorsOn == 1:
+                self._SwitchMotors("off")
+            rospy.logdebug("Stopping")
 
     def _BroadcastOdometryInfo(self, lineParts):
         # This broadcasts ALL info from the Propeller based robot every time data comes in
@@ -339,25 +352,26 @@ class PropellerComm(object):
         # NOTE: turtlebot_node has a lot of code under its cmd_vel function to deal with maximum and minimum speeds,
         # which are dealt with in ArloBot on the Activity Board itself in the Propeller code.
         """ Handle movement requests. """
-        v = twistCommand.linear.x        # m/s
-        omega = twistCommand.angular.z      # rad/s
-        #rospy.logdebug("Handling twist command: " + str(v) + "," + str(omega))
-        message = 's,%.3f,%.3f\r' % (v, omega)
-        #rospy.logdebug("Sending speed command message: " + message)
-        self._WriteSerial(message)
+        if self._SafeToOperate: # Do not move if it is not self._SafeToOperate
+            v = twistCommand.linear.x        # m/s
+            omega = twistCommand.angular.z      # rad/s
+            #rospy.logdebug("Handling twist command: " + str(v) + "," + str(omega))
+            message = 's,%.3f,%.3f\r' % (v, omega)
+            #rospy.logdebug("Sending speed command message: " + message)
+            self._WriteSerial(message)
+        else:
+            message= 's,0.0,0.0\r' # Tell it to be still if it is not SafeToOperate
+            self._WriteSerial(message)
 
-    def _InitializeDriveGeometry(self): # This is Propeller specific
-        #wheelDiameter = rospy.get_param("~driveGeometry/wheelDiameter", "0")
-        trackWidth = rospy.get_param("~driveGeometry/trackWidth", "0")
-        #countsPerRevolution = rospy.get_param("~driveGeometry/countsPerRevolution", "0")
-        distancePerCount = rospy.get_param("~driveGeometry/distancePerCount", "0")
-
-        #wheelDiameterParts = self._GetBaseAndExponent(wheelDiameter)
-        #trackWidthParts = self._GetBaseAndExponent(trackWidth)
-
-        message = 'd,%f,%f\r' % (trackWidth, distancePerCount)
-        #rospy.logdebug("Sending drive geometry params message: " + message)
-        self._WriteSerial(message)
+    def _InitializeDriveGeometry(self, lineParts):
+        if self._SafeToOperate:
+            trackWidth = rospy.get_param("~driveGeometry/trackWidth", "0")
+            distancePerCount = rospy.get_param("~driveGeometry/distancePerCount", "0")
+            message = 'd,%f,%f\r' % (trackWidth, distancePerCount)
+            #rospy.logdebug("Sending drive geometry params message: " + message)
+            self._WriteSerial(message)
+        else:
+            rospy.loginfo(lineParts[1])
         
     def _SwitchMotors(self, state):
         relayExists = rospy.get_param("~usbRelayInstalled", False)

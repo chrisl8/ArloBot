@@ -17,3 +17,6 @@ usbRelaySerialNumber: "A9026EI5"
 # I use 6 and 2 based on the wiring location and that those two do not cycle when the laptop boots
 usbLeftMotorRelay: "6"
 usbRightMotorRelay: "2"
+# Set monitorACconnection to False if you do not want arlobot_safety to monitor the computer's
+# power connection. This works for my laptop, but it may not work for your situation.
+monitorACconnection: True

@@ -1,0 +1,3 @@
+<launch>
+  <node pkg="arlobot_safety" type="arlobot_safety.py" name="arlobot_safety" respawn="true" />
+</launch>

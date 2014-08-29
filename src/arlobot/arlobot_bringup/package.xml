@@ -16,6 +16,7 @@
   <run_depend>zeroconf_avahi</run_depend>
   <run_depend>yocs_cmd_vel_mux</run_depend>
   <run_depend>arlobot_description</run_depend>
+  <run_depend>arlobot_safety</run_depend>
   <run_depend>robot_state_publisher</run_depend>
   <run_depend>robot_pose_ekf</run_depend>
   <run_depend>diagnostic_aggregator</run_depend>

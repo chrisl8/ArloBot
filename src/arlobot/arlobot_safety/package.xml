@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package>
+  <name>arlobot_safety</name>
+  <version>0.1.0</version>
+  <description>
+     arlobot_safety will monitor a few items to determine if it is safe for the robot
+     to move, and will provide a location and method for other packages to
+     tell the robot that it must stop and shut down.
+  </description>
+  <maintainer email="hoopy@ekpyroticfrood.net">Hoopy Frood</maintainer>
+  <license>BSD</license>
+  <url type="website">https://github.com/chrisl8/ArloBot</url>
+  <author email="hoopy@ekpyroticfrood.net">Hoopy Frood</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>arlobot_bringup</run_depend>
+</package>
