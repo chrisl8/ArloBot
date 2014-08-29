@@ -7,7 +7,9 @@ http://forums.parallax.com/showthread.php/152636-Run-ActivityBot-C-Code-in-the-A
 
 I just put them here for my convenience.
 If you installed SimpleIDE in the default way, then you can run the script:
+```
 PutFilesInPlace.sh
+```
 from here, which should put all of these files into your SimpleIDE workspace so that
 ROS Interface for ArloBot.c
 will build.

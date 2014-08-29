@@ -52,7 +52,7 @@ http://forums.parallax.com/showthread.php/152636-Run-ActivityBot-C-Code-in-the-A
 #include "arlodrive.h"
 
 static int abd_speedLimit = 100; // 100 is default in arlodrive, but we may change it.
-static int abdR_speedLimit = 100;
+static int abdR_speedLimit = 100; // Reverse speed limit to allow robot to reverse fast if it is blocked in front and visa versa
 
 fdserial *term;
 
@@ -78,15 +78,25 @@ static int fstack[256]; // If things get weird make this number bigger!
 // for Proximity (PING & IR) Sensors
 int pingArray[6];
 int irArray[6];
-const int numberOfIRonMC3208 = 6; // Number of IR Sensors on the MCP3208 ADC to read TODO: Should this be in encoders.yaml and sent over by ROS?
-const int numberOfPINGsensors = 6; // Number of PING sensors, we assume the are consecutive TODO: Should this be in encoders.yaml and sent over by ROS?
-const int firtPINGsensorPIN = 5; // Which pin the first PING sensor is on TODO: Should this be in encoders.yaml and sent over by ROS?
+const int numberOfIRonMC3208 = 6; // Number of IR Sensors on the MCP3208 ADC to read
+const int numberOfPINGsensors = 6; // Number of PING sensors, we assume the are consecutive
+const int firtPINGsensorPIN = 5; // Which pin the first PING sensor is on
 void pollPingSensors(void *par); // Use a cog to fill range variables with ping distances
 static int pstack[128]; // If things get weird make this number bigger!
 int mcp3208_IR_cm(int); // Function to get distance in CM from IR sensor using MCP3208
 //int adc_IR_cm(int); // Function to get distance in CM from IR sensor using Activty Board built in ADC
 
+// Gyro globals:
+const int hasGyro = 1; // Set this to 0 if you do not have a gyro on your ArloBot's Activity Board.
+/*
+Currently this code makes NO use of the gyro. The Odometry from the ArloBot's wheel encoders is excellent!
+The only thing I do with the gyro is send the data to ROS.
+At some point a ROS node could use that data to detect a serious issue, like the robot being picked up or being stuck.
+As it is though, gmapping, AMCL, etc. work very well off of the Odometry with using the gyro data.
+*/
 // For Gyroscope - Declare everything globally
+const int gyroSCLpin = 1; // Activity Board pin that the SCL pin from the Gyro is connected to.
+const int gyroSDApin = 0;  // Activity Board pin that the SDA pin from the Gyro is connected to.
 unsigned char i2cAddr = 0x69;       //I2C Gyro address
 //L3G4200D register addresses & commads.
 //See device datasheet section 7 for more info.
@@ -109,15 +119,27 @@ i2c *bus;                           //Declare I2C bus
 void pollGyro(void *par); // Use a cog to fill range variables with ping distances
 static int gyrostack[128]; // If things get weird make this number bigger!
 
-// For "Safety Override"
+// For "Safety Override" Cog
 static int safeToProceed = 0, safeToRecede = 0, Escaping = 0;
-
-// Cog
 void safetyOverride(void *par); // Use a cog to squelch incoming commands and perform safety procedures like halting, backing off, avoiding cliffs, calling for help, etc.
 // This can use proximity sensors to detect obstacles (including people) and cliffs
 // This can use the gyro to detect tipping
 // This can use the gyro to detect significant heading errors due to slipping wheels when an obstacle is encountered or high centered
 static int safetyOverrideStack[128]; // If things get weird make this number bigger!
+
+// PIR Sensor (used to detect people/motion before the robot is initialized
+/*
+I got this PIR sensor for free, and it is fun,
+but it doesn't do much for you when the robot is moving
+and sending out IR signals with the Kinect/Xtion
+and with the IR distance sensors. :)
+It is cool though to have it watch for people and alert
+ROS when someone is around. Then ROS can initialize the ArloBot,
+start up the motors with a USB Relay Board
+and start chasing them . . . or something.
+*/
+const int hasPIR = 1;  // Set this to 0 if you do not have PIR sensor mounted
+const int PIRpin = 11; // Set this to the Activity Board pin that your PIR signal line is connected to
 
 int main() {
 
@@ -169,24 +191,26 @@ int main() {
     
     // Start the sensor cog(s)
 	cogstart(&pollPingSensors, NULL, pstack, sizeof pstack);
-
-    // Initialize Gyro in the main program
-  bus = i2c_newbus(1, 0, 0);        //New I2C bus SCL = Pin 1, SDA = Pin 0
-  int n;
-  n = i2c_out(bus, i2cAddr, ctrl3, 1, &cfg3, 1);
-  n += i2c_out(bus, i2cAddr, ctrl4, 1, &cfg4, 1);
-  n += i2c_out(bus, i2cAddr, ctrl1, 1, &cfg1, 1);
-  // Make sure Gyro initialized and stall if it did not.
-  if(n != 9)
-  {
-    print("Bytes should be 9, but was %d,", n);
-    while(1); // This should just TELL ROS that there is no gyro available instead of stalling the program,
-    // TODO:
-    // OR have ROS tell us if we HAVE a gyro and only start this if we think we do.
-    // That way the program works with or without a gyro
-  }
-  // Start Gyro polling in another cog  
-	cogstart(&pollGyro, NULL, gyrostack, sizeof gyrostack);
+    
+    if(hasGyro == 1) {
+        // Initialize Gyro in the main program
+      bus = i2c_newbus(gyroSCLpin, gyroSDApin, 0);        //New I2C bus SCL = Pin 1, SDA = Pin 0
+      int n;
+      n = i2c_out(bus, i2cAddr, ctrl3, 1, &cfg3, 1);
+      n += i2c_out(bus, i2cAddr, ctrl4, 1, &cfg4, 1);
+      n += i2c_out(bus, i2cAddr, ctrl1, 1, &cfg1, 1);
+      // Make sure Gyro initialized and stall if it did not.
+      if(n != 9)
+      {
+        print("Bytes should be 9, but was %d,", n);
+        while(1); // This should just TELL ROS that there is no gyro available instead of stalling the program,
+        // TODO:
+        // OR have ROS tell us if we HAVE a gyro and only start this if we think we do.
+        // That way the program works with or without a gyro
+      }
+      // Start Gyro polling in another cog  
+        cogstart(&pollGyro, NULL, gyrostack, sizeof gyrostack);
+    }
     
 	// Now initialize the Motors
 	// abdrive settings:
@@ -350,12 +374,8 @@ void displayTicks(void) {
 	double Omega = ((speedRight * distancePerCount) - (speedLeft * distancePerCount)) / trackWidth;
 
 	// Odometry for ROS
-    /*int fakeLaser = 255;
-    if(irArray[2] < 30) {
-        fakeLaser = irArray[2];
-    }*/
     /*
-    I am going to try to send ALL of the proximity data (IR and PING sensors) to ROS
+    I sending ALL of the proximity data (IR and PING sensors) to ROS
     over the "odometry" line, since it is real time data which is just as important
     as the odometry, and it seems like it would be faster to send and deal with one packet
     per cycle rather than two.
