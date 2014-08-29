@@ -7,7 +7,7 @@ http://youtu.be/7qJaA6K_WPE
 This is my attempt to build a Package for the Robot Operating System (ROS) http://www.ros.org/ to work with the Parallax Propeller based ArloBot:
 http://www.parallax.com/product/arlo-robotic-platform-system
 
-Please note that you will also need the code to run on your Propeller board. This is stored in the Propeller folder.
+Please note that you will also need the code to run on your Propeller board. This is stored in the "Propeller C Code for ArloBot" folder.
 
 Please adjust settings for your robot in:
 
@@ -17,15 +17,12 @@ Before running this code!
 
 ## Basic usage instructions: ##
 1. Build your ArloBot!
-2. Get the SimpleIDE installed on a computer and load the code from the Propeller folder into your Activity Board. You can do this from Windows or Linux. I find it handy to have SimpleIDE running on my ROS laptop on board the Arlo though to make code updates easy.
-3. Install Ubuntu on a laptop to ride on the ArloBot, and optionally also on a "workstation." I use a "Workstation" for anything that needs a GUI, and I use SSH to connect to the laptop and run anything that does not.
-My "Workstation" is an Oracle VirtualBox installation of Ubuntu, which I find works great for RVIZ on my Windows desktop.
-3. Install ROS Indigo on a Ubuntu laptop that can connect via USB to your Activity Board:
-http://wiki.ros.org/indigo/Installation/Ubuntu
-You will also need the Turtlebot packages, as I use that code when I can:
-http://wiki.ros.org/turtlebot/Tutorials/indigo/Installation
+2. Install SimpleIDE on a computer and load the code from the "Propeller C Code for ArloBot" folder into your Activity Board's EEPROM. You can do this from Windows or Linux. I find it handy to have SimpleIDE running on my ROS laptop on board the Arlo to make code updates easy.
+3. Install Ubuntu on a laptop to ride on the ArloBot, and optionally also on a "workstation." I use a "Workstation" for anything that needs a GUI, and I use SSH to connect to the laptop and run anything that does not.  My "Workstation" is an Oracle VirtualBox installation of Ubuntu, which I find works great for RVIZ on my Windows desktop.
+4. Install ROS Indigo on a Ubuntu laptop that can connect via USB to your Activity Board: http://wiki.ros.org/indigo/Installation/Ubuntu
+5. You will also need the Turtlebot packages, as I use that code when I can: http://wiki.ros.org/turtlebot/Tutorials/indigo/Installation
 NOTE: At this time Indigo Turtlebot has to be installed from source. If you have trouble doing that let me know and I will post my personal "how to" on installing Turtlebot from source to make this work.
-4. Grab this code and put it on both your laptop and workstation:
+6. Grab this code and put it on both your laptop and workstation:
 ```
 cd
 git clone git@github.com:chrisl8/ArloBot.git arlobot
@@ -33,7 +30,7 @@ cd ~/arlobot
 source ~/turtlebot/devel/setup.bash
 catkin_make
 ```
-5. Set up your ROS environment. There are several commands that you have to run every time you start a terminal session to run ROS. What I do is put them into the .bashrc file in my home folder. I have these lines at the end of the .bashrc file on my "Workstation":
+7. Set up your ROS environment. There are several commands that you have to run every time you start a terminal session to run ROS. What I do is put them into the .bashrc file in my home folder. I have these lines at the end of the .bashrc file on my "Workstation":
 ```
 export ROS_MASTER_URI=http://192.168.1.106:11311 # Set to laptop IP
 export ROS_HOSTNAME=192.168.1.107 # Set to THIS machine's IP
@@ -51,7 +48,7 @@ cd ~/arlobot/
 ```
 Which makes it easy to just start running ROS commands as soon as I log in.
 
-6. Depending on what you want to do there are different ways to "bring up" the robot.  These are the "recipes" that are well tested so far:
+8. Depending on what you want to do there are different ways to "bring up" the robot.  These are the "recipes" that are well tested so far:
 
 ```
 A good way to test your Propeller code is to run:
