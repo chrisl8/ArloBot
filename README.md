@@ -86,9 +86,14 @@ roslaunch arlobot_navigation gmapping_demo.launch
 <New Terminal>
 roslaunch arlobot_teleop keyboard_teleop.launch
 <GUI based Terminal>
-roslaunch turtlebot_rviz_launchers view_navigation.launch
+roslaunch arlobot_rviz_launchers view_navigation.launch
 When you are done, save your map!
 rosrun map_server map_saver -f ~/rosmaps/my_map1
+Tests from thsi setup:
+  Make sure that obstacles in the Asus view are shown in the local costmap
+    It is possible to map walls, while the 3D is ignored by the costmap!
+    I find this is caused by the max_obstacle_height being set below the 3D Sensor's height
+    in costmap_common_params.yaml on the "scan:" line
 
 AMCL (Navigating the map we built above:
 http://wiki.ros.org/turtlebot_navigation/Tutorials/Autonomously%20navigate%20in%20a%20known%20map
@@ -96,7 +101,7 @@ roslaunch arlobot_bringup minimal.launch
 <New Terminal>
 roslaunch arlobot_navigation amcl_demo.launch map_file:=~/rosmaps/my_map1.yaml
 <GUI based Terminal>
-roslaunch turtlebot_rviz_launchers view_navigation.launch --screen
+roslaunch arlobot_rviz_launchers view_navigation.launch --screen
 NOTE: This is still in progress. It works pretty well, but needs a little tweaking.
 ```
 Please report an issue for any problems or if you need me to clarify anything!

@@ -24,6 +24,7 @@ import rospy
 import tf
 from math import sin, cos
 import sys
+import time
 
 from geometry_msgs.msg import Quaternion
 from geometry_msgs.msg import Twist
@@ -48,10 +49,9 @@ class PropellerComm(object):
         self._motorsOn = 0 # Set to 1 if the motors are on, used with USB Relay Control board
         self._SafeToOperate = 0 # Use arlobot_safety to set this
         # Store last x, y and heading for reuse when we reset
-        self.lastX = 0.0
-        self.lastY = 0.0
-        self.lastHeading = 0.0
-
+        self.lastX = rospy.get_param("~lastX", 0.0)
+        self.lastY = rospy.get_param("~lastY", 0.0)
+        self.lastHeading = rospy.get_param("~lastHeading", 0.0)
 
         rospy.init_node('arlobot')
 
@@ -62,6 +62,7 @@ class PropellerComm(object):
 
         # Publishers
         self._SerialPublisher = rospy.Publisher('serial', String, queue_size=10)
+        self._pirPublisher = rospy.Publisher('~pirState', Bool, queue_size = 1) # or publishing PIR status
 
         # IF the Odometry Transform is done with the robot_pose_ekf do not publish it,
         # but we are not using robot_pose_ekf, because it does nothing for us if you don't have a full IMU!
@@ -105,10 +106,16 @@ class PropellerComm(object):
             if self._motorsOn == 1:
                 self._SwitchMotors("off")
                 # Reset the propeller board, otherwise there are problems if you bring up the motors again while it has been operating
+                rospy.loginfo("_SerialDataGateway stopping . . .")
                 self._SerialDataGateway.Stop()
+                rospy.loginfo("_SerialDataGateway stopped.")
+                rospy.loginfo("10 second pause to let Activity Board settle if it is resetting already . . .")
+                time.sleep(10) # Give it time to settle.
+                rospy.loginfo("_SerialDataGateway starting . . .")
                 self._SerialDataGateway.Start()
+                rospy.loginfo("_SerialDataGateway started.")
                 # TODO: There is probably a better way, but this seems to work.
-            rospy.logdebug("Stopping")
+            rospy.loginfo("Stopping")
 
     def _BroadcastOdometryInfo(self, lineParts):
         # If we got this far, we can assume that the Propeller board is initialized and the motors should be on.
@@ -216,6 +223,9 @@ class PropellerComm(object):
             # Fake laser from "PING" Ultrasonic Sensor and IR Distance Sensor input:
             # http://wiki.ros.org/navigation/Tutorials/RobotSetup/TF
             '''
+            Use:
+            roslaunch arlobot_rviz_launchers view_robot.launch
+            to view this well for debugging and testing.
             The purpose of this is two fold:
             1. It REALLY helps adjusting values in the Propeller and ROS when I can visualize the sensor output in RVIZ!
                 For this purpose, a lot of the parameters are a matter of personal taste. Whatever makes it easiest to visualize is best.
@@ -238,25 +248,95 @@ class PropellerComm(object):
             # Some help: http://books.google.com/books?id=2ZL9AAAAQBAJ&pg=PT396&lpg=PT396&dq=fake+LaserScan+message&source=bl&ots=VJMfSYXApG&sig=s2YgiHTA3i1OjVyPxp2aAslkW_Y&hl=en&sa=X&ei=B_vDU-LkIoef8AHsooHICA&ved=0CG0Q6AEwCQ#v=onepage&q=fake%20LaserScan%20message&f=false
             # Question: I'm doing this all in degrees and then converting to Radians later. Is there any way to do this in Radians? I just don't know how to create and fill an array with "Radians" since they are not rational numbers, but multiples of PI. Thus the degrees
             num_readings = 360 # How about 1 per degree?
+            #num_reeading_multiple = 2 # We have to track this so we know where to put the readings!
+            #num_readings = 360 * num_reeading_multiple # I am getting "artifacts" in the global cost map where points fail to clear, even though they clear from the local. Maybe we need a higher resolution?
             laser_frequency = 100 # I'm not sure how to decide what to use here.
+            artificialFarDistance = 10 # This is the fake distance to set all empty slots, and slots we consider "out of range"
             #ranges = [1] * num_readings # Fill array with fake "1" readings for testing
-            PINGranges = [0] * num_readings # Fill array with 0 and then overlap with real readings
-            IRranges = [0] * num_readings # Fill array with 0 and then overlap with real readings
+            PINGranges = [artificialFarDistance] * num_readings # Fill array with artificialFarDistance (not 0) and then overlap with real readings
+            # If we use 0, then it won't clear the obstacles when we rotate away, because costmap2d ignores 0's and Out of Range!
+            IRranges = [artificialFarDistance] * num_readings # Fill array with artificialFarDistance (not 0) and then overlap with real readings
+            '''
+            New idea here:
+            First, I do not think that this can be used for reliable for map generation.
+            If your room as objects that the Kinect
+            cannot map, then you will probably need to modify the room (cover mirrors, etc.) or try
+            other laser scanner options.
+            SO, since we only want to use it for cost planning, we should massage the data, because
+            it is easy for it to get bogged down with a lot of "stuff" everywhere.
             
+            From: http://answers.ros.org/question/11446/costmaps-obstacle-does-not-clear-properly-under-sparse-environment/
+            "When clearing obstacles, costmap_2d only trusts laser scans returning a definite range.
+            Indoors, that makes sense. Outdoors, most scans return max range, which does not clear
+            intervening obstacles. A fake scan with slightly shorter ranges can be constructed that
+            does clear them out."
+            SO, we need to set all "hits" above the distance we want to pay attention to to a distance very far away,
+            but just within the range_max (which we can set to anything we want), otherwise costmap will not clear items!
+            Also, 0 does not clear anything! So if we rotate, then it gets 0 at that point, and ignores it,
+            so we need to fill the unused slots with long distances.
+            NOTE: This does cause a "circle" to be drawn around the robot, but it shouldn't be a problem because we set
+            artificialFarDistance to a distance greater than the planner uses.
+            So while it clears things, it shouldn't cause a problem, and the Kinect should override it for things
+            in between.
+            
+            Use:
+            roslaunch arlobot_rviz_launchers view_robot.launch
+            to view this well for debugging and testing.
+            '''
             # Note that sensor orientation is important here! If you have a different number or aim them differently this will not work!
             # TODO: Tweak this value based on real measurements! Use both IR and PING sensors.
             sensorOffset = 0.22545 # The offset between the pretend sensor location in the URDF and real location needs to be added to these values. This may need to be tweaked.
+            maxRangeAccepted = .5 # This will be the max used range, anything beyond this is set to a far distance.
+            '''
+            maxRangeAccepted Testing:
+
+            TODO: More tweaking here could be done. I think it is a trade-off, so there is no end to the adjustment that could be done.
+            I did a lot of testing with gmappingn while building a map. Obviously this would be slightly different from using a map we don't update.
+            It seems there are so many variables here that testing is difficult. We could find one number works great in one situation but is hopeless in another. Having a comprehensive test course to test in multiple modes for every possible value would be great, but I think it would take months! :)
+
+            REMEMBER, the costmap only pays attention out to a certain set for obstacle_range in costmap_common_params.yaml anyway.
+            1 - looks good, and works ok. I am afraid that the costmap gets confused though with things popping in and out of sight all of the time, causing undue wandering.
+            2 - This producing less wandering due to things popping in and out of the field of view, BUT it also shows that we got odd affects at longer distances. i.e.
+                A doorframe almost always has a hit right in the middle of it.
+                In hall, there seems to often be a hit in the middle about 1.5 meters out.
+            .5 - This works very well to have the PING data ONLY provide obstacle avoidance, and immediately forget about said obstacles.
+                This prevents the navigation stack from fighting with the Activity Board code's built in safety stops, and instead navigate around obstacles before the Activity Board code even gets involved (other than to set speed reductions).
+                The only down side if if you tell ArloBot to go somewhere that he cannot due to low obstacles, he will try forever. He won't just bounce off of the obstacle,
+                but he will keep trying it and then go away, turn around, and try again over and over. He may even start wandering around the facility trying to find another way in,
+                but he will eventually come back and try it again.
+                I'm not sure what the solution to this is though, because avoiding low lying obstacles and adding low lying features to the map are really two different things.
+                I think if this is well tuned to avoid low lying obstacles it probably will not work well for mapping features.
+                IF we could map features with the PING sensors, we wouldn't need the 3D sensor. :)
+                
+                NOTE: The bump sensors on Turtlebot mark but do not clear. I'm not sure how that works out. It seems like every bump would end up being a "blot" in the landscape never to be returned to, but maybe there is something I am missing?
+                
+            NOTE: Could this be different for PING vs. IR?
+            Currently I'm not using IR! Just PING. The IR is not being used by costmap. It is here for seeing in RVIZ, and the Propeller board uses it for emergency stopping,
+            but costmap isn't watching it at the moment. I think it is too erratic for that.
+            '''
             pingRange0 = (int(lineParts[7]) / 100.0) + sensorOffset # Convert cm to meters and add offset
+            if pingRange0 > maxRangeAccepted: # Set to "out of range" for distances over 1 meter to clear long range obstacles and use this for short tmer only.
+                pingRange0 = artificialFarDistance # Be sure "ultrasonic_scan.range_max" set above this or costmap will ignore these and not clear the cost map!
             irRange0 = (int(lineParts[8]) / 100.0) + sensorOffset # Convert cm to meters and add offset
             pingRange1 = (int(lineParts[9]) / 100.0) + sensorOffset
+            if pingRange1 > maxRangeAccepted:
+                pingRange1 = artificialFarDistance
             irRange1 = (int(lineParts[10]) / 100.0) + sensorOffset
             pingRange2 = (int(lineParts[11]) / 100.0) + sensorOffset # Center forward sensor.
+            if pingRange2 > maxRangeAccepted:
+                pingRange2 = artificialFarDistance
             irRange2 = (int(lineParts[12]) / 100.0) + sensorOffset # Center forward sensor.
             pingRange3 = (int(lineParts[13]) / 100.0) + sensorOffset
+            if pingRange3 > maxRangeAccepted:
+                pingRange3 = artificialFarDistance
             irRange3 = (int(lineParts[14]) / 100.0) + sensorOffset
             pingRange4 = (int(lineParts[15]) / 100.0) + sensorOffset
+            if pingRange4 > maxRangeAccepted:
+                pingRange4 = artificialFarDistance
             irRange4 = (int(lineParts[16]) / 100.0) + sensorOffset
             pingRange5 = (int(lineParts[17]) / 100.0) + sensorOffset # Rear sensor, note these numbers can change if you add more sensors!
+            if pingRange5 > maxRangeAccepted:
+                pingRange5 = artificialFarDistance
             irRange5 = (int(lineParts[18]) / 100.0) + sensorOffset # Rear sensor, note these numbers can change if you add more sensors!
             # I'm going to start by just kind of "filling in" the area with the data and then adjust based on experimentation.
             '''
@@ -265,16 +345,29 @@ class PropellerComm(object):
             = 28 degree difference (http://ostermiller.org/calc/triangle.html)
             '''
             sensorSeperation = 28
-            sensorSpread = 10 # This is how wide of an arc (in degrees) to paint for each "hit"
-            '''
-            NOTE:
-            This assumes that things get bigger as they are further away. This is true of the PING's area,
-            and while it may or may not be true of the object the PING sees, we have no way of knowing if
-            the object fills the ping's entire field of view or only a small part of it, a "hit" is a "hit".
-            However for the IR sensor, the objects are points, that are the same size regardless of distance,
-            so we are clearly inflating them here.
-            '''
             
+            # Spread code:
+            '''
+            # "sensorSpread" is how wide we expand the sensor "point" in the fake laser scan.
+            # For the purpose of obstacle avoidance, I think this can actually be a single point,
+            # Since the costmap inflates these anyways.
+
+            #One issue I am having is it seems that the "ray trace" to the maximum distance
+            #may not line up with near hits, so that the global cost map is not being cleared!
+            #Switching from a "spread" to a single point may fix this?
+            #Since the costmap inflates obstacles anyway, we shouldn't need the spead should we?
+
+            #sensorSpread = 10 # This is how wide of an arc (in degrees) to paint for each "hit"
+            #sensorSpread = 2 # Testing. I think it has to be even numbers?
+            #TODO: Should this be smaller?! It might help. Need to test more.
+
+            #NOTE:
+            #This assumes that things get bigger as they are further away. This is true of the PING's area,
+            #and while it may or may not be true of the object the PING sees, we have no way of knowing if
+            #the object fills the ping's entire field of view or only a small part of it, a "hit" is a "hit".
+            #However for the IR sensor, the objects are points, that are the same size regardless of distance,
+            #so we are clearly inflating them here.
+
             for x in range(180 - sensorSpread / 2, 180 + sensorSpread / 2):
                 PINGranges[x] = pingRange5 # Rear Sensor
                 IRranges[x] = irRange5 # Rear Sensor
@@ -302,6 +395,37 @@ class PropellerComm(object):
             for x in range((sensorSeperation * 2) - sensorSpread / 2, (sensorSeperation * 2) + sensorSpread / 2):
                 PINGranges[x] = pingRange0
                 IRranges[x] = irRange0
+            '''
+            
+            # Single Point code:
+            #for x in range(180 - sensorSpread / 2, 180 + sensorSpread / 2):
+            PINGranges[180] = pingRange5 # Rear Sensor
+            IRranges[180] = irRange5 # Rear Sensor
+
+            #for x in range((360 - sensorSeperation * 2) - sensorSpread / 2, (360 - sensorSeperation * 2) + sensorSpread / 2):
+            PINGranges[360 - sensorSeperation * 2] = pingRange4
+            IRranges[360 - sensorSeperation * 2] = irRange4
+
+            #for x in range((360 - sensorSeperation) - sensorSpread / 2, (360 - sensorSeperation) + sensorSpread / 2):
+            PINGranges[360 - sensorSeperation] = pingRange3
+            IRranges[360 - sensorSeperation] = irRange3
+
+            #for x in range(360 - sensorSpread / 2, 360):
+            #PINGranges[x] = pingRange2
+            #IRranges[x] = irRange2
+            # Crosses center line
+            #for x in range(0, sensorSpread /2):
+            PINGranges[0] = pingRange2
+            IRranges[0] = irRange2
+            
+            #for x in range(sensorSeperation - sensorSpread / 2, sensorSeperation + sensorSpread / 2):
+            PINGranges[sensorSeperation] = pingRange1
+            IRranges[sensorSeperation] = irRange1
+            
+            #for x in range((sensorSeperation * 2) - sensorSpread / 2, (sensorSeperation * 2) + sensorSpread / 2):
+            PINGranges[sensorSeperation * 2] = pingRange0
+            IRranges[sensorSeperation * 2] = irRange0
+            
 
             # LaserScan: http://docs.ros.org/api/sensor_msgs/html/msg/LaserScan.html
             ultrasonic_scan = LaserScan()
@@ -317,10 +441,10 @@ class PropellerComm(object):
             # Radians: http://en.wikipedia.org/wiki/Radian#Advantages_of_measuring_in_radians
             ultrasonic_scan.angle_min = 0
             infrared_scan.angle_min = 0
-            ultrasonic_scan.angle_max = 2 * 3.14159 # Full circle
-            infrared_scan.angle_max = 2 * 3.14159 # Full circle
-            ultrasonic_scan.scan_time = 1 # I think this is only really applied for 3D scanning
-            infrared_scan.scan_time = 1 # I think this is only really applied for 3D scanning
+            #ultrasonic_scan.angle_max = 2 * 3.14159 # Full circle # Letting it use default, which I think is the same.
+            #infrared_scan.angle_max = 2 * 3.14159 # Full circle # Letting it use default, which I think is the same.
+            #ultrasonic_scan.scan_time = 3 # I think this is only really applied for 3D scanning
+            #infrared_scan.scan_time = 3 # I think this is only really applied for 3D scanning
             # Make sure the part you divide by num_readings is the same as your angle_max!
             # Might even make sense to use a variable here?
             ultrasonic_scan.angle_increment = (2 * 3.14) / num_readings
@@ -333,8 +457,10 @@ class PropellerComm(object):
             # and the laser location in the URDF file.
             ultrasonic_scan.range_min = 0.02 # in Meters Distances below this number will be ignored REMEMBER the offset!
             infrared_scan.range_min = 0.02 # in Meters Distances below this number will be ignored REMEMBER the offset!
-            ultrasonic_scan.range_max = 3 # in Meters Distances above this will be ignored
-            infrared_scan.range_max = 3 # in Meters Distances above this will be ignored
+            # This has to be above our "artificialFarDistance", otherwise "hits" at artificialFarDistance will be ignored,
+            # which means they will not be used to clear the cost map!
+            ultrasonic_scan.range_max = artificialFarDistance + 1 # in Meters Distances above this will be ignored
+            infrared_scan.range_max = artificialFarDistance + 1 # in Meters Distances above this will be ignored
             ultrasonic_scan.ranges = PINGranges
             infrared_scan.ranges = IRranges
             # "intensity" is a value specific to each laser scanner model.
@@ -351,14 +477,25 @@ class PropellerComm(object):
         self._SerialDataGateway.Write(message)
 
     def Start(self):
-        rospy.logdebug("Starting")
+        rospy.loginfo("_SerialDataGateway starting . . .")
+        rospy.loginfo("10 second pause to let Activity Board settle if it is resetting already . . .")
+        time.sleep(10) # Give it time to settle.
         self._SerialDataGateway.Start()
+        rospy.loginfo("_SerialDataGateway started.")
         # Do not put anything here, it won't get run until the SerialDataGateway is stopped.
 
     def Stop(self):
-        rospy.logdebug("Stopping")
+        rospy.loginfo("Stopping")
+        self._SafeToOperate = 0 # Prevent threads fighting
         self._SwitchMotors("off")
+        # Save last position in parameter server in case we come up again without restarting roscore!
+        rospy.set_param('~lastX', self.lastX)
+        rospy.set_param('~lastY', self.lastY)
+        rospy.set_param('~lastHeading', self.lastHeading)
+        time.sleep(3) # Give the motors time to shut off
+        rospy.loginfo("_SerialDataGateway stopping . . .")
         self._SerialDataGateway.Stop()
+        rospy.loginfo("_SerialDataGateway stopped.")
         
     def _HandleVelocityCommand(self, twistCommand): # This is Propeller specific
         # NOTE: turtlebot_node has a lot of code under its cmd_vel function to deal with maximum and minimum speeds,
@@ -383,7 +520,10 @@ class PropellerComm(object):
             rospy.logdebug("Sending drive geometry params message: " + message)
             self._WriteSerial(message)
         else:
-            rospy.loginfo(lineParts[1])
+            if int(lineParts[1]) == 1:
+                self._pirPublisher.publish(True)
+            else:
+                self._pirPublisher.publish(False)
         
     def _SwitchMotors(self, state):
         relayExists = rospy.get_param("~usbRelayInstalled", False)
@@ -426,6 +566,7 @@ if __name__ == '__main__':
     rospy.on_shutdown(propellercomm.Stop)
     try:
         propellercomm.Start()
+        rospy.loginfo("Spun . . .")
         rospy.spin()
 
     except rospy.ROSInterruptException:
