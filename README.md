@@ -62,6 +62,12 @@ o       0.000   0.000   0.000   0.000   0.000   0.000   7       19      84      
 The last 12 numbers are the distances from the PING and InfraRed sensors, they should change as you move around the ArloBot.
 If you want to get really fancy you can send it twist commands from the terminal.
 
+NOTE:
+If you want to force arlobot_bringup to initialize the board even when the laptop
+is plugged in run this after you start it to disable monitoring of AC power:
+rosparam set /arlobot/monitorACconnection False
+That can also be changed on encoders.xml, but that command is useful for on the fly testing.
+
 Basic TeleOp with 3D sensor use:
 roslaunch arlobot_bringup minimal.launch
 <New Terminal>
