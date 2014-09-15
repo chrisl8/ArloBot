@@ -37,6 +37,7 @@ from std_msgs.msg import Bool
 from pylibftdi import BitBangDevice
 
 from SerialDataGateway import SerialDataGateway
+from OdomStationaryBroadcaster import OdomStationaryBroadcaster
 
 class PropellerComm(object):
     '''
@@ -49,9 +50,9 @@ class PropellerComm(object):
         self._motorsOn = 0 # Set to 1 if the motors are on, used with USB Relay Control board
         self._SafeToOperate = 0 # Use arlobot_safety to set this
         # Store last x, y and heading for reuse when we reset
-        self.lastX = rospy.get_param("~lastX", 0.0)
-        self.lastY = rospy.get_param("~lastY", 0.0)
-        self.lastHeading = rospy.get_param("~lastHeading", 0.0)
+        self.lastX = rospy.get_param("lastX", 0.0) # I took off off the ~, because that was causing this to reset to default on every restart even if roscore was still up.
+        self.lastY = rospy.get_param("lastY", 0.0) # I took off off the ~, because that was causing this to reset to default on every restart even if roscore was still up.
+        self.lastHeading = rospy.get_param("lastHeading", 0.0) # I took off off the ~, because that was causing this to reset to default on every restart even if roscore was still up.
 
         rospy.init_node('arlobot')
 
@@ -62,7 +63,7 @@ class PropellerComm(object):
 
         # Publishers
         self._SerialPublisher = rospy.Publisher('serial', String, queue_size=10)
-        self._pirPublisher = rospy.Publisher('~pirState', Bool, queue_size = 1) # or publishing PIR status
+        self._pirPublisher = rospy.Publisher('~pirState', Bool, queue_size = 1) # for publishing PIR status
 
         # IF the Odometry Transform is done with the robot_pose_ekf do not publish it,
         # but we are not using robot_pose_ekf, because it does nothing for us if you don't have a full IMU!
@@ -79,6 +80,7 @@ class PropellerComm(object):
 
         rospy.loginfo("Starting with serial port: " + port + ", baud rate: " + str(baudRate))
         self._SerialDataGateway = SerialDataGateway(port, baudRate,  self._HandleReceivedLine)
+        self._OdomStationaryBroadcaster = OdomStationaryBroadcaster(self._BroadcastStaticOdometryInfo)
 
     def _HandleReceivedLine(self,  line): # This is Propeller specific
         self._Counter = self._Counter + 1
@@ -104,18 +106,18 @@ class PropellerComm(object):
         else:
             self._SafeToOperate = 0
             if self._motorsOn == 1:
+                rospy.loginfo("Safety Shutdown initiated")
                 self._SwitchMotors("off")
                 # Reset the propeller board, otherwise there are problems if you bring up the motors again while it has been operating
                 rospy.loginfo("_SerialDataGateway stopping . . .")
                 self._SerialDataGateway.Stop()
                 rospy.loginfo("_SerialDataGateway stopped.")
-                rospy.loginfo("10 second pause to let Activity Board settle if it is resetting already . . .")
+                rospy.loginfo("10 second pause to let Activity Board settle after serial port reset . . .")
                 time.sleep(10) # Give it time to settle.
                 rospy.loginfo("_SerialDataGateway starting . . .")
                 self._SerialDataGateway.Start()
                 rospy.loginfo("_SerialDataGateway started.")
                 # TODO: There is probably a better way, but this seems to work.
-            rospy.loginfo("Stopping")
 
     def _BroadcastOdometryInfo(self, lineParts):
         # If we got this far, we can assume that the Propeller board is initialized and the motors should be on.
@@ -138,7 +140,6 @@ class PropellerComm(object):
             vx = float(lineParts[5])
             omega = float(lineParts[6])
         
-            #quaternion = tf.transformations.quaternion_from_euler(0, 0, theta)
             quaternion = Quaternion()
             quaternion.x = 0.0 
             quaternion.y = 0.0
@@ -477,25 +478,30 @@ class PropellerComm(object):
         self._SerialDataGateway.Write(message)
 
     def Start(self):
+        self._OdomStationaryBroadcaster.Start()
+        rospy.loginfo("10 second pause before starting serial gateway to let Activity Board settle if it is resetting already . . .")
+        count = 10
+        while count > 0:
+            rospy.loginfo(count)
+            time.sleep(1)
+            count -= 1
         rospy.loginfo("_SerialDataGateway starting . . .")
-        rospy.loginfo("10 second pause to let Activity Board settle if it is resetting already . . .")
-        time.sleep(10) # Give it time to settle.
         self._SerialDataGateway.Start()
         rospy.loginfo("_SerialDataGateway started.")
-        # Do not put anything here, it won't get run until the SerialDataGateway is stopped.
 
     def Stop(self):
         rospy.loginfo("Stopping")
         self._SafeToOperate = 0 # Prevent threads fighting
         self._SwitchMotors("off")
         # Save last position in parameter server in case we come up again without restarting roscore!
-        rospy.set_param('~lastX', self.lastX)
-        rospy.set_param('~lastY', self.lastY)
-        rospy.set_param('~lastHeading', self.lastHeading)
+        rospy.set_param('lastX', self.lastX)
+        rospy.set_param('lastY', self.lastY)
+        rospy.set_param('lastHeading', self.lastHeading)
         time.sleep(3) # Give the motors time to shut off
         rospy.loginfo("_SerialDataGateway stopping . . .")
         self._SerialDataGateway.Stop()
         rospy.loginfo("_SerialDataGateway stopped.")
+        self._OdomStationaryBroadcaster.Stop()
         
     def _HandleVelocityCommand(self, twistCommand): # This is Propeller specific
         # NOTE: turtlebot_node has a lot of code under its cmd_vel function to deal with maximum and minimum speeds,
@@ -524,7 +530,57 @@ class PropellerComm(object):
                 self._pirPublisher.publish(True)
             else:
                 self._pirPublisher.publish(False)
+
+    def _BroadcastStaticOdometryInfo(self):
+        # Broadcast last known odometry and transform while propeller board is offline so that ROS can continue to track status
+        # Otherwise things like gmapping will fail when we loose our transform and publishing topics
+        if self._motorsOn == 0: # Use motor status to decide when to broadcast static odometry:
+            x = self.lastX
+            y = self.lastY
+            theta = self.lastHeading
+            vx = 0 # If the motors are off we will assume the robot is still.
+            omega = 0 # If the motors are off we will assume the robot is still.
         
+            quaternion = Quaternion()
+            quaternion.x = 0.0 
+            quaternion.y = 0.0
+            quaternion.z = sin(theta / 2.0)
+            quaternion.w = cos(theta / 2.0)
+            
+            rosNow = rospy.Time.now()
+            
+            # First, we'll publish the transform from frame odom to frame base_link over tf
+            # Note that sendTransform requires that 'to' is passed in before 'from' while
+            # the TransformListener' lookupTransform function expects 'from' first followed by 'to'.
+            # This transform conflicts with transforms built into the Turtle stack
+            # http://wiki.ros.org/tf/Tutorials/Writing%20a%20tf%20broadcaster%20%28Python%29
+            # This is done in/with the robot_pose_ekf because it can integrate IMU/gyro data
+            # using an "extended Kalman filter"
+            # REMOVE this "line" if you use robot_pose_ekf
+            self._OdometryTransformBroadcaster.sendTransform(
+                (x, y, 0), 
+                (quaternion.x, quaternion.y, quaternion.z, quaternion.w),
+                rosNow,
+                "base_footprint",
+                "odom"
+                )
+
+            # next, we will publish the odometry message over ROS
+            odometry = Odometry()
+            odometry.header.frame_id = "odom"
+            odometry.header.stamp = rosNow
+            odometry.pose.pose.position.x = x
+            odometry.pose.pose.position.y = y
+            odometry.pose.pose.position.z = 0
+            odometry.pose.pose.orientation = quaternion
+
+            odometry.child_frame_id = "base_link"
+            odometry.twist.twist.linear.x = vx
+            odometry.twist.twist.linear.y = 0
+            odometry.twist.twist.angular.z = omega
+            
+            self._OdometryPublisher.publish(odometry)
+
     def _SwitchMotors(self, state):
         relayExists = rospy.get_param("~usbRelayInstalled", False)
         if relayExists:
