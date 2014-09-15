@@ -1,9 +1,11 @@
 <launch>
-<!-- TurtleBot parameters, will eventually go away in arlobot -->
+  <!-- Turtlebot parameters, will eventually go away in arlobot -->
+
   <arg name="base"       default="$(optenv TURTLEBOT_BASE create)"/>  <!-- create, rhoomba -->
   <arg name="stacks"     default="$(optenv TURTLEBOT_STACKS circles)"/>  <!-- circles, hexagons -->
   <arg name="3d_sensor"  default="$(optenv TURTLEBOT_3D_SENSOR asus_xtion_pro)"/>  <!-- kinect, asus_xtion_pro -->
   <arg name="simulation" default="$(optenv TURTLEBOT_SIMULATION false)"/>
+
 
   <param name="/use_sim_time" value="$(arg simulation)"/>
   
