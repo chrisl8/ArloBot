@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package>
+  <name>arlobot_usbrelay</name>
+  <version>0.1.0</version>
+  <description>
+     arlobot_usbrelay will control and monitor the USB Relay board.
+     It will maintain paramaeters describing what relay numbers do what.
+     It will publish a topic listing the status of all relays both by number,
+     and by name.
+     It will host a service that can be called to toggle any relay by number
+     or by name.
+  </description>
+  <maintainer email="hoopy@ekpyroticfrood.net">Hoopy Frood</maintainer>
+  <license>BSD</license>
+  <url type="website">https://github.com/chrisl8/ArloBot</url>
+  <author email="hoopy@ekpyroticfrood.net">Hoopy Frood</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>message_generation</buildtool_depend>
+
+  <run_depend>zeroconf_avahi</run_depend>
+  <run_depend>yocs_cmd_vel_mux</run_depend>
+  <run_depend>arlobot_description</run_depend>
+  <run_depend>robot_state_publisher</run_depend>
+  <run_depend>diagnostic_aggregator</run_depend>
+  <run_depend>rocon_app_manager</run_depend>
+  <run_depend>message_runtime</run_depend>
+</package>
