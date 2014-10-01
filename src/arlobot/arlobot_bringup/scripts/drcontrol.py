@@ -116,6 +116,8 @@ def testBit(int_type, offset):
     mask = 1 << offset
     return(int_type & mask)
 
+# Original
+'''
 def get_relay_state( data, relay ):
     if relay == "1":
         return testBit(data, 1)
@@ -133,6 +135,26 @@ def get_relay_state( data, relay ):
         return testBit(data, 6)
     if relay == "8":
         return testBit(data, 8)
+'''
+
+# For SainSmart 8 port USB model
+def get_relay_state( data, relay ):
+    if relay == "1":
+        return testBit(data, 0)
+    if relay == "2":
+        return testBit(data, 1)
+    if relay == "3":
+        return testBit(data, 2)
+    if relay == "4":
+        return testBit(data, 3)
+    if relay == "5":
+        return testBit(data, 4)
+    if relay == "6":
+        return testBit(data, 5)
+    if relay == "7":
+        return testBit(data, 6)
+    if relay == "8":
+        return testBit(data, 7)
 
 # ----------------------------------------------------------------------------
 # LIST_DEVICES()
@@ -208,7 +230,9 @@ def set_relay():
                     bb.port &= ~int(relay.address[cmdarg.relay], 16)
 
                 elif cmdarg.command == "state":
-                    for i in range(1,8):
+                    #for i in range(1,8):
+                    print bb.port
+                    for i in range(1,9):
                         state = get_relay_state( bb.port, str(i) )
                         if state == 0:
                             if cmdarg.verbose:

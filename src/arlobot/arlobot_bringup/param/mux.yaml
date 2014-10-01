@@ -22,3 +22,7 @@ subscribers:
     topic:       "input/navi"
     timeout:     1.0
     priority:    5
+  - name:        "Web"
+    topic:       "input/web"
+    timeout:     1.0
+    priority:    4

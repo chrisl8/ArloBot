@@ -17,7 +17,7 @@
 #https://code.google.com/p/drh-robotics-ros/
 #Much of my code below is based on or copied from his work.
 #
-# NOTE: This script REQUIRES parameters to be loaded from param/encoders.yaml!
+# NOTE: This script REQUIRES parameters to be loaded from param/arlobot.yaml!
 #import roslib; roslib.load_manifest('arlobot') # http://wiki.ros.org/roslib
 
 import rospy

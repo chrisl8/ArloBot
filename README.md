@@ -11,7 +11,7 @@ Please note that you will also need the code to run on your Propeller board. Thi
 
 Please adjust settings for your robot in:
 
-    ~/arlobot/src/arlobot/arlobot_bringup/param/encoders.yaml
+    ~/arlobot/src/arlobot/arlobot_bringup/param/arlobot.yaml
 
 Before running this code!
 
@@ -66,10 +66,10 @@ NOTE:
 If you want to force arlobot_bringup to initialize the board even when the laptop
 is plugged in run this after you start it to disable monitoring of AC power:
 rosparam set /arlobot/monitorACconnection False
-That can also be changed on encoders.xml, but that command is useful for on the fly testing.
+That can also be changed on arlobot.xml, but that command is useful for on the fly testing.
 
 Basic TeleOp with 3D sensor use:
-roslaunch arlobot_bringup minimal.launch
+roslaunch arlobot_bringup minimal.launch --screen
 <New Terminal>
 roslaunch arlobot_teleop keyboard_teleop.launch
 <New Terminal>
@@ -86,9 +86,9 @@ Tests from this setup:
 
 Gmapping Demo (SLAM Map building):
 http://wiki.ros.org/turtlebot_navigation/Tutorials/Build%20a%20map%20with%20SLAM
-roslaunch arlobot_bringup minimal.launch
+roslaunch arlobot_bringup minimal.launch --screen
 <New Terminal>
-roslaunch arlobot_navigation gmapping_demo.launch
+roslaunch arlobot_navigation gmapping_demo.launch --screen
 <New Terminal>
 roslaunch arlobot_teleop keyboard_teleop.launch
 <GUI based Terminal>
@@ -103,11 +103,25 @@ Tests from thsi setup:
 
 AMCL (Navigating the map we built above:
 http://wiki.ros.org/turtlebot_navigation/Tutorials/Autonomously%20navigate%20in%20a%20known%20map
-roslaunch arlobot_bringup minimal.launch
+roslaunch arlobot_bringup minimal.launch --screen
 <New Terminal>
 roslaunch arlobot_navigation amcl_demo.launch map_file:=~/rosmaps/my_map1.yaml
 <GUI based Terminal>
 roslaunch arlobot_rviz_launchers view_navigation.launch --screen
 NOTE: This is still in progress. It works pretty well, but needs a little tweaking.
+
+Autonomous Map Making (Exploration):
+roslaunch arlobot_bringup minimal.launch --screen
+<New Terminal>
+roslaunch arlobot_explore gmapping_explore.launch --screen
+<New Terminal>
+roslaunch hector_exploration_node exploration_planner.launch --screen
+<GUI based Terminal>
+roslaunch arlobot_rviz_launchers view_navigation.launch
+<New Terminal>
+roslaunch arlobot_explore arlobot_explore.launch --screen
+When you are done, save your map!
+rosrun map_server map_saver -f ~/rosmaps/my_map1
+
 ```
 Please report an issue for any problems or if you need me to clarify anything!

@@ -4,6 +4,8 @@ import subprocess
 from std_msgs.msg import Bool
 import move_base_msgs.msg
 from nav_msgs.msg import Path
+from nav_msgs.msg import Odometry
+from geometry_msgs.msg import Twist
 from hector_nav_msgs.srv import GetRobotTrajectory # It says 'msgs' but it is a srv!
 import tf
 import math
@@ -11,6 +13,7 @@ import math
 # Brings in the SimpleActionClient
 import actionlib
 from actionlib_msgs.msg import GoalID
+from actionlib_msgs.msg import GoalStatus
 
 '''
 An attempt at "autonomous" navigation.
@@ -20,6 +23,8 @@ http://wiki.ros.org/actionlib_tutorials/Tutorials/Writing%20a%20Simple%20Action%
 '''
 
 class ArlobotExplore(object):
+
+#TODO: Test for robot movement before sending it places! It could get really goofy to send to -90 from it's position ten seconds ago!
 
     def __init__(self):
         rospy.init_node('arlobot_explore')
@@ -31,246 +36,242 @@ class ArlobotExplore(object):
         
         # Listen to the transforms http://wiki.ros.org/tf/TfUsingPython
         self.tf_listener = tf.listener.TransformListener()
-        rospy.sleep(2) # If you call self.tf_listener too soon it has no data in the listener buffer!
+        #rospy.sleep(2) # If you call self.tf_listener too soon it has no data in the listener buffer!
         # http://answers.ros.org/question/164911/move_base-and-extrapolation-errors-into-the-future/
+        # This is taken care of later instead on a loop that checks the status before continuing.
+
+    def _SetCurrentOdom(self, currentOdom):
+        self.currentOdom = currentOdom
         
     def Stop(self):
         rospy.loginfo("ArlobotExplore is shutting down.")
-        self._MoveBaseClient.cancel_all_goals()
+        self._MoveBaseClient.cancel_goals_at_and_before_time(rospy.Time.now()) # In case the poor thing is still stuck trying to go nowhere!
+        # NOTE: Do not use cancel_all_goals here as it can cancel future goals sometimes!
+        # Send a series of BE STILL commands just in case to make sure robot is left stationary
+        rospy.loginfo("ArlobotExplore is sending twist commands to halt robot in case it is moving.")
+        pub = rospy.Publisher('cmd_vel_mux/input/teleop', Twist, queue_size=5)
+        twist = Twist()
+        twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
+        twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = 0
+        #print "Sending twist command:"
+        #print twist
+        # You cannot just "send" this, you publish it, and you have to publish it repeatedly, or the robot never starts or just stops
+        pub.publish(twist)
+        count = 0
+        while count < 2: # I'm not sure how many it takes, but more than one is best else sometimes it is missed.
+            rospy.loginfo("Twist halt command " + str(count))
+            #print count
+            #print twist
+            pub.publish(twist)
+            rospy.sleep(1)
+            count += 1
+        rospy.loginfo("ArlobotExplore robot halt should be complete now. Closing down.")
+        #print "twist based rotation done."
         
     def Run(self):
         # Waits until the action server has started up and started
         # listening for goals.
         '''
         This will stall until the move_base comes up,
-        in other words, if you don't run gmapping before this, this will jsut wait,
+        in other words, if you don't run gmapping before this, this will just wait,
         and it won't go on until gmapping says "odom received!"
         '''
+        rospy.loginfo("Waiting for move_base to come up . . . ")
         self._MoveBaseClient.wait_for_server()
         rospy.loginfo("move_base is UP!")
+        # Wait for tf_listener to be ready.
+        # If you call self.tf_listener too soon it has no data in the listener buffer!
+        # http://answers.ros.org/question/164911/move_base-and-extrapolation-errors-into-the-future/
+        # We could put a static dealy in here, but this is faster.
+        rospy.loginfo("Waiting for tf_listener to be ready . . . ")
+        rospy.sleep(.1) # Give it an initial rest just in case ;)
+        tf_listener_ready = False
+        while not tf_listener_ready:
+            try:
+                t = self.tf_listener.getLatestCommonTime("/map", "/base_link")
+                position, quaternion = self.tf_listener.lookupTransform("/map", "/base_link", t)
+                tf_listener_ready = True
+            except tf.ExtrapolationException:
+                rospy.loginfo("tf_listener not ready . . . ")
+                rospy.sleep(.1)
+        rospy.loginfo("tf_listener READY!")
         
-        goal = move_base_msgs.msg.MoveBaseGoal()
-        #rospy.loginfo("Empty goal:")
-        #rospy.loginfo(goal)
-        
-        goal.target_pose.header.frame_id = "map"
-
+        # Need to insert this here:
         while not rospy.is_shutdown():
-            # Rotate in a circle, by 90 degree increments, using current location as the basis
-            rospy.loginfo("Explorer rotating to scan area.")
-            '''
-            This works a lot better :)
-            '''
-            rotation_angle = -90 * math.pi / 180; # -90 degree
-            quaternion_difference = tf.transformations.quaternion_about_axis(rotation_angle, (0, 0, 1))
-            #print "quaternion_difference: " + str(quaternion_difference)
-            # 1
-            # Get current position:
-            t = self.tf_listener.getLatestCommonTime("/map", "/base_link")
-            position, quaternion = self.tf_listener.lookupTransform("/map", "/base_link", t)
-            original_position = position
-            original_quaternion = quaternion
-            new_quaternion = tf.transformations.quaternion_multiply(quaternion, quaternion_difference)
-            goal.target_pose.pose.position.x = position[0]
-            goal.target_pose.pose.position.y = position[1]
-            goal.target_pose.pose.position.z = position[2]
-            goal.target_pose.pose.orientation.x = new_quaternion[0]
-            goal.target_pose.pose.orientation.y = new_quaternion[1]
-            goal.target_pose.pose.orientation.z = new_quaternion[2]
-            goal.target_pose.pose.orientation.w = new_quaternion[3]
-            rospy.loginfo("Sending first quarter rotation to move_base.")
-            self._MoveBaseClient.cancel_all_goals()
-            goal.target_pose.header.stamp = rospy.Time.now()
-            if not rospy.is_shutdown():
-                self._MoveBaseClient.send_goal_and_wait(goal, rospy.Duration(20), rospy.Duration(60)) # Limit how long it can take
-            #self._MoveBaseClient.send_goal(goal)
-            #rospy.loginfo("Waiting for response . . .");
-            #self._MoveBaseClient.wait_for_result()
-            rospy.sleep(1)
-            # 2
-            quaternion = new_quaternion
-            new_quaternion = tf.transformations.quaternion_multiply(quaternion, quaternion_difference)
-            goal.target_pose.pose.position.x = position[0]
-            goal.target_pose.pose.position.y = position[1]
-            goal.target_pose.pose.position.z = position[2]
-            goal.target_pose.pose.orientation.x = new_quaternion[0]
-            goal.target_pose.pose.orientation.y = new_quaternion[1]
-            goal.target_pose.pose.orientation.z = new_quaternion[2]
-            goal.target_pose.pose.orientation.w = new_quaternion[3]
-            rospy.loginfo("Sending second quarter rotation to move_base.")
-            self._MoveBaseClient.cancel_all_goals()
-            goal.target_pose.header.stamp = rospy.Time.now()
-            if not rospy.is_shutdown():
-                self._MoveBaseClient.send_goal_and_wait(goal, rospy.Duration(20), rospy.Duration(60)) # Limit how long it can take
-            #self._MoveBaseClient.send_goal(goal)
-            #rospy.loginfo("Waiting for response . . .");
-            #self._MoveBaseClient.wait_for_result()
-            rospy.sleep(1)
-            # 3
-            quaternion = new_quaternion
-            new_quaternion = tf.transformations.quaternion_multiply(quaternion, quaternion_difference)
-            goal.target_pose.pose.position.x = position[0]
-            goal.target_pose.pose.position.y = position[1]
-            goal.target_pose.pose.position.z = position[2]
-            goal.target_pose.pose.orientation.x = new_quaternion[0]
-            goal.target_pose.pose.orientation.y = new_quaternion[1]
-            goal.target_pose.pose.orientation.z = new_quaternion[2]
-            goal.target_pose.pose.orientation.w = new_quaternion[3]
-            rospy.loginfo("Sending third quarter rotation to move_base.")
-            self._MoveBaseClient.cancel_all_goals()
-            goal.target_pose.header.stamp = rospy.Time.now()
-            if not rospy.is_shutdown():
-                self._MoveBaseClient.send_goal_and_wait(goal, rospy.Duration(20), rospy.Duration(60)) # Limit how long it can take
-            #self._MoveBaseClient.send_goal(goal)
-            #rospy.loginfo("Waiting for response . . .");
-            #self._MoveBaseClient.wait_for_result()
-            rospy.sleep(1)
-            # 4
-            quaternion = new_quaternion
-            new_quaternion = tf.transformations.quaternion_multiply(quaternion, quaternion_difference)
-            goal.target_pose.pose.position.x = position[0]
-            goal.target_pose.pose.position.y = position[1]
-            goal.target_pose.pose.position.z = position[2]
-            goal.target_pose.pose.orientation.x = new_quaternion[0]
-            goal.target_pose.pose.orientation.y = new_quaternion[1]
-            goal.target_pose.pose.orientation.z = new_quaternion[2]
-            goal.target_pose.pose.orientation.w = new_quaternion[3]
-            rospy.loginfo("Sending fourth quarter rotation to move_base.")
-            self._MoveBaseClient.cancel_all_goals()
-            goal.target_pose.header.stamp = rospy.Time.now()
-            if not rospy.is_shutdown():
-                self._MoveBaseClient.send_goal_and_wait(goal, rospy.Duration(20), rospy.Duration(60)) # Limit how long it can take
-            #self._MoveBaseClient.send_goal(goal)
-            #rospy.loginfo("Waiting for response . . .");
-            #self._MoveBaseClient.wait_for_result()
-            # Return to original position:
-            position = original_position
-            quaternion = original_quaternion
-            goal.target_pose.pose.position.x = position[0]
-            goal.target_pose.pose.position.y = position[1]
-            goal.target_pose.pose.position.z = position[2]
-            goal.target_pose.pose.orientation.x = quaternion[0]
-            goal.target_pose.pose.orientation.y = quaternion[1]
-            goal.target_pose.pose.orientation.z = quaternion[2]
-            goal.target_pose.pose.orientation.w = quaternion[3]
-            rospy.loginfo("Returning to original position.")
-            self._MoveBaseClient.cancel_all_goals()
-            goal.target_pose.header.stamp = rospy.Time.now()
-            if not rospy.is_shutdown():
-                self._MoveBaseClient.send_goal_and_wait(goal, rospy.Duration(20), rospy.Duration(60)) # Limit how long it can take
-            #self._MoveBaseClient.send_goal(goal)
-            #rospy.loginfo("Waiting for response . . .");
-            #self._MoveBaseClient.wait_for_result()
+        
+            # How about an uncontrolled rotation sent to cmd_vel instead?
+            # If you publish to ~cmd_vel like the arlobot_teleop script does, then you have to remap that in your launch file like:
+            # <remap from="arlobot_teleop_keyboard/cmd_vel" to="cmd_vel_mux/input/teleop"/>
+            # or for this one:
+            # <remap from="arlobot_explore/cmd_vel" to="cmd_vel_mux/input/teleop"/>
+            # or just publish to cmd_vel_mux/input/teleop
+            #pub = rospy.Publisher('cmd_vel', Twist, queue_size=5)
+            pub = rospy.Publisher('cmd_vel_mux/input/teleop', Twist, queue_size=5)
+            twist = Twist()
+            linear_speed = 0 # Rotate in place, no liner movement
+            angular_speed = 1 # This can be positive or negative
+            # Positive angular_speed will be left or counter-clockwise
+            # Negative angular_speed will be right or clockwise
+            # 1 is a nice calm speed that seems to allow the map to build
+            # 2 is pretty fast, maybe a little scary and it sometimes gets off track!
+            # I will test higher speeds in a more open area later. :)
+            twist.linear.x = linear_speed; twist.linear.y = 0; twist.linear.z = 0
+            twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = angular_speed
+            count = 0
+            rospy.loginfo("Rotating ArloBot to scan surroundings.")
+            # You cannot just "send" a command, you have to broadcast it and keep it up or the robot will eventually stop.
+            while count < 8: # 8 seconds seems about right at angular_speed = 1 to do just over 1 rotation normally
+                rospy.loginfo("Twist command " + str(count))
+                #print twist
+                pub.publish(twist)
+                rospy.sleep(1) # 1 second intervals seems to work fine
+                # Too far apart and the robot will stop periodically,
+                # Too close and they just pass by before the robot finishes what it is doing.
+                count += 1
+            #rospy.sleep(1) # Let it spin for a while
+            # Stop
+            rospy.loginfo("Stopping survey rotation . . . ")
+            twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
+            twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = 0
+            #print "Sending twist command:"
+            #print twist
+            # You cannot just "send" this, you publish it, and you have to publish it repeatedly, or the robot never starts or just stops
+            pub.publish(twist)
+            count = 0
+            while count < 2: # I'm not sure how many it takes, but more than one is best else sometimes it is missed.
+                rospy.loginfo("Twist halt command " + str(count))
+                #print twist
+                pub.publish(twist)
+                rospy.sleep(1)
+                count += 1
+            rospy.loginfo("Survey complete.")
 
+            # Get an explore path and use it.
             # Use to the hector_exploration_node service and get goals!
             # You don't have to initialize services!
             # http://wiki.ros.org/ROS/Tutorials/WritingServiceClient%28python%29
+            rospy.loginfo("Getting exploration path.")
             rospy.wait_for_service('get_exploration_path')
             try:
                 get_exploration_path = rospy.ServiceProxy('get_exploration_path', GetRobotTrajectory)
                 response = get_exploration_path()
                 #rospy.loginfo("get_exploratin_path:")
                 #rospy.loginfo(response)
-                '''
-                The contents of this GetRobotTrajectory service is a nav_msgs/Path message
-                http://docs.ros.org/api/nav_msgs/html/msg/Path.html
-                
-                '''
-                '''
-                rospy.loginfo("Parsing . . .")
-                rospy.loginfo("Here are all of the poses:")
-                count = 1
-                for i in response.trajectory.poses:
-                    if not rospy.is_shutdown():
-                        rospy.loginfo("Pose " + str(count))
-                        rospy.loginfo(i)
-                        if count < 999: # Use this to just try some of the path instead of the entire list
-                            rosNow = rospy.Time.now()
-                            goal.target_pose.header.frame_id = "map"
-                            goal.target_pose.header.stamp = rosNow
-                            goal.target_pose.pose.position.x = i.pose.position.x
-                            goal.target_pose.pose.position.y = i.pose.position.y
-                            goal.target_pose.pose.position.z = i.pose.position.z
-                            goal.target_pose.pose.orientation.x = i.pose.orientation.x
-                            goal.target_pose.pose.orientation.y = i.pose.orientation.y
-                            goal.target_pose.pose.orientation.z = i.pose.orientation.z
-                            goal.target_pose.pose.orientation.w = i.pose.orientation.w
-                            rospy.loginfo("Goal " + str(count))
-                            rospy.loginfo(goal)
-                            rospy.loginfo("Sending goal");
-                            # Sends the goal to the action server.
-                            #self._MoveBaseClient.cancel_all_goals()
-                            #self._MoveBaseClient.send_goal_and_wait(goal, rospy.Duration(10), rospy.Duration(10))
 
-                            #rospy.loginfo("Waiting for response . . .");
-                            # Waits for the server to finish performing the action.
-                            #self._MoveBaseClient.wait_for_result()
-                        count += 1
-                '''
-                #rospy.loginfo(response.trajectory.poses)
+                # The contents of this GetRobotTrajectory service is a nav_msgs/Path message
+                # http://docs.ros.org/api/nav_msgs/html/msg/Path.html
+
                 
-                # Lets juse use the LAST pose and let gmapping deal with the path
+                # Lets just use the LAST pose and let gmapping deal with the path
                 #print(response.trajectory.poses[-1])
                 i = response.trajectory.poses[-1]
-                rosNow = rospy.Time.now()
-                goal.target_pose.header.frame_id = "map"
-                goal.target_pose.header.stamp = rosNow
-                goal.target_pose.pose.position.x = i.pose.position.x
-                goal.target_pose.pose.position.y = i.pose.position.y
-                goal.target_pose.pose.position.z = i.pose.position.z
-                goal.target_pose.pose.orientation.x = i.pose.orientation.x
-                goal.target_pose.pose.orientation.y = i.pose.orientation.y
-                goal.target_pose.pose.orientation.z = i.pose.orientation.z
-                goal.target_pose.pose.orientation.w = i.pose.orientation.w
-                rospy.loginfo("Sending explore goal");
-                # Sends the goal to the action server.
-                #self._MoveBaseClient.cancel_all_goals()
-                self._MoveBaseClient.cancel_all_goals()
-                goal.target_pose.header.stamp = rospy.Time.now()
-                if not rospy.is_shutdown():
-                    self._MoveBaseClient.send_goal_and_wait(goal, rospy.Duration(30), rospy.Duration(10)) # Limit how long it can take
-                # We will just get another goal if it doesnt' reach the first one.
-
-                #rospy.loginfo("Waiting for response . . .");
-                # Waits for the server to finish performing the action.
-                #self._MoveBaseClient.wait_for_result()
-
-            except rospy.ServiceException, e:
-                print "Service call failed: %s"%e
-
+                explorePosition = [0,0,0]
+                explorePosition[0] = i.pose.position.x
+                explorePosition[1] = i.pose.position.y
+                explorePosition[2] = i.pose.position.z
+                exploreQuaternion = [0,0,0,0]
+                exploreQuaternion[0] = i.pose.orientation.x
+                exploreQuaternion[1] = i.pose.orientation.y
+                exploreQuaternion[2] = i.pose.orientation.z
+                exploreQuaternion[3] = i.pose.orientation.w
+                rospy.loginfo("Sending exploration goal to move_base.")
+                result, resultText = self._movetoPositiononMap(explorePosition, exploreQuaternion, 20)
+                '''
+                Timeout?
+                If I make it too long the robot can sit blocked for a long time,
+                but if I make it too short than long routes get preempted.
+                
+                20 seconds seems to be about right, not cutting off any but the
+                longest paths, and they usually repeat anyway.
+                '''
+                rospy.loginfo("Final result: " + str(result) + " " + resultText)
+            except:
+                rospy.loginfo("Hector Explore failed.")
+                
             '''
-            rosNow = rospy.Time.now()
-            #we'll send a goal to the robot to move 1 meter forward
-            goal.target_pose.header.frame_id = "base_link"
-            goal.target_pose.header.stamp = rosNow
-
-            goal.target_pose.pose.position.x = 0.0
-            goal.target_pose.pose.orientation.w = 1.0
-
-            rospy.loginfo("Populated goal:")
-            rospy.loginfo(goal)
-
-            rospy.loginfo("Sending goal");
-            # Sends the goal to the action server.
-            self._MoveBaseClient.send_goal(goal)
-
-            rospy.loginfo("Waiting for response . . .");
-            # Waits for the server to finish performing the action.
-            self._MoveBaseClient.wait_for_result()
-            #This could wait a VERY long time,
-            #if the move_base doesn't have a timeout it will never come back,
-            #in most cases it does, but it seems in some cases it will retry forever.
-            # http://docs.ros.org/api/actionlib/html/classactionlib_1_1simple__action__client_1_1SimpleActionClient.html#a460c9f52fd650f918cb287765f169445
+            IDEAS:
+            It may work better to do an odom based rotation, although I'm not sure how to know when it is complete?
+            I should adjust some of the planner and nav stack parameters to operate closer to my desires,
+            exploring has a different set of needs for navigating a known map:
+            ideas:
+            /move_base/DWAPlannerROS/max_rot_vel # I have set this to 1.0, which makes it behave much more calmly!
+            /move_base/clearing_rotation_allowed # I have disabled this, this makes a HUGE difference.
+            /move_base/controller_frequency
+            /move_base/controller_patience
+            /move_base/recovery_behavior_enabled
             
-            result = self._MoveBaseClient.get_result()
-            rospy.loginfo(result)
-            result = self._MoveBaseClient.get_state()
-            rospy.loginfo(result)
-            result = self._MoveBaseClient.get_state()
-            rospy.loginfo(result)
             '''
+        #t = self.tf_listener.getLatestCommonTime("/map", "/base_link")
+        #position, quaternion = self.tf_listener.lookupTransform("/map", "/base_link", t)
+        #print "Final Position: " + str(position)
+        #print "Final Orientation: " + str(quaternion)
 
-        rospy.loginfo("Exiting Explore!")
+        rospy.loginfo("Clean Finish")
+        
+    def _movetoPositiononMap(self, position, quaternion, timeoutSeconds):
+        result = -1
+        resultText = ""
+        if not rospy.is_shutdown():
+            self._MoveBaseClient.cancel_goals_at_and_before_time(rospy.Time.now())
+            # NOTE: Do not use cancel_all_goals here as it can cancel future goals sometimes!
+        goal = move_base_msgs.msg.MoveBaseGoal()
+        goal.target_pose.header.frame_id = "map"
+        goal.target_pose.pose.position.x = position[0]
+        goal.target_pose.pose.position.y = position[1]
+        goal.target_pose.pose.position.z = position[2]
+        goal.target_pose.pose.orientation.x = quaternion[0]
+        goal.target_pose.pose.orientation.y = quaternion[1]
+        goal.target_pose.pose.orientation.z = quaternion[2]
+        goal.target_pose.pose.orientation.w = quaternion[3]
+        goal.target_pose.header.stamp = rospy.Time.now()
+        if not rospy.is_shutdown():
+            self._MoveBaseClient.send_goal(goal)
+            count = 0
+            finished = False
+            # Wait for action to finish or timeout to run out
+            # Use double timeout, but cancel if timeout is met
+            while count < (timeoutSeconds * 2) and not finished and not rospy.is_shutdown():
+                if count > timeoutSeconds:
+                    self._MoveBaseClient.cancel_goal()
+                    # NOTE: Do not use cancel_all_goals here as it can cancel future goals sometimes!
+                    rospy.loginfo("Time-out reached while attempting to reach goal, cancelling!")
+                count += 1
+                rospy.sleep(1) # Set this delay as you see fit. If the robot is extremely fast this could be slowing you down!
+                result = self._MoveBaseClient.get_state()
+                resultText = ""
+                # http://docs.ros.org/indigo/api/actionlib_msgs/html/msg/GoalStatus.html
+                if result == GoalStatus.PENDING:
+                    resultText = "PENDING"
+                if result == GoalStatus.ACTIVE:
+                    resultText = "ACTIVE"
+                if result == GoalStatus.PREEMPTED:
+                    finished = True
+                    resultText = "PREEMPTED"
+                if result == GoalStatus.SUCCEEDED:
+                    finished = True
+                    resultText = "SUCCEEDED"
+                if result == GoalStatus.ABORTED:
+                    finished = True
+                    resultText = "ABORTED"
+                if result == GoalStatus.REJECTED:
+                    finished = True
+                    resultText = "REJECTED"
+                if result == GoalStatus.PREEMPTING:
+                    resultText = "PREEMPTING"
+                if result == GoalStatus.RECALLING:
+                    resultText = "RECALLING"
+                if result == GoalStatus.RECALLED:
+                    finished = True
+                    resultText = "RECALLED"
+                if result == GoalStatus.LOST:
+                    finished = True
+                    resultText = "LOST"
+                rospy.loginfo("Pending result:" + str(result) + " " + resultText + " Time-out in :" + str(timeoutSeconds - count))
+        #self._MoveBaseClient.send_goal(goal)
+        #rospy.loginfo("Waiting for response . . .");
+        #self._MoveBaseClient.wait_for_result()
+        return result, resultText
+        
 
 if __name__ == '__main__':
     node = ArlobotExplore()

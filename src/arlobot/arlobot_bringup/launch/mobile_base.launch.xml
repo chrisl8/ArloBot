@@ -12,7 +12,7 @@
     <remap from="arlobot/sensor_state" to="mobile_base/sensors/core" />
     <remap from="imu/data" to="mobile_base/sensors/imu_data" />
     <remap from="imu/raw" to="mobile_base/sensors/imu_data_raw" />
-    <rosparam file="$(find arlobot_bringup)/param/encoders.yaml" command="load" />
+    <rosparam file="$(find arlobot_bringup)/param/arlobot.yaml" command="load" />
   </node>
 
   <!-- Remember to boradcoast base_link to odom Transform from propellerbot_node when robot_pose_ekf is not used -->
