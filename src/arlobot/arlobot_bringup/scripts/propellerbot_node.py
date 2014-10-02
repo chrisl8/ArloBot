@@ -129,10 +129,10 @@ class PropellerComm(object):
             #print status.relayOn[self.leftMotorRelay.relayNumber]
             #print status.relayOn[self.leftMotorRelay.relayNumber]
             if status.relayOn[self.leftMotorRelay.relayNumber-1] and status.relayOn[self.rightMotorRelay.relayNumber-1]: # Zero indexed arrays!
-                rospy.loginfo("Motors On")
+                #rospy.loginfo("Motors On")
                 self._motorsOn = 1
             else:
-                rospy.loginfo("Motors OFF") #TODO: Remove this, too verbose, just here for debugging
+                # rospy.loginfo("Motors OFF") #TODO: Remove this, too verbose, just here for debugging
                 self._motorsOn = 0
             #TODO: Everything!
             #self._motorsOn = 0 # Set to 1 if the motors are on, used with USB Relay Control board
