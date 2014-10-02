@@ -17,7 +17,7 @@
 #https://code.google.com/p/drh-robotics-ros/
 #Much of my code below is based on or copied from his work.
 #
-# NOTE: This script REQUIRES parameters to be loaded from param/arlobot.yaml!
+# NOTE: This script REQUIRES parameters to be loaded from param/encoders.yaml!
 #import roslib; roslib.load_manifest('arlobot') # http://wiki.ros.org/roslib
 
 import rospy
@@ -32,6 +32,8 @@ from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 from std_msgs.msg import String
 from std_msgs.msg import Bool
+from arlobot_msgs.msg import usbRelayStatus
+from arlobot_msgs.srv import *
 
 #For USB relay board
 from pylibftdi import BitBangDevice
@@ -45,21 +47,42 @@ class PropellerComm(object):
     '''
 
     def __init__(self, port="/dev/ttyUSB0", baudrate=115200):
+        rospy.init_node('arlobot')
 
         self._Counter = 0 # For Propeller code's _HandleReceivedLine and _WriteSerial
         self._motorsOn = 0 # Set to 1 if the motors are on, used with USB Relay Control board
-        self._SafeToOperate = 0 # Use arlobot_safety to set this
+        self._SafeToOperate = False # Use arlobot_safety to set this
+        self._SwitchingMotors = False # Prevent overlapping calls to _SwitchMotors
         # Store last x, y and heading for reuse when we reset
         self.lastX = rospy.get_param("lastX", 0.0) # I took off off the ~, because that was causing this to reset to default on every restart even if roscore was still up.
         self.lastY = rospy.get_param("lastY", 0.0) # I took off off the ~, because that was causing this to reset to default on every restart even if roscore was still up.
         self.lastHeading = rospy.get_param("lastHeading", 0.0) # I took off off the ~, because that was causing this to reset to default on every restart even if roscore was still up.
-
-        rospy.init_node('arlobot')
+        
+        # Get motor relay numbers for use later in _HandleUSBRelayStatus if USB Relay is in use:
+        self.relayExists = rospy.get_param("~usbRelayInstalled", False)
+        if self.relayExists:
+            # I think it is better to get these once than on every run of _HandleUSBRelayStatus
+            self.usbLeftMotorRelayLabel = rospy.get_param("~usbLeftMotorRelayLabel", "")
+            self.usbRightMotorRelayLabel = rospy.get_param("~usbRightMotorRelayLabel", "")
+            rospy.loginfo("Waiting for USB Relay find_relay service to start . . .")
+            rospy.wait_for_service('/arlobot_usbrelay/find_relay')
+            rospy.loginfo("USB Relay find_relay service started.")
+            try:
+                find_relay = rospy.ServiceProxy('/arlobot_usbrelay/find_relay', FindRelay)
+                self.leftMotorRelay = find_relay(self.usbLeftMotorRelayLabel)
+                self.rightMotorRelay = find_relay(self.usbRightMotorRelayLabel)
+                if self.leftMotorRelay.foundRelay and self.leftMotorRelay.foundRelay:
+                    print "Left = " + str(self.leftMotorRelay.relayNumber) + " & Right = " + str(self.rightMotorRelay.relayNumber)
+                else:
+                    self.relayExists = False
+            except rospy.ServiceException, e:
+                print "Service call failed: %s"%e
+            rospy.Subscriber("arlobot_usbrelay/usbRelayStatus", usbRelayStatus, self._HandleUSBRelayStatus) # Safety Shutdown
 
         # Subscriptions
         rospy.Subscriber("cmd_vel", Twist, self._HandleVelocityCommand) # Is this line or the below bad redundancy?
         rospy.Subscriber("cmd_vel_mux/input/teleop", Twist, self._HandleVelocityCommand) # IS this line or the above bad redundancy?
-        rospy.Subscriber("arlobot_safety/safeToGo", Bool, self._SafetyShutdown) # Safty Shutdown
+        rospy.Subscriber("arlobot_safety/safeToGo", Bool, self._SafetyShutdown) # Safety Shutdown
 
         # Publishers
         self._SerialPublisher = rospy.Publisher('serial', String, queue_size=10)
@@ -82,7 +105,7 @@ class PropellerComm(object):
         self._SerialDataGateway = SerialDataGateway(port, baudRate,  self._HandleReceivedLine)
         self._OdomStationaryBroadcaster = OdomStationaryBroadcaster(self._BroadcastStaticOdometryInfo)
 
-    def _HandleReceivedLine(self,  line): # This is Propeller specific
+    def _HandleReceivedLine(self, line): # This is Propeller specific
         self._Counter = self._Counter + 1
         #rospy.logdebug(str(self._Counter) + " " + line)
         #if (self._Counter % 50 == 0):
@@ -100,14 +123,39 @@ class PropellerComm(object):
                 rospy.loginfo("Propeller: " + line)
                 return
                 
+    def _HandleUSBRelayStatus(self, status):
+        if self.relayExists: # This should never get called otherwise, but just in case the relay is in use but the motors are not.
+            #print status.relayOn
+            #print status.relayOn[self.leftMotorRelay.relayNumber]
+            #print status.relayOn[self.leftMotorRelay.relayNumber]
+            if status.relayOn[self.leftMotorRelay.relayNumber-1] and status.relayOn[self.rightMotorRelay.relayNumber-1]: # Zero indexed arrays!
+                rospy.loginfo("Motors On")
+                self._motorsOn = 1
+            else:
+                rospy.loginfo("Motors OFF") #TODO: Remove this, too verbose, just here for debugging
+                self._motorsOn = 0
+            #TODO: Everything!
+            #self._motorsOn = 0 # Set to 1 if the motors are on, used with USB Relay Control board
+            # Use real data from topic arlobot_usbrelay
+            '''
+            rospy.wait_for_service('arlobot_usbrelay/find_relay')
+            try:
+                usb_relay_status = rospy.ServiceProxy('arlobot_usbrelay/find_relay', usbRelayStatus)
+                resp = usb_relay_status(self.usbLeftMotorRelayLabel)
+                print resp
+                #return resp1.sum
+            except rospy.ServiceException, e:
+                print "Service call failed: %s"%e
+            '''
+            
     def _SafetyShutdown(self, safe):
         if safe.data:
-            self._SafeToOperate = 1
+            self._SafeToOperate = True
         else:
-            self._SafeToOperate = 0
+            self._SafeToOperate = False
             if self._motorsOn == 1:
                 rospy.loginfo("Safety Shutdown initiated")
-                self._SwitchMotors("off")
+                self._SwitchMotors(False)
                 # Reset the propeller board, otherwise there are problems if you bring up the motors again while it has been operating
                 rospy.loginfo("_SerialDataGateway stopping . . .")
                 self._SerialDataGateway.Stop()
@@ -123,7 +171,7 @@ class PropellerComm(object):
         # If we got this far, we can assume that the Propeller board is initialized and the motors should be on.
         # The _SwitchMotors() function will deal with the _SafeToOparete issue
         if self._motorsOn == 0:
-            self._SwitchMotors("on")
+            self._SwitchMotors(True)
         # This broadcasts ALL info from the Propeller based robot every time data comes in
         partsCount = len(lineParts)
 
@@ -491,8 +539,8 @@ class PropellerComm(object):
 
     def Stop(self):
         rospy.loginfo("Stopping")
-        self._SafeToOperate = 0 # Prevent threads fighting
-        self._SwitchMotors("off")
+        self._SafeToOperate = False # Prevent threads fighting
+        self._SwitchMotors(False) # arlobot_usbrelay will also shut off all relays after a delay, but better safe than sorry!
         # Save last position in parameter server in case we come up again without restarting roscore!
         rospy.set_param('lastX', self.lastX)
         rospy.set_param('lastY', self.lastY)
@@ -582,39 +630,59 @@ class PropellerComm(object):
             self._OdometryPublisher.publish(odometry)
 
     def _SwitchMotors(self, state):
-        relayExists = rospy.get_param("~usbRelayInstalled", False)
-        if relayExists:
-            # Start Motors
-            # For SainSmart 8 port USB model http://www.sainsmart.com/sainsmart-4-channel-12-v-usb-relay-board-module-controller-for-automation-robotics-1.html
-            # Note that this is specific to this model, if you want me to code for various models let me know and I can work with you to expand the code
-            # to cover more models and add ROS parameters for picking your model.
-            class relay(dict):
-                address = {
-                    "1":"1",
-                    "2":"2",
-                    "3":"4",
-                    "4":"8",
-                    "5":"10",
-                    "6":"20",
-                    "7":"40",
-                    "8":"80",
-                    "all":"FF"
-                    }
-            relaySerialNumber = rospy.get_param("~usbRelaySerialNumber", "")
-            leftMotorRelay = rospy.get_param("~usbLeftMotorRelay", "")
-            rightMotorRelay = rospy.get_param("~usbRightMotorRelay", "")
-            if state == "on" and self._SafeToOperate == 1:
-                BitBangDevice(relaySerialNumber).port |= int(relay.address[leftMotorRelay], 16)
-                BitBangDevice(relaySerialNumber).port |= int(relay.address[rightMotorRelay], 16)
-                self._motorsOn = 1
-            elif state == "off":
-                BitBangDevice(relaySerialNumber).port &= ~int(relay.address[leftMotorRelay], 16)
-                BitBangDevice(relaySerialNumber).port &= ~int(relay.address[rightMotorRelay], 16)
-                self._motorsOn = 0
+        #relayExists = rospy.get_param("~usbRelayInstalled", False)
+        if self.relayExists:
+            if not self._SwitchingMotors: # Prevent overlapping runs
+                self._SwitchingMotors = True
+                if not self._SafeToOperate: # Switch "on" to "off" if not safe to operate, then we can just pass state to arlobot_usbrelay
+                    state = False
+                rospy.wait_for_service('/arlobot_usbrelay/toggle_relay')
+                rospy.loginfo("Switching motors.")
+                try:
+                    toggle_relay = rospy.ServiceProxy('/arlobot_usbrelay/toggle_relay', ToggleRelay)
+                    leftRelayResult = toggle_relay(self.usbLeftMotorRelayLabel, state)
+                    rightRelayResult = toggle_relay(self.usbRightMotorRelayLabel, state)
+                    if leftRelayResult.toggleSuccess and rightRelayResult.toggleSuccess:
+                        self._motorsOn = 1
+                    else:
+                        self._motorsOn = 0
+                except rospy.ServiceException, e:
+                    print "Service call failed: %s"%e
+                self._SwitchingMotors = False
+
+                '''
+                # Start Motors
+                # For SainSmart 8 port USB model http://www.sainsmart.com/sainsmart-4-channel-12-v-usb-relay-board-module-controller-for-automation-robotics-1.html
+                # Note that this is specific to this model, if you want me to code for various models let me know and I can work with you to expand the code
+                # to cover more models and add ROS parameters for picking your model.
+                class relay(dict):
+                    address = {
+                        "1":"1",
+                        "2":"2",
+                        "3":"4",
+                        "4":"8",
+                        "5":"10",
+                        "6":"20",
+                        "7":"40",
+                        "8":"80",
+                        "all":"FF"
+                        }
+                relaySerialNumber = rospy.get_param("~usbRelaySerialNumber", "")
+                leftMotorRelay = rospy.get_param("~usbLeftMotorRelay", "")
+                rightMotorRelay = rospy.get_param("~usbRightMotorRelay", "")
+                if state == "on" and self._SafeToOperate == 1:
+                    BitBangDevice(relaySerialNumber).port |= int(relay.address[leftMotorRelay], 16)
+                    BitBangDevice(relaySerialNumber).port |= int(relay.address[rightMotorRelay], 16)
+                    self._motorsOn = 1
+                elif state == "off":
+                    BitBangDevice(relaySerialNumber).port &= ~int(relay.address[leftMotorRelay], 16)
+                    BitBangDevice(relaySerialNumber).port &= ~int(relay.address[rightMotorRelay], 16)
+                    self._motorsOn = 0
+                '''
         else: # If no automated motor control exists, just set the state blindly.
-            if state == "on":
+            if state:
                 self._motorsOn = 1
-            elif state == "off":
+            elif not state:
                 self._motorsOn = 0
 
 if __name__ == '__main__':

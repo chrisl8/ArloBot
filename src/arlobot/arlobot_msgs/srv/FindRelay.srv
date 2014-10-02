@@ -1,0 +1,5 @@
+string relay
+---
+bool boardExists
+bool foundRelay
+int8  relayNumber

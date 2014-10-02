@@ -1,9 +1,2 @@
 bool    relayPresent
-bool    relay1on
-bool    relay1on
-bool    relay1on
-bool    relay1on
-bool    relay1on
-bool    relay1on
-bool    relay1on
-bool    relay1on
+bool[]  relayOn
