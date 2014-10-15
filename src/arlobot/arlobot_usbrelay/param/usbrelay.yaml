@@ -8,8 +8,8 @@ relay1enabled: False
 relay1label: "Empty"
 relay2enabled: True
 relay2label: "RightMotor"
-relay3enabled: False
-relay3label: "Empty"
+relay3enabled: True
+relay3label: "BottomLightRow"
 relay4enabled: True
 relay4label: "TopLightRow"
 relay5enabled: False

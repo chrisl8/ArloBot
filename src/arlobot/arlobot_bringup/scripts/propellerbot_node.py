@@ -157,14 +157,14 @@ class PropellerComm(object):
                 rospy.loginfo("Safety Shutdown initiated")
                 self._SwitchMotors(False)
                 # Reset the propeller board, otherwise there are problems if you bring up the motors again while it has been operating
-                rospy.loginfo("_SerialDataGateway stopping . . .")
+                rospy.loginfo("Serial Data Gateway stopping . . .")
                 self._SerialDataGateway.Stop()
-                rospy.loginfo("_SerialDataGateway stopped.")
+                rospy.loginfo("Serial Data Gateway stopped.")
                 rospy.loginfo("10 second pause to let Activity Board settle after serial port reset . . .")
                 time.sleep(10) # Give it time to settle.
-                rospy.loginfo("_SerialDataGateway starting . . .")
-                self._SerialDataGateway.Start()
-                rospy.loginfo("_SerialDataGateway started.")
+                rospy.loginfo("Serial Data Gateway starting . . .")
+                self._SerialDataGateway.Start() # This forces the ActivityBoard to reset before we shut down.
+                rospy.loginfo("Serial Data Gateway started.")
                 # TODO: There is probably a better way, but this seems to work.
 
     def _BroadcastOdometryInfo(self, lineParts):
@@ -527,15 +527,15 @@ class PropellerComm(object):
 
     def Start(self):
         self._OdomStationaryBroadcaster.Start()
-        rospy.loginfo("10 second pause before starting serial gateway to let Activity Board settle if it is resetting already . . .")
+        rospy.loginfo("10 second pause before starting serial gateway to let Activity Board settle in case it is resetting already . . .")
         count = 10
         while count > 0:
-            rospy.loginfo(count)
+            rospy.loginfo(str(count) + " seconds until startup . . .")
             time.sleep(1)
             count -= 1
-        rospy.loginfo("_SerialDataGateway starting . . .")
+        rospy.loginfo("Serial Data Gateway starting . . .")
         self._SerialDataGateway.Start()
-        rospy.loginfo("_SerialDataGateway started.")
+        rospy.loginfo("Serial Data Gateway started.")
 
     def Stop(self):
         rospy.loginfo("Stopping")
@@ -690,7 +690,7 @@ if __name__ == '__main__':
     rospy.on_shutdown(propellercomm.Stop)
     try:
         propellercomm.Start()
-        rospy.loginfo("Spun . . .")
+        rospy.loginfo("Propellerbot_node has 'spun' . . .")
         rospy.spin()
 
     except rospy.ROSInterruptException:
