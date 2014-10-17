@@ -22,6 +22,15 @@ http://wiki.ros.org/navigation/Tutorials/SendingSimpleGoals
 http://wiki.ros.org/actionlib_tutorials/Tutorials/Writing%20a%20Simple%20Action%20Client%20%28Python%29
 '''
 
+'''
+Some info on transforms and quaternions:
+http://answers.ros.org/question/159171/how-to-get-robot-position-xy-in-a-map/
+http://answers.ros.org/question/67206/getting-accurate-real-time-xy-coordinates-with-gmapping/
+http://wiki.ros.org/geometry/RotationMethods
+http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/transforms/program/index.htm
+http://demonstrations.wolfram.com/FromQuaternionTo3DRotation/
+'''
+
 class ArlobotExplore(object):
 
 #TODO: Test for robot movement before sending it places! It could get really goofy to send to -90 from it's position ten seconds ago!
