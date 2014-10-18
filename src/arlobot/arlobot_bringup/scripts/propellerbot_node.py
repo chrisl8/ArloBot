@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# pylint: disable=line-too-long
 # Software License Agreement (BSD License)
 #
 # Author: Chris L8 https://github.com/chrisl8
@@ -33,7 +34,7 @@ from nav_msgs.msg import Odometry
 from std_msgs.msg import String
 from std_msgs.msg import Bool
 from arlobot_msgs.msg import usbRelayStatus
-from arlobot_msgs.srv import *
+from arlobot_msgs.srv import FindRelay, ToggleRelay
 
 #For USB relay board
 from pylibftdi import BitBangDevice
@@ -46,7 +47,7 @@ class PropellerComm(object):
     Helper class for communicating with a Propeller board over serial port
     '''
 
-    def __init__(self, port="/dev/ttyUSB0", baudrate=115200):
+    def __init__(self, port="/dev/ttyUSB0"):
         rospy.init_node('arlobot')
 
         self._Counter = 0 # For Propeller code's _HandleReceivedLine and _WriteSerial
@@ -57,7 +58,7 @@ class PropellerComm(object):
         self.lastX = rospy.get_param("lastX", 0.0) # I took off off the ~, because that was causing this to reset to default on every restart even if roscore was still up.
         self.lastY = rospy.get_param("lastY", 0.0) # I took off off the ~, because that was causing this to reset to default on every restart even if roscore was still up.
         self.lastHeading = rospy.get_param("lastHeading", 0.0) # I took off off the ~, because that was causing this to reset to default on every restart even if roscore was still up.
-        
+
         # Get motor relay numbers for use later in _HandleUSBRelayStatus if USB Relay is in use:
         self.relayExists = rospy.get_param("~usbRelayInstalled", False)
         if self.relayExists:
@@ -86,7 +87,7 @@ class PropellerComm(object):
 
         # Publishers
         self._SerialPublisher = rospy.Publisher('serial', String, queue_size=10)
-        self._pirPublisher = rospy.Publisher('~pirState', Bool, queue_size = 1) # for publishing PIR status
+        self._pirPublisher = rospy.Publisher('~pirState', Bool, queue_size=1) # for publishing PIR status
 
         # IF the Odometry Transform is done with the robot_pose_ekf do not publish it,
         # but we are not using robot_pose_ekf, because it does nothing for us if you don't have a full IMU!
@@ -97,32 +98,32 @@ class PropellerComm(object):
         #self._SonarTransformBroadcaster = tf.TransformBroadcaster()
         self._UltraSonicPublisher = rospy.Publisher("ultrasonic_scan", LaserScan, queue_size=10)
         self._InfraredPublisher = rospy.Publisher("infrared_scan", LaserScan, queue_size=10)
-        
+
         port = rospy.get_param("~port", "/dev/ttyUSB0")
         baudRate = int(rospy.get_param("~baudRate", 115200))
 
         rospy.loginfo("Starting with serial port: " + port + ", baud rate: " + str(baudRate))
-        self._SerialDataGateway = SerialDataGateway(port, baudRate,  self._HandleReceivedLine)
+        self._SerialDataGateway = SerialDataGateway(port, baudRate, self._HandleReceivedLine)
         self._OdomStationaryBroadcaster = OdomStationaryBroadcaster(self._BroadcastStaticOdometryInfo)
 
     def _HandleReceivedLine(self, line): # This is Propeller specific
         self._Counter = self._Counter + 1
         #rospy.logdebug(str(self._Counter) + " " + line)
-        #if (self._Counter % 50 == 0):
+        #if self._Counter % 50 == 0:
         self._SerialPublisher.publish(String(str(self._Counter) + ", in:  " + line))
 
-        if (len(line) > 0):
+        if len(line) > 0:
             lineParts = line.split('\t')
-            if (lineParts[0] == 'o'): # We should broadcast the odometry no matter what. Even if the motors are off, or location is useful!
+            if lineParts[0] == 'o': # We should broadcast the odometry no matter what. Even if the motors are off, or location is useful!
                 self._BroadcastOdometryInfo(lineParts)
                 return
-            if (lineParts[0] == 'i'):
+            if lineParts[0] == 'i':
                 self._InitializeDriveGeometry(lineParts)
                 return
-            if (lineParts[0] == 's'): # Arlo Status info, such as sensors.
+            if lineParts[0] == 's': # Arlo Status info, such as sensors.
                 rospy.loginfo("Propeller: " + line)
                 return
-                
+
     def _HandleUSBRelayStatus(self, status):
         if self.relayExists: # This should never get called otherwise, but just in case the relay is in use but the motors are not.
             #print status.relayOn
@@ -147,7 +148,7 @@ class PropellerComm(object):
             except rospy.ServiceException, e:
                 print "Service call failed: %s"%e
             '''
-            
+
     def _SafetyShutdown(self, safe):
         if safe.data:
             self._SafeToOperate = True
@@ -176,27 +177,27 @@ class PropellerComm(object):
         partsCount = len(lineParts)
 
         #rospy.logwarn(partsCount)
-        if (partsCount  != 8): # Just discard short/long lines, increment this as lines get longer
+        if partsCount != 8: # Just discard short/long lines, increment this as lines get longer
             pass
-        
+
         try:
             x = float(lineParts[1])
             y = float(lineParts[2])
             # 3 is odom based heading and 4 is gyro based
             theta = float(lineParts[3]) # On ArloBot odometry derived heading works best.
-            
+
             vx = float(lineParts[5])
             omega = float(lineParts[6])
-        
+
             quaternion = Quaternion()
-            quaternion.x = 0.0 
+            quaternion.x = 0.0
             quaternion.y = 0.0
             quaternion.z = sin(theta / 2.0)
             quaternion.w = cos(theta / 2.0)
-            
-            
+
+
             rosNow = rospy.Time.now()
-            
+
             # First, we'll publish the transform from frame odom to frame base_link over tf
             # Note that sendTransform requires that 'to' is passed in before 'from' while
             # the TransformListener' lookupTransform function expects 'from' first followed by 'to'.
@@ -206,7 +207,7 @@ class PropellerComm(object):
             # using an "extended Kalman filter"
             # REMOVE this "line" if you use robot_pose_ekf
             self._OdometryTransformBroadcaster.sendTransform(
-                (x, y, 0), 
+                (x, y, 0),
                 (quaternion.x, quaternion.y, quaternion.z, quaternion.w),
                 rosNow,
                 "base_footprint",
@@ -226,7 +227,7 @@ class PropellerComm(object):
             odometry.twist.twist.linear.x = vx
             odometry.twist.twist.linear.y = 0
             odometry.twist.twist.angular.z = omega
-            
+
             # Save last X, Y and Heading for reuse if we have to reset:
             self.lastX = x
             self.lastY = y
@@ -287,7 +288,7 @@ class PropellerComm(object):
             We do not need to broadcast a transform,
             because it is static and contained within the URDF files now.
             self._SonarTransformBroadcaster.sendTransform(
-                (0.1, 0.0, 0.2), 
+                (0.1, 0.0, 0.2),
                 (0, 0, 0, 1),
                 rosNow,
                 "sonar_laser",
@@ -313,7 +314,7 @@ class PropellerComm(object):
             other laser scanner options.
             SO, since we only want to use it for cost planning, we should massage the data, because
             it is easy for it to get bogged down with a lot of "stuff" everywhere.
-            
+
             From: http://answers.ros.org/question/11446/costmaps-obstacle-does-not-clear-properly-under-sparse-environment/
             "When clearing obstacles, costmap_2d only trusts laser scans returning a definite range.
             Indoors, that makes sense. Outdoors, most scans return max range, which does not clear
@@ -327,7 +328,7 @@ class PropellerComm(object):
             artificialFarDistance to a distance greater than the planner uses.
             So while it clears things, it shouldn't cause a problem, and the Kinect should override it for things
             in between.
-            
+
             Use:
             roslaunch arlobot_rviz_launchers view_robot.launch
             to view this well for debugging and testing.
@@ -356,9 +357,9 @@ class PropellerComm(object):
                 I'm not sure what the solution to this is though, because avoiding low lying obstacles and adding low lying features to the map are really two different things.
                 I think if this is well tuned to avoid low lying obstacles it probably will not work well for mapping features.
                 IF we could map features with the PING sensors, we wouldn't need the 3D sensor. :)
-                
+
                 NOTE: The bump sensors on Turtlebot mark but do not clear. I'm not sure how that works out. It seems like every bump would end up being a "blot" in the landscape never to be returned to, but maybe there is something I am missing?
-                
+
             NOTE: Could this be different for PING vs. IR?
             Currently I'm not using IR! Just PING. The IR is not being used by costmap. It is here for seeing in RVIZ, and the Propeller board uses it for emergency stopping,
             but costmap isn't watching it at the moment. I think it is too erratic for that.
@@ -394,7 +395,7 @@ class PropellerComm(object):
             = 28 degree difference (http://ostermiller.org/calc/triangle.html)
             '''
             sensorSeperation = 28
-            
+
             # Spread code:
             '''
             # "sensorSpread" is how wide we expand the sensor "point" in the fake laser scan.
@@ -436,16 +437,16 @@ class PropellerComm(object):
             for x in range(0, sensorSpread /2):
                 PINGranges[x] = pingRange2
                 IRranges[x] = irRange2
-            
+
             for x in range(sensorSeperation - sensorSpread / 2, sensorSeperation + sensorSpread / 2):
                 PINGranges[x] = pingRange1
                 IRranges[x] = irRange1
-            
+
             for x in range((sensorSeperation * 2) - sensorSpread / 2, (sensorSeperation * 2) + sensorSpread / 2):
                 PINGranges[x] = pingRange0
                 IRranges[x] = irRange0
             '''
-            
+
             # Single Point code:
             #for x in range(180 - sensorSpread / 2, 180 + sensorSpread / 2):
             PINGranges[180] = pingRange5 # Rear Sensor
@@ -466,15 +467,15 @@ class PropellerComm(object):
             #for x in range(0, sensorSpread /2):
             PINGranges[0] = pingRange2
             IRranges[0] = irRange2
-            
+
             #for x in range(sensorSeperation - sensorSpread / 2, sensorSeperation + sensorSpread / 2):
             PINGranges[sensorSeperation] = pingRange1
             IRranges[sensorSeperation] = irRange1
-            
+
             #for x in range((sensorSeperation * 2) - sensorSpread / 2, (sensorSeperation * 2) + sensorSpread / 2):
             PINGranges[sensorSeperation * 2] = pingRange0
             IRranges[sensorSeperation * 2] = irRange0
-            
+
 
             # LaserScan: http://docs.ros.org/api/sensor_msgs/html/msg/LaserScan.html
             ultrasonic_scan = LaserScan()
@@ -514,7 +515,7 @@ class PropellerComm(object):
             infrared_scan.ranges = IRranges
             # "intensity" is a value specific to each laser scanner model.
             # It can safely be ignored
-            
+
             self._UltraSonicPublisher.publish(ultrasonic_scan)
             self._InfraredPublisher.publish(infrared_scan)
 
@@ -550,7 +551,7 @@ class PropellerComm(object):
         self._SerialDataGateway.Stop()
         rospy.loginfo("_SerialDataGateway stopped.")
         self._OdomStationaryBroadcaster.Stop()
-        
+
     def _HandleVelocityCommand(self, twistCommand): # This is Propeller specific
         # NOTE: turtlebot_node has a lot of code under its cmd_vel function to deal with maximum and minimum speeds,
         # which are dealt with in ArloBot on the Activity Board itself in the Propeller code.
@@ -563,7 +564,7 @@ class PropellerComm(object):
             #rospy.logdebug("Sending speed command message: " + message)
             self._WriteSerial(message)
         else:
-            message= 's,0.0,0.0\r' # Tell it to be still if it is not SafeToOperate
+            message = 's,0.0,0.0\r' # Tell it to be still if it is not SafeToOperate
             self._WriteSerial(message)
 
     def _InitializeDriveGeometry(self, lineParts):
@@ -588,15 +589,15 @@ class PropellerComm(object):
             theta = self.lastHeading
             vx = 0 # If the motors are off we will assume the robot is still.
             omega = 0 # If the motors are off we will assume the robot is still.
-        
+
             quaternion = Quaternion()
-            quaternion.x = 0.0 
+            quaternion.x = 0.0
             quaternion.y = 0.0
             quaternion.z = sin(theta / 2.0)
             quaternion.w = cos(theta / 2.0)
-            
+
             rosNow = rospy.Time.now()
-            
+
             # First, we'll publish the transform from frame odom to frame base_link over tf
             # Note that sendTransform requires that 'to' is passed in before 'from' while
             # the TransformListener' lookupTransform function expects 'from' first followed by 'to'.
@@ -606,7 +607,7 @@ class PropellerComm(object):
             # using an "extended Kalman filter"
             # REMOVE this "line" if you use robot_pose_ekf
             self._OdometryTransformBroadcaster.sendTransform(
-                (x, y, 0), 
+                (x, y, 0),
                 (quaternion.x, quaternion.y, quaternion.z, quaternion.w),
                 rosNow,
                 "base_footprint",
@@ -626,7 +627,7 @@ class PropellerComm(object):
             odometry.twist.twist.linear.x = vx
             odometry.twist.twist.linear.y = 0
             odometry.twist.twist.angular.z = omega
-            
+
             self._OdometryPublisher.publish(odometry)
 
     def _SwitchMotors(self, state):
@@ -695,6 +696,6 @@ if __name__ == '__main__':
 
     except rospy.ROSInterruptException:
         propellercomm.Stop()
-    
+
 
 
