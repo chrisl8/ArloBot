@@ -11,15 +11,14 @@ import time
 import rospy
 
 def _OnLineReceived(line):
-    print(line)
-
+    print line
 
 class SerialDataGateway(object):
     '''
     Helper class for receiving lines from a serial port
     '''
 
-    def __init__(self, port="/dev/ttyUSB0", baudrate=115200, lineHandler = _OnLineReceived):
+    def __init__(self, port="/dev/ttyUSB0", baudrate=115200, lineHandler=_OnLineReceived):
         '''
         Initializes the receiver class.
         port: The serial port to listen to.
@@ -31,7 +30,7 @@ class SerialDataGateway(object):
         self._KeepRunning = False
 
     def Start(self):
-        self._Serial = serial.Serial(port = self._Port, baudrate = self._Baudrate, timeout = 1)
+        self._Serial = serial.Serial(port=self._Port, baudrate=self._Baudrate, timeout=1)
 
         self._KeepRunning = True
         self._ReceiverThread = threading.Thread(target=self._Listen)
@@ -64,7 +63,7 @@ class SerialDataGateway(object):
             self._Serial.write(data)
 
     if __name__ == '__main__':
-        dataReceiver = SerialDataGateway("/dev/ttyUSB0",  115200)
+        dataReceiver = SerialDataGateway("/dev/ttyUSB0", 115200)
         dataReceiver.Start()
 
         raw_input("Hit <Enter> to end.")
