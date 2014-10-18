@@ -36,9 +36,6 @@ from std_msgs.msg import Bool
 from arlobot_msgs.msg import usbRelayStatus
 from arlobot_msgs.srv import FindRelay, ToggleRelay
 
-#For USB relay board
-from pylibftdi import BitBangDevice
-
 from SerialDataGateway import SerialDataGateway
 from OdomStationaryBroadcaster import OdomStationaryBroadcaster
 
@@ -631,7 +628,7 @@ class PropellerComm(object):
             self._OdometryPublisher.publish(odometry)
 
     def _SwitchMotors(self, state):
-        #relayExists = rospy.get_param("~usbRelayInstalled", False)
+        # Relay control was moved to its own package
         if self.relayExists:
             if not self._SwitchingMotors: # Prevent overlapping runs
                 self._SwitchingMotors = True
@@ -650,36 +647,6 @@ class PropellerComm(object):
                 except rospy.ServiceException, e:
                     print "Service call failed: %s"%e
                 self._SwitchingMotors = False
-
-                '''
-                # Start Motors
-                # For SainSmart 8 port USB model http://www.sainsmart.com/sainsmart-4-channel-12-v-usb-relay-board-module-controller-for-automation-robotics-1.html
-                # Note that this is specific to this model, if you want me to code for various models let me know and I can work with you to expand the code
-                # to cover more models and add ROS parameters for picking your model.
-                class relay(dict):
-                    address = {
-                        "1":"1",
-                        "2":"2",
-                        "3":"4",
-                        "4":"8",
-                        "5":"10",
-                        "6":"20",
-                        "7":"40",
-                        "8":"80",
-                        "all":"FF"
-                        }
-                relaySerialNumber = rospy.get_param("~usbRelaySerialNumber", "")
-                leftMotorRelay = rospy.get_param("~usbLeftMotorRelay", "")
-                rightMotorRelay = rospy.get_param("~usbRightMotorRelay", "")
-                if state == "on" and self._SafeToOperate == 1:
-                    BitBangDevice(relaySerialNumber).port |= int(relay.address[leftMotorRelay], 16)
-                    BitBangDevice(relaySerialNumber).port |= int(relay.address[rightMotorRelay], 16)
-                    self._motorsOn = 1
-                elif state == "off":
-                    BitBangDevice(relaySerialNumber).port &= ~int(relay.address[leftMotorRelay], 16)
-                    BitBangDevice(relaySerialNumber).port &= ~int(relay.address[rightMotorRelay], 16)
-                    self._motorsOn = 0
-                '''
         else: # If no automated motor control exists, just set the state blindly.
             if state:
                 self._motorsOn = 1
