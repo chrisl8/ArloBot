@@ -57,10 +57,11 @@ class SerialDataGateway(object):
                 stringIO.write(data)
 
     def Write(self, data):
-        #info = "Writing to serial port: %s" %data
-        #rospy.loginfo(info)
-        if hasattr(SerialDataGateway, '_Serial'): # Don't call if not initialized
+        #AttributeError: 'SerialDataGateway' object has no attribute '_Serial'
+        try:
             self._Serial.write(data)
+        except AttributeError:
+            rospy.loginfo("Serial Port not ready")
 
     if __name__ == '__main__':
         dataReceiver = SerialDataGateway("/dev/ttyUSB0", 115200)
