@@ -32,7 +32,7 @@ from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 from std_msgs.msg import String
 from std_msgs.msg import Bool
-from arlobot_msgs.msg import usbRelayStatus
+from arlobot_msgs.msg import usbRelayStatus, arloStatus
 from arlobot_msgs.srv import FindRelay, ToggleRelay
 
 from SerialDataGateway import SerialDataGateway
@@ -57,6 +57,7 @@ class PropellerComm(object):
         self.lastX = rospy.get_param("lastX", 0.0)
         self.lastY = rospy.get_param("lastY", 0.0)
         self.lastHeading = rospy.get_param("lastHeading", 0.0)
+        self.alternate_heading = self.lastHeading
 
         # Get motor relay numbers for use later in _HandleUSBRelayStatus if USB Relay is in use:
         self.relayExists = rospy.get_param("~usbRelayInstalled", False)
@@ -90,6 +91,7 @@ class PropellerComm(object):
         # Publishers
         self._SerialPublisher = rospy.Publisher('serial', String, queue_size=10)
         self._pirPublisher = rospy.Publisher('~pirState', Bool, queue_size=1)  # for publishing PIR status
+        self._arlo_status_publisher = rospy.Publisher('arlo_status', arloStatus, queue_size=1)
 
         # IF the Odometry Transform is done with the robot_pose_ekf do not publish it,
         # but we are not using robot_pose_ekf, because it does nothing for us if you don't have a full IMU!
@@ -129,8 +131,30 @@ class PropellerComm(object):
                 return
             if line_parts[0] == 's':  # Arlo Status info, such as sensors.
                 # rospy.loginfo("Propeller: " + line)
-                # TODO: Broadcast this info on a topic
+                self._broadcast_arlo_status(line_parts)
                 return
+
+    def _broadcast_arlo_status(self, line_parts):
+        arlo_status = arloStatus()
+        # Order from ROS Interface for ArloBot.c
+        # dprint(term, "s\t%d\t%d\t%d\t%d\t%d\n", safeToProceed, safeToRecede, Escaping, abd_speedLimit, abdR_speedLimit);
+        if int(line_parts[1]) == 1:
+            arlo_status.safeToProceed = True
+        else:
+            arlo_status.safeToProceed = False
+        if int(line_parts[2]) == 1:
+            arlo_status.safeToRecede = True
+        else:
+            arlo_status.safeToRecede = False
+        if int(line_parts[3]) == 1:
+            arlo_status.Escaping = True
+        else:
+            arlo_status.Escaping = False
+        arlo_status.abd_speedLimit = int(line_parts[4])
+        arlo_status.abdR_speedLimit = int(line_parts[5])
+        arlo_status.Heading = self.lastHeading
+        arlo_status.gyroHeading = self.alternate_heading
+        self._arlo_status_publisher.publish(arlo_status)
 
     def _handle_usb_relay_status(self, status):
         """
@@ -190,6 +214,7 @@ class PropellerComm(object):
         y = float(line_parts[2])
         # 3 is odom based heading and 4 is gyro based
         theta = float(line_parts[3])  # On ArloBot odometry derived heading works best.
+        alternate_theta = float(line_parts[4])
 
         vx = float(line_parts[5])
         omega = float(line_parts[6])
@@ -236,6 +261,7 @@ class PropellerComm(object):
         self.lastX = x
         self.lastY = y
         self.lastHeading = theta
+        self.alternate_heading = alternate_theta
 
         # robot_pose_ekf needs these covariances and we may need to adjust them.
         # From: ~/turtlebot/src/turtlebot_create/create_node/src/create_node/covariances.py
