@@ -18,7 +18,7 @@ Before running this code!
 ## Basic usage instructions: ##
 1. Build your ArloBot! http://ekpyroticfrood.net/?p=65
 2. Install SimpleIDE on a computer and load the code from the "Propeller C Code for ArloBot" folder into your Activity Board's EEPROM. You can do this from Windows or Linux. I find it handy to have SimpleIDE running on my ROS laptop on board the Arlo to make code updates easy. http://learn.parallax.com/propeller-c-set-simpleide/linux
-3. Install Ubuntu on a laptop to ride on the ArloBot, and optionally also on a "workstation." I use a "Workstation" for anything that needs a GUI, and I use SSH to connect to the laptop and run anything that does not.  My "Workstation" is an Oracle VirtualBox installation of Ubuntu, which I find works great for RVIZ on my Windows desktop.
+3. http://ekpyroticfrood.net/?p=81 Install Ubuntu on a laptop to ride on the ArloBot, and optionally also on a "workstation." I use a "Workstation" for anything that needs a GUI, and I use SSH to connect to the laptop and run anything that does not.  My "Workstation" is an Oracle VirtualBox installation of Ubuntu, which I find works great for RVIZ on my Windows desktop.
 4. Install ROS Indigo on a Ubuntu laptop that can connect via USB to your Activity Board: http://wiki.ros.org/indigo/Installation/Ubuntu
 5. You will also need the Turtlebot packages, as I use that code when I can: http://wiki.ros.org/turtlebot/Tutorials/indigo/Installation
 NOTE: At this time Indigo Turtlebot has to be installed from source. If you have trouble doing that let me know and I will post my personal "how to" on installing Turtlebot from source to make this work.
