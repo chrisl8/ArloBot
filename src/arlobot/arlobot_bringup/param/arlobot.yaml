@@ -1,5 +1,5 @@
 # Please enter the port where your ActivityBoard is at here. This is based on how your cables are plugged in.
-port: /dev/ttyUSB0
+port: /dev/ttyUSB1
 # I alwyas use 115200 for the ActivityBoard
 baudRate: 115200
 # trackwidth [m], distancePerCount [m]

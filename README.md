@@ -84,6 +84,13 @@ Tests from this setup:
   Turn off Laser Scan and turn on Registered DepthCloud to see if you get a picture of the room overlaied properly onto the 3D virtual world in RVIZ.
   
 
+Remote Control with an xBox 360 joystick:
+roslaunch arlobot_bringup minimal.launch --screen
+<New Terminal>
+rosparam set /joystick/dev "/dev/input/js1"
+roslaunch turtlebot_teleop xbox360_teleop.launch --screen
+
+
 Gmapping Demo (SLAM Map building):
 http://wiki.ros.org/turtlebot_navigation/Tutorials/Build%20a%20map%20with%20SLAM
 roslaunch arlobot_bringup minimal.launch --screen
