@@ -1,0 +1,35 @@
+<launch>
+  <!-- Turtlebot parameters, will eventually go away in arlobot -->
+
+  <arg name="base"       default="$(optenv TURTLEBOT_BASE create)"/>  <!-- create, rhoomba -->
+  <arg name="stacks"     default="$(optenv TURTLEBOT_STACKS circles)"/>  <!-- circles, hexagons -->
+  <arg name="3d_sensor"  default="$(optenv TURTLEBOT_3D_SENSOR asus_xtion_pro)"/>  <!-- kinect, asus_xtion_pro -->
+  <arg name="simulation" default="$(optenv TURTLEBOT_SIMULATION false)"/>
+
+
+  <param name="/use_sim_time" value="$(arg simulation)"/>
+  
+<!--
+  Collection of robot-centric definitions and nodes for the turtlebot.
+ -->
+
+  <arg name="urdf_file" default="$(find xacro)/xacro.py '$(find arlobot_description)/urdf/common.urdf.xacro'" />
+  <param name="robot_description" command="$(arg urdf_file)" />
+
+  <!-- important generally, but specifically utilised by the current app manager -->
+  <param name="robot/name" value="$(optenv ROBOT turtlebot)"/>
+  <param name="robot/type" value="turtlebot"/>
+
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+    <param name="publish_frequency" type="double" value="5.0" />
+  </node>
+<!-- Not used by ArloBot
+  <node pkg="diagnostic_aggregator" type="aggregator_node" name="diagnostic_aggregator" >
+    <rosparam command="load" file="$(find turtlebot_bringup)/param/$(arg base)/diagnostics.yaml" />
+  </node>
+-->
+
+  <include file="$(find arlobot_bringup)/launch/mobile_base.launch.xml" />
+  <include file="$(find arlobot_safety)/launch/arlobot_safety.launch" />
+  <include file="$(find arlobot_usbrelay)/launch/arlobot_usbrelay.launch" />
+</launch>

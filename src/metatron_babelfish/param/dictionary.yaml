@@ -1,0 +1,14 @@
+# Each of these should be a list because the metatron_babelfish node will pic one at random from the list,
+# Even if there is only one entry, it can still be a list. This makes it easy to add variation later, and easier to code the node.
+# This is a location where you can put .wav files to play instead of speaking text,
+# and then just put the filename in here in place of any text line.
+# metatron_babelfish will use the .wav in the name to decide it is to be played with aplay intead of espeak
+soundFileLocation: "/home/chrisl8/sounds"
+myname: ["two flower"]
+introduction: ["HelloMyNameIsTwoFlower.wav"]
+pluggedIn: ["Thank you for plugging me in."]
+unPlugged: ["Thank you for unplugging me.", "I suddenly feel very depressed"]
+PIRsensor1st: ["Hello?", "Hi.", "Greetings!"]
+PIRsensor2nd: ["Is anybody there?", "How are you?", "I talk, but I don't listen."]
+PIRsensorOff: ["Goodbye", "So long."]
+randomChatter: ["WhatHappensIfIDoThis.wav", "Yes, we are having a very nice time.", "Hello world!", "Is anybody there?", "How are you?", "I talk, but I don't listen.", "Has it ever occured to you?"]

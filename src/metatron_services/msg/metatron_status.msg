@@ -1,0 +1,8 @@
+bool arlobotMinimal
+bool camera1
+bool camera2
+bool newScreenShot
+bool leftMotorOn
+bool rightMotorOn
+bool upperLightOn
+bool lowerLightOn

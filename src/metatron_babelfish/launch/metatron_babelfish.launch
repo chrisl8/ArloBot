@@ -1,0 +1,5 @@
+<launch>
+  <node pkg="metatron_babelfish" type="metatron_babelfish.py" name="metatron_babelfish" respawn="true">
+    <rosparam file="$(find metatron_babelfish)/param/dictionary.yaml" command="load" ns="dictionary" />
+  </node>
+</launch>
