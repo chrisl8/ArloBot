@@ -87,7 +87,7 @@ Tests from this setup:
 Remote Control with an xBox 360 joystick:
 roslaunch arlobot_bringup minimal.launch --screen
 <New Terminal>
-rosparam set /joystick/dev "/dev/input/js1"
+rosparam set /joystick/dev "/dev/input/js0"
 roslaunch turtlebot_teleop xbox360_teleop.launch --screen
 
 

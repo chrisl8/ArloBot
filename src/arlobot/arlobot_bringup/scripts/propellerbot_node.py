@@ -189,12 +189,12 @@ class PropellerComm(object):
                 rospy.loginfo("Serial Data Gateway stopping . . .")
                 self._SerialDataGateway.Stop()
                 rospy.loginfo("Serial Data Gateway stopped.")
-                rospy.loginfo("10 second pause to let Activity Board settle after serial port reset . . .")
-                time.sleep(10)  # Give it time to settle.
+                rospy.loginfo("5 second pause to let Activity Board settle after serial port reset . . .")
+                time.sleep(5)  # Give it time to settle.
                 rospy.loginfo("Serial Data Gateway starting . . .")
-                self._SerialDataGateway.Start()  # This forces the ActivityBoard to reset before we shut down.
+                self._SerialDataGateway.Start()
                 rospy.loginfo("Serial Data Gateway started.")
-                # TODO: There is probably a better way, but this seems to work.
+                # TODO: Is there a way to reset the board without stopping and starring SerialDataGateway?
 
     def _broadcast_odometry_info(self, line_parts):
         """
@@ -618,12 +618,13 @@ class PropellerComm(object):
     def start(self):
         self._OdomStationaryBroadcaster.Start()
         # 10 second pause before starting serial gateway to let Activity Board settle in case it is resetting already
-        rospy.loginfo("10 second pause before starting serial gateway . . .")
-        count = 10
-        while count > 0:
-            rospy.loginfo(str(count) + " seconds until startup . . .")
-            time.sleep(1)
-            count -= 1
+        # There should be no reason to have to do this.
+        #rospy.loginfo("10 second pause before starting serial gateway . . .")
+        #count = 10
+        #while count > 0:
+        #    rospy.loginfo(str(count) + " seconds until startup . . .")
+        #    time.sleep(1)
+        #    count -= 1
         rospy.loginfo("Serial Data Gateway starting . . .")
         self._SerialDataGateway.Start()
         rospy.loginfo("Serial Data Gateway started.")
