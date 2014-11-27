@@ -40,6 +40,10 @@ class MetatronId(object):
         self.cameraChoice = ""  # Track camera choice
         self._MetaTronStatusPublisher = rospy.Publisher('~status', metatron_status, queue_size=1)
 
+        # Cameras - This is very setup dependent!
+        self.camera1 = rospy.get_param("/camera1", "/dev/video0")
+        self.camera2 = rospy.get_param("/camera2", "/dev/video0")
+
         # Don't forget to add your services to CMakeLists.txt
         camera_toggle = rospy.Service('~toggle_camera', ToggleCamera, self._toggle_cameras)
         # QUESTION: Is there any point to this, or should this just be in the metatron launch file?
@@ -167,11 +171,11 @@ class MetatronId(object):
 
         self.cameraChoice = req.camera
         if req.camera == "laptop":
-            video_command = ['mjpg_streamer', '-i', '/usr/local/lib/input_uvc.so -d /dev/video1 -f 30 -r 1280x720',
+            video_command = ['mjpg_streamer', '-i', '/usr/local/lib/input_uvc.so -d ' + self.camera2 + ' -f 30 -r 1280x720',
                              '-o',
                              '/usr/local/lib/output_http.so -p 58180 -w /home/chrisl8/mjpg-streamer/mjpg-streamer/www']
         else:  # Just assume we want the primary camera if we get a bogus choice
-            video_command = ['mjpg_streamer', '-i', '/usr/local/lib/input_uvc.so -d /dev/video0 -f 30 -r 1280x720',
+            video_command = ['mjpg_streamer', '-i', '/usr/local/lib/input_uvc.so -d ' + self.camera1 + ' -f 30 -r 1280x720',
                              '-o',
                              '/usr/local/lib/output_http.so -p 58180 -w /home/chrisl8/mjpg-streamer/mjpg-streamer/www']
 

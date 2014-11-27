@@ -13,6 +13,8 @@ from std_msgs.msg import Bool
 from metatron_services.srv import SpeakText, ListenText
 # For SMS sending
 from twilio.rest import TwilioRestClient
+# For Pushover - https://pushover.net/faq#library-python
+import httplib, urllib
 import os.path
 import time
 
@@ -43,6 +45,12 @@ class MetatronBabel(object):
         self.twilio_account_sid = rospy.get_param("/metatron_id/twilio_account_sid", "")
         self.twilio_auth_token = rospy.get_param("/metatron_id/twilio_auth_token", "")
         self.twilio_number = rospy.get_param("/metatron_id/twilio_number", "")
+
+        #Pushover setup - https://pushover.net/faq#library-python
+        self.use_pushover = rospy.get_param("/metatron_id/use_pushover", False)
+        self.pushover_token = rospy.get_param("/metatron_id/pushover_token", "")
+        self.pushover_user = rospy.get_param("/metatron_id/pushover_user", "")
+        self.pushover_sound = rospy.get_param("/metatron_id/pushover_sound", "")
 
         # In case we cannot find somethig in the dictionary, have something to say.
         self.missingDictionaryItem = ['I really have no idea what to say.']
@@ -84,14 +92,14 @@ class MetatronBabel(object):
                     if rospy.get_time() - self.PIR_last_hello > 600: # Initial greeting squelch in seconds
                         text = rospy.get_param("~dictionary/PIRsensor1st", self.missingDictionaryItem)
                         text = random.choice(text)
-                        print text
+                        #print text
                         self._say(text)
                         self.PIR_last_hello = rospy.get_time()
             else: # If PIR is no longer seeing something
                 if self.PIR_last_count > 15: # Only say "bye" if the activity was significant
                     text = rospy.get_param("~dictionary/PIRsensorOff", self.missingDictionaryItem)
                     text = random.choice(text)
-                    print text
+                    #print text
                     self._say(text)
             self.PIR_last_result = topicInput.data # New "last_result"
             self.PIR_last_count = 0 # Restart count since this is a new status
@@ -106,6 +114,10 @@ class MetatronBabel(object):
 
     def Stop(self):
         rospy.loginfo("Metatron BabelFish is shutting down.")
+        text = rospy.get_param("~dictionary/shutdown", self.missingDictionaryItem)
+        text = random.choice(text)
+        #print text
+        self._say(text)
 
     def Chatter(self):
         while not rospy.is_shutdown():
@@ -150,6 +162,7 @@ class MetatronBabel(object):
 
     def _handle_listen_request(self, text):
         print text.input_text
+        self._say(text)
         print text.sender[1:]
         return True
 
@@ -167,13 +180,26 @@ class MetatronBabel(object):
             process = subprocess.Popen([self.speechEngine, text], close_fds=True)
         process.wait() # Wait for it to finish, this should be instantaneous.
 
-        if not is_wav & self.use_twilio:
-            client = TwilioRestClient(self.twilio_account_sid, self.twilio_auth_token)
-            client.messages.create(
-                to=self.my_phone_number,
-                from_=self.twilio_number,
-                body=text,
-            )
+        # Twilio SMS send - Disabled for now, don't use for everything :)
+        # if not is_wav & self.use_twilio:
+        #     client = TwilioRestClient(self.twilio_account_sid, self.twilio_auth_token)
+        #     client.messages.create(
+        #         to=self.my_phone_number,
+        #         from_=self.twilio_number,
+        #         body=text,
+        #     )
+        # Pushover
+        # https://pushover.net/faq#library-python
+        if not is_wav & self.use_pushover:
+            conn = httplib.HTTPSConnection("api.pushover.net:443")
+            conn.request("POST", "/1/messages.json",
+                         urllib.urlencode({
+                             "token": self.pushover_token,
+                             "user": self.pushover_user,
+                             "sound": self.pushover_sound,
+                             "message": text,
+                             }), { "Content-type": "application/x-www-form-urlencoded" })
+            conn.getresponse()
         self.isSpeaking = False
         self.lastStatement = rospy.get_time()
 
