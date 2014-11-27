@@ -103,6 +103,9 @@ class PropellerComm(object):
         self._UltraSonicPublisher = rospy.Publisher("ultrasonic_scan", LaserScan, queue_size=10)
         self._InfraredPublisher = rospy.Publisher("infrared_scan", LaserScan, queue_size=10)
 
+        # You can use the ~/metatron/scripts/find_propeller.sh script to find this, and
+        # You can set it by running this before starting this:
+        # rosparam set /arlobot/port $(~/metatron/scripts/find_propeller.sh)        
         port = rospy.get_param("~port", "/dev/ttyUSB0")
         baud_rate = int(rospy.get_param("~baudRate", 115200))
 

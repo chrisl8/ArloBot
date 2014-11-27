@@ -1,5 +1,8 @@
-# Please enter the port where your ActivityBoard is at here. This is based on how your cables are plugged in.
-port: /dev/ttyUSB1
+# Note, the port where your Propeller is plugged in can be found with a script now,
+# This is in the Metatron package called ~/metatron/scripts/find_propeller.sh
+# So you can run this to set the port once roscore is started, but before starting Arlobot:
+# rosparam set /arlobot/port $(~/metatron/scripts/find_propeller.sh)
+#port: /dev/ttyUSB1
 # I alwyas use 115200 for the ActivityBoard
 baudRate: 115200
 # trackwidth [m], distancePerCount [m]
@@ -16,7 +19,8 @@ usbRelayInstalled: True
 # The other usbRelay... settings do not matter if usbRelayInstalled is False
 # For the port numbers and other specics about the USB Realy setup see and chnage arlobot_usbrelay/param/usbrelay.yaml
 # Get this serial number running ~/arlobot/src/arlobot/arlobot_bringup/scripts/drcontrol.py -l
-usbRelaySerialNumber: "A9026EI5"
+# Actually the serial number is now pulled programatically.
+#usbRelaySerialNumber: "A9026EI5"
 # You can connect the motors to any relay you want, and just put them here.
 # I use 6 and 2 based on the wiring location and that those two do not cycle when the laptop boots
 usbLeftMotorRelay: "6"
