@@ -25,6 +25,7 @@ import rospy
 import tf
 from math import sin, cos
 import time
+import json
 
 from geometry_msgs.msg import Quaternion
 from geometry_msgs.msg import Twist
@@ -388,7 +389,7 @@ class PropellerComm(object):
         # TODO: Use both IR and PING sensors?
         # The offset between the pretend sensor location in the URDF
         # and real location needs to be added to these values. This may need to be tweaked.
-        sensor_offset = 0.22545
+        sensor_offset = 0.217 # Measured, Calculated: 0.22545
         # This will be the max used range, anything beyond this is set to "artificial_far_distance"
         max_range_accepted = .5
 
@@ -443,37 +444,22 @@ class PropellerComm(object):
         # Currently I'm not using IR! Just PING. The IR is not being used by costmap.
         # It is here for seeing in RVIZ, and the Propeller board uses it for emergency stopping,
         # but costmap isn't watching it at the moment. I think it is too erratic for that.
+        
+        sensor_data = json.loads(line_parts[7])
+        ping = [artificial_far_distance] * 10
+        ir = [artificial_far_distance] * len(ping)
 
         # Convert cm to meters and add offset
-        ping_range0 = (int(line_parts[7]) / 100.0) + sensor_offset
-        # Set to "out of range" for distances over "max_range_accepted" to clear long range obstacles
-        # and use this for near range only.
-        if ping_range0 > max_range_accepted:
-            # Be sure "ultrasonic_scan.range_max" is set higher than this or
-            # costmap will ignore these and not clear the cost map!
-            ping_range0 = artificial_far_distance
-        ir_range0 = (int(line_parts[8]) / 100.0) + sensor_offset  # Convert cm to meters and add offset
-        ping_range1 = (int(line_parts[9]) / 100.0) + sensor_offset
-        if ping_range1 > max_range_accepted:
-            ping_range1 = artificial_far_distance
-        ir_range1 = (int(line_parts[10]) / 100.0) + sensor_offset
-        ping_range2 = (int(line_parts[11]) / 100.0) + sensor_offset  # Center forward sensor.
-        if ping_range2 > max_range_accepted:
-            ping_range2 = artificial_far_distance
-        ir_range2 = (int(line_parts[12]) / 100.0) + sensor_offset  # Center forward sensor.
-        ping_range3 = (int(line_parts[13]) / 100.0) + sensor_offset
-        if ping_range3 > max_range_accepted:
-            ping_range3 = artificial_far_distance
-        ir_range3 = (int(line_parts[14]) / 100.0) + sensor_offset
-        ping_range4 = (int(line_parts[15]) / 100.0) + sensor_offset
-        if ping_range4 > max_range_accepted:
-            ping_range4 = artificial_far_distance
-        ir_range4 = (int(line_parts[16]) / 100.0) + sensor_offset
-        # Rear sensor, note these numbers can change if you add more sensors!
-        ping_range5 = (int(line_parts[17]) / 100.0) + sensor_offset
-        if ping_range5 > max_range_accepted:
-            ping_range5 = artificial_far_distance
-        ir_range5 = (int(line_parts[18]) / 100.0) + sensor_offset
+        for i in range(0, len(ping)):
+            # ping[0] = (int(line_parts[7]) / 100.0) + sensor_offset
+            ping[i] = (sensor_data.get('p' + str(i), artificial_far_distance * 100) / 100.0) + sensor_offset
+            # Set to "out of range" for distances over "max_range_accepted" to clear long range obstacles
+            # and use this for near range only.
+            if ping[i] > max_range_accepted:
+                # Be sure "ultrasonic_scan.range_max" is set higher than this or
+                # costmap will ignore these and not clear the cost map!
+                ping[i] = artificial_far_distance
+            ir[i] = (sensor_data.get('i' + str(i), artificial_far_distance * 100) / 100.0) + sensor_offset  # Convert cm to meters and add offset
 
         # The sensors are 11cm from center to center at the front of the base plate.
         # The radius of the base plate is 22.545 cm
@@ -488,12 +474,12 @@ class PropellerComm(object):
         # sensors, instead of "jumping" from one point to the next.
         # # "sensor_spread" is how wide we expand the sensor "point" in the fake laser scan.
         # # For the purpose of obstacle avoidance, I think this can actually be a single point,
-        # # Since the costmap inflates these anyways.
+        # # Since the costmap inflates these anyway.
         #
         # #One issue I am having is it seems that the "ray trace" to the maximum distance
         # #may not line up with near hits, so that the global cost map is not being cleared!
         # #Switching from a "spread" to a single point may fix this?
-        # #Since the costmap inflates obstacles anyway, we shouldn't need the spead should we?
+        # #Since the costmap inflates obstacles anyway, we shouldn't need the spread should we?
         #
         # #sensor_spread = 10 # This is how wide of an arc (in degrees) to paint for each "hit"
         # #sensor_spread = 2 # Testing. I think it has to be even numbers?
@@ -506,65 +492,77 @@ class PropellerComm(object):
         # #so we are clearly inflating them here.
         #
         # for x in range(180 - sensor_spread / 2, 180 + sensor_spread / 2):
-        #     PINGranges[x] = ping_range5 # Rear Sensor
-        #     IRranges[x] = ir_range5 # Rear Sensor
+        #     PINGranges[x] = ping[5] # Rear Sensor
+        #     IRranges[x] = ir[5] # Rear Sensor
         #
         # for x in range((360 - sensor_seperation * 2) - sensor_spread / 2,
         #                (360 - sensor_seperation * 2) + sensor_spread / 2):
-        #     PINGranges[x] = ping_range4
-        #     IRranges[x] = ir_range4
+        #     PINGranges[x] = ping[4]
+        #     IRranges[x] = ir[4]
         #
         # for x in range((360 - sensor_seperation) - sensor_spread / 2,
         #                (360 - sensor_seperation) + sensor_spread / 2):
-        #     PINGranges[x] = ping_range3
-        #     IRranges[x] = ir_range3
+        #     PINGranges[x] = ping[3]
+        #     IRranges[x] = ir[3]
         #
         # for x in range(360 - sensor_spread / 2, 360):
-        #     PINGranges[x] = ping_range2
-        #     IRranges[x] = ir_range2
+        #     PINGranges[x] = ping[2]
+        #     IRranges[x] = ir[2]
         # # Crosses center line
         # for x in range(0, sensor_spread /2):
-        #     PINGranges[x] = ping_range2
-        #     IRranges[x] = ir_range2
+        #     PINGranges[x] = ping[2]
+        #     IRranges[x] = ir[2]
         #
         # for x in range(sensor_seperation - sensor_spread / 2, sensor_seperation + sensor_spread / 2):
-        #     PINGranges[x] = ping_range1
-        #     IRranges[x] = ir_range1
+        #     PINGranges[x] = ping[1]
+        #     IRranges[x] = ir[1]
         #
         # for x in range((sensor_seperation * 2) - sensor_spread / 2, (sensor_seperation * 2) + sensor_spread / 2):
-        #     PINGranges[x] = ping_range0
-        #     IRranges[x] = ir_range0
+        #     PINGranges[x] = ping[0]
+        #     IRranges[x] = ir[0]
 
         # Single Point code:
         #for x in range(180 - sensor_spread / 2, 180 + sensor_spread / 2):
-        ping_ranges[180] = ping_range5  # Rear Sensor
-        ir_ranges[180] = ir_range5  # Rear Sensor
+        ping_ranges[180 + sensor_seperation * 2] = ping[5]
+        ir_ranges[180 + sensor_seperation * 2] = ir[5]
+
+        ping_ranges[180 + sensor_seperation] = ping[6]
+        ir_ranges[180 + sensor_seperation] = ir[6]
+
+        ping_ranges[180] = ping[7]  # Rear Sensor
+        ir_ranges[180] = ir[7]  # Rear Sensor
+
+        ping_ranges[180 - sensor_seperation] = ping[8]
+        ir_ranges[180 - sensor_seperation] = ir[8]
+
+        ping_ranges[180 - sensor_seperation * 2] = ping[9]
+        ir_ranges[180 - sensor_seperation * 2] = ir[9]
 
         # for x in range((360 - sensor_seperation * 2) - sensor_spread / 2,
         #                (360 - sensor_seperation * 2) + sensor_spread / 2):
-        ping_ranges[360 - sensor_seperation * 2] = ping_range4
-        ir_ranges[360 - sensor_seperation * 2] = ir_range4
+        ping_ranges[360 - sensor_seperation * 2] = ping[4]
+        ir_ranges[360 - sensor_seperation * 2] = ir[4]
 
         # for x in range((360 - sensor_seperation) - sensor_spread / 2,
         #                (360 - sensor_seperation) + sensor_spread / 2):
-        ping_ranges[360 - sensor_seperation] = ping_range3
-        ir_ranges[360 - sensor_seperation] = ir_range3
+        ping_ranges[360 - sensor_seperation] = ping[3]
+        ir_ranges[360 - sensor_seperation] = ir[3]
 
         #for x in range(360 - sensor_spread / 2, 360):
-        #PINGranges[x] = ping_range2
-        #IRranges[x] = ir_range2
+        #PINGranges[x] = ping[2]
+        #IRranges[x] = ir[2]
         # Crosses center line
         #for x in range(0, sensor_spread /2):
-        ping_ranges[0] = ping_range2
-        ir_ranges[0] = ir_range2
+        ping_ranges[0] = ping[2]
+        ir_ranges[0] = ir[2]
 
         #for x in range(sensor_seperation - sensor_spread / 2, sensor_seperation + sensor_spread / 2):
-        ping_ranges[sensor_seperation] = ping_range1
-        ir_ranges[sensor_seperation] = ir_range1
+        ping_ranges[sensor_seperation] = ping[1]
+        ir_ranges[sensor_seperation] = ir[1]
 
         #for x in range((sensor_seperation * 2) - sensor_spread / 2, (sensor_seperation * 2) + sensor_spread / 2):
-        ping_ranges[sensor_seperation * 2] = ping_range0
-        ir_ranges[sensor_seperation * 2] = ir_range0
+        ping_ranges[sensor_seperation * 2] = ping[0]
+        ir_ranges[sensor_seperation * 2] = ir[0]
 
         # LaserScan: http://docs.ros.org/api/sensor_msgs/html/msg/LaserScan.html
         ultrasonic_scan = LaserScan()

@@ -6,4 +6,5 @@
 >-Wall
 >-fno-exceptions
 >defs::-std=c99
+>-lm
 >BOARD::GENERIC
