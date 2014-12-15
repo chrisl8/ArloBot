@@ -6,4 +6,5 @@ pkill roslaunch
 sleep 10
 pkill roscore
 sleep 1
+echo "Everything Killed."
 
