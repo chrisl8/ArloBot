@@ -7,13 +7,13 @@
 
  This is the code to run on a Parallax Propeller based Activity Board
  in order to interface ROS with an ArloBot.
- 
+
  Author: Chris L8 https://github.com/chrisl8
  URL: https://github.com/chrisl8/ArloBot
- 
+
  The ROS Node for this code is called propellerbot_node.py
  and can be found in the arlobot_bringup package from the above URL.
- 
+
  Special thanks to Dr. Rainer Hessmer. Much of this code is based on his work at
  https://code.google.com/p/drh-robotics-ros/
 
@@ -310,7 +310,7 @@ int main() {
                    Here is the code from arlodrive.c:
                     int abd_speedLimit = 100;
                     static int encoderFeedback = 1;
-                    
+
                     void drive_setMaxSpeed(int maxTicksPerSec) {
                           abd_speedLimit = maxTicksPerSec;
                         }
@@ -323,7 +323,7 @@ int main() {
                             if(right < -abd_speedLimit) right = -abd_speedLimit;
                           }
                           ...
-                    
+
                     So clearly we need to "normalize" the speed so that if one number is truncated,
                     the other is brought down the same amount, in order to accomplish the same turn
                     ratio at a slower speed!
@@ -422,7 +422,7 @@ void displayTicks(void) {
     over the "odometry" line, since it is real time data which is just as important
     as the odometry, and it seems like it would be faster to send and deal with one packet
     per cycle rather than two.
-    
+
     In the propeller node I will convert this to fake laser data.
     I have two goals here:
     1. I want to be able to visualize in RVIZ what the sensors are reporting. This will help with debugging
