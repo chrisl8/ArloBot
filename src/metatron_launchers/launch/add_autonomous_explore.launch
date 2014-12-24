@@ -1,0 +1,6 @@
+<!-- This will only work if Metatron & Alrobot are already running -->
+<launch>
+  <include file="$(find arlobot_explore)/launch/gmapping_explore.launch" />
+  <include file="$(find hector_exploration_node)/launch/exploration_planner.launch" />
+  <include file="$(find arlobot_explore)/launch/arlobot_explore.launch" />
+</launch>
