@@ -20,25 +20,25 @@ from pylibftdi import Driver # Required to get serial number of unknown USB Rela
 
 # From:
 # ----------------------------------------------------------------------------
-#   
+#
 #   DRCONTROL.PY
-#   
+#
 #   Copyright (C) 2012 Sebastian Sjoholm, sebastian.sjoholm@gmail.com
-#   
+#
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
-#   
+#
 #   This program is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
-#   
+#
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#   
-#   Version history can be found at 
+#
+#   Version history can be found at
 #   http://code.google.com/p/drcontrol/wiki/VersionHistory
 #
 #   $Rev$
@@ -124,7 +124,7 @@ class UsbRelay(object):
         # http://wiki.ros.org/rospy_tutorials/Tutorials/WritingPublisherSubscriber
         self.r = rospy.Rate(0.25) # 1hz refresh rate
         #self.r = rospy.Rate(1) # 1hz refresh rate
-        
+
         # Prevent overlapping calls to the serial port
         self._Busy = False
 
@@ -234,7 +234,7 @@ class UsbRelay(object):
             self.r.sleep() # Sleep long enough to maintain the rate set in __init__
 
     def Stop(self):
-        rospy.sleep(5) # Give other nodes a chance to clean up before shutting down our services.
+        #rospy.sleep(5) # Give other nodes a chance to clean up before shutting down our services.
         rospy.loginfo("Shutting off all enabled relays . . .")
         for i in range(1,9): # Walk the relays to find the one with the right name.
             relayEnabled = rospy.get_param("~relay" + str(i) + "enabled", False)

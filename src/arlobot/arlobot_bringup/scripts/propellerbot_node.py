@@ -106,8 +106,8 @@ class PropellerComm(object):
 
         # You can use the ~/metatron/scripts/find_propeller.sh script to find this, and
         # You can set it by running this before starting this:
-        # rosparam set /arlobot/port $(~/metatron/scripts/find_propeller.sh)        
-        port = rospy.get_param("~port", "/dev/ttyUSB0")
+        # rosparam set /arlobot/port $(~/metatron/scripts/find_propeller.sh)
+        port = rospy.get_param("~port", "/dev/ttyUSB1")
         baud_rate = int(rospy.get_param("~baudRate", 115200))
 
         rospy.loginfo("Starting with serial port: " + port + ", baud rate: " + str(baud_rate))
@@ -158,6 +158,7 @@ class PropellerComm(object):
         arlo_status.abdR_speedLimit = int(line_parts[5])
         arlo_status.Heading = self.lastHeading
         arlo_status.gyroHeading = self.alternate_heading
+        arlo_status.minDistanceSensor = int(line_parts[6])
         self._arlo_status_publisher.publish(arlo_status)
 
     def _handle_usb_relay_status(self, status):
@@ -444,8 +445,11 @@ class PropellerComm(object):
         # Currently I'm not using IR! Just PING. The IR is not being used by costmap.
         # It is here for seeing in RVIZ, and the Propeller board uses it for emergency stopping,
         # but costmap isn't watching it at the moment. I think it is too erratic for that.
-        
-        sensor_data = json.loads(line_parts[7])
+
+        try:
+            sensor_data = json.loads(line_parts[7])
+        except:
+            return
         ping = [artificial_far_distance] * 10
         ir = [artificial_far_distance] * len(ping)
 

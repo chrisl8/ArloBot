@@ -7,4 +7,4 @@
 >-fno-exceptions
 >defs::-std=c99
 >-lm
->BOARD::GENERIC
+>BOARD::QUICKSTART

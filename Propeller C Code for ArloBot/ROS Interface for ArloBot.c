@@ -1,13 +1,13 @@
 /*
  This is the code to run on a Parallax Propeller based Activity Board
  in order to interface ROS with an ArloBot.
- 
+
  Author: Chris L8 https://github.com/chrisl8
  URL: https://github.com/chrisl8/ArloBot
- 
+
  The ROS Node for this code is called propellerbot_node.py
  and can be found in the arlobot_bringup package from the above URL.
- 
+
  Special thanks to Dr. Rainer Hessmer. Much of this code is based on his work at
  https://code.google.com/p/drh-robotics-ros/
 
@@ -82,6 +82,7 @@ int pingArray[6] = {0};
 int irArray[8] = {0};
 const int irArrayLength = 8; // The IR array will have empty positions
 const int numberOfPINGsensors = 6; // Number of PING sensors, we assume the are consecutive
+const int rearPINGsensor = 5;
 const int rearIRsensor = 7;
 
 // Local Sensor Polling Cog
@@ -126,7 +127,7 @@ void pollGyro(void *par); // Use a cog to fill range variables with ping distanc
 static int gyrostack[128]; // If things get weird make this number bigger!
 
 // For "Safety Override" Cog
-static int safeToProceed = 0, safeToRecede = 0, Escaping = 0;
+static volatile int safeToProceed = 0, safeToRecede = 0, Escaping = 0, minDistanceSensor = 0;
 
 void safetyOverride(void *par); // Use a cog to squelch incoming commands and perform safety procedures like halting, backing off, avoiding cliffs, calling for help, etc.
 // This can use proximity sensors to detect obstacles (including people) and cliffs
@@ -267,16 +268,20 @@ int main() {
     double CommandedVelocity = 0.0;
     double CommandedAngularVelocity = 0.0;
 
+    // Declaring variables outside of loop
+    // This may or may not improve performance
+    // Some of these we want to hold and use later too
+    char buf[20]; // A Buffer long enough to hold the longest line ROS may send.
+    int count = 0;
+    double angularVelocityOffset = 0.0, expectedLeftSpeed = 0.0, expectedRightSpeed = 0.0;
+
     // Listen for drive commands
     while (1) {
 
-        /* TODO:
-         1. Should there should be code here to stop the motors if we go too long with no input from ROS?
-         */
+        // TODO: Should there should be code here to stop the motors if we go too long with no input from ROS?
 
         if (fdserial_rxReady(term) != 0) { // Non blocking check for data in the input buffer
-            char buf[20]; // A Buffer long enough to hold the longest line ROS may send.
-            int count = 0;
+            count = 0;
             while (count < 20) {
                 buf[count] = readChar(term);
                 if (buf[count] == '\r' || buf[count] == '\n')
@@ -292,69 +297,86 @@ int main() {
                 CommandedVelocity = strtod(token, &unconverted);
                 token = strtok(NULL, delimiter);
                 CommandedAngularVelocity = strtod(token, &unconverted);
-                double angularVelocityOffset = CommandedAngularVelocity * (trackWidth * 0.5);
-
-                // Prevent saturation at max wheel speed when a compound command is sent.
-                /* Without this, if your max speed is 50, and ROS asks us to set one wheel
-                   at 50 and the other at 100, we will end up with both at 50
-                   changing a turn into a straight line!
-                   This is because arlodrive.c just cuts off each wheel at the set max speed
-                   with no regard for the expected left to right wheel speed ratio.
-                   Here is the code from arlodrive.c:
-                    int abd_speedLimit = 100;
-                    static int encoderFeedback = 1;
-                    
-                    void drive_setMaxSpeed(int maxTicksPerSec) {
-                          abd_speedLimit = maxTicksPerSec;
-                        }
-                    ...
-                    void set_drive_speed(int left, int right) {
-                      if(encoderFeedback) {
-                            if(left > abd_speedLimit) left = abd_speedLimit;
-                            if(left < -abd_speedLimit) left = -abd_speedLimit;
-                            if(right > abd_speedLimit) right = abd_speedLimit;
-                            if(right < -abd_speedLimit) right = -abd_speedLimit;
-                          }
-                          ...
-                    
-                    So clearly we need to "normalize" the speed so that if one number is truncated,
-                    the other is brought down the same amount, in order to accomplish the same turn
-                    ratio at a slower speed!
-                    Especially if the max speed is variable based on parameters within this code,
-                    such as proximity to walls, etc.
-                */
-                if (CommandedVelocity > 0) {
-                    if ((abd_speedLimit * distancePerCount) - fabs(angularVelocityOffset) < CommandedVelocity)
-                        CommandedVelocity = (abd_speedLimit * distancePerCount) - fabs(angularVelocityOffset);
-                } else {
-                    if (-((abdR_speedLimit * distancePerCount) - fabs(angularVelocityOffset)) > CommandedVelocity)
-                        CommandedVelocity = -((abdR_speedLimit * distancePerCount) - fabs(angularVelocityOffset));
-                }
-
-                double expectedLeftSpeed = CommandedVelocity - angularVelocityOffset;
-                double expectedRightSpeed = CommandedVelocity + angularVelocityOffset;
-
-                expectedLeftSpeed = expectedLeftSpeed / distancePerCount;
-                expectedRightSpeed = expectedRightSpeed / distancePerCount;
-
-                if (Escaping == 0) { // Don't fight with the Propeller escape code!
-                    if (CommandedVelocity > 0 && safeToProceed == 1) {
-                        drive_speed(expectedLeftSpeed, expectedRightSpeed);
-                    } else if (CommandedVelocity < 0 && safeToRecede == 1) {
-                        drive_speed(expectedLeftSpeed, expectedRightSpeed);
-                    } else if (CommandedVelocity == 0) {
-                        // Rotate in place at full requested speed regardless of nearby obstacles.
-                        drive_speed(expectedLeftSpeed, expectedRightSpeed);
-                    }
-                }
-                // Using drive_rampStep does not appear to work with AMCL. It expects the robot to do what it is told, and
-                // this doesn't give later commands Especially the command to slow to 0! The drive is left creeping after AMCL
-                // tells it to stop!
-                // Worse drive_rampStep causes the robot to behave in an almost drunk manner where it wanders left and right
-                // instead of going straight ahead.
-                // The repeated "twist" statements provide the required "loop".
+                angularVelocityOffset = CommandedAngularVelocity * (trackWidth * 0.5);
             }
         }
+
+        /* Restructuring this so that it updates the drive_speed on EVERY
+           round. This way even if there is no updated twist command
+           from ROS, we will still account for updates in the speed limit
+           from the SaftyOverride cog by recalculating the drive commands
+           based on the new speed limit at every loop.*/
+
+        // Prevent saturation at max wheel speed when a compound command is sent.
+        /* Without this, if your max speed is 50, and ROS asks us to set one wheel
+           at 50 and the other at 100, we will end up with both at 50
+           changing a turn into a straight line!
+           This is because arlodrive.c just cuts off each wheel at the set max speed
+           with no regard for the expected left to right wheel speed ratio.
+           Here is the code from arlodrive.c:
+            int abd_speedLimit = 100;
+            static int encoderFeedback = 1;
+
+            void drive_setMaxSpeed(int maxTicksPerSec) {
+                  abd_speedLimit = maxTicksPerSec;
+                }
+            ...
+            void set_drive_speed(int left, int right) {
+              if(encoderFeedback) {
+                    if(left > abd_speedLimit) left = abd_speedLimit;
+                    if(left < -abd_speedLimit) left = -abd_speedLimit;
+                    if(right > abd_speedLimit) right = abd_speedLimit;
+                    if(right < -abd_speedLimit) right = -abd_speedLimit;
+                  }
+                  ...
+
+            So clearly we need to "normalize" the speed so that if one number is truncated,
+            the other is brought down the same amount, in order to accomplish the same turn
+            ratio at a slower speed!
+            Especially if the max speed is variable based on parameters within this code,
+            such as proximity to walls, etc.
+        */
+
+        //dprint(term, "\nd1:%f\n", CommandedVelocity); // For Debugging
+        // Not doing this on in place rotations (Velocity = 0)
+        if (CommandedVelocity > 0) { // Use forward speed limit for rotate in place.
+            if ((abd_speedLimit * distancePerCount) - fabs(angularVelocityOffset) < CommandedVelocity)
+                CommandedVelocity = (abd_speedLimit * distancePerCount) - fabs(angularVelocityOffset);
+        // Use abdR_speedLimit for reverse movement.
+        } else if (CommandedVelocity < 0){ // In theory ROS never requests a negative angular velocity, only teleop
+            if (-((abdR_speedLimit * distancePerCount) - fabs(angularVelocityOffset)) > CommandedVelocity)
+                CommandedVelocity = -((abdR_speedLimit * distancePerCount) - fabs(angularVelocityOffset));
+        }
+
+        expectedLeftSpeed = CommandedVelocity - angularVelocityOffset;
+        expectedRightSpeed = CommandedVelocity + angularVelocityOffset;
+
+        expectedLeftSpeed = expectedLeftSpeed / distancePerCount;
+        expectedRightSpeed = expectedRightSpeed / distancePerCount;
+
+        //dprint(term, "\nd1:%f\n", CommandedVelocity); // For Debugging
+        if (Escaping == 0) { // Don't fight with the Propeller escape code!
+            if (CommandedVelocity > 0) {
+                if (safeToProceed == 1)
+                    drive_speed(expectedLeftSpeed, expectedRightSpeed);
+                else
+                    drive_speed(0, 0);
+            } else if (CommandedVelocity < 0) { // In theory ROS never does this, right? Only teleop
+                if (safeToRecede == 1)
+                    drive_speed(expectedLeftSpeed, expectedRightSpeed);
+                else
+                    drive_speed(0, 0);
+            } else if (CommandedVelocity == 0) {
+                // Rotate in place regardless of nearby obstacles.
+                drive_speed(expectedLeftSpeed, expectedRightSpeed);
+            }
+        }
+        // Using drive_rampStep does not appear to work with AMCL. It expects the robot to do what it is told, and
+        // this doesn't give later commands Especially the command to slow to 0! The drive is left creeping after AMCL
+        // tells it to stop!
+        // Worse drive_rampStep causes the robot to behave in an almost drunk manner where it wanders left and right
+        // instead of going straight ahead.
+        // The repeated "twist" statements provide the required "loop".
         pause(10); // Maximum read frequency. TODO: Is this required? Is it the right length?
     }
 }
@@ -415,7 +437,7 @@ void displayTicks(void) {
     over the "odometry" line, since it is real time data which is just as important
     as the odometry, and it seems like it would be faster to send and deal with one packet
     per cycle rather than two.
-    
+
     In the propeller node I will convert this to fake laser data.
     I have two goals here:
     1. I want to be able to visualize in RVIZ what the sensors are reporting. This will help with debugging
@@ -443,7 +465,7 @@ void displayTicks(void) {
     // Send a regular "status" update to ROS including information that does not need to be refreshed as often as the odometry.
     throttleStatus = throttleStatus + 1;
     if (throttleStatus > 9) {
-        dprint(term, "s\t%d\t%d\t%d\t%d\t%d\n", safeToProceed, safeToRecede, Escaping, abd_speedLimit, abdR_speedLimit);
+        dprint(term, "s\t%d\t%d\t%d\t%d\t%d\t%d\n", safeToProceed, safeToRecede, Escaping, abd_speedLimit, abdR_speedLimit, minDistanceSensor);
         throttleStatus = 0;
     }
 }
@@ -560,160 +582,234 @@ void pollGyro(void *par) {
     }
 }
 
-const int maxDistance = 70;
-const int IRMaxDistance = 60; // Because IR is less reliable at long distances
-const int haltDistance[10] = {5, 10, 12, 10, 5, 5, 10, 12, 10, 5};
-const int minimumSpeed = 10;
-
 void safetyOverride(void *par) {
-// Each sensor needs to have its own response because of their various angles.
-// We cannot use the same distance response for each, and we may want different max speeds and escape sequences.
-    int startSlowDownDistance[10] = {10, 40, maxDistance, 40, 10, 10, 40, maxDistance, 40, 10};
-    int IRstartSlowDownDistance[10] = {10, 40, IRMaxDistance, 40, 10, 10, 40, maxDistance, 40, 10};
-// TODO: Is there some way to make the robot stop and not "back and forth" because it goes past halt distance?
+    const int maxDistance = 70;
+    const int IRMaxDistance = 50; // Because IR is less reliable at long distances
+    const int haltDistance[10] = {5, 10, 12, 10, 5, 5, 10, 12, 10, 5};
+    const int minimumSpeed = 10;
+    const int throttleStop = 5; // Determines how fast speed limit changes happen.
+    int throttleRamp = 0;
+    // Each sensor needs to have its own response because of their various angles.
+    // We cannot use the same distance response for each, and we may want different max speeds and escape sequences.
+    int startSlowDownDistance[10] = {8, 40, maxDistance, 40, 8, 8, 40, maxDistance, 40, 8};
+    int IRstartSlowDownDistance[10] = {8, 20, IRMaxDistance, 20, 8, 8, 20, maxDistance, 20, 8};
+    // Declare all variables up front so they do not have to be created in the loop, only set.
+    // This may or may not improve performance.
+    int blockedSensor[10] = {0};
+    int i, blockedF = 0, blockedR = 0, pleaseEscape = 0, minDistance = 255, minRDistance = 255, newSpeedLimit = 100;
     while (1) {
-        int blockedSensor[6] = {0};
-        int i, blocked = 0, minDistance = 255;
-        // Walk PING Array to find blocked paths and halt immediately
+        // Rest blockedSensor array to all zeros.
+        memset(blockedSensor, 0, sizeof(blockedSensor));
+        blockedF = 0;
+        blockedR = 0;
+        pleaseEscape = 0;
+        minDistance = 255;
+        // Walk Front Sensor Array to find blocked paths and halt immediately
         for (i = 0; i < 5; i++) { // Only use the front sensors
+            // PING Sensors
             if (pingArray[i] < startSlowDownDistance[i]) {
-                if (pingArray[i] < minDistance)
+                if (pingArray[i] <= haltDistance[i] + 1) { // Halt just before.
+                    safeToProceed = 0; // Prevent main thread from setting any drive_speed
+                    // Stop robot if it is currently moving forward and not escaping
+                    //if ((Escaping == 0) && (speedLeft > 0 || speedRight > 0)) {
+                    if ((Escaping == 0) && ((speedLeft + speedRight) > 0)) {
+                        drive_speed(0, 0);
+                    }
+                    blockedF = 1; // Use this to give the "all clear" later if it never gets set
+                    blockedSensor[i] = 1; // Keep track of which sensors are blocked for intelligent escape sequences.
+                    if (pingArray[i] < haltDistance[i]) // Escape just after, to try make a buffer to avoid back and forthing.
+                        pleaseEscape = 1;
+                }
+                // For speed restriction:
+                if (pingArray[i] < minDistance) {
                     minDistance = pingArray[i];
-                if (pingArray[i] < haltDistance[i]) {
-                    blocked = 1; // Use this to give the "all clear" later if it never gets set
-                    safeToProceed = 0; // Prevent main thread from setting any drive_speed
-                    blockedSensor[i] = 1; // Keep track of which sensors are blocked for intelligent escape sequences.
+                    minDistanceSensor = i;
                 }
             }
-        }
-
-        // Walk IR Array to find blocked paths and halt immediately
-        // Check IR sensors on MCP3208
-        for (i = 0; i < 5; i++) { // Only use the front sensors
+            // IR Sensors
             if (irArray[i] < IRstartSlowDownDistance[i]) {
-                if (irArray[i] < minDistance)
-                    minDistance = irArray[i];
-                if (irArray[i] < haltDistance[i]) {
-                    blocked = 1; // Use this to give the "all clear" later if it never gets set
+                if (irArray[i] <= haltDistance[i] + 1) {
                     safeToProceed = 0; // Prevent main thread from setting any drive_speed
+                    // Stop robot if it is currently moving forward and not escaping
+                    //if ((Escaping == 0) && (speedLeft > 0 || speedRight > 0)) {
+                    if ((Escaping == 0) && ((speedLeft + speedRight) > 0)) {
+                        drive_speed(0, 0);
+                    }
+                    blockedF = 1; // Use this to give the "all clear" later if it never gets set
                     blockedSensor[i] = 1; // Keep track of which sensors are blocked for intelligent escape sequences.
+                    if (irArray[i] < haltDistance[i])
+                        pleaseEscape = 1;
+                }
+                // For speed restriction:
+                if (irArray[i] < minDistance) {
+                    minDistance = irArray[i];
+                    minDistanceSensor = i;
                 }
             }
         }
 
-        // Check rear Sensor and just don't reverse, no escaping yet.
-        if (pingArray[rearIRsensor] < haltDistance[rearIRsensor]) {
-            safeToRecede = 0;
-        } else if (irArray[rearIRsensor] < haltDistance[rearIRsensor]) {
-            safeToRecede = 0;
-        } else {
-            safeToRecede = 1;
+        minRDistance = 255;
+        // Check the REAR PING sensor to find blocked paths and halt immediately
+        if (pingArray[rearPINGsensor] < startSlowDownDistance[rearPINGsensor]) {
+            if (pingArray[rearPINGsensor] <= haltDistance[rearPINGsensor] + 1) { // Halt just before.
+                safeToRecede = 0; // Prevent main thread from setting any drive_speed
+                // Stop robot if it is currently moving forward and not escaping
+                //if ((Escaping == 0) && (speedLeft < 0 || speedRight < 0)) {
+                if ((Escaping == 0) && ((speedLeft + speedRight) < 0)) {
+                    drive_speed(0, 0);
+                }
+                blockedR = 1; // Use this to give the "all clear" later if it never gets set
+                blockedSensor[rearPINGsensor] = 1; // Keep track of which sensors are blocked for intelligent escape sequences.
+                if (pingArray[rearPINGsensor] < haltDistance[rearPINGsensor]) // Escape just after, to try make a buffer to avoid back and forthing.
+                    pleaseEscape = 1;
+            }
+            // For speed restriction:
+            if (pingArray[rearPINGsensor] < minRDistance) {
+                minRDistance = pingArray[rearPINGsensor];
+                minDistanceSensor = rearPINGsensor;
+            }
         }
-
-        // Set backup speed limit
-        int minRDistance = 255;
-        if (pingArray[rearIRsensor] < startSlowDownDistance[rearIRsensor]) {
-            minRDistance = pingArray[rearIRsensor];
-        }
+        // IR Sensor - Only one of these
         if (irArray[rearIRsensor] < IRstartSlowDownDistance[rearIRsensor]) {
+            if (irArray[rearIRsensor] <= haltDistance[rearIRsensor] + 1) {
+                safeToRecede = 0; // Prevent main thread from setting any drive_speed
+                // Stop robot if it is currently moving forward and not escaping
+                //if ((Escaping == 0) && (speedLeft < 0 || speedRight < 0)) {
+                if ((Escaping == 0) && ((speedLeft + speedRight) < 0)) {
+                    drive_speed(0, 0);
+                }
+                blockedR = 1; // Use this to give the "all clear" later if it never gets set
+                blockedSensor[rearIRsensor] = 1; // Keep track of which sensors are blocked for intelligent escape sequences.
+                if (irArray[rearIRsensor] < haltDistance[rearIRsensor])
+                    pleaseEscape = 1;
+            }
+            // For speed restriction:
             if (irArray[rearIRsensor] < minRDistance) {
                 minRDistance = irArray[rearIRsensor];
+                minDistanceSensor = i;
             }
         }
 
-        // Reduce speed when we are close to an obstruction
-        /*
-        Ideas:
-        1. A counter that requires a given speed to be arrived at X times before it is implemented.
-        2. Same, but only for wide changes.
-        3. A system by which it only changes X per round, so it has to change slowly, not rapidly
-        Have to test each to see how it deals with sudden obstacles in the way,
-        and with normal driving.
-        */
+        // Reduce Speed Limit when we are close to an obstruction
+        /* Explanation: minDistance won't be set unless a given sensor is closer than its particular
+        startSlowDownDistance value, so we won't be slowing down if sensor 0 is 40, only if it is
+        under 10 */
         if (minDistance < maxDistance) {
             // Set based on percentage of range
-            int new_abd_speedLimit = (minDistance - haltDistance[1]) * (100 / (maxDistance - haltDistance[1]));
+            // TODO: Is this a good method?
+            newSpeedLimit = (minDistance - haltDistance[minDistanceSensor]) * (100 / (maxDistance - haltDistance[minDistanceSensor]));
             // Limit maximum and minimum speed.
-            if (new_abd_speedLimit < minimumSpeed) {
-                new_abd_speedLimit = minimumSpeed;
-            } else if (new_abd_speedLimit > 100) {
-                new_abd_speedLimit = 100;
+            if (newSpeedLimit < minimumSpeed) {
+                newSpeedLimit = minimumSpeed;
+            } else if (newSpeedLimit > 100) {
+                newSpeedLimit = 100;
             }
-
             // Ramp and limit affect of random hits
-            if (new_abd_speedLimit > abd_speedLimit) {
-                abd_speedLimit = abd_speedLimit + 1;
-            } else if (new_abd_speedLimit < abd_speedLimit) {
-                abd_speedLimit = abd_speedLimit - 1;
+            if (newSpeedLimit > abd_speedLimit) {
+                if (throttleRamp == throttleStop)
+                    abd_speedLimit = abd_speedLimit + 1;
+            } else if (newSpeedLimit < abd_speedLimit) {
+                if (throttleRamp == throttleStop)
+                    abd_speedLimit = abd_speedLimit - 1;
             }
-        } else { //TODO: How would we ever get here without abd_speedLimit already == 100?
-            abd_speedLimit = 100; // Full speed if all is well, let the built in speed ramping of drive_rampStep deal with the sudden increase
+        } else {
+            // Ramp return to full if all obstacles are clear
+            if (abd_speedLimit < 100) {
+                if (throttleRamp == throttleStop) // Slow ramping down
+                    abd_speedLimit = abd_speedLimit + 1;
+            }
         }
 
-        // Same for reverse speed limit
-        // TODO: This code should probably be some sort of function instead of a cut and paste :)
-        //abdR_speedLimit = 100;
+        // Same for REVERSE Speed Limit
         if (minRDistance < maxDistance) {
             // Set based on percentage of range
-            int newRLimit = (minRDistance - haltDistance[1]) * (100 / (maxDistance - haltDistance[1]));
+            // TODO: Is this a good method?
+            newSpeedLimit = (minRDistance - haltDistance[minDistanceSensor]) * (100 / (maxDistance - haltDistance[minDistanceSensor]));
             // Limit maximum and minimum speed.
-            if (newRLimit < minimumSpeed) {
-                newRLimit = minimumSpeed;
-            } else if (newRLimit > 100) {
-                newRLimit = 100;
+            if (newSpeedLimit < minimumSpeed) {
+                newSpeedLimit = minimumSpeed;
+            } else if (newSpeedLimit > 100) {
+                newSpeedLimit = 100;
             }
-
             // Ramp and limit affect of random hits
-            if (newRLimit > abdR_speedLimit) {
-                abdR_speedLimit = abdR_speedLimit + 1;
-            } else if (newRLimit < abdR_speedLimit) {
-                abdR_speedLimit = abdR_speedLimit - 1;
+            if (newSpeedLimit > abdR_speedLimit) {
+                if (throttleRamp == throttleStop)
+                    abdR_speedLimit = abdR_speedLimit + 1;
+            } else if (newSpeedLimit < abdR_speedLimit) {
+                if (throttleRamp == throttleStop)
+                    abdR_speedLimit = abdR_speedLimit - 1;
             }
-        } else { //TODO: How would we ever get here without abdR_speedLimit already == 100?
-            abdR_speedLimit = 100; // Full speed if all is well, let the built in speed ramping of drive_rampStep deal with the sudden increase
+        } else {
+            // Ramp return to full if all obstacles are clear
+            if (abdR_speedLimit < 100) {
+                if (throttleRamp == throttleStop) // Slow ramping down
+                    abdR_speedLimit = abdR_speedLimit + 1;
+            }
         }
 
+        // Clear forward and backward individually now.
+        if (blockedF == 0) {
+            safeToProceed = 1;
+        }
+        if (blockedR == 0) {
+            safeToRecede = 1;
+        }
         // If NO sensors are blocked, give the all clear!
-        if (blocked == 0) {
-            if (Escaping == 1) {// If it WAS unsafe before
+        if (blockedF == 0 && blockedR == 0) {
+            if (Escaping == 1) {// If it WAS escaping before stop it before releasing it
                 drive_speed(0, 0); // return to stopped before giving control back to main thread
             }
-            safeToProceed = 1;
             Escaping = 0; // Have fun!
         } else {
-            Escaping = 1; // This will stop main thread from driving the motors.
-            /* At this point we are blocked, so it is OK to take over control
-               of the robot (safeToProceed == 0, so the main thread won't do anything),
-               and it is safe to do work ignoring the need to slow down or stop
-               because we know our position pretty well.
-               HOWEVER, you will have to RECHECK distances yourself if you are going to move
-               in this program location.
-            */
-            if (safeToRecede == 1) {
-                // NOTE: This might cause a wiggle :)
-                // TODO: Might need to add a pause on some of these to give them more time and avoid back and forthing with no progress.
-                if (blockedSensor[2] == 1) {
-                    drive_speed(-minimumSpeed, -minimumSpeed); // back off slowly until we are clear. This needs more smarts.
-                    // Question: Should 0 and 4 have priority or 1 and 3?
-                } else if (blockedSensor[1] == 1) { // block on sensor left of center
-                    drive_speed(-minimumSpeed, -(minimumSpeed * 2)); // Curve out to the right
-                } else if (blockedSensor[3] == 1) { // blocked on sensor right of center
-                    drive_speed(-(minimumSpeed * 2), -minimumSpeed); // Curve out to the left
-                } else if (blockedSensor[0] == 1) { // Blocked on far left side or near wall
-                    drive_speed(0, -minimumSpeed); // Turn out to the right slowly
-                } else if (blockedSensor[4] == 1) { // Blocked on far right side or near wall
-                    drive_speed(-minimumSpeed, 0); // Turn out to the left slowly
+            if (pleaseEscape == 1) {
+                Escaping = 1; // This will stop main thread from driving the motors.
+                /* At this point we are blocked, so it is OK to take over control
+                   of the robot (safeToProceed == 0, so the main thread won't do anything),
+                   and it is safe to do work ignoring the need to slow down or stop
+                   because we know our position pretty well.
+                   HOWEVER, you will have to RECHECK distances yourself if you are going to move
+                   in this program location.
+                */
+                if (safeToRecede == 1) {
+                    // The order here determines priority.
+                    if (blockedSensor[2] == 1) {
+                        drive_speed(-minimumSpeed, -minimumSpeed);
+                    } else if (blockedSensor[1] == 1) { // block on sensor left of center
+                        drive_speed(-minimumSpeed, -(minimumSpeed * 2)); // Curve out to the right
+                    } else if (blockedSensor[3] == 1) { // blocked on sensor right of center
+                        drive_speed(-(minimumSpeed * 2), -minimumSpeed); // Curve out to the left
+                    } else if (blockedSensor[0] == 1) { // Blocked on far left side or near wall
+                        drive_speed(0, -minimumSpeed); // Turn out to the right slowly
+                    } else if (blockedSensor[4] == 1) { // Blocked on far right side or near wall
+                        drive_speed(-minimumSpeed, 0); // Turn out to the left slowly
+                    }
+                } else if (safeToProceed == 1) { // Escaping for rear sensors, these will move more generically forward.
+                    if (blockedSensor[7] == 1) {
+                        drive_speed(minimumSpeed, minimumSpeed);
+                    } else if (blockedSensor[6] == 1) { // block on sensor left of center
+                        drive_speed(minimumSpeed, minimumSpeed);
+                    } else if (blockedSensor[8] == 1) { // blocked on sensor right of center
+                        drive_speed(minimumSpeed, minimumSpeed);
+                    } else if (blockedSensor[5] == 1) { // Blocked on far left side or near wall
+                        drive_speed(minimumSpeed, minimumSpeed);
+                    } else if (blockedSensor[9] == 1) { // Blocked on far right side or near wall
+                        drive_speed(minimumSpeed, minimumSpeed);
+                    }
+                } else { // We are trapped, be still.
+                    drive_speed(0, 0);
                 }
-            } else {
-                drive_speed(0, 0);
+            } else { // This is the "halt" but don't "escape" action.
+                if (Escaping == 1) {// If it WAS Escaping, stop it now.
+                    drive_speed(0, 0); // return to stopped before giving control back to main thread
+                }
+                Escaping = 0; // Blocked, but not escaping.
             }
         }
 
-        pause(1); // This throttles the transition speed of everything in this cog.
-        /* Imagine the functions here, and how many times they have to iterate to achieve
-           a given setting, and multiply it by this to determine the maximum transition
-           speed.
-        */
+        throttleRamp = throttleRamp + 1;
+        if(throttleRamp > throttleStop)
+            throttleRamp = 0;
 
+        pause(1); // Just throttles this cog a little.
     }
 }
