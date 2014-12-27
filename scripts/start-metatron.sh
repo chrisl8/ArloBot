@@ -1,3 +1,12 @@
+# This is the primary script to
+# Start the entire robot
+# Check to make sure required hardware is present:
+${SCRIPTDIR}/check_hardware.sh
+if [ $? -gt 0 ]
+then
+echo "Hardware problem! Exiting!"
+exit 1
+fi
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 ${SCRIPTDIR}/ros_prep.sh
 # Start web server for Twilio
