@@ -34,7 +34,7 @@ class MetatronBabel(object):
         #print self.speechEngine
 
         # Set laptop volume to 100% so everyone can hear us
-        process = subprocess.Popen(['amixer', '-q', 'set', 'Master', '100%'], close_fds=True)
+        process = subprocess.Popen(['amixer', '-D', 'pulse', 'sset', 'Master', '100%', 'on'], close_fds=True)
         process.wait() # Wait for it to finish, this should be instantaneous.
         # TODO This could get reset by something else, it might be smart to do this at every output,
         # but that would get old, and prevent us from shutting him up!
