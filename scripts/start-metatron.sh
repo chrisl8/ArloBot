@@ -1,3 +1,4 @@
+SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 # This is the primary script to
 # Start the entire robot
 # Check to make sure required hardware is present:
@@ -7,7 +8,6 @@ then
 echo "Hardware problem! Exiting!"
 exit 1
 fi
-SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 ${SCRIPTDIR}/ros_prep.sh
 # Start web server for Twilio
 ngrok -authtoken E_-s84Q-fW2O1B_kU1Fl -subdomain=52c014b4 -log=stdout 8001 &
