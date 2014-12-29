@@ -13,35 +13,12 @@ Please note that you will need the code to run on your Propeller board. This is 
 Before running this code please adjust settings for your robot in:
     ~/arlobot/src/arlobot/arlobot_bringup/param/arlobot.yaml
 
+## Arlobot Setup Instructions: ##
+Complete setup and usage instructions are at my blog:
+http://ekpyroticfrood.net/?p=162
+
 ## Basic usage instructions: ##
-<ol>
-<li>Build your ArloBot! http://ekpyroticfrood.net/?p=65</li>
-<li>Install SimpleIDE on a computer and load the code from the "Propeller C Code for ArloBot" folder into your Activity Board's EEPROM. You can do this from Windows or Linux. I find it handy to have SimpleIDE running on my ROS laptop on board the Arlo to make code updates easy. http://learn.parallax.com/propeller-c-set-simpleide/linux</li>
-<li>Install Ubuntu - http://ekpyroticfrood.net/?p=81<br/>
-Do this on a laptop to ride on the ArloBot, and optionally also on a "workstation." I use a "Workstation" for anything that needs a GUI, and I use SSH to connect to the laptop and run anything that does not.  My "Workstation" is an Oracle VirtualBox installation of Ubuntu, which I find works great for RVIZ on my Windows desktop.</li>
-<li>Install ROS Indigo - http://ekpyroticfrood.net/?p=89</li>
-<li>Grab this code and put it on both your laptop and workstation.</li>
-<li>Adjust settings for your robot in:
-    ~/arlobot/src/arlobot/arlobot_bringup/param/arlobot.yaml</li>
-<li>Set up your ROS environment. There are several commands that you have to run every time you start a terminal session to run ROS. What I do is put them into the .bashrc file in my home folder. I have these lines at the end of the .bashrc file on my "Workstation":
-<pre>
-export ROS_MASTER_URI=http://192.168.1.106:11311 # Set to laptop IP
-export ROS_HOSTNAME=192.168.1.107 # Set to THIS machine's IP
-export ROSLAUNCH_SSH_UNKNOWN=1
-source ~/arlobot/devel/setup.bash
-cd ~/arlobot/
-</pre>
-and these lines at the end of the .bashrc on the laptop on the ArloBot:
-<pre>
-export ROS_MASTER_URI=http://192.168.1.106:11311 # Set to laptop IP
-export ROS_HOSTNAME=192.168.1.106 # Set to THIS machine's IP
-export ROSLAUNCH_SSH_UNKNOWN=1
-source ~/arlobot/devel/setup.bash
-cd ~/arlobot/
-</pre>
-Which makes it easy to just start running ROS commands as soon as I log in.</li>
-<li>Depending on what you want to do there are different ways to "bring up" the robot.  These are the "recipes" that are well tested so far:</li>
-</ol>
+Depending on what you want to do there are different ways to "bring up" the robot.<br/>These are the "recipes" that are well tested so far:
 ```
 A good way to test your Propeller code is to run:
 miniterm.py  /dev/ttyUSB1 115200
