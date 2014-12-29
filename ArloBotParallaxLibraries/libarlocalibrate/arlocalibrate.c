@@ -37,7 +37,7 @@ volatile int ticksR;
 volatile int tcL;
 volatile int tcR;
 
-static int us;
+//static int us;
 
 static int eeAddr;
 
