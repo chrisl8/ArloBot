@@ -17,18 +17,10 @@ Before running this code please adjust settings for your robot in:
 <ol>
 <li>Build your ArloBot! http://ekpyroticfrood.net/?p=65</li>
 <li>Install SimpleIDE on a computer and load the code from the "Propeller C Code for ArloBot" folder into your Activity Board's EEPROM. You can do this from Windows or Linux. I find it handy to have SimpleIDE running on my ROS laptop on board the Arlo to make code updates easy. http://learn.parallax.com/propeller-c-set-simpleide/linux</li>
-<li>http://ekpyroticfrood.net/?p=81 Install Ubuntu on a laptop to ride on the ArloBot, and optionally also on a "workstation." I use a "Workstation" for anything that needs a GUI, and I use SSH to connect to the laptop and run anything that does not.  My "Workstation" is an Oracle VirtualBox installation of Ubuntu, which I find works great for RVIZ on my Windows desktop.</li>
-<li>Install ROS Indigo on a Ubuntu laptop that can connect via USB to your Activity Board: http://wiki.ros.org/indigo/Installation/Ubuntu
-<li>You will also need the Turtlebot packages, as I use that code when I can: http://wiki.ros.org/turtlebot/Tutorials/indigo/Installation
-NOTE: At this time Indigo Turtlebot has to be installed from source. If you have trouble doing that let me know and I will post my personal "how to" on installing Turtlebot from source to make this work.</li>
-<li>Grab this code and put it on both your laptop and workstation:
-```
-cd
-git clone git@github.com:chrisl8/ArloBot.git arlobot
-cd ~/arlobot
-source ~/turtlebot/devel/setup.bash
-catkin_make
-```</li>
+<li>Install Ubuntu - http://ekpyroticfrood.net/?p=81<br/>
+Do this on a laptop to ride on the ArloBot, and optionally also on a "workstation." I use a "Workstation" for anything that needs a GUI, and I use SSH to connect to the laptop and run anything that does not.  My "Workstation" is an Oracle VirtualBox installation of Ubuntu, which I find works great for RVIZ on my Windows desktop.</li>
+<li>Install ROS Indigo - http://ekpyroticfrood.net/?p=89</li>
+<li>Grab this code and put it on both your laptop and workstation.</li>
 <li>Adjust settings for your robot in:
     ~/arlobot/src/arlobot/arlobot_bringup/param/arlobot.yaml</li>
 <li>Set up your ROS environment. There are several commands that you have to run every time you start a terminal session to run ROS. What I do is put them into the .bashrc file in my home folder. I have these lines at the end of the .bashrc file on my "Workstation":
@@ -128,7 +120,7 @@ roslaunch arlobot_bringup minimal.launch --screen
 <New Terminal>
 roslaunch arlobot_explore gmapping_explore.launch --screen
 <New Terminal>
-roslaunch hector_exploration_node exploration_planner.launch --screen
+roslaunch arlobot_explore exploration_planner.launch --screen
 <GUI based Terminal>
 roslaunch arlobot_rviz_launchers view_navigation.launch
 <New Terminal>
