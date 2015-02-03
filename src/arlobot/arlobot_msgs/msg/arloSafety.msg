@@ -1,0 +1,2 @@
+bool      safeToGo
+bool      unPlugging
