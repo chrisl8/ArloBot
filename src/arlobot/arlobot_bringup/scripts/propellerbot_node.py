@@ -33,7 +33,7 @@ from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 from std_msgs.msg import String
 from std_msgs.msg import Bool
-from arlobot_msgs.msg import usbRelayStatus, arloStatus
+from arlobot_msgs.msg import usbRelayStatus, arloStatus, arloSafety
 from arlobot_msgs.srv import FindRelay, ToggleRelay
 
 from SerialDataGateway import SerialDataGateway
@@ -51,6 +51,7 @@ class PropellerComm(object):
         self._Counter = 0  # For Propeller code's _HandleReceivedLine and _write_serial
         self._motorsOn = 0  # Set to 1 if the motors are on, used with USB Relay Control board
         self._SafeToOperate = False  # Use arlobot_safety to set this
+        self._unPlugging = False # Used for when arlobot_safety tells us to "UnPlug"!
         self._SwitchingMotors = False  # Prevent overlapping calls to _switch_motors
         # Store last x, y and heading for reuse when we reset
         # I took off off the ~, because that was causing these to reset to default on every restart
@@ -87,7 +88,7 @@ class PropellerComm(object):
         rospy.Subscriber("cmd_vel", Twist, self._handle_velocity_command)  # Is this line or the below bad redundancy?
         rospy.Subscriber("cmd_vel_mux/input/teleop", Twist,
                          self._handle_velocity_command)  # IS this line or the above bad redundancy?
-        rospy.Subscriber("arlobot_safety/safeToGo", Bool, self._safety_shutdown)  # Safety Shutdown
+        rospy.Subscriber("arlobot_safety/safetyStatus", arloSafety, self._safety_shutdown)  # Safety Shutdown
 
         # Publishers
         self._SerialPublisher = rospy.Publisher('serial', String, queue_size=10)
@@ -177,15 +178,14 @@ class PropellerComm(object):
             else:
                 self._motorsOn = 0
 
-    def _safety_shutdown(self, safe):
+    def _safety_shutdown(self, status):
         """
         Shut down the motors if the SafeToOperate topic goes false.
         Other functions could be included, but for now it is just the motors.
         """
-        if safe.data:
-            self._SafeToOperate = True
-        else:
-            self._SafeToOperate = False
+        self._unPlugging = status.unPlugging
+        self._SafeToOperate = status.safeToGo
+        if not self._SafeToOperate:
             if self._motorsOn == 1:
                 rospy.loginfo("Safety Shutdown initiated")
                 self._switch_motors(False)
@@ -658,15 +658,18 @@ class PropellerComm(object):
         # NOTE: turtlebot_node has a lot of code under its cmd_vel function to deal with maximum and minimum speeds,
         # which are dealt with in ArloBot on the Activity Board itself in the Propeller code.
         if self._SafeToOperate:  # Do not move if it is not self._SafeToOperate
-            v = twist_command.linear.x  # m/s
-            omega = twist_command.angular.z  # rad/s
-            # rospy.logdebug("Handling twist command: " + str(v) + "," + str(omega))
-            message = 's,%.3f,%.3f\r' % (v, omega)
-            # rospy.logdebug("Sending speed command message: " + message)
-            self._write_serial(message)
+            if self._unPlugging:
+                # Slow backup unti unplugged
+                message = 's,0.0,0.0\r' #TODO: Set an actual crawl speed
+            else:
+                v = twist_command.linear.x  # m/s
+                omega = twist_command.angular.z  # rad/s
+                # rospy.logdebug("Handling twist command: " + str(v) + "," + str(omega))
+                message = 's,%.3f,%.3f\r' % (v, omega)
         else:
             message = 's,0.0,0.0\r'  # Tell it to be still if it is not SafeToOperate
-            self._write_serial(message)
+        # rospy.logdebug("Sending speed command message: " + message)
+        self._write_serial(message)
 
     def _initialize_drive_geometry(self, line_parts):
         """ Send parameters from YAML file to Propeller board. """
