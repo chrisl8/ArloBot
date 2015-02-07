@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import rospy
 import subprocess
+import os
 from std_msgs.msg import Bool
 from arlobot_msgs.msg import arloSafety
 from arlobot_msgs.srv import UnPlug
@@ -101,6 +102,17 @@ class ArlobotSafety(object):
                 safety_status.safeToGo = True
                 # Send Twist messages to make it move the robot
                 sendTwist = True
+
+            # Check for external "STOP" calls:
+            # Any external calls will override everything else!
+            # This allows any program anywhere to put the word "STOP"
+            # Into a file in /tmp/arloStatus/ and stop the robot.
+            # IF the folder exists of course.
+            if os.path.isdir("/tmp/arloStatus/"):
+                if subprocess.call(["grep", "-R", "STOP", "/tmp/arloStatus/"]):
+                    safety_status.safeToGo = False
+                else
+                    safety_status.safeToGo = True
             
             self._safetyStatusPublisher.publish(safety_status) # Publish safety status
 
