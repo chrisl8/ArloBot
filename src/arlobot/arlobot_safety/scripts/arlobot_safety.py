@@ -77,6 +77,9 @@ class ArlobotSafety(object):
                     self.acPower = False
                     rospy.set_param('~ACpower', self.acPower)
             
+            # Set AC Power status message
+            safety_status.acPower = self.acPower
+
             # arloSafty Status message
             safety_status = arloSafety()
             sendTwist = False
