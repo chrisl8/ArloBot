@@ -4,6 +4,7 @@ import subprocess
 from std_msgs.msg import Bool
 from arlobot_msgs.msg import arloSafety
 from arlobot_msgs.srv import UnPlug
+from geometry_msgs.msg import Twist
 
 '''
 This node will monitor various items and let ROS know if it is safe
@@ -78,22 +79,47 @@ class ArlobotSafety(object):
             
             # arloSafty Status message
             safety_status = arloSafety()
+            sendTwist = False
 
             # Determine safety status based on what we know
             if self.acPower:
                 safety_status.safeToGo = False
             else:
                 safety_status.safeToGo = True
-                # If unplugged clear any request to unplug.
-                # This will happen in the propellerbot_node eventually
-                self._unPlug = False
+                if self._unPlug:
+                    # Turn off unPlug now that it is unplugged
+                    self._unPlug = False
+                    # Send one last twist message to stop the robot
+                    sendTwist = True
 
             safety_status.unPlugging = self._unPlug
-            # If we've been asked to unplug, then set safeToGo
             if safety_status.unPlugging:
+                # If we've been asked to unplug, then set safeToGo
                 safety_status.safeToGo = True
+                # Send Twist messages to make it move the robot
+                sendTwist = True
             
             self._safetyStatusPublisher.publish(safety_status) # Publish safety status
+
+            if sendTwist:
+                # Send Twist command if robot is to be unplugging itself.
+                # The actual value of the twist command will not be used.
+                # In order to maintain a 100% safe unplug, the propellerbot_node
+                # will ignore the value of the twist command while in "unPlugging" mode
+                # and send its own value.
+                # This allows the propellerbot_node's _handle_velocity_command
+                # to stay in charge, while not requiring a specal "loop" within the node code
+                # to accomplish the unpugging.
+                pub = rospy.Publisher('cmd_vel_mux/input/teleop', Twist, queue_size=1)
+                twist = Twist()
+                # This is a "dummy" twist command, so set to 0, in case it DOES get run.
+                linear_speed = 0
+                angular_speed = 0
+                twist.linear.x = linear_speed; twist.linear.y = 0; twist.linear.z = 0
+                twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = angular_speed
+                for x in range(0, 10):
+                    pub.publish(twist)
+
             self.r.sleep() # Sleep long enough to maintain the rate set in __init__
 
     def _handle_unplug_request(self, request):

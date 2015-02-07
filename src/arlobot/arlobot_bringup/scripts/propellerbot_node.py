@@ -53,6 +53,7 @@ class PropellerComm(object):
         self._SafeToOperate = False  # Use arlobot_safety to set this
         self._unPlugging = False # Used for when arlobot_safety tells us to "UnPlug"!
         self._SwitchingMotors = False  # Prevent overlapping calls to _switch_motors
+        self._serialAvailable = False
         # Store last x, y and heading for reuse when we reset
         # I took off off the ~, because that was causing these to reset to default on every restart
         # even if roscore was still up.
@@ -181,7 +182,7 @@ class PropellerComm(object):
     def _safety_shutdown(self, status):
         """
         Shut down the motors if the SafeToOperate topic goes false.
-        Other functions could be included, but for now it is just the motors.
+        Set unPlugging variable to allow for safe unplug operation.
         """
         self._unPlugging = status.unPlugging
         self._SafeToOperate = status.safeToGo
@@ -189,8 +190,12 @@ class PropellerComm(object):
             if self._motorsOn == 1:
                 rospy.loginfo("Safety Shutdown initiated")
                 self._switch_motors(False)
+                # Wait for the motors to shut off
+                while self._motorsOn:
+                    time.sleep(1)
                 # Reset the propeller board, otherwise there are problems
                 # if you bring up the motors again while it has been operating
+                self._serialAvailable = False
                 rospy.loginfo("Serial Data Gateway stopping . . .")
                 self._SerialDataGateway.Stop()
                 rospy.loginfo("Serial Data Gateway stopped.")
@@ -199,6 +204,7 @@ class PropellerComm(object):
                 rospy.loginfo("Serial Data Gateway starting . . .")
                 self._SerialDataGateway.Start()
                 rospy.loginfo("Serial Data Gateway started.")
+                self._serialAvailable = True
                 # TODO: Is there a way to reset the board without stopping and starring SerialDataGateway?
 
     def _broadcast_odometry_info(self, line_parts):
@@ -633,6 +639,7 @@ class PropellerComm(object):
         rospy.loginfo("Serial Data Gateway starting . . .")
         self._SerialDataGateway.Start()
         rospy.loginfo("Serial Data Gateway started.")
+        self._serialAvailable = True
 
     def stop(self):
         """
@@ -648,6 +655,7 @@ class PropellerComm(object):
         rospy.set_param('lastY', self.lastY)
         rospy.set_param('lastHeading', self.lastHeading)
         time.sleep(3)  # Give the motors time to shut off
+        self._serialAvailable = False
         rospy.loginfo("_SerialDataGateway stopping . . .")
         self._SerialDataGateway.Stop()
         rospy.loginfo("_SerialDataGateway stopped.")
@@ -657,19 +665,26 @@ class PropellerComm(object):
         """ Handle movement requests. """
         # NOTE: turtlebot_node has a lot of code under its cmd_vel function to deal with maximum and minimum speeds,
         # which are dealt with in ArloBot on the Activity Board itself in the Propeller code.
-        if self._SafeToOperate:  # Do not move if it is not self._SafeToOperate
-            if self._unPlugging:
-                # Slow backup unti unplugged
-                message = 's,0.0,0.0\r' #TODO: Set an actual crawl speed
+        if self._motorsOn and self._serialAvailable:
+            if self._SafeToOperate:  # Do not move if it is not self._SafeToOperate
+                if self._unPlugging:
+                    # Slow backup until unplugged
+                    # NOTE: This only works if the safety node sends us dummy twist commands,
+                    # otherwise we would never get to this function.
+                    # This should be a slow backward crawl
+                    # -0.01 is about as slow as possible
+                    # -0.02 works more reliably
+                    rospy.loginfo("Unplugging!")
+                    message = 's,-0.02,0.0\r'
+                else:
+                    v = twist_command.linear.x  # m/s
+                    omega = twist_command.angular.z  # rad/s
+                    # rospy.logdebug("Handling twist command: " + str(v) + "," + str(omega))
+                    message = 's,%.3f,%.3f\r' % (v, omega)
             else:
-                v = twist_command.linear.x  # m/s
-                omega = twist_command.angular.z  # rad/s
-                # rospy.logdebug("Handling twist command: " + str(v) + "," + str(omega))
-                message = 's,%.3f,%.3f\r' % (v, omega)
-        else:
-            message = 's,0.0,0.0\r'  # Tell it to be still if it is not SafeToOperate
-        # rospy.logdebug("Sending speed command message: " + message)
-        self._write_serial(message)
+                message = 's,0.0,0.0\r'  # Tell it to be still if it is not SafeToOperate
+            # rospy.logdebug("Sending speed command message: " + message)
+            self._write_serial(message)
 
     def _initialize_drive_geometry(self, line_parts):
         """ Send parameters from YAML file to Propeller board. """
@@ -744,7 +759,8 @@ class PropellerComm(object):
         if self.relayExists:
             if not self._SwitchingMotors:  # Prevent overlapping runs
                 self._SwitchingMotors = True
-                # Switch "on" to "off" if not safe to operate, then we can just pass state to arlobot_usbrelay
+                # Switch "on" to "off" if not safe to operate,
+                # then we can just pass state to arlobot_usbrelay
                 if not self._SafeToOperate:
                     state = False
                 rospy.wait_for_service('/arlobot_usbrelay/toggle_relay')
