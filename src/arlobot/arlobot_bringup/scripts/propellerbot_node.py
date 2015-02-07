@@ -48,12 +48,14 @@ class PropellerComm(object):
     def __init__(self):
         rospy.init_node('arlobot')
 
+        self.r = rospy.Rate(1) # 1hz refresh rate
         self._Counter = 0  # For Propeller code's _HandleReceivedLine and _write_serial
         self._motorsOn = 0  # Set to 1 if the motors are on, used with USB Relay Control board
         self._SafeToOperate = False  # Use arlobot_safety to set this
         self._unPlugging = False # Used for when arlobot_safety tells us to "UnPlug"!
         self._SwitchingMotors = False  # Prevent overlapping calls to _switch_motors
         self._serialAvailable = False
+        self._serialTimeout = 0
         # Store last x, y and heading for reuse when we reset
         # I took off off the ~, because that was causing these to reset to default on every restart
         # even if roscore was still up.
@@ -122,6 +124,7 @@ class PropellerComm(object):
         from the Propeller board and will send the data to the correct function.
         """
         self._Counter += 1
+        self._serialTimeout = 0
         # rospy.logdebug(str(self._Counter) + " " + line)
         # if self._Counter % 50 == 0:
         self._SerialPublisher.publish(String(str(self._Counter) + ", in:  " + line))
@@ -189,23 +192,27 @@ class PropellerComm(object):
         if not self._SafeToOperate:
             if self._motorsOn == 1:
                 rospy.loginfo("Safety Shutdown initiated")
-                self._switch_motors(False)
-                # Wait for the motors to shut off
-                while self._motorsOn:
-                    time.sleep(1)
-                # Reset the propeller board, otherwise there are problems
-                # if you bring up the motors again while it has been operating
-                self._serialAvailable = False
-                rospy.loginfo("Serial Data Gateway stopping . . .")
-                self._SerialDataGateway.Stop()
-                rospy.loginfo("Serial Data Gateway stopped.")
-                rospy.loginfo("5 second pause to let Activity Board settle after serial port reset . . .")
-                time.sleep(5)  # Give it time to settle.
-                rospy.loginfo("Serial Data Gateway starting . . .")
-                self._SerialDataGateway.Start()
-                rospy.loginfo("Serial Data Gateway started.")
-                self._serialAvailable = True
-                # TODO: Is there a way to reset the board without stopping and starring SerialDataGateway?
+                self._reset_serial_connection()
+
+    def _reset_serial_connection(self):
+        self._switch_motors(False)
+        # Wait for the motors to shut off
+        while self._motorsOn:
+            time.sleep(1)
+        # Reset the propeller board, otherwise there are problems
+        # if you bring up the motors again while it has been operating
+        self._serialAvailable = False
+        rospy.loginfo("Serial Data Gateway stopping . . .")
+        self._SerialDataGateway.Stop()
+        rospy.loginfo("Serial Data Gateway stopped.")
+        rospy.loginfo("5 second pause to let Activity Board settle after serial port reset . . .")
+        time.sleep(5)  # Give it time to settle.
+        rospy.loginfo("Serial Data Gateway starting . . .")
+        self._SerialDataGateway.Start()
+        rospy.loginfo("Serial Data Gateway started.")
+        self._serialAvailable = True
+        # TODO: Is there a way to reset the board without stopping and starring SerialDataGateway?
+
 
     def _broadcast_odometry_info(self, line_parts):
         """
@@ -782,14 +789,23 @@ class PropellerComm(object):
             elif not state:
                 self._motorsOn = 0
 
+    def watchDog(self):
+        while not rospy.is_shutdown():
+            self._serialTimeout += 1
+            #rospy.loginfo("Serial Timeout = " + str(self._serialTimeout))
+            if self._serialTimeout > 9:
+                rospy.loginfo("Watchdog Timeout Reset initiated")
+                self._reset_serial_connection()
+            self.r.sleep()
 
 if __name__ == '__main__':
     propellercomm = PropellerComm()
     rospy.on_shutdown(propellercomm.stop)
     try:
         propellercomm.start()
-        rospy.loginfo("Propellerbot_node has 'spun' . . .")
-        rospy.spin()
+        rospy.loginfo("Propellerbot_node has started.")
+        propellercomm.watchDog()
+        #rospy.spin()
 
     except rospy.ROSInterruptException:
         propellercomm.stop()
