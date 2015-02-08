@@ -47,7 +47,7 @@
 //#include "mcp3208.h" // MCP3208 8 Channel ADC - MCP3208 now handled by Quickstart board
 //#include "ping.h" // Include ping header - PING now handled by Quickstart board
 // Add adcDCpropab.h if you want to use the ADC built into the Activity Board
-//#include "adcDCpropab.h"                      // Include adcDCpropab http://learn.parallax.com/propeller-c-simple-circuits/measure-volts
+#include "adcDCpropab.h"                      // Include adcDCpropab http://learn.parallax.com/propeller-c-simple-circuits/measure-volts
 #include "fdserial.h"
 /*
 http://forums.parallax.com/showthread.php/154274-The-quot-Artist-quot-robot?p=1277133&viewfull=1#post1277133
@@ -98,6 +98,10 @@ const int propTXpin = 6;
 
 void pollPropBoard2(void *par); // Use a cog to fill range variables with ping distances
 static int prop2stack[128]; // If things get weird make this number bigger!
+
+// MotorPower constants:
+const int monitorMotorPower = 1;
+// Be sure to uncomment include "adcDCpropab.h"
 
 // Gyro globals:
 const int hasGyro = 1; // Set this to 0 if you do not have a gyro on your ArloBot's Activity Board.
@@ -471,7 +475,16 @@ void displayTicks(void) {
     // Send a regular "status" update to ROS including information that does not need to be refreshed as often as the odometry.
     throttleStatus = throttleStatus + 1;
     if (throttleStatus > 9) {
-        dprint(term, "s\t%d\t%d\t%d\t%d\t%d\t%d\n", safeToProceed, safeToRecede, Escaping, abd_speedLimit, abdR_speedLimit, minDistanceSensor);
+        // Check Motor Power
+        double leftMotorPower = 4.69;
+        double rightMotorPower = 4.69;
+        if (monitorMotorPower == 1) {
+            // If these get flipped just flip the wires, or the numbers.
+            adc_init(21, 20, 19, 18);
+            leftMotorPower = adc_volts(0);
+            rightMotorPower = adc_volts(1);
+        }
+        dprint(term, "s\t%d\t%d\t%d\t%d\t%d\t%d\t%.2f\t%.2f\n", safeToProceed, safeToRecede, Escaping, abd_speedLimit, abdR_speedLimit, minDistanceSensor, leftMotorPower, rightMotorPower);
         throttleStatus = 0;
     }
 }
