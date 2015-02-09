@@ -85,12 +85,12 @@ class PropellerComm(object):
                 self.leftMotorRelay = find_relay(self.usbLeftMotorRelayLabel)
                 self.rightMotorRelay = find_relay(self.usbRightMotorRelayLabel)
                 if self.leftMotorRelay.foundRelay and self.leftMotorRelay.foundRelay:
-                    print("Left = " + str(self.leftMotorRelay.relayNumber) + " & Right = " + str(
+                    rospy.loginfo("Left = " + str(self.leftMotorRelay.relayNumber) + " & Right = " + str(
                         self.rightMotorRelay.relayNumber))
                 else:
                     self.relayExists = False
             except rospy.ServiceException as e:
-                print("Service call failed: %s" % e)
+                rospy.loginfo("Service call failed: %s" % e)
             rospy.Subscriber("arlobot_usbrelay/usbRelayStatus", usbRelayStatus,
                              self._handle_usb_relay_status)  # Safety Shutdown
 
@@ -828,7 +828,7 @@ class PropellerComm(object):
                     else:
                         self._motorsOn = False
                 except rospy.ServiceException as e:
-                    print("Service call failed: %s" % e)
+                    rospy.loginfo("Service call failed: %s" % e)
                 self._SwitchingMotors = False
         else:  # If no automated motor control exists, just set the state blindly.
             self._motorsOn = state
