@@ -5,7 +5,6 @@ import os
 from std_msgs.msg import Bool
 from arlobot_msgs.msg import arloSafety
 from arlobot_msgs.srv import UnPlug
-from geometry_msgs.msg import Twist
 
 '''
 This node will monitor various items and let ROS know if it is safe
@@ -26,6 +25,9 @@ class ArlobotSafety(object):
 
         # Global variable for whether we've been asked to unplug or not
         self._unPlug = False
+
+        # Track battery
+        self._laptopBatteryPercent = 100
 
         # I am going to set the AC power status as a parameter, so that it can be checked by low priority nodes,
         # and publish the "arloSafety" as a topic so that it can be subscribed to and acted upon immediately
@@ -54,7 +56,9 @@ class ArlobotSafety(object):
                 
             if checkAC: # Unless we were told not to
                 #upower -i /org/freedesktop/UPower/devices/line_power_AC
-                laptopPowerState = subprocess.Popen(['upower', '-i', '/org/freedesktop/UPower/devices/line_power_AC'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
+                laptopPowerState = subprocess.Popen(['upower', '-d', '/org/freedesktop/UPower/devices/line_power_AC'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
+                # Only grab the FIRST battery percentage!
+                gotBatteryPercent = False
                 for line in iter(laptopPowerState.stdout.readline, ""):
                     #rospy.loginfo(line) # for Debugging
                     if 'online' in line:
@@ -71,19 +75,25 @@ class ArlobotSafety(object):
                                 rospy.loginfo("AC Power Connected.")
                                 self.acPower = True
                                 rospy.set_param('~ACpower', self.acPower)
+                    if 'percentage' in line and not gotBatteryPercent:
+                        upowerOutput = line.split()
+                        #rospy.loginfo(upowerOutput[1].rstrip('%'))
+                        self._laptopBatteryPercent = int(upowerOutput[1].rstrip('%'))
+                        gotBatteryPercent = True
                 laptopPowerState.stdout.close()
                 laptopPowerState.wait()
             else: # Just set to 0 if we were told to ignore AC power status.
                 if self.acPower: # Only log and set parameters if there is a change!
                     self.acPower = False
                     rospy.set_param('~ACpower', self.acPower)
-            
+
             # arloSafty Status message
             safety_status = arloSafety()
+
+            safety_status.laptopBatteryPercent = self._laptopBatteryPercent
+
             # Set AC Power status message
             safety_status.acPower = self.acPower
-
-            sendTwist = False
 
             # Determine safety status based on what we know
             if self.acPower:
@@ -93,46 +103,24 @@ class ArlobotSafety(object):
                 if self._unPlug:
                     # Turn off unPlug now that it is unplugged
                     self._unPlug = False
-                    # Send one last twist message to stop the robot
-                    sendTwist = True
 
             safety_status.unPlugging = self._unPlug
             if safety_status.unPlugging:
                 # If we've been asked to unplug, then set safeToGo
                 safety_status.safeToGo = True
-                # Send Twist messages to make it move the robot
-                sendTwist = True
 
             # Check for external "STOP" calls:
             # Any external calls will override everything else!
             # This allows any program anywhere to put the word "STOP"
-            # Into a file in /tmp/arloStatus/ and stop the robot.
+            # Into a file in /var/arloStatus/ and stop the robot.
             # IF the folder exists of course.
-            if os.path.isdir("/tmp/arloStatus/"):
+            status_dir = os.path.expanduser("~/arloStatus")
+            if os.path.isdir(status_dir):
                 devnull = open(os.devnull, 'w')
-                if not subprocess.call(["grep", "-R", "STOP", "/tmp/arloStatus/"], stdout=devnull, stderr=devnull):
+                if not subprocess.call(["grep", "-R", "STOP", status_dir], stdout=devnull, stderr=devnull):
                     safety_status.safeToGo = False
             
             self._safetyStatusPublisher.publish(safety_status) # Publish safety status
-
-            if sendTwist:
-                # Send Twist command if robot is to be unplugging itself.
-                # The actual value of the twist command will not be used.
-                # In order to maintain a 100% safe unplug, the propellerbot_node
-                # will ignore the value of the twist command while in "unPlugging" mode
-                # and send its own value.
-                # This allows the propellerbot_node's _handle_velocity_command
-                # to stay in charge, while not requiring a specal "loop" within the node code
-                # to accomplish the unpugging.
-                pub = rospy.Publisher('cmd_vel_mux/input/teleop', Twist, queue_size=1)
-                twist = Twist()
-                # This is a "dummy" twist command, so set to 0, in case it DOES get run.
-                linear_speed = 0
-                angular_speed = 0
-                twist.linear.x = linear_speed; twist.linear.y = 0; twist.linear.z = 0
-                twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = angular_speed
-                for x in range(0, 10):
-                    pub.publish(twist)
 
             self.r.sleep() # Sleep long enough to maintain the rate set in __init__
 
