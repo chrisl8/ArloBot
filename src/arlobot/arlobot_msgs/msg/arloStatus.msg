@@ -10,3 +10,5 @@ bool      leftMotorPower
 bool      rightMotorPower
 float32   robotBatteryLevel
 bool      robotBatteryLow
+int16     laptopBatteryPercent
+bool      acPower
