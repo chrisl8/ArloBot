@@ -26,6 +26,8 @@ import tf
 from math import sin, cos
 import time
 import json
+import subprocess
+import os
 
 from geometry_msgs.msg import Quaternion
 from geometry_msgs.msg import Twist
@@ -50,12 +52,17 @@ class PropellerComm(object):
 
         self.r = rospy.Rate(1) # 1hz refresh rate
         self._Counter = 0  # For Propeller code's _HandleReceivedLine and _write_serial
-        self._motorsOn = 0  # Set to 1 if the motors are on, used with USB Relay Control board
+        self._motorsOn = False  # Set to 1 if the motors are on, used with USB Relay Control board
         self._SafeToOperate = False  # Use arlobot_safety to set this
+        self._acPower = False # Track AC power status internally
         self._unPlugging = False # Used for when arlobot_safety tells us to "UnPlug"!
+        self._wasUnplugging = False # Track previous unplugging status for motor control
         self._SwitchingMotors = False  # Prevent overlapping calls to _switch_motors
         self._serialAvailable = False
         self._serialTimeout = 0
+        self._leftMotorPower = False
+        self._rightMotorPower = False
+        self._laptop_battery_percent = 100
         # Store last x, y and heading for reuse when we reset
         # I took off off the ~, because that was causing these to reset to default on every restart
         # even if roscore was still up.
@@ -164,6 +171,28 @@ class PropellerComm(object):
         arlo_status.Heading = self.lastHeading
         arlo_status.gyroHeading = self.alternate_heading
         arlo_status.minDistanceSensor = int(line_parts[6])
+        left_motor_voltage = (15 / 4.69) * float(line_parts[7])
+        right_motor_voltage = (15 / 4.69) * float(line_parts[8])
+        arlo_status.robotBatteryLevel = 12.0
+        if left_motor_voltage < 1:
+            arlo_status.leftMotorPower = False
+        else:
+            arlo_status.leftMotorPower = True
+            arlo_status.robotBatteryLevel = left_motor_voltage
+        self._leftMotorPower = arlo_status.leftMotorPower
+        if right_motor_voltage < 1:
+            arlo_status.rightMotorPower = False
+        else:
+            arlo_status.rightMotorPower = True
+            arlo_status.robotBatteryLevel = right_motor_voltage
+        self._rightMotorPower = arlo_status.rightMotorPower
+        # 11.6 volts is the cutoff for an SLA battery.
+        if arlo_status.robotBatteryLevel < 12:
+            arlo_status.robotBatteryLow = True
+        else:
+            arlo_status.robotBatteryLow = False
+        arlo_status.laptopBatteryPercent = self._laptop_battery_percent
+        arlo_status.acPower = self._acPower
         self._arlo_status_publisher.publish(arlo_status)
 
     def _handle_usb_relay_status(self, status):
@@ -178,9 +207,9 @@ class PropellerComm(object):
             # Zero indexed arrays!
             if (status.relayOn[self.leftMotorRelay.relayNumber - 1] and
                     status.relayOn[self.rightMotorRelay.relayNumber - 1]):
-                self._motorsOn = 1
+                self._motorsOn = True
             else:
-                self._motorsOn = 0
+                self._motorsOn = False
 
     def _safety_shutdown(self, status):
         """
@@ -189,28 +218,31 @@ class PropellerComm(object):
         """
         self._unPlugging = status.unPlugging
         self._SafeToOperate = status.safeToGo
+        self._acPower = status.acPower
+        self._laptop_battery_percent = status.laptopBatteryPercent
         if not self._SafeToOperate:
-            if self._motorsOn == 1:
+            if self._motorsOn:
                 rospy.loginfo("Safety Shutdown initiated")
                 self._reset_serial_connection()
 
     def _reset_serial_connection(self):
-        self._switch_motors(False)
-        # Wait for the motors to shut off
-        while self._motorsOn:
-            time.sleep(1)
+        if self._motorsOn:
+            self._switch_motors(False)
+            # Wait for the motors to shut off
+            while self._motorsOn:
+                time.sleep(1)
         # Reset the propeller board, otherwise there are problems
         # if you bring up the motors again while it has been operating
         self._serialAvailable = False
         rospy.loginfo("Serial Data Gateway stopping . . .")
-        self._SerialDataGateway.Stop()
+        try:
+            self._SerialDataGateway.Stop()
+        except AttributeError:
+            rospy.loginfo("Attempt to start nonexistent Serial device.")
         rospy.loginfo("Serial Data Gateway stopped.")
         rospy.loginfo("5 second pause to let Activity Board settle after serial port reset . . .")
         time.sleep(5)  # Give it time to settle.
-        rospy.loginfo("Serial Data Gateway starting . . .")
-        self._SerialDataGateway.Start()
-        rospy.loginfo("Serial Data Gateway started.")
-        self._serialAvailable = True
+        self.startSerialPort()
         # TODO: Is there a way to reset the board without stopping and starring SerialDataGateway?
 
 
@@ -220,7 +252,7 @@ class PropellerComm(object):
         """
         # If we got this far, we can assume that the Propeller board is initialized and the motors should be on.
         # The _switch_motors() function will deal with the _SafeToOparete issue
-        if self._motorsOn == 0:
+        if not self._motorsOn:
             self._switch_motors(True)
         parts_count = len(line_parts)
 
@@ -643,10 +675,30 @@ class PropellerComm(object):
         #    rospy.loginfo(str(count) + " seconds until startup . . .")
         #    time.sleep(1)
         #    count -= 1
+        self.startSerialPort()
+
+    def startSerialPort(self):
         rospy.loginfo("Serial Data Gateway starting . . .")
-        self._SerialDataGateway.Start()
+        try:
+            self._SerialDataGateway.Start()
+        except:
+            rospy.loginfo("ARLO SERIAL PORT Start Error")
+            reset_usb_script = os.path.expanduser("~/metatron/scripts/callRestUSB.sh")
+            if os.path.isfile(reset_usb_script):
+                rospy.loginfo("RESETING USB PORTS")
+                rospy.loginfo(reset_usb_script)
+                devnull = open(os.devnull, 'w')
+                subprocess.call(["/bin/bash", reset_usb_script], stdout=devnull, stderr=devnull)
+                # The reset should have shut off the motors,
+                # and allowing the stop method to try turning off the motors after the
+                # USB port reset will make the arlobot_usbrelay node hang
+                _motorsOn = False
+                # At this point we have to restart the node.
+                # The respawn atribute in the launch file should handle this.
+                raise SystemExit(0)
         rospy.loginfo("Serial Data Gateway started.")
         self._serialAvailable = True
+
 
     def stop(self):
         """
@@ -655,8 +707,9 @@ class PropellerComm(object):
         """
         rospy.loginfo("Stopping")
         self._SafeToOperate = False  # Prevent threads fighting
-        self._switch_motors(
-            False)  # arlobot_usbrelay will also shut off all relays after a delay, but better safe than sorry!
+        if self._motorsOn:
+            # arlobot_usbrelay will also shut off all relays after a delay, but better safe than sorry!
+            self._switch_motors( False)
         # Save last position in parameter server in case we come up again without restarting roscore!
         rospy.set_param('lastX', self.lastX)
         rospy.set_param('lastY', self.lastY)
@@ -664,32 +717,26 @@ class PropellerComm(object):
         time.sleep(3)  # Give the motors time to shut off
         self._serialAvailable = False
         rospy.loginfo("_SerialDataGateway stopping . . .")
-        self._SerialDataGateway.Stop()
+        try:
+            self._SerialDataGateway.Stop()
+        except AttributeError:
+            rospy.loginfo("Attempt to start nonexistent Serial device.")
         rospy.loginfo("_SerialDataGateway stopped.")
         self._OdomStationaryBroadcaster.Stop()
 
     def _handle_velocity_command(self, twist_command):  # This is Propeller specific
         """ Handle movement requests. """
-        # NOTE: turtlebot_node has a lot of code under its cmd_vel function to deal with maximum and minimum speeds,
+        # NOTE: turtlebot_node has a lot of code under its cmd_vel function
+        # to deal with maximum and minimum speeds,
         # which are dealt with in ArloBot on the Activity Board itself in the Propeller code.
-        if self._motorsOn and self._serialAvailable:
-            if self._SafeToOperate:  # Do not move if it is not self._SafeToOperate
-                if self._unPlugging:
-                    # Slow backup until unplugged
-                    # NOTE: This only works if the safety node sends us dummy twist commands,
-                    # otherwise we would never get to this function.
-                    # This should be a slow backward crawl
-                    # -0.01 is about as slow as possible
-                    # -0.02 works more reliably
-                    rospy.loginfo("Unplugging!")
-                    message = 's,-0.02,0.0\r'
-                else:
-                    v = twist_command.linear.x  # m/s
-                    omega = twist_command.angular.z  # rad/s
-                    # rospy.logdebug("Handling twist command: " + str(v) + "," + str(omega))
-                    message = 's,%.3f,%.3f\r' % (v, omega)
-            else:
-                message = 's,0.0,0.0\r'  # Tell it to be still if it is not SafeToOperate
+        if self._clear_to_go("forGeneralUse"):
+            v = twist_command.linear.x  # m/s
+            omega = twist_command.angular.z  # rad/s
+            # rospy.logdebug("Handling twist command: " + str(v) + "," + str(omega))
+            message = 's,%.3f,%.3f\r' % (v, omega)
+            self._write_serial(message)
+        elif self._clear_to_go("to_stop"):
+            message = 's,0.0,0.0\r'  # Tell it to be still if it is not safe to operate
             # rospy.logdebug("Sending speed command message: " + message)
             self._write_serial(message)
 
@@ -713,7 +760,7 @@ class PropellerComm(object):
         so that ROS can continue to track status
         Otherwise things like gmapping will fail when we loose our transform and publishing topics
         """
-        if self._motorsOn == 0:  # Use motor status to decide when to broadcast static odometry:
+        if not self._motorsOn:  # Use motor status to decide when to broadcast static odometry:
             x = self.lastX
             y = self.lastY
             theta = self.lastHeading
@@ -777,17 +824,14 @@ class PropellerComm(object):
                     left_relay_result = toggle_relay(self.usbLeftMotorRelayLabel, state)
                     right_relay_result = toggle_relay(self.usbRightMotorRelayLabel, state)
                     if left_relay_result.toggleSuccess and right_relay_result.toggleSuccess:
-                        self._motorsOn = 1
+                        self._motorsOn = True
                     else:
-                        self._motorsOn = 0
+                        self._motorsOn = False
                 except rospy.ServiceException as e:
                     print("Service call failed: %s" % e)
                 self._SwitchingMotors = False
         else:  # If no automated motor control exists, just set the state blindly.
-            if state:
-                self._motorsOn = 1
-            elif not state:
-                self._motorsOn = 0
+            self._motorsOn = state
 
     def watchDog(self):
         while not rospy.is_shutdown():
@@ -796,7 +840,76 @@ class PropellerComm(object):
             if self._serialTimeout > 9:
                 rospy.loginfo("Watchdog Timeout Reset initiated")
                 self._reset_serial_connection()
+            if self._unPlugging or self._wasUnplugging:
+                self.UnplugRobot()
             self.r.sleep()
+
+    def UnplugRobot(self):
+        if self._unPlugging and \
+                not self._wasUnplugging and \
+                self._clear_to_go("forUnplugging"):
+            # We will only do this once, and let it continue until AC power is disconnected
+            self._wasUnplugging = True
+            # Slow backup until unplugged
+            # This should be a slow backward crawl
+            # -0.01 is about as slow as possible
+            # -0.02 works more reliably
+            rospy.loginfo("Unplugging!")
+            message = 's,-0.02,0.0\r'
+            self._write_serial(message)
+        # Once we are unplugged, stop the robot before returning control to handle_velocity_command
+        # And we only need permission to stop at this point.
+        if self._wasUnplugging and \
+                not self._acPower and \
+                self._serialAvailable:
+            rospy.loginfo("Unplugging complete")
+            message = 's,0.0,0.0\r'
+            self._wasUnplugging = False
+            self._write_serial(message)
+        # Finally, if we were unplugging, but something went wrong, we should stop the robot
+        # Since no one else will do this while we have the "_wasUnplugging" variable
+        # set.
+        if self._wasUnplugging and \
+                not self._clear_to_go("forUnplugging") and \
+                self._serialAvailable:
+            message = 's,0.0,0.0\r'
+            self._wasUnplugging = False
+            self._write_serial(message)
+
+    # Considlate "clear to go" requirements here.
+    def _clear_to_go(self, forWhat):
+        return_value = False
+        # Required for all operations
+        if self._serialAvailable and \
+           self._SafeToOperate and \
+           self._motorsOn and \
+           self._leftMotorPower and \
+           self._rightMotorPower:
+               return_value = True
+        # Negations by use case
+        if forWhat == "forUnplugging":
+            # Unpugging should only happen if AC is connected
+            if not self._acPower:
+               return_value = False
+        if forWhat == "forGeneralUse":
+            # The handle_velocity_command should only operate if the robot is unplugged,
+            # and the unplugging function of the Watchdog process is not in control
+            if self._acPower or \
+                    self._wasUnplugging:
+                return_value = False
+        # Special Cases
+        if forWhat == "to_stop":
+            # handle_velocity_command can send a STOP if it is unsafe to do anythging else,
+            # but the serial connection is up,
+            # as long as the unplugging operation is not in progress
+            # This should bring the robot to a halt in response to any other requset,
+            # if anything is amiss.
+            if self._serialAvailable and \
+                    not self._wasUnplugging:
+                return_value = True
+            else:
+                return_value = False
+        return return_value
 
 if __name__ == '__main__':
     propellercomm = PropellerComm()
