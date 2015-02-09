@@ -27,6 +27,11 @@ do
     echo "Waiting for roscore to start . . ."
     sleep 1
 done
+if [ ! -d ${HOME}/arloStatus ]
+then
+    mkdir ${HOME}/arloStatus
+fi
+chmod 777 ${HOME}/arloStatus &> /dev/null
 rosparam set /arlobot/port $(${SCRIPTDIR}/find_ActivityBoard.sh)
 rosparam set /joystick/dev $(${SCRIPTDIR}/find_xbox_controller.sh)
 rosparam set /camera1 $(${SCRIPTDIR}/find_camera.sh C615)
