@@ -243,8 +243,6 @@ class PropellerComm(object):
         rospy.loginfo("5 second pause to let Activity Board settle after serial port reset . . .")
         time.sleep(5)  # Give it time to settle.
         self.startSerialPort()
-        # TODO: Is there a way to reset the board without stopping and starring SerialDataGateway?
-
 
     def _broadcast_odometry_info(self, line_parts):
         """
@@ -387,8 +385,6 @@ class PropellerComm(object):
         num_readings = 360  # How about 1 per degree?
         #num_reeading_multiple = 2 # We have to track this so we know where to put the readings!
         #num_readings = 360 * num_reeading_multiple
-        # TODO: I am getting "artifacts" in the global cost map where points fail to clear,
-        # even though they clear from the local. Maybe we need a higher resolution?
         laser_frequency = 100  # I'm not sure how to decide what to use here.
         # This is the fake distance to set all empty slots, and slots we consider "out of range"
         artificial_far_distance = 10
@@ -667,14 +663,6 @@ class PropellerComm(object):
 
     def start(self):
         self._OdomStationaryBroadcaster.Start()
-        # 10 second pause before starting serial gateway to let Activity Board settle in case it is resetting already
-        # There should be no reason to have to do this.
-        #rospy.loginfo("10 second pause before starting serial gateway . . .")
-        #count = 10
-        #while count > 0:
-        #    rospy.loginfo(str(count) + " seconds until startup . . .")
-        #    time.sleep(1)
-        #    count -= 1
         self.startSerialPort()
 
     def startSerialPort(self):
