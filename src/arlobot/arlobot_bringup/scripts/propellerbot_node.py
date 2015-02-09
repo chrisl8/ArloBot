@@ -692,7 +692,7 @@ class PropellerComm(object):
                 # The reset should have shut off the motors,
                 # and allowing the stop method to try turning off the motors after the
                 # USB port reset will make the arlobot_usbrelay node hang
-                _motorsOn = False
+                self._motorsOn = False
                 # At this point we have to restart the node.
                 # The respawn atribute in the launch file should handle this.
                 raise SystemExit(0)
