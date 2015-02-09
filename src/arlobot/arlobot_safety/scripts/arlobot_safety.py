@@ -78,11 +78,11 @@ class ArlobotSafety(object):
                     self.acPower = False
                     rospy.set_param('~ACpower', self.acPower)
             
+            # arloSafty Status message
+            safety_status = arloSafety()
             # Set AC Power status message
             safety_status.acPower = self.acPower
 
-            # arloSafty Status message
-            safety_status = arloSafety()
             sendTwist = False
 
             # Determine safety status based on what we know
@@ -109,10 +109,9 @@ class ArlobotSafety(object):
             # Into a file in /tmp/arloStatus/ and stop the robot.
             # IF the folder exists of course.
             if os.path.isdir("/tmp/arloStatus/"):
-                if subprocess.call(["grep", "-R", "STOP", "/tmp/arloStatus/"]):
+                devnull = open(os.devnull, 'w')
+                if not subprocess.call(["grep", "-R", "STOP", "/tmp/arloStatus/"], stdout=devnull, stderr=devnull):
                     safety_status.safeToGo = False
-                else
-                    safety_status.safeToGo = True
             
             self._safetyStatusPublisher.publish(safety_status) # Publish safety status
 
