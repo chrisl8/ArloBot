@@ -2,11 +2,12 @@
 // Setup:
 // npm insatll behavior3js
 // Modifications:
-// package.json:
-//  "main": "libs/behavior3-0.2.0dev.js",
-// behavior3-0.2.0dev.js:
-//this.b3 = this.b3 || {};
-//+b3 = {};
+// node_modules/behavior3js/package.json:
+//  -"main": "libs/b3core.0.1.0.min.js",
+//  +"main": "libs/b3core.0.1.0.js",
+// node_modules/behavior3js/libs/b3core.0.1.0.js:
+//   this.b3 = this.b3 || {};
+//  +b3 = {};
 
 var behavior3js = require('behavior3js');
 
