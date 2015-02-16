@@ -1,0 +1,164 @@
+{
+    "title": "A Behavior Tree",
+    "description": "",
+    "root": "ca5577d6-3ccd-4496-84ec-180672c13962",
+    "display": {
+        "camera_x": 927.5,
+        "camera_y": 485.5,
+        "camera_z": 1,
+        "x": -560,
+        "y": -224
+    },
+    "properties": {},
+    "nodes": {
+        "6f625e87-2514-484d-ba32-5e6237691f63": {
+            "id": "6f625e87-2514-484d-ba32-5e6237691f63",
+            "name": "ROSisRunning",
+            "title": "ROSisRunning",
+            "description": "",
+            "display": {
+                "x": 64,
+                "y": -336
+            },
+            "parameters": {},
+            "properties": {}
+        },
+        "7a6d8234-598c-4315-8c6f-002334f14aa0": {
+            "id": "7a6d8234-598c-4315-8c6f-002334f14aa0",
+            "name": "StartROS",
+            "title": "StartROS",
+            "description": "",
+            "display": {
+                "x": 64,
+                "y": -272
+            },
+            "parameters": {},
+            "properties": {}
+        },
+        "a4e713d6-fe7f-419f-ab48-8f0c76ad3a58": {
+            "id": "a4e713d6-fe7f-419f-ab48-8f0c76ad3a58",
+            "name": "Priority",
+            "title": "Priority",
+            "description": "",
+            "display": {
+                "x": -144,
+                "y": -304
+            },
+            "parameters": {},
+            "properties": {},
+            "children": [
+                "6f625e87-2514-484d-ba32-5e6237691f63",
+                "7a6d8234-598c-4315-8c6f-002334f14aa0"
+            ]
+        },
+        "ca5577d6-3ccd-4496-84ec-180672c13962": {
+            "id": "ca5577d6-3ccd-4496-84ec-180672c13962",
+            "name": "Sequence",
+            "title": "Sequence",
+            "description": "",
+            "display": {
+                "x": -352,
+                "y": -224
+            },
+            "parameters": {},
+            "properties": {},
+            "children": [
+                "a4e713d6-fe7f-419f-ab48-8f0c76ad3a58",
+                "f9af0fd7-00b2-4ce6-8ab4-e2f36947f48c"
+            ]
+        },
+        "f9af0fd7-00b2-4ce6-8ab4-e2f36947f48c": {
+            "id": "f9af0fd7-00b2-4ce6-8ab4-e2f36947f48c",
+            "name": "Priority",
+            "title": "Priority",
+            "description": "",
+            "display": {
+                "x": -144,
+                "y": -144
+            },
+            "parameters": {},
+            "properties": {},
+            "children": [
+                "79483eaa-caa4-49f8-9a47-693a63f0461f",
+                "0a79fcf0-5dad-4d8d-825d-1859dc175ad5",
+                "bf259898-4236-4667-9b88-ffa161ba1b9e"
+            ]
+        },
+        "bf259898-4236-4667-9b88-ffa161ba1b9e": {
+            "id": "bf259898-4236-4667-9b88-ffa161ba1b9e",
+            "name": "UnPlugRobot",
+            "title": "UnPlugRobot",
+            "description": "",
+            "display": {
+                "x": 64,
+                "y": -80
+            },
+            "parameters": {},
+            "properties": {}
+        },
+        "a77ff380-4ce3-49c6-badd-240fdb7ed30f": {
+            "id": "a77ff380-4ce3-49c6-badd-240fdb7ed30f",
+            "name": "LaptopBatteryCharged",
+            "title": "LaptopBatteryCharged",
+            "description": "",
+            "display": {
+                "x": 272,
+                "y": -144
+            },
+            "parameters": {},
+            "properties": {}
+        },
+        "0a79fcf0-5dad-4d8d-825d-1859dc175ad5": {
+            "id": "0a79fcf0-5dad-4d8d-825d-1859dc175ad5",
+            "name": "Inverter",
+            "title": "Inverter",
+            "description": "",
+            "display": {
+                "x": 64,
+                "y": -144
+            },
+            "parameters": {},
+            "properties": {},
+            "child": "a77ff380-4ce3-49c6-badd-240fdb7ed30f"
+        },
+        "79483eaa-caa4-49f8-9a47-693a63f0461f": {
+            "id": "79483eaa-caa4-49f8-9a47-693a63f0461f",
+            "name": "RobotIsUnplugged",
+            "title": "RobotIsUnplugged",
+            "description": "",
+            "display": {
+                "x": 64,
+                "y": -208
+            },
+            "parameters": {},
+            "properties": {}
+        }
+    },
+    "custom_nodes": [
+        {
+            "name": "LaptopBatteryCharged",
+            "title": "",
+            "category": "condition"
+        },
+        {
+            "name": "UnPlugRobot",
+            "title": "",
+            "category": "action"
+        },
+        {
+            "name": "ROSisRunning",
+            "title": "",
+            "category": "condition"
+        },
+        {
+            "name": "StartROS",
+            "title": "",
+            "category": "action"
+        },
+        {
+            "name": "RobotIsUnplugged",
+            "title": "",
+            "category": "condition"
+        }
+    ]
+}
