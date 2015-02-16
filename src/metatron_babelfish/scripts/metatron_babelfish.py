@@ -161,9 +161,9 @@ class MetatronBabel(object):
         return True
 
     def _handle_listen_request(self, text):
-        print text.input_text
-        self._say(text)
-        print text.sender[1:]
+        rospy.loginfo(text.input_text)
+        self._say(text.input_text)
+        rospy.loginfo(text.sender[1:])
         return True
 
     def _say(self, text):
