@@ -7,3 +7,4 @@ use_pushover: False
 pushover_token: ""
 pushover_user: ""
 pushover_sound: ""
+speech_engine: "~/metatron/scripts/tts.sh"

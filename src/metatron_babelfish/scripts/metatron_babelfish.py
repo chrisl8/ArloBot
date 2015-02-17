@@ -5,6 +5,7 @@
 import rospy
 import subprocess
 import random
+from os.path import expanduser
 from std_msgs.msg import Bool
 # You CANNOT declare the services in the same package as the node that implements it!
 # So this cannot work:
@@ -26,12 +27,9 @@ class MetatronBabel(object):
         self.r = rospy.Rate(1) # 1hz refresh rate
 
         self.isSpeaking = False
-        self.speechEngine = 'espeak' # Use espeak by default because it comes with Ubuntu
-        onlineSpeechEngine = '/home/chrisl8/speech/attText2Speech.sh'
-        if os.path.isfile(onlineSpeechEngine):
-            self.speechEngine = onlineSpeechEngine
-        self.soundFileLocation = rospy.get_param("~dictionary/soundFileLocation", "/")
-        #print self.speechEngine
+        # Use espeak by default because it comes with Ubuntu
+        self.speechEngine = expanduser(rospy.get_param("/metatron_id/speech_engine", "espeak"))
+        self.soundFileLocation = expanduser(rospy.get_param("~dictionary/soundFileLocation", "/"))
 
         # Set laptop volume to 100% so everyone can hear us
         process = subprocess.Popen(['amixer', '-D', 'pulse', 'sset', 'Master', '100%', 'on'], close_fds=True)
