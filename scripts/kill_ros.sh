@@ -42,5 +42,9 @@ then
     done
 fi
 echo "Everything Killed."
+if [ -f nohup.out ]
+then
+    rm nohup.out
+fi
 ${SCRIPTDIR}/callRestUSB.sh
 
