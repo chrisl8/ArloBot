@@ -50,3 +50,11 @@ then
     sudo apt-get install festvox-en1
 fi
 
+if ! (grep mbrola /etc/festival.scm)
+then
+    echo "Updating default Festival voice"
+    echo "You will be asked for your password"
+    echo "To allow updates to /etc/festival.scm"
+    sudo ${SCRIPTDIR}/updateFestivalDefaults.sh
+fi
+
