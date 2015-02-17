@@ -36,6 +36,17 @@ fi
 # Install apps needed by Metatron/Arlobot
 if ! (which festival>/dev/null)
 then
+    echo "Installing Festival for robot speech"
+    echo "You will be asked for your password"
+    echo "In order to run apt-get install."
     sudo apt-get install festival
+fi
+
+if ! (dpkg -l festvox-en1>/dev/null)
+then
+    echo "Installing Festival en1 voice for robot speech"
+    echo "You will be asked for your password"
+    echo "In order to run apt-get install."
+    sudo apt-get install festvox-en1
 fi
 
