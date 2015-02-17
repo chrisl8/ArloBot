@@ -4,6 +4,7 @@ Convenience Scripts
 These are scripts that are meant to make it easy to start up basic ROS functions on the robot without having to run dozens of roslaunch commands.
 
 <ul>
+<li>setup.sh - Set up everything Metatron and Arlobot need in your environment.</li>
 <li>kill_ros.sh - This will stop all ROS programs and reset everything.</li>
 <li>start-arlobot-only.sh - This will start up just the ArloBot basic ROS package</li>
 <li>start-metatron.sh - This will start up Arlobot and Metatron, basically everything.</li>
