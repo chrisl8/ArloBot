@@ -1,6 +1,8 @@
 // http://behavior3js.guineashots.com/
 // Setup:
-// npm insatll behavior3js
+// npm install behavior3js
+// npm install pushover-notifications
+// npm install say
 // Modifications:
 // node_modules/behavior3js/package.json:
 //  -"main": "libs/b3core.0.1.0.min.js",
@@ -11,6 +13,10 @@
 
 var behavior3js = require('behavior3js');
 
+var exec = require('child_process').exec;
+var push = require('pushover-notifications');
+var say = require('say');
+
 var arloTree = new b3.BehaviorTree();
 
 var ROSisRunning = b3.Class(b3.Condition);
@@ -18,6 +24,10 @@ ROSisRunning.prototype.name = 'ROSisRunning';
 ROSisRunning.prototype.tick = function(tick) {
     // Stub tick
     console.log("ROSisRunning");
+    //TODO: IF ROS is running, then set:
+    //metaTronProcessStarted
+    //to false, so that if it starts,
+    //StartROS will start it again.
     return b3.FAILURE;
 };
 
@@ -25,7 +35,52 @@ var StartROS = b3.Class(b3.Action);
 StartROS.prototype.name = 'StartROS';
 StartROS.prototype.tick = function(tick) {
     console.log("Start ROS");
-    return b3.RUNNING;
+    if (arloBot.metaTronProcessStarted) {
+        if (arloBot.metatronStartupNoError) {
+            console.log("RUNNING!");
+            return b3.RUNNING;
+        } else {
+            console.log("FAILURE");
+            return b3.FAILURE;
+        }
+    } else {
+        console.log("Running child process . . .");
+        arloBot.metaTronProcessStarted = true;
+        // node suffers from similar user environment issues
+        // as running via PHP from the web,
+        // so PHP's start script works well,
+        // although we can run it as me, so no need for the
+        // stub to call with sudo
+        // TODO: Make this path more portable!
+        exec('../../arloweb/startROS.sh', function(error, stdout) {
+            if (error.code > 0) {
+                arloBot.metatronStartupNoError = false;
+                arloBot.metaTronStartupERROR = stdout;
+                // Report ERROR:
+                // TODO: Should this be its own behavior?
+                var p = new push({
+                    user: personalData.pushover.USER,
+                    token: personalData.pushover.TOKEN
+                });
+                var msg = {
+                    message: arloBot.metaTronStartupERROR,
+                    title: "ROS Startup ERROR!",
+                    sound: personalData.pushover.sound,
+                    priority: 1 // Most will be -1 or 0, but this is important
+                };
+                p.send(msg); // Silent with no error reporting
+                // NOTE: say uses Festival,
+                // which is great, because there is no good interface for it,
+                // but getting the voice you want can be a pain!
+                // no callback, fire and forget
+                // "null" means use system default
+                say.speak(null, 'It hates me.');
+            } else {
+                arloBot.metaTronProcessSuccess = true;
+            }
+        });
+        return b3.RUNNING;
+    }
 };
 
 var UnPlugRobot = b3.Class(b3.Action);
@@ -64,14 +119,15 @@ var arloNodeData = JSON.parse(fs.readFileSync('arloTreeData.json', 'utf8'));
 // Despite the Editor creating a beautify JSON behavior tree for us,
 // we still have to list the custom nodes for it by hand.
 //var customNodeNames = {
-    //'ROSisRunning': ROSisRunning,
-    //'StartROS': StartROS,
-    //'UnPlugRobot': UnPlugRobot,
-    //'LaptopBatteryCharged': LaptopBatteryCharged,
-    //'RobotIsUnplugged': RobotIsUnplugged
+//'ROSisRunning': ROSisRunning,
+//'StartROS': StartROS,
+//'UnPlugRobot': UnPlugRobot,
+//'LaptopBatteryCharged': LaptopBatteryCharged,
+//'RobotIsUnplugged': RobotIsUnplugged
 //};
 // TODO: Does this work as the better way to do this?
-var customNodeNames= {};
+var customNodeNames = {};
+
 function parseCustomNodes(element, index, array) {
     customNodeNames[element.name] = eval(element.name);
 }
@@ -79,6 +135,10 @@ arloNodeData.custom_nodes.forEach(parseCustomNodes);
 //console.log(customNodeNames);
 
 arloTree.load(arloNodeData, customNodeNames);
+
+// Load personal settings not included in git repo
+var personalDataFile = process.env.HOME + '/.arlobot/personalDataForBehavior.json';
+var personalData = JSON.parse(fs.readFileSync(personalDataFile, 'utf8'));
 
 // This is the Arlobot "object" we will use to track everything,
 // note that there is also a "blackboard" where nodes can track
@@ -90,6 +150,9 @@ arloTree.load(arloNodeData, customNodeNames);
 // Rather track things we can only know from inside of here,
 // such as last action or speech time, etc.
 var arloBot = {
+    metatronProcessStarted: false,
+    metatronStartupNoError: true,
+    metatronStartupERROR: '',
     // Currently filled with dummy data
     flipBit: 1,
     flipBit2: 1,

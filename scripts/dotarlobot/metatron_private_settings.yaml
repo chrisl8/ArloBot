@@ -1,0 +1,9 @@
+use_twilio: False
+twilio_account_sid: ""
+twilio_auth_token: ""
+twilio_number: ""
+my_phone_number: ""
+use_pushover: False
+pushover_token: ""
+pushover_user: ""
+pushover_sound: ""

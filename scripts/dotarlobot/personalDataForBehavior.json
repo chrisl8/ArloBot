@@ -1,0 +1,13 @@
+{
+    "pushover": {
+        "TOKEN": "",
+        "USER": "",
+        "sound": ""
+    },
+    "twilio": {
+        "account_sid": "",
+        "auth_token": "",
+        "number": "",
+        "my_phone_number": ""
+    }
+}
