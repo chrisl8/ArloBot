@@ -26,7 +26,7 @@ ROSisRunning.prototype.tick = function(tick) {
     console.log("ROSisRunning");
     //TODO: IF ROS is running, then set:
     //metaTronProcessStarted
-    //to false, so that if it starts,
+    //to false, so that if it stops running,
     //StartROS will start it again.
     return b3.FAILURE;
 };
@@ -83,6 +83,20 @@ StartROS.prototype.tick = function(tick) {
     }
 };
 
+var RobotKnowsWhatRoomItIsIn = b3.Class(b3.Condition);
+RobotKnowsWhatRoomItIsIn.prototype.name = 'RobotKnowsWhatRoomItIsIn';
+RobotKnowsWhatRoomItIsIn.prototype.tick = function(tick) {
+    console.log(this.name);
+    return b3.FAILURE;
+};
+
+var DetermineRoom = b3.Class(b3.Action);
+DetermineRoom.prototype.name = 'DetermineRoom';
+DetermineRoom.prototype.tick = function(tick) {
+    console.log(this.name);
+    return b3.RUNNING;
+};
+
 var UnPlugRobot = b3.Class(b3.Action);
 UnPlugRobot.prototype.name = 'UnPlugRobot';
 UnPlugRobot.prototype.tick = function(tick) {
@@ -94,7 +108,7 @@ var LaptopBatteryCharged = b3.Class(b3.Action);
 LaptopBatteryCharged.prototype.name = 'LaptopBatteryCharged';
 LaptopBatteryCharged.prototype.tick = function(tick) {
     console.log(this.name);
-    return b3.SUCCESS;
+    return b3.FAILURE;
 };
 
 var RobotIsUnplugged = b3.Class(b3.Condition);
@@ -127,7 +141,6 @@ var arloNodeData = JSON.parse(fs.readFileSync('arloTreeData.json', 'utf8'));
 //};
 // TODO: Does this work as the better way to do this?
 var customNodeNames = {};
-
 function parseCustomNodes(element, index, array) {
     customNodeNames[element.name] = eval(element.name);
 }
