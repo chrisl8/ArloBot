@@ -1,2 +1,2 @@
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
-node ${SCRIPTDIR}/tts.js
+node ${SCRIPTDIR}/tts.js "${1}"
