@@ -6,6 +6,10 @@ var fs = require('fs');
 fs.open(beQuietFile, 'r', function(err) {
     if (err) {
 
+        var exec = require('child_process').exec;
+        // Set volume at max
+        exec('/usr/bin/amixer -D pulse sset Master 100% on');
+
         var requestedSound = process.argv[2];
 
         // This script can accept text to speak,
@@ -14,7 +18,6 @@ fs.open(beQuietFile, 'r', function(err) {
         // decide what it is!
         var possibleExtension = requestedSound.slice(-4).toLowerCase();
         if (possibleExtension === '.wav') {
-            var exec = require('child_process').exec;
             exec('/usr/bin/aplay -q ' + requestedSound);
         } else {
             // https://github.com/marak/say.js/
