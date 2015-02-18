@@ -33,6 +33,12 @@ then
     mkdir ${ARLOHOME}/sounds
 fi
 
+if [ ! -d ${ARLOHOME}/status ]
+then
+    mkdir ${ARLOHOME}/status
+fi
+chmod -R 777 ${ARLOHOME}/status
+
 # Install apps needed by Metatron/Arlobot
 if ! (which festival>/dev/null)
 then
