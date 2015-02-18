@@ -3,6 +3,23 @@
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 
+# Check for node.js installation
+if ! (which node>/dev/null)
+then
+    echo "You do not have node.js installed."
+    echo "Please run the following commands to install node.js,"
+    echo "or use instructions from http://nodejs.org/ if you prefer,"
+    echo "and then run this setup script again."
+    echo ""
+    echo "cd"
+    echo "wget http://nodejs.org/dist/v0.12.0/node-v0.12.0.tar.gz"
+    echo "tar xzvf node-v0.12.0.tar.gz"
+    echo "cd node-v0.12.0"
+    echo "./configure"
+    echo "make"
+    echo "sudo make install"
+fi
+
 # We will use ~/.arlobot to store "private" data
 # That is data that doesn't need to be part of
 # the public github repo like user tokens,
