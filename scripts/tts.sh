@@ -1,4 +1,6 @@
-#!/bin/bash
-# NOTE: The curtesy loader above is REQUIRED for python called shell scripts!
-SCRIPTDIR=$(cd $(dirname "$0") && pwd)
-node ${SCRIPTDIR}/tts.js "${1}"
+#!/usr/bin/env node
+
+// This is an example of how to call a node module from the command line,
+var tts = require('./tts.js');
+tts(process.argv[2]);
+
