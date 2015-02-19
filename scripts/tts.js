@@ -27,5 +27,25 @@ module.exports = function(sound) {
             }
         }
     });
+    // Send 'sound' to myself via Pushover
+    // Load personal settings to get Pushover User and Token
+    var personalDataFile = process.env.HOME + '/.arlobot/personalDataForBehavior.json';
+    fs.readFile(personalDataFile, function(err, data) {
+        if (!err) {
+            var personalData = JSON.parse(data);
+            if (personalData.pushover.USER !== "") {
+                var push = require('pushover-notifications');
+                var p = new push({
+                    user: personalData.pushover.USER,
+                    token: personalData.pushover.TOKEN
+                });
+                var msg = {
+                    message: sound,
+                    sound: personalData.pushover.sound,
+                    priority: -1
+                };
+                p.send(msg); // Silent with no error reporting
+            }
+        }
+    });
 };
-
