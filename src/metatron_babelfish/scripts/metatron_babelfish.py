@@ -152,10 +152,24 @@ class MetatronBabel(object):
         self._say(text.text_to_speak)
         return True
 
+    # This will get the text messages from Twilio,
+    # and parse and respond to them.
     def _handle_listen_request(self, text):
-        rospy.loginfo(text.input_text)
-        self._say(text.input_text)
-        rospy.loginfo(text.sender[1:])
+        rospy.loginfo(text.sender[1:] + ":" + text.input_text)
+        if text.input_text[:3].lower() == 'say':
+            self._say(text.input_text[3:].strip())
+        elif "map" in text.input_text.lower():
+            list_map_script = expanduser('~/metatron/scripts/list-maps.sh')
+            map_list_text = ""
+            map_list = subprocess.Popen([list_map_script], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
+            # Only grab the FIRST battery percentage!
+            for line in iter(map_list.stdout.readline, ""):
+                map_list_text += line
+            map_list.stdout.close()
+            map_list.wait()
+            text_me = expanduser('~/metatron/scripts/textme.sh')
+            process = subprocess.Popen([text_me, map_list_text], close_fds=True)
+            process.wait() # Wait for it to finish, this should be instantaneous.
         return True
 
     def _say(self, text):
