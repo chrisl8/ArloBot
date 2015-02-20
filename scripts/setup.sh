@@ -13,7 +13,7 @@ then
     echo ""
     echo "cd"
     echo "wget http://nodejs.org/dist/v0.12.0/node-v0.12.0.tar.gz"
-    echo "tar xzvf node-v0.12.0.tar.gz"
+    echo "tar xzf node-v0.12.0.tar.gz"
     echo "cd node-v0.12.0"
     echo "./configure"
     echo "make"
