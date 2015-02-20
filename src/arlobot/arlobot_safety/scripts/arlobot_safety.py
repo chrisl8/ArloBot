@@ -114,7 +114,7 @@ class ArlobotSafety(object):
             # This allows any program anywhere to put the word "STOP"
             # Into a file in /var/arloStatus/ and stop the robot.
             # IF the folder exists of course.
-            status_dir = os.path.expanduser("~/arloStatus")
+            status_dir = os.path.expanduser("~/.arlobot/status")
             if os.path.isdir(status_dir):
                 devnull = open(os.devnull, 'w')
                 if not subprocess.call(["grep", "-R", "STOP", status_dir], stdout=devnull, stderr=devnull):
