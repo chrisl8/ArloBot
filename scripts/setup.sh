@@ -18,6 +18,7 @@ then
     echo "./configure"
     echo "make"
     echo "sudo make install"
+    exit 1
 fi
 
 # We will use ~/.arlobot to store "private" data
