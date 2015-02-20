@@ -27,15 +27,9 @@ class MetatronBabel(object):
         self.r = rospy.Rate(1) # 1hz refresh rate
 
         self.isSpeaking = False
-        # Use espeak by default because it comes with Ubuntu
-        self.speechEngine = expanduser(rospy.get_param("/metatron_id/speech_engine", "espeak"))
+        # No true "default" now. It must handle all sound. "echo" seems like a safe place to dump if this is not set.
+        self.speechEngine = expanduser(rospy.get_param("/metatron_id/speech_engine", "echo"))
         self.soundFileLocation = expanduser(rospy.get_param("~dictionary/soundFileLocation", "/"))
-
-        # Set laptop volume to 100% so everyone can hear us
-        process = subprocess.Popen(['amixer', '-D', 'pulse', 'sset', 'Master', '100%', 'on'], close_fds=True)
-        process.wait() # Wait for it to finish, this should be instantaneous.
-        # TODO This could get reset by something else, it might be smart to do this at every output,
-        # but that would get old, and prevent us from shutting him up!
 
         #Twilio setup
         self.use_twilio = rospy.get_param("/metatron_id/use_twilio", False)
@@ -173,7 +167,7 @@ class MetatronBabel(object):
             if text.split('.')[1] == 'wav':
                 is_wav = True
         if is_wav:
-            process = subprocess.Popen(['/usr/bin/aplay', '-q', self.soundFileLocation + "/" + text], close_fds=True)
+            process = subprocess.Popen([self.speechEngine, self.soundFileLocation + "/" + text], close_fds=True)
         else:
             process = subprocess.Popen([self.speechEngine, text], close_fds=True)
         process.wait() # Wait for it to finish, this should be instantaneous.
@@ -186,18 +180,7 @@ class MetatronBabel(object):
         #         from_=self.twilio_number,
         #         body=text,
         #     )
-        # Pushover
-        # https://pushover.net/faq#library-python
-        if not is_wav & self.use_pushover:
-            conn = httplib.HTTPSConnection("api.pushover.net:443")
-            conn.request("POST", "/1/messages.json",
-                         urllib.urlencode({
-                             "token": self.pushover_token,
-                             "user": self.pushover_user,
-                             "sound": self.pushover_sound,
-                             "message": text,
-                             }), { "Content-type": "application/x-www-form-urlencoded" })
-            conn.getresponse()
+        # Pushover moved to speech node module
         self.isSpeaking = False
         self.lastStatement = rospy.get_time()
 
