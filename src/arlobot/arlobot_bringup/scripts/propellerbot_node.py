@@ -664,6 +664,7 @@ class PropellerComm(object):
     def start(self):
         self._OdomStationaryBroadcaster.Start()
         self.startSerialPort()
+        self._serialTimeout = 0
 
     def startSerialPort(self):
         rospy.loginfo("Serial Data Gateway starting . . .")
@@ -823,7 +824,8 @@ class PropellerComm(object):
 
     def watchDog(self):
         while not rospy.is_shutdown():
-            self._serialTimeout += 1
+            if self._serialAvailable:
+                self._serialTimeout += 1
             #rospy.loginfo("Serial Timeout = " + str(self._serialTimeout))
             if self._serialTimeout > 9:
                 rospy.loginfo("Watchdog Timeout Reset initiated")
