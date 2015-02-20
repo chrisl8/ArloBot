@@ -11,7 +11,7 @@ from std_msgs.msg import Bool
 # So this cannot work:
 #from metatron_babelfish.srv import *
 # If you do you will get "ImportError: No module named srv"
-from metatron_services.srv import SpeakText, ListenText
+from metatron_services.srv import SpeakText, ListenText, SetMap
 # For SMS sending
 from twilio.rest import TwilioRestClient
 # For Pushover - https://pushover.net/faq#library-python
@@ -158,19 +158,27 @@ class MetatronBabel(object):
         rospy.loginfo(text.sender[1:] + ":" + text.input_text)
         if text.input_text[:3].lower() == 'say':
             self._say(text.input_text[3:].strip())
-        elif "map" in text.input_text.lower():
-            list_map_script = expanduser('~/metatron/scripts/list-maps.sh')
-            map_list_text = ""
-            map_list = subprocess.Popen([list_map_script], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
-            # Only grab the FIRST battery percentage!
-            for line in iter(map_list.stdout.readline, ""):
-                map_list_text += line
-            map_list.stdout.close()
-            map_list.wait()
-            text_me = expanduser('~/metatron/scripts/textme.sh')
-            process = subprocess.Popen([text_me, map_list_text], close_fds=True)
-            process.wait() # Wait for it to finish, this should be instantaneous.
+            return True
+        # Get the list of maps for use and comparison
+        list_map_script = expanduser('~/metatron/scripts/list-maps.sh')
+        map_list_text = ""
+        map_list = subprocess.Popen([list_map_script], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
+        for line in iter(map_list.stdout.readline, ""):
+            map_list_text += line
+        map_list.stdout.close()
+        map_list.wait()
+        if text.input_text in map_list_text:
+            self._say("I am setting the map to: " + text.input_text)
+            return self.set_map_client(text.input_text)
+        if "map" in text.input_text.lower():
+            self._send_text_message(map_list_text)
+            return True
         return True
+
+    def _send_text_message(self, text):
+        text_me = expanduser('~/metatron/scripts/textme.sh')
+        process = subprocess.Popen([text_me, text], close_fds=True)
+        process.wait() # Wait for it to finish, this should be instantaneous.
 
     def _say(self, text):
         while self.isSpeaking:
@@ -197,6 +205,15 @@ class MetatronBabel(object):
         # Pushover moved to speech node module
         self.isSpeaking = False
         self.lastStatement = rospy.get_time()
+
+    def set_map_client(self, map):
+        rospy.wait_for_service('/metatron_id/set_map')
+        try:
+            set_map_service = rospy.ServiceProxy('/metatron_id/set_map', SetMap)
+            response = set_map_service(map)
+            return response.result
+        except rospy.ServiceException, e:
+            return False
 
 if __name__ == '__main__':
     node = MetatronBabel()

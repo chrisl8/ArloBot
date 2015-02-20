@@ -6,3 +6,4 @@ bool leftMotorOn
 bool rightMotorOn
 bool upperLightOn
 bool lowerLightOn
+string mapToUse

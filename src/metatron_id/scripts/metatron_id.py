@@ -38,6 +38,7 @@ class MetatronId(object):
         self.arloMinimal = 0  # Track whether the arlo_bringup minimal package has been brought up and is running.
         self.cameraState = False  # Track camera state
         self.cameraChoice = ""  # Track camera choice
+        self.mapToUse = ""
         self._MetaTronStatusPublisher = rospy.Publisher('~status', metatron_status, queue_size=1)
 
         # Cameras - This is very setup dependent!
@@ -50,6 +51,8 @@ class MetatronId(object):
         arlo_minimal_toggle = rospy.Service('~toggle_arlo_minimal', ToggleArloMinimal, self._toggle_arlo_minimal)
         self.newScreenShot = False  # Global so _wake_screen can set it
         screen_wake = rospy.Service('~wake_screen', WakeScreen, self._wake_screen)
+
+        set_map = rospy.Service('~set_map', SetMap, self._set_map)
 
         # If you get an error like this:
         #ERROR: service [/metatron_id/toggle_camera] responded with an error: error processing request:
@@ -111,6 +114,8 @@ class MetatronId(object):
             #statusToPublish.upperLightOn = self.upperLightOn
             #statusToPublish.lowerLightOn = self.lowerLightOn
 
+            status_to_publish.mapToUse = self.mapToUse
+
             self._MetaTronStatusPublisher.publish(status_to_publish)
 
             self.r.sleep()  # Sleep long enough to maintain the rate set in __init__
@@ -163,6 +168,10 @@ class MetatronId(object):
         process.wait()  # Wait for it to finish, this should be instantaneous.
         # This will tell the web interface to grab a new copy, avoiding waisted network traffic
         self.newScreenShot = True
+        return True
+
+    def _set_map(self, req):
+        self.mapToUse = req.map
         return True
 
     def _toggle_cameras(self, req):

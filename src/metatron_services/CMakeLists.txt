@@ -59,6 +59,7 @@ add_service_files(
   ToggleCamera.srv
   ToggleArloMinimal.srv
   WakeScreen.srv
+  SetMap.srv
 )
 
 ## Generate actions in the 'action' folder
