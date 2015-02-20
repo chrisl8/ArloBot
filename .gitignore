@@ -6,3 +6,4 @@
 /build
 /devel
 .idea
+src/CMakeLists.txt
