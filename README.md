@@ -3,8 +3,12 @@ ArloBot Package for ROS
 
 Update February 24, 2015: I am still actively developing and using my "ArloBot", so if you have any questions or problems feel free to let me know!
 The two initial goals for this package are:
-1. To allow all of the functions of the TurtleBot from this Tutorial: http://wiki.ros.org/Robots/TurtleBot to run on the "Arlo Platform". I believe that is possible now. If you find anything that doesn't work, open an issue!
-2. I have purchased and am working though "Review ROS By Example INDIGO". All of the exmamples in this book should work on the Arlo Platform. As I'm working through the book now, I will update my code if I find anything that doesn't work properly. I highly recommend purchasing this book and working through it if you have or wish to build a ROS based robot! http://www.lulu.com/shop/r-patrick-goebel/ros-by-example-indigo-volume-1/ebook/product-22015937.html
+
+1. To allow all of the functions of the TurtleBot from this tutorial: http://wiki.ros.org/Robots/TurtleBot to run on the "Arlo Platform". I believe that is possible now. If you find anything that doesn't work, open an issue!
+
+2. I have purchased and am working though "ROS By Example INDIGO". All of the exmamples in this book should work on the Arlo Platform. As I'm working through the book now, I will update my code if I find anything that doesn't work properly. I highly recommend purchasing this book and working through it if you have or wish to build a ROS based robot! http://www.lulu.com/shop/r-patrick-goebel/ros-by-example-indigo-volume-1/ebook/product-22015937.html
+
+3. Once these two goals are accomplished, the "ArloBot" becomes an open ended mobile development platform where anything is possible. I have a lot of ideas and it is just a matter of time and interest as to what specifically I will do. I have sevearl irons in the fire. This repository, however, will focus on goals 1 & 2 and I will put other more specialized functions into other repositories.
 
 The goal of this project is to allow a Parallax Arlo Platform robot http://www.parallax.com/product/arlo-robotic-platform-system to run all of the demonstration projects for the Robot Operating System (ROS) based TurtleBot http://wiki.ros.org/Robots/TurtleBot
 
