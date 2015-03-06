@@ -40,6 +40,11 @@ class ArlobotExplore(object):
         # http://answers.ros.org/question/164911/move_base-and-extrapolation-errors-into-the-future/
         # This is taken care of later instead on a loop that checks the status before continuing.
 
+        # We will decrement this number if the plan is failing,
+        # to see if we can make it work by attempting a "closer" point along
+        # the path.
+        self._poseDivider = 1
+
     def _SetCurrentOdom(self, currentOdom):
         self.currentOdom = currentOdom
         
@@ -53,20 +58,15 @@ class ArlobotExplore(object):
         twist = Twist()
         twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
         twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = 0
-        #print "Sending twist command:"
-        #print twist
         # You cannot just "send" this, you publish it, and you have to publish it repeatedly, or the robot never starts or just stops
         pub.publish(twist)
         count = 0
         while count < 2: # I'm not sure how many it takes, but more than one is best else sometimes it is missed.
             rospy.loginfo("Twist halt command " + str(count))
-            #print count
-            #print twist
             pub.publish(twist)
             rospy.sleep(1)
             count += 1
         rospy.loginfo("ArlobotExplore robot halt should be complete now. Closing down.")
-        #print "twist based rotation done."
         
     def Run(self):
         # Waits until the action server has started up and started
@@ -121,26 +121,23 @@ class ArlobotExplore(object):
             rospy.loginfo("Rotating ArloBot to scan surroundings.")
             # You cannot just "send" a command, you have to broadcast it and keep it up or the robot will eventually stop.
             while count < 8: # 8 seconds seems about right at angular_speed = 1 to do just over 1 rotation normally
-                rospy.loginfo("Twist command " + str(count))
-                #print twist
-                pub.publish(twist)
-                rospy.sleep(1) # 1 second intervals seems to work fine
-                # Too far apart and the robot will stop periodically,
-                # Too close and they just pass by before the robot finishes what it is doing.
+                if not rospy.is_shutdown():
+                    rospy.loginfo("Twist command " + str(count))
+                    pub.publish(twist)
+                    rospy.sleep(1) # 1 second intervals seems to work fine
+                    # Too far apart and the robot will stop periodically,
+                    # Too close and they just pass by before the robot finishes what it is doing.
                 count += 1
             #rospy.sleep(1) # Let it spin for a while
             # Stop
             rospy.loginfo("Stopping survey rotation . . . ")
             twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
             twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = 0
-            #print "Sending twist command:"
-            #print twist
             # You cannot just "send" this, you publish it, and you have to publish it repeatedly, or the robot never starts or just stops
             pub.publish(twist)
             count = 0
             while count < 2: # I'm not sure how many it takes, but more than one is best else sometimes it is missed.
                 rospy.loginfo("Twist halt command " + str(count))
-                #print twist
                 pub.publish(twist)
                 rospy.sleep(1)
                 count += 1
@@ -164,7 +161,11 @@ class ArlobotExplore(object):
                 
                 # Lets just use the LAST pose and let gmapping deal with the path
                 #print(response.trajectory.poses[-1])
-                i = response.trajectory.poses[-1]
+                rospy.loginfo("Pose Divider = " + str(self._poseDivider))
+                print len(response.trajectory.poses)
+                print (len(response.trajectory.poses) - 1) / self._poseDivider
+                i = response.trajectory.poses[(len(response.trajectory.poses) - 1) / self._poseDivider]
+                print i
                 explorePosition = [0,0,0]
                 explorePosition[0] = i.pose.position.x
                 explorePosition[1] = i.pose.position.y
@@ -185,6 +186,15 @@ class ArlobotExplore(object):
                 longest paths, and they usually repeat anyway.
                 '''
                 rospy.loginfo("Final result: " + str(result) + " " + resultText)
+                # Each time we fail to reach the goal given by the hector explore planner,
+                # cut the subsequent goals in half,
+                # and keep cutting them in half again,
+                # until we come up with a goal that is close enough to reach.
+                # Then start over!
+                if result == GoalStatus.SUCCEEDED:
+                    self._poseDivider = 1
+                else:
+                    self._poseDivider += 1
             except:
                 rospy.loginfo("Hector Explore failed.")
                 
