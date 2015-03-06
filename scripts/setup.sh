@@ -12,12 +12,16 @@ then
     echo "and then run this setup script again."
     echo ""
     echo "cd"
-    echo "wget http://nodejs.org/dist/v0.12.0/node-v0.12.0.tar.gz"
-    echo "tar xzf node-v0.12.0.tar.gz"
-    echo "cd node-v0.12.0"
+    echo "# Currently roslib does not work with node 0.12.0"
+    echo "wget http://nodejs.org/dist/v0.10.35/node-v0.10.35.tar.gz"
+    echo "tar xzf node-v0.10.35.tar.gz"
+    echo "cd node-v0.10.35"
     echo "./configure"
     echo "make"
     echo "sudo make install"
+    echo "# And you had better install roslib by hand too!"
+    echo "cd ~/metatron/behavior"
+    echo "npm install roslib"
     exit 1
 fi
 
