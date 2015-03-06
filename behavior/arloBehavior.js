@@ -2,8 +2,6 @@ module.exports = function() {
     // http://behavior3js.guineashots.com/
     // Setup:
     // npm install behavior3js
-    // npm install pushover-notifications
-    // npm install say
     // Modifications:
     // node_modules/behavior3js/package.json:
     //  -"main": "libs/b3core.0.1.0.min.js",
@@ -16,7 +14,7 @@ module.exports = function() {
 
     var exec = require('child_process').exec;
     var spawn = require('child_process').spawn;
-    var push = require('pushover-notifications');
+    var ROSLIB = require('roslib');
     // Note that tts will convert text to speech,
     // or it will send a ".wav" string (path, etc)
     // to aplay.
@@ -84,17 +82,6 @@ module.exports = function() {
                 // if killed externally.
                 if (data.indexOf('[master] killing on exit') > -1) {
                     arloBot.metatronStartupNoError = false;
-                    var p = new push({
-                        user: personalData.pushover.USER,
-                        token: personalData.pushover.TOKEN
-                    });
-                    var msg = {
-                        message: "ROS has Shut Down.",
-                        title: "ROS Shutdown!",
-                        sound: personalData.pushover.sound,
-                        priority: 1 // Most will be -1 or 0, but this is important
-                    };
-                    p.send(msg); // Silent with no error reporting
                     tts('What happend?');
                     // TODO: At this point we may want to set
                     // arloBot.metatronProcessStarted = false;
@@ -115,20 +102,7 @@ module.exports = function() {
                 } else {
                     // FAILURE
                     arloBot.metatronStartupNoError = false;
-                    var p = new push({
-                        user: personalData.pushover.USER,
-                        token: personalData.pushover.TOKEN
-                    });
-                    var msg = {
-                        message: "ROS Startup Failed.",
-                        title: "ROS Startup ERROR!",
-                        sound: personalData.pushover.sound,
-                        priority: 1 // Most will be -1 or 0, but this is important
-                    };
-                    p.send(msg); // Silent with no error reporting
                     tts('It hates me.');
-                    // TODO: TEST, and how do we send failure info
-                    // to Pushover and say?
                 }
             });
 
@@ -138,25 +112,6 @@ module.exports = function() {
             //     if (error.code > 0) {
             //         arloBot.metatronStartupNoError = false;
             //         arloBot.metaTronStartupERROR = stdout;
-            //         // Report ERROR:
-            //         // TODO: Should this be its own behavior?
-            //         var p = new push({
-            //             user: personalData.pushover.USER,
-            //             token: personalData.pushover.TOKEN
-            //         });
-            //         var msg = {
-            //             message: arloBot.metaTronStartupERROR,
-            //             title: "ROS Startup ERROR!",
-            //             sound: personalData.pushover.sound,
-            //             priority: 1 // Most will be -1 or 0, but this is important
-            //         };
-            //         p.send(msg); // Silent with no error reporting
-            //         // NOTE: say uses Festival,
-            //         // which is great, because there is no good interface for it,
-            //         // but getting the voice you want can be a pain!
-            //         // no callback, fire and forget
-            //         // "null" means use system default
-            //         say.speak(null, 'It hates me.');
             //     } else {
             //         arloBot.metatronProcessStartupComplete = true;
             //     }
@@ -278,5 +233,65 @@ module.exports = function() {
         console.log("---");
     }, 1000);
     //tree.tick(arloBot,blackboard);
+    // Copied from arloweb.js
+    var connectedToROS = false, // Track my opinion of the connection
+        connectRequested = false, // For when we asked and are waiting patiently.
+        pleaseWait = false, // Display Please Wait on the Connect button
+        ros, // Empty global for actual connection.
+        cmdVel, // Empty global for actual topic
+        wakeScreen, // Empty global for actual topic
+        toggleCamera, // Empty global for actual topic
+        toggleRelay, // Empty global for actual topic
+        sendTextToSpeak, // Empty global for actual topic
+        shortDelay = 1000,
+        longDelay = 3000,
+        camera1On = false, // For tracking Camera status
+        camera2On = false, // For tracking Camera status
+        upperLightOn = false, // For tracking LED light bars
+        lowerLightOn = false, // For tracking LED light bars
+        UpperLightRowRelay = -1,
+        UpperLightRowName = "TopLightRow", // Found in arlobot_usbrelay/param/usbrelay.yaml
+        LowerLightRowRelay = -1,
+        LowerLightRowName = "BottomLightRow", // Found in arlobot_usbrelay/param/usbrelay.yaml
+        RightMotorRelay = -1,
+        RightMotorName = "RightMotor", // Found in arlobot_usbrelay/param/usbrelay.yaml
+        LeftMotorRelay = -1,
+        LeftMotorName = "LeftMotor"; // Found in arlobot_usbrelay/param/usbrelay.yaml
+    // Copied from arloweb.js
+    // Be sure to set url to point to localhost,
+    // and change any references to web objects with console.log (i.e. setActionField)
+    var pollROS = function() {
+        console.log('pollROS run');
+        connectedToROS = false;
+
+        ros = new ROSLIB.Ros({
+            url: 'ws://localhost:9090'
+        });
+
+        ros.on('connection', function() {
+            console.log('Websocket connected.');
+            //connectRequested = true;
+            updateConnectedButton();
+            checkROSServices();
+        });
+
+        ros.on('error', function(error) {
+            //console.log('Error connecting to websocket server: ', error);
+            console.log('Websocket eror');
+            if (ros !== undefined) {
+                ros.close();
+            }
+        });
+
+        ros.on('close', function() {
+            //console.log('Connection to websocket server closed.');
+            console.log('Websocket closed');
+            connectedToROS = false;
+            updateConnectedButton();
+            setTimeout(pollROS, shortDelay);
+        });
+    };
+
+    pollROS();
     console.log('done');
-}
+};
