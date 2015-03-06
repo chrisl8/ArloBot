@@ -41,6 +41,14 @@ then
         sleep 1
     done
 fi
+if (pkill -f prime)
+then
+    while (pgrep -f prime)
+    do
+        echo "Waiting for prime (3D camera) to close . . ."
+        sleep 1
+    done
+fi
 echo "Everything Killed."
 if [ -f nohup.out ]
 then
