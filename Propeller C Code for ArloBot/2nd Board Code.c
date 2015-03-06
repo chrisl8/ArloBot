@@ -16,7 +16,7 @@ fdserial *propterm;
 int mcp3208_IR_cm(int); // Function to get distance in CM from IR sensor using MCP3208
 
 const int numberOfPINGsensors = 10;
-const int numberOfIRonMC3208 = 6; // Number of IR Sensors on the MCP3208 ADC to read
+const int numberOfIRonMC3208 = 8; // Number of IR Sensors on the MCP3208 ADC to read
 const int firtPINGsensorPIN = 2; // Which pin the first PING sensor is on
 const int propRXpin = 0;
 const int propTXpin = 1;
@@ -86,13 +86,7 @@ void pollPingSensors(void *par) {
         //dprint(term, "p,%d,%d\n", i, ping); // For Debugging
         if(i < numberOfIRonMC3208) { // If there is also an IR sensor at this number check it too
           ir = mcp3208_IR_cm(i);
-          if(i ==  numberOfIRonMC3208 - 1) {// Last IR is actually in position 7, convert it here!
-            dprint(propterm, "i,%d,%d.", lastIRposition, ir);
-            //dprint(term, "i,%d,%d", lastIRposition, ir); // For Debugging
-          } else {
-            dprint(propterm, "i,%d,%d.", i, ir);
-            //dprint(term, "i,%d,%d", i, ir); // For Debugging
-          }
+          dprint(propterm, "i,%d,%d.", i, ir);
           receivedChar = fdserial_rxChar(propterm); // Should get a character after each output for rate limiting
         }
       }

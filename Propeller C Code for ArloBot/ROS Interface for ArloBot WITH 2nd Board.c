@@ -638,6 +638,7 @@ void safetyOverride(void *par) {
     const int maxDistance = 70;
     const int IRMaxDistance = 50; // Because IR is less reliable at long distances
     const int haltDistance[10] = {5, 10, 12, 10, 5, 5, 10, 12, 10, 5};
+    const int floorDistance = 30;
     const int minimumSpeed = 10;
     const int throttleStop = 5; // Determines how fast speed limit changes happen.
     int throttleRamp = 0;
@@ -656,6 +657,20 @@ void safetyOverride(void *par) {
         blockedR = 0;
         pleaseEscape = 0;
         minDistance = 255;
+        // Check Cliff Sensors first
+        for (i = 5; i < 7; i++) {
+            if (irArray[i] > floorDistance) {
+                safeToProceed = 0; // Prevent main thread from setting any drive_speed
+                // Stop robot if it is currently moving forward and not escaping
+                //if ((Escaping == 0) && (speedLeft > 0 || speedRight > 0)) {
+                if ((Escaping == 0) && ((speedLeft + speedRight) > 0)) {
+                    drive_speed(0, 0);
+                }
+                blockedF = 1; // Use this to give the "all clear" later if it never gets set
+                blockedSensor[2] = 1; // Pretend this is the front sensor, since it needs to back up NOW!
+                pleaseEscape = 1;
+                }
+        }
         // Walk Front Sensor Array to find blocked paths and halt immediately
         for (i = 0; i < 5; i++) { // Only use the front sensors
             // PING Sensors
