@@ -1,3 +1,4 @@
+MAPFILE=${HOME}/.arlobot/rosmaps/${1}
 if [ $# -eq 0 ]
 then
     echo "You must provide a map file name."
@@ -5,13 +6,13 @@ then
     exit
 fi
 
-if [ -f ${1} ]
+if [ ! -f ${MAPFILE} ]
 then
-    MAPFILE=~/.arlobot/rosmaps/${1}.yaml
-elif [ -f ~/.arlobot/rosmaps/${1}.yaml ]
+    MAPFILE=${MAPFILE}.yaml
+fi
+echo ${MAPFILE}
+if [ ! -f ${MAPFILE} ]
 then
-    MAPFILE=${1}
-else
     echo "File does not exist!"
     exit 1
 fi
