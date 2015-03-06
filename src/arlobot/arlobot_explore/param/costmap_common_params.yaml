@@ -7,8 +7,8 @@ raytrace_range: 3.0
 robot_radius: 0.20  # distance a circular robot should be clear of the obstacle (kobuki: 0.18)
 #robot_radius: 0.4509 # ArloBot - This makes a mess.
 # footprint: [[x0, y0], [x1, y1], ... [xn, yn]]  # if the robot is not circular
-inflation_radius: 0.50  # max. distance from an obstacle at which costs are incurred for planning paths.
-cost_scaling_factor: 5  # exponential rate at which the obstacle cost drops off (default: 10)
+inflation_radius: 0.30  # max. distance from an obstacle at which costs are incurred for planning paths.
+cost_scaling_factor: 10  # exponential rate at which the obstacle cost drops off (default: 10)
 
 # voxel map configuration; z-voxels 0 are filled by bumpers and 1 by laser scan (kinect)
 map_type: voxel
@@ -31,3 +31,5 @@ scan: {data_type: LaserScan, topic: scan, marking: true, clearing: true, min_obs
 # I do not THINK that it works to make per source inflation_radius changes:
 #ultrasonic: {data_type: LaserScan, topic: ultrasonic_scan, marking: true, clearing: true, min_obstacle_height: 0.0, max_obstacle_height: 0.15, inflation_radius: 0.01}
 ultrasonic: {data_type: LaserScan, topic: ultrasonic_scan, marking: true, clearing: true, min_obstacle_height: 0.0, max_obstacle_height: 0.15}
+# This appears to help with exporation immensely by allowing it to create paths to destinations outside of the map:
+unknown_threshold: 1 # Default 15

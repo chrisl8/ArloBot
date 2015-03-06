@@ -24,7 +24,7 @@ TrajectoryPlannerROS:
   meter_scoring: true
   pdist_scale: 0.6
   gdist_scale: 0.8
-  occdist_scale: 0.01
+  occdist_scale: 0.1
   heading_lookahead: 0.325
   dwa: true
 
@@ -37,3 +37,4 @@ TrajectoryPlannerROS:
   min_vel_y: 0.0
   acc_lim_y: 0.0
   vy_samples: 1
+  escape_vel: -0.1
