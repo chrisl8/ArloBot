@@ -232,16 +232,15 @@ class PropellerComm(object):
         # Reset the propeller board, otherwise there are problems
         # if you bring up the motors again while it has been operating
         self._serialAvailable = False
-        self.stop()
-        #rospy.loginfo("Serial Data Gateway stopping . . .")
-        #try:
-            #self._SerialDataGateway.Stop()
-        #except AttributeError:
-            #rospy.loginfo("Attempt to start nonexistent Serial device.")
-        #rospy.loginfo("Serial Data Gateway stopped.")
-        #rospy.loginfo("5 second pause to let Activity Board settle after serial port reset . . .")
-        #time.sleep(15)  # Give it time to settle.
-        #self.startSerialPort()
+        rospy.loginfo("Serial Data Gateway stopping . . .")
+        try:
+            self._SerialDataGateway.Stop()
+        except AttributeError:
+            rospy.loginfo("Attempt to start nonexistent Serial device.")
+        rospy.loginfo("Serial Data Gateway stopped.")
+        rospy.loginfo("5 second pause to let Activity Board settle after serial port reset . . .")
+        time.sleep(5)  # Give it time to settle.
+        self.startSerialPort()
 
     def _broadcast_odometry_info(self, line_parts):
         """
@@ -711,7 +710,6 @@ class PropellerComm(object):
             rospy.loginfo("Attempt to start nonexistent Serial device.")
         rospy.loginfo("_SerialDataGateway stopped.")
         self._OdomStationaryBroadcaster.Stop()
-        exit()
 
     def _handle_velocity_command(self, twist_command):  # This is Propeller specific
         """ Handle movement requests. """
