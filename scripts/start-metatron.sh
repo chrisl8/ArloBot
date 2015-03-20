@@ -1,3 +1,4 @@
+source ~/catkin_ws/devel/setup.bash
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 # This is the primary script to
 # Start the entire robot

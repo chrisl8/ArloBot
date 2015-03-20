@@ -54,5 +54,6 @@ if [ -f nohup.out ]
 then
     rm nohup.out
 fi
+${SCRIPTDIR}/XVLidarStopMotor.sh
 ${SCRIPTDIR}/callRestUSB.sh
 

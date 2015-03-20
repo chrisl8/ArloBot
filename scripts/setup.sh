@@ -78,6 +78,20 @@ then
     sudo apt-get install festvox-en1
 fi
 
+if ! (id|grep dialout>/dev/null)
+then
+    sudo adduser ${USER} dialout
+    echo "You may have to reboot before you can use the Propeller Board."
+fi
+sudo apt-get install python-ftdi python-pip python-serial
+sudo pip install pylibftdi
+
+if ! [ -f /etc/udev/rules.d/99-libftdi.rules ]
+then
+    sudo ${SCRIPTDIR}/addRuleForUSBRelayBoard.sh
+    echo "You may have to reboot before the USB Relay board will function!"
+fi
+
 if ! (grep mbrola /etc/festival.scm>/dev/null)
 then
     echo "Updating default Festival voice"
@@ -85,4 +99,10 @@ then
     echo "To allow updates to /etc/festival.scm"
     sudo ${SCRIPTDIR}/updateFestivalDefaults.sh
 fi
+
+# Set up required sudo entries.
+echo "${USER} ALL = NOPASSWD: ${SCRIPTDIR}/resetUSB.sh" >> /tmp/arlobot_sudoers
+chmod 0440 /tmp/arlobot_sudoers
+sudo mv /tmp/arlobot_sudoers /etc/sudoers.d/
+sudo chown root:root /etc/sudoers.d/arlobot_sudoers
 

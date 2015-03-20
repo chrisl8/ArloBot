@@ -29,10 +29,18 @@ echo "Activity Board missing!"
 exit 1
 fi
 # Quick Start Board
-${SCRIPTDIR}/find_QuickStart.sh |grep USB &> /dev/null
+# While it should exist, it does not have to be plugged into the computer for Arlo to operate
+#${SCRIPTDIR}/find_QuickStart.sh |grep USB &> /dev/null
+#if [ $? -gt 0 ]
+#then
+#echo "Quick Start Board missing!"
+#exit 1
+#fi
+# XV-11
+${SCRIPTDIR}/find_XVLidar.sh |grep ACM &> /dev/null
 if [ $? -gt 0 ]
 then
-echo "Quick Start Board missing!"
+echo "XV-11 missing!"
 exit 1
 fi
 exit 0
