@@ -6,6 +6,6 @@
 /devel
 .idea
 src/CMakeLists.txt
-behavior/node_modules/roslib/
-behavior/node_modules/canvas/
-behavior/build/
+node/node_modules/roslib/
+node/node_modules/canvas/
+node/build/
