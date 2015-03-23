@@ -10,3 +10,4 @@ node/node_modules/roslib/
 node/node_modules/roslibjs/
 node/node_modules/canvas/
 node/build/
+scripts/mjpg-streamer/
