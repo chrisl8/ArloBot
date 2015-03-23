@@ -30,6 +30,7 @@ class MetatronBabel(object):
         # No true "default" now. It must handle all sound. "echo" seems like a safe place to dump if this is not set.
         self.speechEngine = expanduser(rospy.get_param("/metatron_id/speech_engine", "echo"))
         self.soundFileLocation = expanduser(rospy.get_param("~dictionary/soundFileLocation", "/"))
+        self.script_location = expanduser(rospy.get_param("/metatron_id/script_location", "~"))
 
         #Twilio setup
         self.use_twilio = rospy.get_param("/metatron_id/use_twilio", False)
@@ -160,7 +161,7 @@ class MetatronBabel(object):
             self._say(text.input_text[3:].strip())
             return True
         # Get the list of maps for use and comparison
-        list_map_script = expanduser('~/metatron/scripts/list-maps.sh')
+        list_map_script = self.script_location + '/list-maps.sh'
         map_list_text = ""
         map_list = subprocess.Popen([list_map_script], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
         for line in iter(map_list.stdout.readline, ""):
@@ -176,7 +177,7 @@ class MetatronBabel(object):
         return True
 
     def _send_text_message(self, text):
-        text_me = expanduser('~/metatron/scripts/textme.sh')
+        text_me = self.script_location + '/textme.sh'
         process = subprocess.Popen([text_me, text], close_fds=True)
         process.wait() # Wait for it to finish, this should be instantaneous.
 

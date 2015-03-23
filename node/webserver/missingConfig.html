@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Missing arloweb.ini File!</title>
+<meta charset="utf-8">
+</head>
+<body style="
+    background-color: black;
+    color: white;
+    font-size: 2em;
+">
+ERROR: arloweb.ini not found:<br/>
+<p>Please modify arloweb.ini.example to set your folder location and user id,<br/>then rename the file to arloweb.ini</p>
+<p>You will also need entries in /etc/sudoers to allow whatever user your web server runs under to run startROS.sh and stopROS.sh.<br/>I use XAMPP, which runs as daemon,<br/>so I have this line in /etc/sudoers:<br/>daemon ALL = (chrisl8) NOPASSWD: /home/chrisl8/arloweb/startROS.sh, /home/chrisl8/arloweb/stopROS.sh</p>
+<a href="index.php">Try again?</a>
+</body>
+</html>

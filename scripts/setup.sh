@@ -25,6 +25,25 @@ then
     exit 1
 fi
 
+# Install required node packages
+echo "Installing required node packages . . ."
+echo "You may be asked for your password"
+echo "In order to run npm install -g"
+sudo npm install -g grunt forever forever-service
+
+if [ ! -d  ${SCRIPTDIR}/../node/node_modules/roslibjs ]
+then
+    echo "Installing roslibjs for arloBehavior.js"
+    echo "You may be asked for your password"
+    echo "in order to run sudo commands."
+    echo "Fix personal npm folder permissions"
+    sudo chown -R `whoami` ${HOME}/.npm/
+    cd ${SCRIPTDIR}/../node/node_modules/
+    git clone git@github.com:RobotWebTools/roslibjs.git
+    cd roslibjs
+    npm install
+fi
+
 # We will use ~/.arlobot to store "private" data
 # That is data that doesn't need to be part of
 # the public github repo like user tokens,
@@ -61,30 +80,33 @@ then
 fi
 chmod -R 777 ${ARLOHOME}/status
 
-# Install apps needed by Metatron/Arlobot
-if ! (which festival>/dev/null)
-then
-    echo "Installing Festival for robot speech"
-    echo "You will be asked for your password"
-    echo "In order to run apt-get install."
-    sudo apt-get install festival
-fi
+# Install required Ubuntu packages
+echo "Installing required Ubuntu packages . . ."
+echo "You may be asked for your password"
+echo "In order to run apt-get install."
+sudo apt-get install ros-indigo-rosbridge-server imagemagick ngrok-client fswebcam festival festvox-en1 python-ftdi python-pip python-serial libv4l-dev
 
-if ! (dpkg -l festvox-en1>/dev/null)
-then
-    echo "Installing Festival en1 voice for robot speech"
-    echo "You will be asked for your password"
-    echo "In order to run apt-get install."
-    sudo apt-get install festvox-en1
-fi
+# Install required Python packages
+echo "Installing required Python packages . . ."
+echo "You may be asked for your password"
+sudo pip install twilio pylibftdi
+
+# Install mjpg-streamer
+cd ${SCRIPTDIR}
+svn co https://svn.code.sf.net/p/mjpg-streamer/code/ mjpg-streamer
+cd mjpg-streamer/mjpg-streamer
+# sudo apt-get install libv4l-dev # Installed earlier, left here for documentation of why
+make USE_LIBV4L2=true clean all
+sudo make install
+# mjpg_streamer usage example:
+#mjpg_streamer -i "/usr/local/lib/input_uvc.so -d /dev/video0 -f 30 -r 640x480" -o "/usr/local/lib/output_http.so -p 58180 -w ${SCRIPTDIR}/mjpg-streamer/mjpg-streamer/www"
+
 
 if ! (id|grep dialout>/dev/null)
 then
     sudo adduser ${USER} dialout
     echo "You may have to reboot before you can use the Propeller Board."
 fi
-sudo apt-get install python-ftdi python-pip python-serial
-sudo pip install pylibftdi
 
 if ! [ -f /etc/udev/rules.d/99-libftdi.rules ]
 then
@@ -95,14 +117,28 @@ fi
 if ! (grep mbrola /etc/festival.scm>/dev/null)
 then
     echo "Updating default Festival voice"
-    echo "You will be asked for your password"
+    echo "You may be asked for your password"
     echo "To allow updates to /etc/festival.scm"
     sudo ${SCRIPTDIR}/updateFestivalDefaults.sh
 fi
 
 # Set up required sudo entries.
-echo "${USER} ALL = NOPASSWD: ${SCRIPTDIR}/resetUSB.sh" >> /tmp/arlobot_sudoers
-chmod 0440 /tmp/arlobot_sudoers
-sudo mv /tmp/arlobot_sudoers /etc/sudoers.d/
-sudo chown root:root /etc/sudoers.d/arlobot_sudoers
+sudo -nl|grep resetUSB > /dev/null
+if [ $? -eq 0  ]
+then
+    echo "Sudo entries already in place."
+else
+    echo "${USER} ALL = NOPASSWD: ${SCRIPTDIR}/resetUSB.sh" >> /tmp/arlobot_sudoers
+    chmod 0440 /tmp/arlobot_sudoers
+    sudo mv /tmp/arlobot_sudoers /etc/sudoers.d/
+    sudo chown root:root /etc/sudoers.d/arlobot_sudoers
+fi
+
+echo "Chris, did you add the robotStatusUser user,"
+echo "and his key?"
+#sudo useradd -m robotStatusUser
+#sudo su - robotStatusUser
+#mkdir .ssh
+#vim .ssh/authorized_keys
+echo STOP > ${HOME}/.arlobot/status/room-MainFloorHome
 

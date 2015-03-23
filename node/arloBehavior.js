@@ -1,4 +1,3 @@
-module.exports = function() {
     // http://behavior3js.guineashots.com/
     // Setup:
     // npm install behavior3js
@@ -14,7 +13,7 @@ module.exports = function() {
 
     var exec = require('child_process').exec;
     var spawn = require('child_process').spawn;
-    var ROSLIB = require('roslib');
+    var ROSLIB = require('roslibjs');
     // Note that tts will convert text to speech,
     // or it will send a ".wav" string (path, etc)
     // to aplay.
@@ -25,6 +24,73 @@ module.exports = function() {
 
     var textme = require('../scripts/textme.js');
     var arloTree = new b3.BehaviorTree();
+    var forever = require('forever-monitor');
+
+    var kill_rosHasRun = false;
+
+    // Cleanup on shutdown
+    // http://stackoverflow.com/questions/14031763/doing-a-cleanup-action-just-before-node-js-exits
+    function exitHandler(options, err) {
+        if (options.cleanup) console.log('arloBehavior has been told to "cleanup"');
+        if (err) console.log(err.stack);
+        //if (options.exit) process.exit();
+        if (options.exit) {
+            console.log('arloBehavior has been asked to exit.');
+            console.log('Stopping webserver');
+            webserver.stop();
+            var command = __dirname + '/../scripts/kill_ros.sh';
+            // It is rather catastrophic if this repeats!
+            if (!kill_rosHasRun) {
+                kill_rosHasRun = true;
+                console.log("Running kill_ros.sh . . .");
+                var shutdownCommand = exec(command);
+                shutdownCommand.stdout.on('data', function(data) {
+                    console.log('kill_ros: ' + data);
+                });
+
+                shutdownCommand.stderr.on('data', function(data) {
+                    console.log('kill_ros: ' + data);
+                });
+
+                shutdownCommand.on('close', function(code) {
+                    console.log('kill_ros.sh closed with code ' + code);
+                    process.exit();
+                });
+                shutdownCommand.on('error', function(err) {
+                    console.log('kill_ros process error' + err);
+                });
+            }
+
+        }
+    }
+
+    //do something when app is closing
+    process.on('exit', exitHandler.bind(null, {
+        cleanup: true
+    }));
+
+    //catches ctrl+c event
+    process.on('SIGINT', exitHandler.bind(null, {
+        exit: true
+    }));
+
+    //catches uncaught exceptions
+    process.on('uncaughtException', exitHandler.bind(null, {
+        exit: true
+    }));
+
+    // Start Webserver
+    var webserver = new(forever.Monitor)('webserver.js', {
+        //max: 3,
+        silent: false,
+        sourceDir: 'webserver/',
+        args: [],
+    });
+    webserver.on('exit', function() {
+        console.log('Webserver has exited after 10 restarts');
+    });
+    console.log("Starting web server.");
+    webserver.start();
 
     var ROSisRunning = b3.Class(b3.Condition);
     ROSisRunning.prototype.name = 'ROSisRunning';
@@ -35,7 +101,7 @@ module.exports = function() {
         //metatronProcessStarted
         //to false, so that if it stops running,
         //StartROS will start it again.
-        //TODO: This will be ased on ROS subscriptions.
+        //TODO: This will be assed on ROS subscriptions.
         //TODO: somewhere we need to subjscribe jsut like arloweb!
         return b3.FAILURE;
     };
@@ -68,7 +134,7 @@ module.exports = function() {
             // stub to call with sudo
             // TODO: Make this path more portable!
 
-            var rosProcess = spawn('../../arloweb/startROS.sh');
+            var rosProcess = spawn('./startROS.sh');
 
             rosProcess.stdout.setEncoding('utf8');
             rosProcess.stdout.on('data', function(data) {
@@ -294,4 +360,3 @@ module.exports = function() {
 
     pollROS();
     console.log('done');
-};

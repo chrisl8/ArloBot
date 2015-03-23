@@ -4,6 +4,7 @@ import rospy
 import subprocess
 from metatron_services.srv import *
 from metatron_services.msg import *
+from os.path import expanduser
 
 # This is the "id" for my personal instance of ArloBot named Metatron
 # The purpose of this node is to provide Metatron with basic, internally motivated,
@@ -40,6 +41,8 @@ class MetatronId(object):
         self.cameraChoice = ""  # Track camera choice
         self.mapToUse = ""
         self._MetaTronStatusPublisher = rospy.Publisher('~status', metatron_status, queue_size=1)
+        self.script_location = expanduser(rospy.get_param("/metatron_id/script_location", "~"))
+        self.web_folder = expanduser(rospy.get_param("/metatron_id/web_folder", "~"))
 
         # Cameras - This is very setup dependent!
         self.camera1 = rospy.get_param("/camera1", "/dev/video0")
@@ -90,7 +93,7 @@ class MetatronId(object):
                 #"DISPLAY=:0.0 import -window root ~/arloweb/xscreen.png"
                 # http://www.thegeekstuff.com/2012/08/screenshot-ubuntu/
                 process = subprocess.Popen(
-                    "DISPLAY=:0.0 /usr/bin/import -window root /home/chrisl8/arloweb/xscreen.png", shell=True)
+                    "DISPLAY=:0.0 /usr/bin/import -window root " + self.web_folder + "/xscreen.png", shell=True)
                 # Wait for it to finish, this should be instantaneous.
                 process.wait()
                 # This will tell the web interface to grab a new copy, avoiding waisted network traffic
@@ -163,7 +166,7 @@ class MetatronId(object):
         process = subprocess.Popen("DISPLAY=:0.0 /usr/bin/xset dpms force on", shell=True)
         process.wait()  # Wait for it to finish, this should be instantaneous.
         # Then take a fresh screen shot now rather than waiting for the next round
-        process = subprocess.Popen("DISPLAY=:0.0 /usr/bin/import -window root /home/chrisl8/arloweb/xscreen.png",
+        process = subprocess.Popen("DISPLAY=:0.0 /usr/bin/import -window root " + self.web_folder + "/xscreen.png",
                                    shell=True)
         process.wait()  # Wait for it to finish, this should be instantaneous.
         # This will tell the web interface to grab a new copy, avoiding waisted network traffic
@@ -182,11 +185,11 @@ class MetatronId(object):
         if req.camera == "laptop":
             video_command = ['mjpg_streamer', '-i', '/usr/local/lib/input_uvc.so -d ' + self.camera2 + ' -f 30 -r 1280x720',
                              '-o',
-                             '/usr/local/lib/output_http.so -p 58180 -w /home/chrisl8/mjpg-streamer/mjpg-streamer/www']
+                             '/usr/local/lib/output_http.so -p 58180 -w ' + self.script_location + '/mjpg-streamer/mjpg-streamer/www']
         else:  # Just assume we want the primary camera if we get a bogus choice
             video_command = ['mjpg_streamer', '-i', '/usr/local/lib/input_uvc.so -d ' + self.camera1 + ' -f 30 -r 1280x720',
                              '-o',
-                             '/usr/local/lib/output_http.so -p 58180 -w /home/chrisl8/mjpg-streamer/mjpg-streamer/www']
+                             '/usr/local/lib/output_http.so -p 58180 -w ' + self.script_location + '/mjpg-streamer/mjpg-streamer/www']
 
         if req.state:  # "True" is on, "False" is off, because sending "on" to a ROS service sends True, not text
             try:

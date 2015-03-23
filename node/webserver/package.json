@@ -1,0 +1,26 @@
+{
+  "name": "Arloweb",
+  "version": "1.0.0",
+  "description": "Web Interface for my Arlobot",
+  "main": "webserver.js",
+  "dependencies": {
+    "body-parser": "^1.12.2",
+    "express": "^4.12.2",
+    "http-server": "^0.7.5",
+    "mkdirp": "^0.5.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chrisl8/Arloweb.git"
+  },
+  "author": "ChrisL8",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chrisl8/Arloweb/issues"
+  },
+  "homepage": "https://github.com/chrisl8/Arloweb"
+}
