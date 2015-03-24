@@ -70,6 +70,10 @@ class PropellerComm(object):
         self.lastY = rospy.get_param("lastY", 0.0)
         self.lastHeading = rospy.get_param("lastHeading", 0.0)
         self.alternate_heading = self.lastHeading
+        self.track_width = rospy.get_param("~driveGeometry/trackWidth", "0")
+        self.distance_per_count = rospy.get_param("~driveGeometry/distancePerCount", "0")
+        self.ignore_proximity = rospy.get_param("~ignoreProximity", False);
+        self.robotParamChanged = False
 
         # Get motor relay numbers for use later in _HandleUSBRelayStatus if USB Relay is in use:
         self.relayExists = rospy.get_param("~usbRelayInstalled", False)
@@ -722,6 +726,14 @@ class PropellerComm(object):
             # rospy.logdebug("Handling twist command: " + str(v) + "," + str(omega))
             message = 's,%.3f,%.3f\r' % (v, omega)
             self._write_serial(message)
+            if self.robotParamChanged:
+                if (self.ignore_proximity):
+                    ignore_proximity = 1
+                else:
+                    ignore_proximity = 0
+                message = 'd,%f,%f,%d\r' % (self.track_width, self.distance_per_count, ignore_proximity)
+                self.robotParamChanged = False
+                self._write_serial(message)
         elif self._clear_to_go("to_stop"):
             message = 's,0.0,0.0\r'  # Tell it to be still if it is not safe to operate
             # rospy.logdebug("Sending speed command message: " + message)
@@ -730,9 +742,11 @@ class PropellerComm(object):
     def _initialize_drive_geometry(self, line_parts):
         """ Send parameters from YAML file to Propeller board. """
         if self._SafeToOperate:
-            track_width = rospy.get_param("~driveGeometry/trackWidth", "0")
-            distance_per_count = rospy.get_param("~driveGeometry/distancePerCount", "0")
-            message = 'd,%f,%f,%f,%f,%f\r' % (track_width, distance_per_count, self.lastX, self.lastY, self.lastHeading)
+            if (self.ignore_proximity):
+                ignore_proximity = 1
+            else:
+                ignore_proximity = 0
+            message = 'd,%f,%f,%d,%f,%f,%f\r' % (self.track_width, self.distance_per_count, ignore_proximity, self.lastX, self.lastY, self.lastHeading)
             rospy.logdebug("Sending drive geometry params message: " + message)
             self._write_serial(message)
         else:
@@ -830,6 +844,18 @@ class PropellerComm(object):
                 self._reset_serial_connection()
             if self._unPlugging or self._wasUnplugging:
                 self.UnplugRobot()
+            old_track_width = self.track_width
+            self.track_width = rospy.get_param("~driveGeometry/trackWidth", "0")
+            if not old_track_width == self.track_width:
+                self.robotParamChanged = True
+            old_distance_per_count = self.distance_per_count
+            self.distance_per_count = rospy.get_param("~driveGeometry/distancePerCount", "0")
+            if not old_distance_per_count == self.distance_per_count:
+                self.robotParamChanged = True
+            old_ignore_proximity = self.ignore_proximity
+            self.ignore_proximity = rospy.get_param("~ignoreProximity", False);
+            if not old_ignore_proximity == self.ignore_proximity:
+                self.robotParamChanged = True
             self.r.sleep()
 
     def UnplugRobot(self):
