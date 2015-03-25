@@ -7,7 +7,7 @@ then
 fi
 # Attempt to kill ROS if it is already running and reset USB Ports
 ${SCRIPTDIR}/kill_ros.sh
-echo "Clearing ROS Logs"
+echo "Clearing ROS Logs . . ."
 rm -r ${HOME}/.ros/log/*
 # Check to make sure required hardware is present:
 # This will wait 5 seconds for the USB reset to finish,
