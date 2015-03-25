@@ -124,7 +124,7 @@ fi
 
 # Set up required sudo entries.
 sudo -nl|grep resetUSB > /dev/null
-if [ $? -eq 0  ]
+if [ $? -ne 0 ]
 then
     echo "Sudo entries already in place."
 else
