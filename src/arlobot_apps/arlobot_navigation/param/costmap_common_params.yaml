@@ -26,7 +26,9 @@ observation_sources: scan ultrasonic # Not using IR, though the data is there.
 # TurtleBot version:
 #scan: {data_type: LaserScan, topic: scan, marking: true, clearing: true, min_obstacle_height: 0.25, max_obstacle_height: 0.35}
 # ArloBot version: The Asus Xtion is at about .45 meters high on the Arlobot, so the 0.35 is below the level it reports data causing ROS to ignore the Xtion for obstacle avoidance!
-scan: {data_type: LaserScan, topic: scan, marking: true, clearing: true, min_obstacle_height: 0.25, max_obstacle_height: 0.45}
+#scan: {data_type: LaserScan, topic: scan, marking: true, clearing: true, min_obstacle_height: 0.25, max_obstacle_height: 0.45}
+# neato_laser scanner: It is a lot lower than the Xtion was mounted, so the min_obstacle_height has to be lower.
+scan: {data_type: LaserScan, topic: scan, marking: true, clearing: true, min_obstacle_height: 0.01, max_obstacle_height: 0.45}
 #bump: {data_type: PointCloud2, topic: mobile_base/sensors/bumper_pointcloud, marking: true, clearing: false, min_obstacle_height: 0.0, max_obstacle_height: 0.15}
 # I do not THINK that it works to make per source inflation_radius changes:
 #ultrasonic: {data_type: LaserScan, topic: ultrasonic_scan, marking: true, clearing: true, min_obstacle_height: 0.0, max_obstacle_height: 0.15, inflation_radius: 0.01}
