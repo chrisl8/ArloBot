@@ -1,12 +1,3 @@
-use_twilio: False
-twilio_account_sid: ""
-twilio_auth_token: ""
-twilio_number: ""
-my_phone_number: ""
-use_pushover: False
-pushover_token: ""
-pushover_user: ""
-pushover_sound: ""
 speech_engine: "~/catkin_ws/src/Metatron/scripts/tts.sh"
 script_location: "~/catkin_ws/src/Metatron/scripts"
 web_folder: "~/catkin_ws/src/Metatron/node/webserver/public"

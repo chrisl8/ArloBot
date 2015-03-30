@@ -84,7 +84,7 @@ chmod -R 777 ${ARLOHOME}/status
 echo "Installing required Ubuntu packages . . ."
 echo "You may be asked for your password"
 echo "In order to run apt-get install."
-sudo apt-get install ros-indigo-rosbridge-server imagemagick ngrok-client fswebcam festival festvox-en1 python-ftdi python-pip python-serial libv4l-dev
+sudo apt-get install ros-indigo-rosbridge-server imagemagick ngrok-client fswebcam festival festvox-en1 python-ftdi python-pip python-serial libv4l-dev jq
 
 # Install required Python packages
 echo "Installing required Python packages . . ."

@@ -46,6 +46,9 @@ rosparam set /xv11/port $(${SCRIPTDIR}/find_XVLidar.sh)
 rosparam set /joystick/dev $(${SCRIPTDIR}/find_xbox_controller.sh)
 rosparam set /camera1 $(${SCRIPTDIR}/find_camera.sh C615)
 rosparam set /camera2 $(${SCRIPTDIR}/find_camera.sh HP)
-echo "Open and close the basement door to ensure lockout is working."
-echo STOP > ${HOME}/.arlobot/status/room-MainFloorHome
+if [ $(jq '.wait_for_door_confirmation' ${HOME}/.arlobot/personalDataForBehavior.json) == true   ]
+then
+    echo "Open and close the basement door to ensure lockout is working."
+    echo STOP > ${HOME}/.arlobot/status/room-MainFloorHome
+fi
 exit 0
