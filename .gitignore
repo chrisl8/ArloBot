@@ -11,3 +11,4 @@ node/node_modules/roslibjs/
 node/node_modules/canvas/
 node/build/
 scripts/mjpg-streamer/
+node/webserver/public/xscreen.png
