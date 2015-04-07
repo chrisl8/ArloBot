@@ -6,7 +6,7 @@ then
     echo "ROS Prep Failed, EXITING!"
     exit 1
 fi
-# Start web server for Twilio
+# Start ngrok server for Twilio
 nohup ngrok -authtoken E_-s84Q-fW2O1B_kU1Fl -subdomain=52c014b4 -log=stdout 8080 &
 nohup /opt/ros/indigo/bin/roslaunch metatron_id metatron_id.launch --screen &
 echo "Use kill_ros.sh to close."
