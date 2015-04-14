@@ -655,7 +655,7 @@ void safetyOverride(void *par) {
         const int maxDistance = 70;
         const int IRMaxDistance = 50; // Because IR is less reliable at long distances
         const int haltDistance[10] = {5, 10, 12, 10, 5, 5, 10, 12, 10, 5};
-        const int floorDistance = 30;
+        const int floorDistance = 40; // at 30 it was stalling when crossing half inch bumps.
         const int minimumSpeed = 10;
         const int throttleStop = 5; // Determines how fast speed limit changes happen.
         int throttleRamp = 0;
@@ -679,6 +679,9 @@ void safetyOverride(void *par) {
                 if (irArray[i] > floorDistance) {
                     safeToProceed = 0; // Prevent main thread from setting any drive_speed
                     // Stop robot if it is currently moving forward and not escaping
+                    // TODO: Can we "chase" the robot off of a cliff, because the rear sensor
+                    // would put us into an "Escaping == 1" situation, but we would be moving foward
+                    // OVER the cliff instead of back, and thus really need to stop now?!
                     if ((Escaping == 0) && ((speedLeft + speedRight) > 0)) {
                         drive_speed(0, 0);
                     }
@@ -877,14 +880,20 @@ void safetyOverride(void *par) {
                         } else if (blockedSensor[9] == 1) { // Blocked on far right side or near wall
                             drive_speed(minimumSpeed, minimumSpeed);
                         }
-                    } else { // We are trapped, be still.
-                        drive_speed(0, 0);
+                    } else { // We are trapped!!
+                        // Turns out we cannot escape, so turn off "Escaping",
+                        // and now drive control should refuse to move forward or back,
+                        // due to safeToRecede & safeToProceed both == 1,
+                        // but it should be willing to rotate in place,
+                        // which is a normal function of both arlobot_explore
+                        // and the navigation stack's "clearing" function.
+                        Escaping = 0;
                     }
-                } else { // This is the "halt" but don't "escape" action.
+                } else { // This is the "halt" but don't "escape" action for that middle ground.
                     if (Escaping == 1) {// If it WAS Escaping, stop it now.
                         drive_speed(0, 0); // return to stopped before giving control back to main thread
                     }
-                    Escaping = 0; // Blocked, but not escaping.
+                    Escaping = 0; // Blocked, but not close enough to Escape yet
                 }
             }
 
