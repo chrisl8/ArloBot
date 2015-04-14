@@ -1,6 +1,14 @@
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 # Attempt to kill ROS if it is already running
 echo "Killing everything, please wait a moment . . ."
+if (pkill -f log.io)
+then
+    while (pkill -f log.io)
+    do
+        echo "Waiting for log.io to close . . ."
+        sleep 1
+    done
+fi
 if (pkill -f metatron_id.launch)
 then
     while (pgrep -f metatron_id.launch)
