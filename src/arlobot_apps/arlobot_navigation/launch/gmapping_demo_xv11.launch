@@ -5,6 +5,6 @@
   <node name="laser_filter" pkg="arlobot_navigation" type="laser_filter.py" />
   <include file="$(find arlobot_navigation)/launch/includes/gmapping_xv11.launch.xml"/>
 
-  <include file="$(find arlobot_navigation)/launch/includes/move_base.launch.xml"/>
+  <include file="$(find arlobot_navigation)/launch/includes/move_base_wXV11.launch.xml"/>
 
 </launch>

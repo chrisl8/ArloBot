@@ -838,8 +838,10 @@ class PropellerComm(object):
         while not rospy.is_shutdown():
             if self._serialAvailable:
                 self._serialTimeout += 1
+            else:
+                self._serialTimeout = 0
             #rospy.loginfo("Serial Timeout = " + str(self._serialTimeout))
-            if self._serialTimeout > 9:
+            if self._serialTimeout > 19:
                 rospy.loginfo("Watchdog Timeout Reset initiated")
                 self._reset_serial_connection()
             if self._unPlugging or self._wasUnplugging:

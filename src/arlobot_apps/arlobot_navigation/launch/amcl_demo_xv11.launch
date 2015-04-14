@@ -11,10 +11,21 @@
     <arg name="scan_topic" value="/scan" />
   </include>
   <include file="$(find arlobot_bringup)/launch/xv11_remap_for_dual_use.launch" />
-  <!-- <node name="laser_filter" pkg="arlobot_navigation" type="laser_filter.py" /> -->
 
-  <include file="$(find arlobot_navigation)/launch/includes/gmapping.launch.xml"/>
+  <!-- Map server -->
+  <arg name="map_file" default="$(find turtlebot_navigation)/maps/willow-2010-02-18-0.10.yaml"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+
+  <arg name="initial_pose_x" default="0.0"/> <!-- Use 17.0 for willow's map in simulation -->
+  <arg name="initial_pose_y" default="0.0"/> <!-- Use 17.0 for willow's map in simulation -->
+  <arg name="initial_pose_a" default="0.0"/>
+  <include file="$(find turtlebot_navigation)/launch/includes/amcl.launch.xml">
+    <arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
+    <arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
+    <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
+  </include>
 
   <include file="$(find arlobot_navigation)/launch/includes/move_base_wXV11.launch.xml"/>
 
 </launch>
+

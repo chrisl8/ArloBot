@@ -12,8 +12,8 @@
   <arg name="custom_param_file" default="$(find arlobot_navigation)/param/dummy.yaml"/>
 
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
-    <rosparam file="$(find arlobot_navigation)/param/costmap_common_params.yaml" command="load" ns="global_costmap" />
-    <rosparam file="$(find arlobot_navigation)/param/costmap_common_params.yaml" command="load" ns="local_costmap" />   
+    <rosparam file="$(find arlobot_navigation)/param/costmap_common_params_wXV11.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find arlobot_navigation)/param/costmap_common_params_wXV11.yaml" command="load" ns="local_costmap" />   
     <rosparam file="$(find arlobot_navigation)/param/local_costmap_params.yaml" command="load" />   
     <rosparam file="$(find arlobot_navigation)/param/global_costmap_params.yaml" command="load" />
     <rosparam file="$(find arlobot_navigation)/param/dwa_local_planner_params.yaml" command="load" />
