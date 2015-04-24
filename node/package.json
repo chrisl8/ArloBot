@@ -5,10 +5,11 @@
   "main": "robot-server.js",
   "dependencies": {
     "behavior3js": "^0.1.0",
-    "forever-monitor": "^1.5.2",
     "pushover-notifications": "^0.2.2",
-    "roslibjs": "^0.14.0-SNAPSHOT",
-    "say": "^0.6.0"
+    "roslib": "^0.15.0",
+    "say": "^0.6.0",
+    "socket.io": "^1.3.5",
+    "twilio": "^2.0.0"
   },
   "devDependencies": {},
   "scripts": {

@@ -11,45 +11,17 @@
     },
     "properties": {},
     "nodes": {
-        "6f625e87-2514-484d-ba32-5e6237691f63": {
-            "id": "6f625e87-2514-484d-ba32-5e6237691f63",
-            "name": "ROSisRunning",
-            "title": "ROSisRunning",
-            "description": "",
-            "display": {
-                "x": 624,
-                "y": -170.66666666666666
-            },
-            "parameters": {},
-            "properties": {}
-        },
         "7a6d8234-598c-4315-8c6f-002334f14aa0": {
             "id": "7a6d8234-598c-4315-8c6f-002334f14aa0",
             "name": "StartROS",
             "title": "StartROS",
             "description": "",
             "display": {
-                "x": 624,
-                "y": -106.66666666666666
+                "x": 416,
+                "y": -72
             },
             "parameters": {},
             "properties": {}
-        },
-        "a4e713d6-fe7f-419f-ab48-8f0c76ad3a58": {
-            "id": "a4e713d6-fe7f-419f-ab48-8f0c76ad3a58",
-            "name": "Priority",
-            "title": "Priority",
-            "description": "",
-            "display": {
-                "x": 416,
-                "y": -138.66666666666666
-            },
-            "parameters": {},
-            "properties": {},
-            "children": [
-                "6f625e87-2514-484d-ba32-5e6237691f63",
-                "7a6d8234-598c-4315-8c6f-002334f14aa0"
-            ]
         },
         "ca5577d6-3ccd-4496-84ec-180672c13962": {
             "id": "ca5577d6-3ccd-4496-84ec-180672c13962",
@@ -63,7 +35,8 @@
             "parameters": {},
             "properties": {},
             "children": [
-                "a4e713d6-fe7f-419f-ab48-8f0c76ad3a58",
+                "2a155636-ab63-482e-9547-f26840487fec",
+                "7a6d8234-598c-4315-8c6f-002334f14aa0",
                 "b95dda8c-41be-4483-812c-fdac27db3164",
                 "f9af0fd7-00b2-4ce6-8ab4-e2f36947f48c"
             ]
@@ -75,7 +48,7 @@
             "description": "",
             "display": {
                 "x": 416,
-                "y": 149.33333333333334
+                "y": 184
             },
             "parameters": {},
             "properties": {},
@@ -92,7 +65,7 @@
             "description": "",
             "display": {
                 "x": 624,
-                "y": 213.33333333333334
+                "y": 248
             },
             "parameters": {},
             "properties": {}
@@ -104,7 +77,7 @@
             "description": "",
             "display": {
                 "x": 832,
-                "y": 149.33333333333334
+                "y": 184
             },
             "parameters": {},
             "properties": {}
@@ -116,7 +89,7 @@
             "description": "",
             "display": {
                 "x": 624,
-                "y": 149.33333333333334
+                "y": 184
             },
             "parameters": {},
             "properties": {},
@@ -129,7 +102,7 @@
             "description": "",
             "display": {
                 "x": 624,
-                "y": 85.33333333333334
+                "y": 120
             },
             "parameters": {},
             "properties": {}
@@ -141,7 +114,7 @@
             "description": "",
             "display": {
                 "x": 624,
-                "y": -42.66666666666666
+                "y": -8
             },
             "parameters": {},
             "properties": {}
@@ -153,7 +126,7 @@
             "description": "",
             "display": {
                 "x": 416,
-                "y": -10.666666666666657
+                "y": 24
             },
             "parameters": {},
             "properties": {},
@@ -169,10 +142,48 @@
             "description": "",
             "display": {
                 "x": 624,
-                "y": 21.333333333333343
+                "y": 56
             },
             "parameters": {},
             "properties": {}
+        },
+        "0b22a353-4a84-4a10-86c2-18b6001de7db": {
+            "id": "0b22a353-4a84-4a10-86c2-18b6001de7db",
+            "name": "Sequence",
+            "title": "Sequence",
+            "description": "",
+            "display": {
+                "x": -304,
+                "y": -64
+            },
+            "parameters": {},
+            "properties": {},
+            "children": []
+        },
+        "2a155636-ab63-482e-9547-f26840487fec": {
+            "id": "2a155636-ab63-482e-9547-f26840487fec",
+            "name": "ROSrunRequested",
+            "title": "ROSrunRequested",
+            "description": "",
+            "display": {
+                "x": 416,
+                "y": -136
+            },
+            "parameters": {},
+            "properties": {}
+        },
+        "fabf3f81-c1c7-4af1-a75b-db85c1dfd634": {
+            "id": "fabf3f81-c1c7-4af1-a75b-db85c1dfd634",
+            "name": "Sequence",
+            "title": "Sequence",
+            "description": "",
+            "display": {
+                "x": -320,
+                "y": -64
+            },
+            "parameters": {},
+            "properties": {},
+            "children": []
         }
     },
     "custom_nodes": [
@@ -185,11 +196,6 @@
             "name": "UnPlugRobot",
             "title": "",
             "category": "action"
-        },
-        {
-            "name": "ROSisRunning",
-            "title": "",
-            "category": "condition"
         },
         {
             "name": "StartROS",
@@ -210,6 +216,11 @@
             "name": "DetermineRoom",
             "title": "",
             "category": "action"
+        },
+        {
+            "name": "ROSrunRequested",
+            "title": "",
+            "category": "condition"
         }
     ]
 }

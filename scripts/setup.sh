@@ -29,7 +29,17 @@ fi
 echo "Installing required node packages . . ."
 echo "You may be asked for your password"
 echo "In order to run npm install -g"
-sudo npm install -g grunt forever forever-service
+sudo npm install -g grunt
+
+echo "Fix personal npm folder permissions"
+sudo chown -R `whoami` ${HOME}/.npm/
+
+echo "Grabbing dependencies for node packages."
+cd ${SCRIPTDIR}/../node/webserver
+npm install
+cd ${SCRIPTDIR}/../node
+npm install
+cd ${SCRIPTDIR}
 
 if [ ! -d  ${SCRIPTDIR}/../node/node_modules/roslibjs ]
 then
@@ -84,7 +94,7 @@ chmod -R 777 ${ARLOHOME}/status
 echo "Installing required Ubuntu packages . . ."
 echo "You may be asked for your password"
 echo "In order to run apt-get install."
-sudo apt-get install ros-indigo-rosbridge-server imagemagick ngrok-client fswebcam festival festvox-en1 python-ftdi python-pip python-serial libv4l-dev jq
+sudo apt-get install ros-indigo-rosbridge-server imagemagick fswebcam festival festvox-en1 python-ftdi python-pip python-serial libv4l-dev jq
 
 # Install required Python packages
 echo "Installing required Python packages . . ."
@@ -92,14 +102,17 @@ echo "You may be asked for your password"
 sudo pip install twilio pylibftdi
 
 # Install mjpg-streamer
-cd ${SCRIPTDIR}
-svn co https://svn.code.sf.net/p/mjpg-streamer/code/ mjpg-streamer
-cd mjpg-streamer/mjpg-streamer
-# sudo apt-get install libv4l-dev # Installed earlier, left here for documentation of why
-make USE_LIBV4L2=true clean all
-sudo make install
-# mjpg_streamer usage example:
-#mjpg_streamer -i "/usr/local/lib/input_uvc.so -d /dev/video0 -f 30 -r 640x480" -o "/usr/local/lib/output_http.so -p 58180 -w ${SCRIPTDIR}/mjpg-streamer/mjpg-streamer/www"
+if ! (which mjpg_streamer)
+then
+    cd ${SCRIPTDIR}
+    svn co https://svn.code.sf.net/p/mjpg-streamer/code/ mjpg-streamer
+    cd mjpg-streamer/mjpg-streamer
+    # sudo apt-get install libv4l-dev # Installed earlier, left here for documentation of why
+    make USE_LIBV4L2=true clean all
+    sudo make install
+    # mjpg_streamer usage example:
+    #mjpg_streamer -i "/usr/local/lib/input_uvc.so -d /dev/video0 -f 30 -r 640x480" -o "/usr/local/lib/output_http.so -p 58180 -w ${SCRIPTDIR}/mjpg-streamer/mjpg-streamer/www"
+fi
 
 
 if ! (id|grep dialout>/dev/null)
@@ -136,9 +149,16 @@ fi
 
 echo "Chris, did you add the robotStatusUser user,"
 echo "and his key?"
+echo "(This is NOT required for Arlobot, just a personal thing.)"
 #sudo useradd -m robotStatusUser
 #sudo su - robotStatusUser
 #mkdir .ssh
 #vim .ssh/authorized_keys
 echo STOP > ${HOME}/.arlobot/status/room-MainFloorHome
+if ! [ -f ${HOME}/Desktop/arlobot.desktop ]
+then
+    echo "Modify and copy arlobot.desktop"
+    echo "to your Desktop folder to create an icon"
+    echo "in XWindows to start up the Robot!"
+fi
 

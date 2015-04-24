@@ -10,6 +10,11 @@
         "number": "",
         "my_phone_number": ""
     },
+    "ngrok": {
+        "authtoken": "",
+        "subdomain": "",
+        "port": 8080
+    },
     "use_xv11": false,
     "wait_for_door_confirmation": false,
     "speech_engine": "~/catkin_ws/src/Metatron/scripts/tts.sh",

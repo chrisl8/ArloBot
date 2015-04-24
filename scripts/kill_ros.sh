@@ -17,14 +17,6 @@ then
         sleep 1
     done
 fi
-if (pkill ngrok)
-then
-    while (pgrep ngrok)
-    do
-        echo "Waiting for ngrok to close . . ."
-        sleep 1
-    done
-fi
 if (pkill -f "arlobot_bringup minimal.launch")
 then
     while (pgrep -f "arlobot_bringup minimal.launch")

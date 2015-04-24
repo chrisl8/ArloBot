@@ -13,31 +13,22 @@
 
     var exec = require('child_process').exec;
     var spawn = require('child_process').spawn;
-    var ROSLIB = require('roslibjs');
+    var ROSLIB = require('roslib');
     // Note that tts will convert text to speech,
     // or it will send a ".wav" string (path, etc)
     // to aplay.
     // The benefit of using it is that it will honor
     // system wide "bequiet" requests.
     // The same modele is used by ROS Python scripts.
-    var tts = require('../scripts/tts.js');
+    var tts = require('./tts');
 
-    var textme = require('../scripts/textme.js');
+    var textme = require('./textme');
     var arloTree = new b3.BehaviorTree();
-    var forever = require('forever-monitor');
-
-    var kill_rosHasRun = false;
 
     // Cleanup on shutdown
     // http://stackoverflow.com/questions/14031763/doing-a-cleanup-action-just-before-node-js-exits
-    function exitHandler(options, err) {
-        if (options.cleanup) console.log('arloBehavior has been told to "cleanup"');
-        if (err) console.log(err.stack);
-        //if (options.exit) process.exit();
-        if (options.exit) {
-            console.log('arloBehavior has been asked to exit.');
-            console.log('Stopping webserver');
-            webserver.stop();
+    var kill_rosHasRun = false;
+    var killROS = function(exitWhenDone) {
             var command = __dirname + '/../scripts/kill_ros.sh';
             // It is rather catastrophic if this repeats!
             if (!kill_rosHasRun) {
@@ -54,13 +45,25 @@
 
                 shutdownCommand.on('close', function(code) {
                     console.log('kill_ros.sh closed with code ' + code);
-                    process.exit();
+                    if (exitWhenDone) {
+                        process.exit();
+                    } else {
+                        kill_rosHasRun = false;
+                    }
                 });
                 shutdownCommand.on('error', function(err) {
                     console.log('kill_ros process error' + err);
                 });
             }
+    };
 
+    function exitHandler(options, err) {
+        if (options.cleanup) console.log('arloBehavior has been told to "cleanup"');
+        if (err) console.log(err.stack);
+        //if (options.exit) process.exit();
+        if (options.exit) {
+            console.log('arloBehavior has been asked to exit.');
+            killROS(true);
         }
     }
 
@@ -80,6 +83,8 @@
     }));
 
     // Start Webserver
+    /*
+    // This is a good example of using forever, but we do not need it here.
     var webserver = new(forever.Monitor)('webserver.js', {
         //max: 3,
         silent: false,
@@ -91,19 +96,24 @@
     });
     console.log("Starting web server.");
     webserver.start();
+    */
+    var webServer = require('./webserver/webserver');
+    httpServer = webServer.start();
+    var io = require("socket.io").listen(httpServer);
 
-    var ROSisRunning = b3.Class(b3.Condition);
-    ROSisRunning.prototype.name = 'ROSisRunning';
-    ROSisRunning.prototype.tick = function(tick) {
-        // Stub tick
-        console.log("ROSisRunning");
-        //TODO: IF ROS is running, then set:
-        //metatronProcessStarted
-        //to false, so that if it stops running,
-        //StartROS will start it again.
-        //TODO: This will be assed on ROS subscriptions.
-        //TODO: somewhere we need to subjscribe jsut like arloweb!
-        return b3.FAILURE;
+    var ROSrunRequested = b3.Class(b3.Condition);
+    ROSrunRequested.prototype.name = 'ROSrunRequested';
+    ROSrunRequested.prototype.tick = function(tick) {
+        console.log(this.name);
+        if (webServer.webModel.ROSstart) {
+            return b3.SUCCESS;
+        } else {
+            if (arloBot.metatronProcessStartupComplete) {
+                arloBot.metatronProcessStartupComplete = false;
+                killROS(false);
+            }
+            return b3.FAILURE;
+        }
     };
 
     var StartROS = b3.Class(b3.Action);
@@ -114,6 +124,7 @@
             if (arloBot.metatronStartupNoError) {
                 if (arloBot.metatronProcessStartupComplete) {
                     console.log("SUCCESS!");
+                    io.sockets.emit('ROSisRunning',{status: true, text: 'Running!'});
                     return b3.SUCCESS;
                 } else {
                     console.log("RUNNING!");
@@ -127,13 +138,14 @@
             console.log("Running child process . . .");
             arloBot.metatronProcessStartupComplete = false;
             arloBot.metatronProcessStarted = true;
+            io.sockets.emit('ROSisRunning',{status: false, text: 'starting up . . .'});
             // node suffers from similar user environment issues
             // as running via PHP from the web,
             // so PHP's start script works well,
             // although we can run it as me, so no need for the
             // stub to call with sudo
-            // TODO: Make this path more portable!
-
+            // TODO: Make sure kill_ros.sh doesn't kill anything
+            // that we started or need in the node app!
             var rosProcess = spawn('./startROS.sh');
 
             rosProcess.stdout.setEncoding('utf8');
@@ -147,11 +159,13 @@
                 // This is what we get if ROS exits, such as
                 // if killed externally.
                 if (data.indexOf('[master] killing on exit') > -1) {
+                    tts('What happened?');
                     arloBot.metatronStartupNoError = false;
-                    tts('What happend?');
-                    // TODO: At this point we may want to set
-                    // arloBot.metatronProcessStarted = false;
-                    // And let it try to restart?
+                    // Require user to request a restart
+                    webServer.webModel.ROSstart = false;
+                    // , and then do it.
+                    arloBot.metatronProcessStarted = false;
+                    io.sockets.emit('ROSisRunning',{status: false, text: 'Not Running.'});
                 }
             });
             // rosProcess.stderr.setEncoding('utf8');
@@ -166,9 +180,14 @@
                     arloBot.metatronStartupNoError = true;
                     arloBot.metatronProcessStartupComplete = true;
                 } else {
+                    tts('It hates me.');
                     // FAILURE
                     arloBot.metatronStartupNoError = false;
-                    tts('It hates me.');
+                    // Require user to request a restart
+                    webServer.webModel.ROSstart = false;
+                    // , and then do it.
+                    arloBot.metatronProcessStarted = false;
+                    io.sockets.emit('ROSisRunning',{status: false, text: 'failed to start.'});
                 }
             });
 
@@ -240,7 +259,7 @@
     // and you can LOAD this data into the editor to start where you left off again
     var arloNodeData = JSON.parse(fs.readFileSync('arloTreeData.json', 'utf8'));
 
-    // Despite the Editor creating a beautify JSON behavior tree for us,
+    // Despite the Editor creating a beautiful JSON behavior tree for us,
     // we still have to list the custom nodes for it by hand.
     //var customNodeNames = {
     //'ROSisRunning': ROSisRunning,
@@ -256,7 +275,6 @@
         customNodeNames[element.name] = eval(element.name);
     }
     arloNodeData.custom_nodes.forEach(parseCustomNodes);
-    //console.log(customNodeNames);
 
     arloTree.load(arloNodeData, customNodeNames);
 
@@ -268,7 +286,7 @@
     // note that there is also a "blackboard" where nodes can track
     // their internal status, even amongst multiple calls
     // to the same node type,
-    // but this will keep track of braoder robot settings.
+    // but this will keep track of broader robot settings.
     // NOTE: Do NOT track things here that the nodes
     // should be collecting from real time status!
     // Rather track things we can only know from inside of here,
@@ -297,6 +315,7 @@
         arloBot.spokeThisTick = false;
         //console.log(blackboard);
         console.log("---");
+        console.log(webServer.webModel);
     }, 1000);
     //tree.tick(arloBot,blackboard);
     // Copied from arloweb.js
@@ -359,4 +378,4 @@
     };
 
     pollROS();
-    console.log('done');
+    console.log('arloBehavior.js is done, behold the power of async!');

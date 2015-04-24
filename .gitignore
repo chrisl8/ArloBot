@@ -6,9 +6,8 @@
 /devel
 .idea
 src/CMakeLists.txt
-node/node_modules/roslib/
-node/node_modules/roslibjs/
-node/node_modules/canvas/
+node/node_modules/
 node/build/
 scripts/mjpg-streamer/
 node/webserver/public/xscreen.png
+node/webserver/node_modules/

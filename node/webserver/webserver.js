@@ -1,3 +1,14 @@
+var webModel = {
+    ROSstart: false,
+    autoExplore: false,
+    mapName: ''
+};
+
+var fs = require('fs');
+// Load personal settings not included in git repo
+var personalDataFile = process.env.HOME + '/.arlobot/personalDataForBehavior.json';
+var personalData = JSON.parse(fs.readFileSync(personalDataFile, 'utf8'));
+
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
@@ -7,7 +18,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-var fs = require('fs');
 var mkdirp = require('mkdirp');
 var exec = require('child_process').exec;
 
@@ -64,6 +74,14 @@ app.post('/kioskBackEnd', function(req, res) {
     }
 });
 
+// LocalMenu button handler:
+app.post('/robotModel', function(req, res) {
+    if (req.body.ROSstart != null) {
+        webModel.ROSstart = req.body.ROSstart;
+    }
+    res.send();
+});
+
 // Twilio SMS Receiver:
 app.post('/receivemessage', function(req, res) {
     // If you want a text response:
@@ -73,9 +91,11 @@ app.post('/receivemessage', function(req, res) {
     res.send(twiml, {
         'Content-Type': 'text/xml'
     }, 200);
-    //console.log("Body: " + req.body.Body);
-    //console.log("From: " + req.body.From);
-    var command = './runROSthings.sh ' + req.body.Body + ' ' + req.body.From;
+    console.log("Body: " + req.body.Body);
+    console.log("From: " + req.body.From);
+    /*
+    if (req.body.Body === 's')
+        var command = './runROSthings.sh ' + req.body.Body + ' ' + req.body.From;
     var ROScommand = exec(command);
     ROScommand.stdout.on('data', function(data) {
         console.log('stdout: ' + data);
@@ -91,9 +111,27 @@ app.post('/receivemessage', function(req, res) {
     ROScommand.on('error', function(err) {
         console.log('child process error' + err);
     });
+*/
 });
 
-var webServer = app.listen(8080);
+function start() {
+    var webServer = app.listen(8080);
+    var ngrok = require('ngrok');
+    ngrok.connect({
+        authtoken: personalData.ngrok.authtoken,
+        subdomain: personalData.ngrok.subdomain,
+        port: personalData.ngrok.port
+    }, function(err, url) {
+        console.log('ngrok URL: ' + url);
+        if (err != null) {
+            console.log(err);
+        }
+    });
+    return webServer;
+}
+
+exports.start = start;
+exports.webModel = webModel;
 
 //var server = app.listen(8080, function() {
 //var host = server.address().address;
