@@ -58,6 +58,7 @@ add_service_files(
   ToggleRelay.srv
   FindRelay.srv
   UnPlug.srv
+  pause_explorer.srv
 )
 
 ## Generate actions in the 'action' folder

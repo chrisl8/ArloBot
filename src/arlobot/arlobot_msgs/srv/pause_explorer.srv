@@ -1,0 +1,3 @@
+bool pause_explorer
+---
+bool explorer_paused
