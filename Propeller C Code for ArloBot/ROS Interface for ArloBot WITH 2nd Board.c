@@ -756,6 +756,7 @@ void safetyOverride(void *par) {
                 }
             }
             // IR Sensor - Only one of these
+            /* Disable response to IR sensor data
             if (irArray[rearIRsensor] < IRstartSlowDownDistance[rearIRsensor]) {
                 if (irArray[rearIRsensor] <= haltDistance[rearIRsensor] + 1) {
                     safeToRecede = 0; // Prevent main thread from setting any drive_speed
@@ -774,6 +775,7 @@ void safetyOverride(void *par) {
                     minDistanceSensor = i;
                 }
             }
+            */
 
             // Reduce Speed Limit when we are close to an obstruction
             /* Explanation: minDistance won't be set unless a given sensor is closer than its particular
