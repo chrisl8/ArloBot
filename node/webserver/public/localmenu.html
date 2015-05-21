@@ -1,80 +1,42 @@
+<!DOCTYPE html>
 <html>
-    <head>
+<head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="http://arlobot:8080/socket.io/socket.io.js"></script>
     <script type="text/javascript" src="knockout-3.3.0.js"></script>
-    <script>
-    window.onload = function() {
-
-      var robotModel = {
-        ROSis: ko.observable('Not Running'),
-         ROSisRunning: ko.observable(false),
-         inRoom: ko.observable(false),
-         showStartROSbutton: ko.observable(true),
-         showStopROSbutton: ko.observable(true),
-        startROS: function() {
-            $.ajax({
-                    type: "POST",
-                    url: 'robotModel',
-                    dataType: 'json',
-                    contentType: 'application/json; charset=UTF-8',
-                    data: JSON.stringify({
-                        ROSstart: true
-                    }),
-                    cache: false
-                });
-          },
-        stopROS: function() {
-            $.ajax({
-                    type: "POST",
-                    url: 'robotModel',
-                    dataType: 'json',
-                    contentType: 'application/json; charset=UTF-8',
-                    data: JSON.stringify({
-                        ROSstart: false
-                    }),
-                    cache: false
-                });
-          },
-        otherOption: function() {
-            $.ajax({
-                    type: "POST",
-                    url: 'robotModel',
-                    dataType: 'json',
-                    contentType: 'application/json; charset=UTF-8',
-                    data: JSON.stringify({
-                        Random: true
-                    }),
-                    cache: false
-                });
-          }
-      };
-
-    ko.applyBindings(robotModel);
-
-      //var sensor = document.getElementById('sensor');
-      //var socket = io.connect("http://arlobot:8080");
-      var socket = io();
-      socket.on("ROSisRunning", function (data) {
-        robotModel.ROSisRunning(data.status);
-        robotModel.ROSis(data.text);
-        robotModel.showStartROSbutton(!data.status);
-        robotModel.showStopROSbutton(data.status);
-        console.log(data);
-      });
-    };
-    </script>
-        <title>Testing result</title>
+    <script type="text/javascript" src="knockout.mapping-latest.js"></script>
+    <script type="text/javascript" src="localmenu.js"></script>
+    <title>Testing result</title >
     </head>
     <body>
         <div>
-        <p>Robot Operating System is <span data-bind="text: ROSis"></span></p>
-    <button data-bind="visible: showStartROSbutton, click:startROS">Start ROS</button>
-    <button data-bind="visible: showStopROSbutton, click:stopROS">Stop ROS</button>
-    <button data-bind="click:otherOption">Other Option</button>
-    <button id="talk">Talk</button>
-    <button id="stop" style="background: red; font-weight: bold;">STOP</button>
-    <button id="go" style="background: green; font-weight: bold;">Go</button>
-        </div>
-    </body>
-</html>
+            <p><span data-bind="text: status"></span></p>
+            <p>AC Plugged in? <span data-bind="text: pluggedIn"></span></p>
+            <p>Laptop Battery charged? <span data-bind="text: laptopFullyCharged"></span> Charge: <span data-bind="text: laptopBatteryPercentage"></span></p>
+            <p>Basement door open: <span data-bind="text: basementDoorOpen"></span></p>
+            <button data-bind="visible: basementDoorOpen, click: markBasementClosed" style="background: magenta; font-weight: bold;">Set Basement Door Closed</button>
+            <button data-bind="visible: !ROSisRunning(), click:startROS">Start ROS</button>
+            <button data-bind="visible: ROSisRunning, click:stopROS">Stop ROS</button>
+            <p>Which Map?<select data-bind='options: mapList, optionsCaption:"Choose a map...", value:selectedMap'></select></p>
+            <button data-bind="click:halt, visible: !haltRobot()" id="stop" style="background: red; font-weight: bold; font-size: 100px">STOP</button>
+            <button data-bind="click:unHalt, visible: haltRobot" id="go" style="background: green; font-weight: bold;">Go</button>
+            <button data-bind="click: quiet, visible: !beQuiet()">Be Quiet</button>
+            <button data-bind="click: talk, visible: beQuiet">Talk</button>
+            <button data-bind="click: pauseAutoExplore, visible: !pauseExplore()">Pause Explorer</button>
+            <button data-bind="click: unPauseAutoExplore, visible: pauseExplore">Resume Explorer</button>
+            <br/>
+            <div data-bind="visible: autoExplore">
+                <form id='saveMapForm' name='saveMapForm'>
+                <label for="saveMap"></label>
+                  <input type="text" name="saveMap" id="saveMap" placeholder="Enter new map name . . ." data-bind="textInput: newMapName"/>
+              </form>
+              <button data-bind="click:saveMap">Save Map</button>
+          </div>
+          <a href="/" target="_blank">ArloWeb</a><br/>
+          <button data-bind="click: startLogStreamer, visible: !logStreamerRunning()">Start Log Streamer</button>
+          <button data-bind="click: stopLogStreamer, visible: logStreamerRunning">Kill Log Streamer</button>
+          <a href="http://arlobot:28778/" target="_blank">Log Streamer</a>
+
+      </div>
+  </body>
+  </html>

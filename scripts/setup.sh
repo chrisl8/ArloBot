@@ -29,7 +29,7 @@ fi
 echo "Installing required node packages . . ."
 echo "You may be asked for your password"
 echo "In order to run npm install -g"
-sudo npm install -g grunt
+sudo npm install -g grunt forever
 
 echo "Fix personal npm folder permissions"
 sudo chown -R `whoami` ${HOME}/.npm/

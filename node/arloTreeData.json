@@ -6,8 +6,8 @@
         "camera_x": 444.5,
         "camera_y": 247.5,
         "camera_z": 1,
-        "x": 0,
-        "y": 0
+        "x": -80,
+        "y": 144
     },
     "properties": {},
     "nodes": {
@@ -17,8 +17,8 @@
             "title": "StartROS",
             "description": "",
             "display": {
-                "x": 416,
-                "y": -72
+                "x": 336,
+                "y": 48
             },
             "parameters": {},
             "properties": {}
@@ -29,33 +29,18 @@
             "title": "Sequence",
             "description": "",
             "display": {
-                "x": 208,
-                "y": 0
+                "x": 128,
+                "y": 144
             },
             "parameters": {},
             "properties": {},
             "children": [
                 "2a155636-ab63-482e-9547-f26840487fec",
                 "7a6d8234-598c-4315-8c6f-002334f14aa0",
-                "b95dda8c-41be-4483-812c-fdac27db3164",
-                "f9af0fd7-00b2-4ce6-8ab4-e2f36947f48c"
-            ]
-        },
-        "f9af0fd7-00b2-4ce6-8ab4-e2f36947f48c": {
-            "id": "f9af0fd7-00b2-4ce6-8ab4-e2f36947f48c",
-            "name": "Priority",
-            "title": "Priority",
-            "description": "",
-            "display": {
-                "x": 416,
-                "y": 184
-            },
-            "parameters": {},
-            "properties": {},
-            "children": [
-                "79483eaa-caa4-49f8-9a47-693a63f0461f",
-                "0a79fcf0-5dad-4d8d-825d-1859dc175ad5",
-                "bf259898-4236-4667-9b88-ffa161ba1b9e"
+                "2860749d-6fed-48ef-9483-337cdd66ede6",
+                "bf259898-4236-4667-9b88-ffa161ba1b9e",
+                "c868ee6d-db2f-4798-b6e7-97e0d22d2623",
+                "ba78b85a-6dd3-4ca5-bcca-fcbe48c76d38"
             ]
         },
         "bf259898-4236-4667-9b88-ffa161ba1b9e": {
@@ -64,85 +49,20 @@
             "title": "UnPlugRobot",
             "description": "",
             "display": {
-                "x": 624,
-                "y": 248
+                "x": 336,
+                "y": 176
             },
             "parameters": {},
             "properties": {}
-        },
-        "a77ff380-4ce3-49c6-badd-240fdb7ed30f": {
-            "id": "a77ff380-4ce3-49c6-badd-240fdb7ed30f",
-            "name": "LaptopBatteryCharged",
-            "title": "LaptopBatteryCharged",
-            "description": "",
-            "display": {
-                "x": 832,
-                "y": 184
-            },
-            "parameters": {},
-            "properties": {}
-        },
-        "0a79fcf0-5dad-4d8d-825d-1859dc175ad5": {
-            "id": "0a79fcf0-5dad-4d8d-825d-1859dc175ad5",
-            "name": "Inverter",
-            "title": "Inverter",
-            "description": "",
-            "display": {
-                "x": 624,
-                "y": 184
-            },
-            "parameters": {},
-            "properties": {},
-            "child": "a77ff380-4ce3-49c6-badd-240fdb7ed30f"
-        },
-        "79483eaa-caa4-49f8-9a47-693a63f0461f": {
-            "id": "79483eaa-caa4-49f8-9a47-693a63f0461f",
-            "name": "RobotIsUnplugged",
-            "title": "RobotIsUnplugged",
-            "description": "",
-            "display": {
-                "x": 624,
-                "y": 120
-            },
-            "parameters": {},
-            "properties": {}
-        },
-        "ec34bf52-6bbe-4a5a-8514-f9df06005456": {
-            "id": "ec34bf52-6bbe-4a5a-8514-f9df06005456",
-            "name": "RobotKnowsWhatRoomItIsIn",
-            "title": "RobotKnowsWhatRoomItIsIn",
-            "description": "",
-            "display": {
-                "x": 624,
-                "y": -8
-            },
-            "parameters": {},
-            "properties": {}
-        },
-        "b95dda8c-41be-4483-812c-fdac27db3164": {
-            "id": "b95dda8c-41be-4483-812c-fdac27db3164",
-            "name": "Priority",
-            "title": "Priority",
-            "description": "",
-            "display": {
-                "x": 416,
-                "y": 24
-            },
-            "parameters": {},
-            "properties": {},
-            "children": [
-                "ec34bf52-6bbe-4a5a-8514-f9df06005456",
-                "2860749d-6fed-48ef-9483-337cdd66ede6"
-            ]
         },
         "2860749d-6fed-48ef-9483-337cdd66ede6": {
             "id": "2860749d-6fed-48ef-9483-337cdd66ede6",
-            "name": "DetermineRoom",
-            "title": "DetermineRoom",
+            "name": "getMapOrExploreRequest",
+            "title": "getMapOrExploreRequest",
             "description": "",
             "display": {
-                "x": 624,
-                "y": 56
+                "x": 336,
+                "y": 112
             },
             "parameters": {},
             "properties": {}
@@ -166,8 +86,8 @@
             "title": "ROSrunRequested",
             "description": "",
             "display": {
-                "x": 416,
-                "y": -136
+                "x": 336,
+                "y": -16
             },
             "parameters": {},
             "properties": {}
@@ -184,14 +104,33 @@
             "parameters": {},
             "properties": {},
             "children": []
+        },
+        "c868ee6d-db2f-4798-b6e7-97e0d22d2623": {
+            "id": "c868ee6d-db2f-4798-b6e7-97e0d22d2623",
+            "name": "AutoExplore",
+            "title": "AutoExplore",
+            "description": "",
+            "display": {
+                "x": 336,
+                "y": 240
+            },
+            "parameters": {},
+            "properties": {}
+        },
+        "ba78b85a-6dd3-4ca5-bcca-fcbe48c76d38": {
+            "id": "ba78b85a-6dd3-4ca5-bcca-fcbe48c76d38",
+            "name": "LoadMap",
+            "title": "LoadMap",
+            "description": "",
+            "display": {
+                "x": 336,
+                "y": 304
+            },
+            "parameters": {},
+            "properties": {}
         }
     },
     "custom_nodes": [
-        {
-            "name": "LaptopBatteryCharged",
-            "title": "",
-            "category": "condition"
-        },
         {
             "name": "UnPlugRobot",
             "title": "",
@@ -203,24 +142,24 @@
             "category": "action"
         },
         {
-            "name": "RobotIsUnplugged",
+            "name": "ROSrunRequested",
             "title": "",
             "category": "condition"
         },
         {
-            "name": "RobotKnowsWhatRoomItIsIn",
-            "title": "",
-            "category": "condition"
-        },
-        {
-            "name": "DetermineRoom",
+            "name": "AutoExplore",
             "title": "",
             "category": "action"
         },
         {
-            "name": "ROSrunRequested",
+            "name": "LoadMap",
             "title": "",
-            "category": "condition"
+            "category": "action"
+        },
+        {
+            "name": "getMapOrExploreRequest",
+            "title": "",
+            "category": "action"
         }
     ]
 }
