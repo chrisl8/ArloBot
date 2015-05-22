@@ -1,7 +1,7 @@
 Metatron Package for Arlobot
 ===========================
 
-![Alt text](/docs/robotControlPanel.png?raw=true "Control Panel")
+![Alt text](/screenshots/robotControlPanel.png?raw=true "Control Panel")
 
 This is a supplementary package for the Arlobot package.
 It provides basic "personality" and autonomous operation functions
