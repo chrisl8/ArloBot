@@ -1,5 +1,54 @@
 window.onload = function() {
 
+    // For LCARish buttons:
+    var LCARishButton = function(buttonID, knockoutItem, offAction, onAction) {
+        var buttonElement = document.getElementById(buttonID),
+            onSide = buttonElement.getElementsByClassName("switch-on")[0],
+            offSide = buttonElement.getElementsByClassName("switch-off")[0],
+            switchItself = buttonElement.getElementsByClassName("toggle")[0],
+            oldValue = knockoutItem();
+        if (knockoutItem()) {
+            onSide.classList.add("toggler--is-active");
+            offSide.classList.remove("toggler--is-inactive");
+            switchItself.classList.add("toggle-on");
+            switchItself.classList.remove("toggle-off");
+        } else {
+            offSide.classList.add("toggler--is-inactive");
+            onSide.classList.remove("toggler--is-active");
+            switchItself.classList.remove("toggle-on");
+            switchItself.classList.add("toggle-off");
+        }
+        knockoutItem.subscribe(function(newValue) {
+            if (newValue !== oldValue) {
+                oldValue = newValue;
+                if (newValue) {
+                    onAction();
+                } else {
+                    offAction();
+                }
+            }
+            if (newValue) {
+                onSide.classList.add("toggler--is-active");
+                offSide.classList.remove("toggler--is-inactive");
+                switchItself.classList.add("toggle-on");
+                switchItself.classList.remove("toggle-off");
+            } else {
+                offSide.classList.add("toggler--is-inactive");
+                onSide.classList.remove("toggler--is-active");
+                switchItself.classList.remove("toggle-on");
+                switchItself.classList.add("toggle-off");
+            }
+        });
+        onSide.addEventListener("click", function() {
+            oldValue = true;
+            onAction();
+        });
+        offSide.addEventListener("click", function() {
+            oldValue = false;
+            offAction();
+        });
+    };
+
     var robotModel = {
         /*
         robotStatus: ko.observable('Robot web server is not running.'),
@@ -51,6 +100,25 @@ window.onload = function() {
         },
         stopLogStreamer: function() {
             socket.emit('stopLogStreamer');
+        },
+        buttonOneText: ko.observable('Curiosity'),
+        buttonOne: function() {
+            this.buttonOneText('Cat is Dead');
+        },
+        buttonTwoText: ko.observable('Button'),
+        buttonTwo: function() {
+            this.buttonTwoText('Please do not push this button again!');
+        },
+        buttonThreeText: ko.observable('Button'),
+        buttonThree: function() {
+            this.buttonThreeText("Now you've done it!");
+        },
+        buttonFourText: ko.observable('Button'),
+        buttonFour: function() {
+            this.buttonFourText('<sigh>');
+        },
+        reloadPage: function() {
+            document.location.reload(true);
         }
     };
 
@@ -69,6 +137,10 @@ window.onload = function() {
         ko.mapping.fromJS(data, webModel);
         if (firstStart) {
             firstStart = false;
+            // Run the function once for each button:
+            //LCARishButton('button-id', koWatchItem, koOffAction, koOnAction)
+            LCARishButton('talk-bequiet-button', webModel.beQuiet, webModel.talk, webModel.quiet);
+            LCARishButton('explore-pause-button', webModel.pauseExplore, webModel.unPauseAutoExplore, webModel.pauseAutoExplore);
             ko.applyBindings(webModel);
         }
         if (webModel.autoExplore()) webModel.selectedMap('Explore!');
@@ -78,6 +150,13 @@ window.onload = function() {
     socket.on('webModel', function(data) {
         console.log('.');
         ko.mapping.fromJS(data, webModel);
+        if (webModel.autoExplore()) {
+            webModel.selectedMap('Explore!');
+        } else if (webModel.mapName() != '') {
+            if (webModel.selectedMap !== webModel.mapName()) {
+                webModel.selectedMap(webModel.mapName());
+            }
+        }
     });
 
 

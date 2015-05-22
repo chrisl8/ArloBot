@@ -53,6 +53,13 @@ then
     cd roslibjs
     npm install
 fi
+../node/webserver/public/lcars/
+if [ ! -d  ${SCRIPTDIR}/../node/webserver/public/lcars/ ]
+then
+    echo "Cloning in lcars CSS Framework"
+    cd ${SCRIPTDIR}/../node/node_modules/public/
+    git clone git@github.com:Garrett-/lcars.git
+fi
 
 # We will use ~/.arlobot to store "private" data
 # That is data that doesn't need to be part of

@@ -8,7 +8,7 @@ var webModel = {
     haltRobot: false,
     basementDoorOpen: true,
     laptopFullyCharged: 'unknown',
-    laptopBatteryPercentage: 'unknown',
+    laptopBatteryPercentage: '???%',
     logStreamerRunning: false,
     status: 'Arlo behavior is not running.',
     mapList: ['Explore!'],
@@ -78,27 +78,21 @@ var setSemaphoreFiles = function(text) {
                 fs.unlink(stopFile);
             } else if (text === 'markBasementClosed') {
                 fs.unlink(basementDoorFile);
+                readSemaphoreFiles();
             }
-            readSemaphoreFiles();
         }
     });
 };
 
 var readSemaphoreFiles = function() {
-    var changed = false;
-    var oldValue = webModel.haltRobot;
     fs.readFile(stopFile, function(err) {
         if (err) webModel.haltRobot = false;
         else webModel.haltRobot = true;
     });
-    if (webModel.haltRobot !== oldValue) changed = true;
-    oldValue = webModel.beQuiet;
     fs.readFile(quietFile, function(err) {
         if (err) webModel.beQuiet = false;
         else webModel.beQuiet = true;
     });
-    if (webModel.beQuiet !== oldValue) changed = true;
-    oldValue = webModel.basementDoorOpen;
     fs.readFile(basementDoorFile, 'utf8', function(err, data) {
         if (err) webModel.basementDoorOpen = false;
         else {
@@ -108,8 +102,6 @@ var readSemaphoreFiles = function() {
             else webModel.basementDoorOpen = true;
         }
     });
-    if (webModel.basementDoorOpen !== oldValue) changed = true;
-    return changed;
 };
 
 readSemaphoreFiles();
@@ -253,7 +245,7 @@ function start() {
     });
 
     exports.updateWebModel = function(variable, value) {
-        if ((webModel[variable] != value) || (readSemaphoreFiles())) {
+        if ((webModel[variable] != value)) {
             webModel[variable] = value;
             io.sockets.emit('webModel', webModel);
         }
@@ -262,8 +254,10 @@ function start() {
     // Socket listeners
     io.on('connection', function(socket) {
         socket.emit('startup', webModel);
+        console.log('Connection!');
+
         socket.on('setMap', function(data) {
-            console.log(data);
+            console.log('Set map: ' + data);
             if (data != null) {
                 if (data === 'Explore!') {
                     webModel.mapName = '';
@@ -273,65 +267,64 @@ function start() {
                     webModel.mapName = data;
                 }
             }
-            console.log(webModel);
-            socket.emit('webModel', webModel);
+            io.sockets.emit('webModel', webModel);
         });
 
         // LocalMenu button handlers:
         socket.on('startROS', function() {
             webModel.ROSstart = true;
-            socket.emit('webModel', webModel);
+            io.sockets.emit('webModel', webModel);
         });
         socket.on('stopROS', function() {
             webModel.ROSstart = false;
-            socket.emit('webModel', webModel);
+            io.sockets.emit('webModel', webModel);
         });
         socket.on('haltRobot', function() {
-            setSemaphoreFiles('stop');
             webModel.haltRobot = true;
-            socket.emit('webModel', webModel);
+            setSemaphoreFiles('stop');
+            io.sockets.emit('webModel', webModel);
         });
         socket.on('unHaltRobot', function() {
-            setSemaphoreFiles('go');
             webModel.haltRobot = false;
-            socket.emit('webModel', webModel);
+            setSemaphoreFiles('go');
+            io.sockets.emit('webModel', webModel);
         });
         socket.on('beQuiet', function() {
-            setSemaphoreFiles('beQuiet');
             webModel.beQuiet = true;
-            socket.emit('webModel', webModel);
+            setSemaphoreFiles('beQuiet');
+            io.sockets.emit('webModel', webModel);
         });
         socket.on('talk', function() {
-            setSemaphoreFiles('talk');
             webModel.beQuiet = false;
-            socket.emit('webModel', webModel);
+            setSemaphoreFiles('talk');
+            io.sockets.emit('webModel', webModel);
         });
         socket.on('markBasementClosed', function() {
             setSemaphoreFiles('markBasementClosed');
             webModel.basementDoorOpen = false;
-            socket.emit('webModel', webModel);
+            io.sockets.emit('webModel', webModel);
         });
         socket.on('pauseAutoExplore', function() {
             webModel.pauseExplore = true;
-            socket.emit('webModel', webModel);
+            io.sockets.emit('webModel', webModel);
         });
         socket.on('unPauseAutoExplore', function() {
             webModel.pauseExplore = false;
-            socket.emit('webModel', webModel);
+            io.sockets.emit('webModel', webModel);
         });
         socket.on('saveMap', function(data) {
-            console.log(data);
+            console.log('Save map as: ' + data);
             saveMap(data);
         });
         socket.on('startLogStreamer', function() {
             startLogStreamer();
             webModel.logStreamerRunning = true;
-            socket.emit('webModel', webModel);
+            io.sockets.emit('webModel', webModel);
         });
         socket.on('stopLogStreamer', function() {
             stopLogStreamer();
             webModel.logStreamerRunning = false;
-            socket.emit('webModel', webModel);
+            io.sockets.emit('webModel', webModel);
         });
     });
 

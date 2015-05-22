@@ -11,3 +11,4 @@ node/build/
 scripts/mjpg-streamer/
 node/webserver/public/xscreen.png
 node/webserver/node_modules/
+node/webserver/public/lcars/
