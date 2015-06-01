@@ -36,3 +36,4 @@ monitorACconnection: True
 # and simply operate 100% under ROS control.
 # This should also work if changed on the fly.
 ignoreProximity: False
+ignoreCliffSensors: False
