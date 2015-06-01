@@ -3,36 +3,22 @@ Propeller C Code for ArloBot
 
 This is the code to build in SimpleIDE and download to your ArloBot's Activity Board EEPROM in order to communicate with ROS over the USB serial interface.
 
-## Two Versions Now ##
+## One Version Now ##
 Note, I now have a second Propeller based Quickstart board on my Arlo. All PING and Infrared sensors are on this board. This means I have two versions of the code here.
-* ROS Interface for ArloBot - Is the original code for when you have all sensors plugged into the same board.
+* ROS Interface for ArloBot - This will work in all cases.
 
-* ROS Interface for ArloBot WITH 2nd Board - Is the new code I am using now with two boards, and
-* 2nd Board Code - Is the code for the Quickstart board.
-
-Please note that while I'm trying to make sure both sets of code are as close as possible to each other, the single board code is not as well testd now. Let me know if you find bugs.
+* 2nd Board Code - Is the code for the Quickstart board, if you have one, if not, ignore it.
 
 ## Customize Code for Your Setup ##
-Be sure to adust the following constants in the code based on what sensors you have and where you've plugged them in: (These are not all in one place, you will have to search for them.)
 
-```
-const int MCP3208_dinoutPIN = 3;
-const int MCP3208_clkPIN = 4;
-const int MCP3208_csPIN = 2;
-const float referenceVoltage = 5.0;
-const int numberOfIRonMC3208 = 6;
-const int numberOfPINGsensors = 6;
-const int firtPINGsensorPIN = 5;
-const int hasGyro = 1;
-const int gyroSCLpin = 1;
-const int gyroSDApin = 0;
-const int hasPIR = 1;
-const int PIRpin = 11;
-```
+You have to open the code in SimpleIDE to install it on your Propeller Activity Board.
+When you do, read the top of the file and comment out "#define has..." lines for things you do not have,
+and adjust the numbers for things you do have.
+The entire thing should be documented in the code at the top, and if not, let me know.
 
-There are other things that are not quite so easy to adjust so you may have to tweak the code. If you would like me to make more changes to the code to make it more "adjustable" let me know and I will try.
+Once you set all of the #define lines properly, the code should work on your setup.
 
-Ultimately if every Arlo has s different set of PING and Infrared sensors, the code may not be good at handling that.
+I decided to use #define because these settings occur BEFORE the compiler compiles the code. So anything you set as "not included" is never even compiled, saving memory on the microcontroller.
 
 ## ArloBot Libraries Required!##
 You will need to have the Parallax ArloBot Libraries in your SimpleIDE workspace in order for this to build. Those libraries are included in this github repository, or you can get them here:
