@@ -1,7 +1,7 @@
 ArloBot Package for ROS
 ===========================
 
-Update JUne 1, 2015: I finally merged my dev branch into master. Hopefully it all works, but obviously the world is my beta testers, since I'm the only alpha tester.
+Update June 1, 2015: I finally merged my dev branch into master. Hopefully it all works, but obviously the world is my beta testers, since I'm the only alpha tester.
 
 I've made a lot of changes to the C code for the Propeller board to try to make it easily work for various configurations without you having to rewrite the C code yourself. Still, it may not work out. Please let me know how it works.
 
