@@ -1,3 +1,24 @@
+/* ATTENTION! ATTENTION! ATTENTION! ATTENTION! ATTENTION! ATTENTION!
+You MUST edit the following settings based on the physical layout
+of your robot!
+For each QUESTION:
+UNCOMMENT '#define' lines for any included items,
+COMMENT '#define' lines for anything that is not included.
+For each SETTING:
+Set the variable as required, noting that usually these are ignored if the preceding QUESTION is commented out. */
+
+// How many PING Sensors do you have on the QuickStart board?
+#define NUMBER_OF_PING_SENSORS 14
+// How many IR Sensors do you have on the MCP3208?
+#define NUMBER_OF_IR_SENSORS 8
+// Which pin the first PING sensor is on?
+#define FIRST_PING_SENSOR_PIN 2
+// Which pin on the QuickStart Board is the RX pin connected out to the Activity board?
+#define QUICKSTART_RX_PIN 0
+// Which pin on the QuickStart Board is the TX pin connected in from the Activity board?
+#define QUICKSTART_TX_PIN 1
+
+
 /* 2nd Propeller Board (QuickStart Board) Code for ArloBot
 
    This code should run on the 2nd board and send data to the primary
@@ -15,11 +36,6 @@ fdserial *propterm;
 
 int mcp3208_IR_cm(int); // Function to get distance in CM from IR sensor using MCP3208
 
-const int numberOfPINGsensors = 10;
-const int numberOfIRonMC3208 = 8; // Number of IR Sensors on the MCP3208 ADC to read
-const int firtPINGsensorPIN = 2; // Which pin the first PING sensor is on
-const int propRXpin = 0;
-const int propTXpin = 1;
 void pollPingSensors(void *par); // Use a cog to fill range variables with ping distances
 static int pstack[128]; // If things get weird make this number bigger!
 int isActive = 0;
@@ -61,7 +77,7 @@ void pollPingSensors(void *par) {
   // The last IR sensor will be retagged with this position number,
   // in case there are more PINGs than IRs.
   const int lastIRposition = 7;
-  propterm = fdserial_open(propRXpin, propTXpin, 0, 115200);
+  propterm = fdserial_open(QUICKSTART_RX_PIN, QUICKSTART_TX_PIN, 0, 115200);
   //term = fdserial_open(31, 30, 0, 115200); // for Debugging
   // Initialize variables outside of loop
   // This may or may not improve performance.
@@ -79,12 +95,12 @@ void pollPingSensors(void *par) {
     if (receivedChar == 'i') {
       high(16); // LEDs for debugging
       isActive = 1;
-      for(int i=0; i < numberOfPINGsensors; i++ ) {
-        ping = ping_cm(firtPINGsensorPIN + i);
+      for(int i=0; i < NUMBER_OF_PING_SENSORS; i++ ) {
+        ping = ping_cm(FIRST_PING_SENSOR_PIN + i);
         dprint(propterm, "p,%d,%d.", i, ping);
         receivedChar = fdserial_rxChar(propterm); // Should get a character after each output for rate limiting
         //dprint(term, "p,%d,%d\n", i, ping); // For Debugging
-        if(i < numberOfIRonMC3208) { // If there is also an IR sensor at this number check it too
+        if(i < NUMBER_OF_IR_SENSORS) { // If there is also an IR sensor at this number check it too
           ir = mcp3208_IR_cm(i);
           dprint(propterm, "i,%d,%d.", i, ir);
           receivedChar = fdserial_rxChar(propterm); // Should get a character after each output for rate limiting

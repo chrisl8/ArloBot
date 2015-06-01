@@ -1,25 +1,210 @@
+/* ATTENTION! ATTENTION! ATTENTION! ATTENTION! ATTENTION! ATTENTION!
+You MUST edit the following settings based on the physical layout
+of your robot!
+For each QUESTION:
+UNCOMMENT '#define' lines for any included items,
+COMMENT '#define' lines for anything that is not included.
+For each SETTING:
+Set the variable as required, noting that usually these are ignored if the preceding QUESTION is commented out.
+
+Example, My robot has a "Thing1", but not a "Thing2"
+*/
+#define hasThingOne
+//#define hasTHingTwo
+
+/* Just like that, comment out the "has" line for things you do not have,
+and if you do have the thing, adjust the numbers on the other definition as needed.
+By using the #define lines, code for items you do not have is never seen by the compiler and is never even loaded on the Propeller bard, saving memory. */
+
+// PROXIMITY SENSOR TUNING
+// Use these to tune the robots responses!
+// What is the maximum distance at which sensor readings should be noticed?
+#define MAX_DISTANCE 70
+// What is the maximum distance at which IR (Infrared) sensor readings should be noticed?
+// IR sensors tend to be less reliable, so make this shorter than the MAX_DISTANCE, which applies to PING sensors.
+#define IR_MAX_DISTANCE 50
+// What is the minimum speed that the speed limiter should set the robot to?
+#define MINIMUM_SPEED 10
+// THROTTLE_STOP determines how quickly the speed limit is changed.
+// Make this number bigger to allow the speed to change more rapidly.
+#define THROTTLE_STOP 5
+
+// QUESTION: Does your robot have a 2nd Propeller "QuickStart" board where the PING sensors are connected?
+#define hasQuickStartBoard
+// WARNING WARNING WARNING!
+// You must ALSO open up "2nd Board Code.c" and make changes there if you are using the QuickStart board!
+// Settings for QuickStart Board - IGNORE IF YOU DON'T HAVE ONE!
+// SETTING: Which pin on the Activity Board is the RX pin connected out to the QuickStart board?
+#define QUICKSTART_RX_PIN 5
+// SETTING: Which pin on the Activity Board is the TX pin connected in from the QuickStart board?
+#define QUICKSTART_TX_PIN 6
+
+// Settings for PING and IR (Infrared) sensors connected DIRECLTY to the Activity Board:
+// SETTING: Which pin on the Activity Board is the first PING sensor connected to?
+#define FIRST_PING_SENSOR_PIN 5
+
+// QUESTION: Are you using an MCP3208 chip to read poll analog sensors from the Activity Board?
+//#define hasMCP3208
+// Settings for MCP3208, if it has one:
+// SETTING: How many IR sensors (if any) are connected to your MCP3208?
+#define NUMBER_OF_IR_ON_MCP3208 6
+#define MCP3208_DINOUT_PIN 3
+#define MCP3208_CLK_PIN 4
+#define MCP3208_CS_PIN 2
+// MCP3208 reference voltage setting. I use 5.0v for the 5.0v IR sensors from Parallax
+#define MCP3208_REFERENCE_VOLTAGE 5.0
+
+// PROXIMITY SENSORS:
+// IMPORTANT! This section is very important!
+// SETTINGS: Proximity (PING & IR) Sensor count and location:
+#define NUMBER_OF_PING_SENSORS 14
+#define NUMBER_OF_IR_SENSORS 8
+
+// QUESTION: Do you have PING sensors on the front of your robot?
+#define hasFrontPingSensors
+#define FIRST_FRONT_PING_SENSOR_NUMBER 0 // Count from 0
+// Your sensors need to poll consecutively for each section!
+#define HOW_MANY_FRONT_PING_SENSORS 5
+
+// QUESTION: Do you have PING sensors on the back of your robot?
+#define hasRearPingSensors
+#define FIRST_REAR_PING_SENSOR_NUMBER 5 // Count from 0
+#define HOW_MANY_REAR_PING_SENSORS 5
+
+// QUESTION: Do you have IR sensors on the front of your robot?
+#define hasFrontIRSensors
+#define FIRST_FRONT_IR_SENSOR_NUMBER 0 // Count from 0
+#define HOW_MANY_FRONT_IR_SENSORS 5
+
+// QUESTION: Do you have IR sensors on the back of your robot?
+#define hasRearIRSensors
+#define FIRST_REAR_IR_SENSOR_NUMBER 5 // Count from 0
+#define HOW_MANY_REAR_IR_SENSORS 1
+
+// QUESTION: Do you have PING sensors on the front "upper deck" of your robot?
+/* These would be facing straight forward in the middle of decks above
+the deck the circle of sensors is on.
+I have one on the top deck, and then one on the stand holding the Xtion sensor.
+All of these will be assumed to face forward. */
+#define hasFrontUpperDeckSensors
+#define FIRST_FRONT_UPPER_SENSOR_NUMBER 10 // Count from 0
+#define HOW_MANY_FRONT_UPPER_SENSORS 2
+
+// QUESTION: Do you have PING sensors on the REAR "upper deck" of your robot?
+#define hasRearUpperDeckSensors
+#define FIRST_REAR_UPPER_SENSOR_NUMBER 12 // Count from 0
+#define HOW_MANY_REAR_UPPER_SENSORS 2
+
+/* Here you set up arrays showing what the halt distance,
+   and distance to start slowing down is for each sensor.
+   Each sensor needs to have its own response because of their various angles.
+   We cannot use the same distance response for each,
+   and we may want different max speeds and escape sequences too.
+   Remember the order is based on the order that they are plugged
+   in to your board.
+   WARNING: Be sure the array has the correct number of entries! */
+const int haltDistance[NUMBER_OF_PING_SENSORS] = {5, 10, 12, 10, 5, 5, 10, 12, 10, 5, 12, 12, 12, 12};
+const int startSlowDownDistance[NUMBER_OF_PING_SENSORS] = {8, 40, MAX_DISTANCE, 40, 8, 8, 40, MAX_DISTANCE, 40, 8, MAX_DISTANCE, 20, MAX_DISTANCE, MAX_DISTANCE};
+// Set shorter distances for IR sensors because they are less reliable.
+const int IRstartSlowDownDistance[NUMBER_OF_IR_SENSORS] = {8, 20, IR_MAX_DISTANCE, 20, 8, IR_MAX_DISTANCE, 0, 0};
+/* My last two IR sensors are cliff sensors, thus the "0, 0" because slowdow
+does not apply to them. */
+
+// QUESTION: Sensor Identities:
+// Put the sensor number by each label
+// Comment out any sensor you do not have
+#define FRONT_CENTER_SENSOR 2
+// NOTE: IF you comment out the FRONT_CENTER_SENSOR, then ALL Front sensors are ignored for escaping!
+// "Left" refers to the ROBOT's left, assuming he faces the way he drives "forward"
+#define FRONT_NEAR_LEFT_SENSOR 1
+#define FRONT_FAR_LEFT_SENSOR 0
+#define FRONT_NEAR_RIGHT_SENSOR 3
+#define FRONT_FAR_RIGHT_SENSOR 4
+#define REAR_FAR_RIGHT_SENSOR 5
+#define REAR_NEAR_RIGHT_SENSOR 6
+#define REAR_CENTER_SENSOR 7
+// NOTE: IF you comment out the REAR_CENTER_SENSOR, then ALL Rear sensors are ignored for escaping!
+#define REAR_NEAR_LEFT_SENSOR 8
+#define REAR_FAR_LEFT_SENSOR 9
+#define FRONT_UPPER_DECK_SENSOR 10
+#define FRONT_3D_MOUNTED_SENSOR 11
+#define REAR_UPPER_DECK_SENSOR 12
+#define REAR_3D_MOUNTED_SENSOR 13
+
+// QUESTION: Do you want to "rename" the rear IR sensor(s)?
+/* If this is set, all "rear" IR sensors will be labeled with this number
+when checked. I use this because while I have 5 rear PING sensors,
+I only have 1 rear IR sensor. So the escape options for the one rear
+IR sensor should match the rear center PING sensor.
+If you don't want to do this, just comment this setting out:
+*/
+#define RENAME_REAR_IR_SENSOR REAR_CENTER_SENSOR
+
+
+// QUESTION: Does your robot have a PIR (Passive Infrared) sensor connected to the Activity Board?
+/* NOTE: I got this PIR sensor for free, and it is fun,
+   but it doesn't do much for you when the robot is moving
+   and sending out IR signals with the Kinect/Xtion
+   and with the IR distance sensors. :)
+   It is cool though to have it watch for people and alert
+   ROS when someone is around. Then ROS can initialize the ArloBot,
+   start up the motors with a USB Relay Board
+   and start chasing them . . . or something.
+   */
+#define hasPIR
+// SETTING: IF you have a PIR sensor, which pin is it connected to?
+#define PIR_PIN 11
+
+// GYROSCOPE:
+// QUESTION: Does your robot have a Gyro module installed on the Activity Board?
+#define hasGyro
+// Settings for Gyroscope, if it has one:
+// SETTING: Activity Board pin that the SCL pin from the Gyro is connected to:
+#define GYRO_SCL_PIN 1
+// SETTING: Activity Board pin that the SDA pin from the Gyro is connected to:
+#define GYRO_SDA_PIN 0
+
+// VOLTAGE MONITORING:
+// QUESTION: Do you have a voltage divider connected to the Activity Board's built in ADC to monitor voltage at the left and right motors?
+#define hasMotorPowerMonitorCircuit
+// Settings for Motor Power Monitor Circuit, if it has one:
+// If these get flipped just flip the wires, or the numbers.
+#define LEFT_MOTOR_ADC_PIN 0
+#define RIGHT_MOTOR_ADC_PIN 1
+
+// CLIFF SENSORS:
+// QUESTION: Do you have IR "cliff" sensors mounted to the front of the robot?
+#define hasCliffSensors
+// SETTING: Which IR sensor number (counting from 0) is the first cliff sensor?
+#define FIRST_CLIFF_SENSOR 5
+// SETTING: How many cliff sensors are there?
+#define NUMBER_OF_CLIFF_SENSORS 2
+// SETTING: What is the maximum distance before the robot should consider it to be a cliff?
+// at 30 it was stalling when crossing half inch bumps.
+#define FLOOR_DISTANCE 40
+
 /*
- This is the code to run on a Parallax Propeller based Activity Board
- in order to interface ROS with an ArloBot.
+This is the code to run on a Parallax Propeller based Activity Board
+in order to interface ROS with an ArloBot.
 
- Author: Chris L8 https://github.com/chrisl8
- URL: https://github.com/chrisl8/ArloBot
+Author: Chris L8 https://github.com/chrisl8
+URL: https://github.com/chrisl8/ArloBot
 
- The ROS Node for this code is called propellerbot_node.py
- and can be found in the arlobot_bringup package from the above URL.
+The ROS Node for this code is called propellerbot_node.py
+and can be found in the arlobot_bringup package from the above URL.
 
- Special thanks to Dr. Rainer Hessmer. Much of this code is based on his work at
- https://code.google.com/p/drh-robotics-ros/
+Special thanks to Dr. Rainer Hessmer. Much of this code is based on his work at
+https://code.google.com/p/drh-robotics-ros/
 
- Please also see these sites which helped me tremendously with the formulas:
- http://www.seattlerobotics.org/encoder/200610/article3/IMU%20Odometry,%20by%20David%20Anderson.htm
- http://webdelcire.com/wordpress/archives/527
+Please also see these sites which helped me tremendously with the formulas:
+http://www.seattlerobotics.org/encoder/200610/article3/IMU%20Odometry,%20by%20David%20Anderson.htm
+http://webdelcire.com/wordpress/archives/527
 
- And of course the entire point of this is to interface with ROS, so read about everything ROS here:
- http://wiki.ros.org/
+And of course the entire point of this is to interface with ROS, so read about everything ROS here:
+http://wiki.ros.org/
 
- All code here heavily borrowed from everywhere code can be found! :)
- */
+All code here heavily borrowed from everywhere code can be found! :)
+*/
 
 /* SimpleIDE Options
  * Everything here is the default for a new SimpleIDE project except for "Enable Pruning."
@@ -38,11 +223,26 @@
  */
 
 #include "simpletools.h"
-#include "mcp3208.h" // MCP3208 8 Channel ADC
-#include "ping.h" // Include ping header
-// Add adcDCpropab.h if you want to use the ADC built into the Activity Board
-//#include "adcDCpropab.h"                      // Include adcDCpropab http://learn.parallax.com/propeller-c-simple-circuits/measure-volts
 #include "fdserial.h"
+
+#ifdef hasMCP3208
+#include "mcp3208.h"
+#endif
+
+#ifdef hasQuickStartBoard
+// PING Sensors are all handled by the QuickStart board if it is present.
+#else
+#include "ping.h"
+#endif
+
+#ifdef hasMotorPowerMonitorCircuit
+/* Nothing else in my code uses the built in ADC,
+although you could modify the code to use it with
+IR sensors. */
+// Include adcDCpropab http://learn.parallax.com/propeller-c-simple-circuits/measure-volts
+#include "adcDCpropab.h"
+#endif
+
 /*
 http://forums.parallax.com/showthread.php/154274-The-quot-Artist-quot-robot?p=1277133&viewfull=1#post1277133
 "The most impressive is that we can use the same code as the ActivityBot examples, replacing only the library’s name. So everyone who has a big-size Robot, similar to The Artist (like Arlo, Eddie or any other) must only change the library “abdrive.h” with the “arlodrive.h”. So we can take all the advantages form the pre-written code for the ActivityBot!'
@@ -58,7 +258,10 @@ fdserial *term;
 
 // Robot description: We will get this from ROS so that it is easier to tweak between runs without reloading the Propeller EEPROM.
 // http://learn.parallax.com/activitybot/calculating-angles-rotation
-static double distancePerCount = 0.0, trackWidth = 0.0; // See encoders.yaml to set or change this value
+static double distancePerCount = 0.0, trackWidth = 0.0;
+/* See ~/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml
+   to set or change this value
+*/
 
 const char delimiter[2] = ","; // Delimiter character for incoming messages from the ROS Python script
 
@@ -77,33 +280,31 @@ static int fstack[256]; // If things get weird make this number bigger!
 
 //int adc_IR_cm(int); // Function to get distance in CM from IR sensor using Activty Board built in ADC
 
-// for Proximity (PING & IR) Sensor Variables
-int pingArray[6] = {0};
-int irArray[8] = {0};
-const int irArrayLength = 8; // The IR array will have empty positions
-const int numberOfPINGsensors = 6; // Number of PING sensors, we assume the are consecutive
-const int rearPINGsensor = 5;
-const int rearIRsensor = 7;
+// Global Storage for PING & IR Sensor Data:
+int pingArray[NUMBER_OF_PING_SENSORS] = {0};
+int irArray[NUMBER_OF_IR_SENSORS] = {0};
 
+#ifdef hasQuickStartBoard
+// For Quickstart Board communication
+fdserial *propterm;
+void pollPropBoard2(void *par); // Use a cog to fill range variables with ping distances
+static int prop2stack[128]; // If things get weird make this number bigger!
+#else
 // Local Sensor Polling Cog
-const int firtPINGsensorPIN = 5; // Which pin the first PING sensor is on
-const int numberOfIRonMC3208 = 6; // Number of IR Sensors on the MCP3208 ADC to read
 void pollPingSensors(void *par); // Use a cog to fill range variables with ping distances
 static int pstack[128]; // If things get weird make this number bigger!
 int mcp3208_IR_cm(int); // Function to get distance in CM from IR sensor using MCP3208
+#endif
 
-
-// Gyro globals:
-const int hasGyro = 1; // Set this to 0 if you do not have a gyro on your ArloBot's Activity Board.
+// For Gyroscope:
+#ifdef hasGyro
 /*
-Currently this code makes NO use of the gyro. The Odometry from the ArloBot's wheel encoders is excellent!
-The only thing I do with the gyro is send the data to ROS.
-At some point a ROS node could use that data to detect a serious issue, like the robot being picked up or being stuck.
-As it is though, gmapping, AMCL, etc. work very well off of the Odometry with using the gyro data.
-*/
-// For Gyroscope - Declare everything globally
-const int gyroSCLpin = 1; // Activity Board pin that the SCL pin from the Gyro is connected to.
-const int gyroSDApin = 0;  // Activity Board pin that the SDA pin from the Gyro is connected to.
+   NOTE About Gyro module:
+   Currently this code makes NO use of the gyro. The Odometry from the ArloBot's wheel encoders is excellent!
+   The only thing I do with the gyro is send the data to ROS.
+   At some point a ROS node could use that data to detect a serious issue, like the robot being picked up or being stuck.
+   As it is though, gmapping, AMCL, etc. work very well off of the Odometry with using the gyro data.
+   */
 unsigned char i2cAddr = 0x69;       //I2C Gyro address
 //L3G4200D register addresses & commads.
 //See device datasheet section 7 for more info.
@@ -120,14 +321,22 @@ unsigned char xL = 0x28;            //Reg for x low byte - Next 5 bytes xH, yL, 
 unsigned char reply;                //Single byte reply
 char xyz[6];                        //XYZ dat array
 int gyroXvel, gyroYvel, gyroZvel;                       //Axis variables
-static double gyroHeading = 0.0;
 i2c *bus;                           //Declare I2C bus
 // Create a cog for polling the Gyro
 void pollGyro(void *par); // Use a cog to fill range variables with ping distances
 static int gyrostack[128]; // If things get weird make this number bigger!
+#endif
+// We need this even if there is no Gyro. Just pass 0.0 if it doesn't exist.
+// Otherwise I would have to modify the propeller_node.py too.
+static double gyroHeading = 0.0;
 
 // For "Safety Override" Cog
-static volatile int safeToProceed = 0, safeToRecede = 0, Escaping = 0, minDistanceSensor = 0;
+static volatile int safeToProceed = 0,
+safeToRecede = 0,
+Escaping = 0,
+minDistanceSensor = 0,
+ignoreProximity = 0,
+ignoreCliffSensors = 0;
 
 void safetyOverride(void *par); // Use a cog to squelch incoming commands and perform safety procedures like halting, backing off, avoiding cliffs, calling for help, etc.
 // This can use proximity sensors to detect obstacles (including people) and cliffs
@@ -135,41 +344,27 @@ void safetyOverride(void *par); // Use a cog to squelch incoming commands and pe
 // This can use the gyro to detect significant heading errors due to slipping wheels when an obstacle is encountered or high centered
 static int safetyOverrideStack[128]; // If things get weird make this number bigger!
 
-// PIR Sensor (used to detect people/motion before the robot is initialized
-/*
-I got this PIR sensor for free, and it is fun,
-but it doesn't do much for you when the robot is moving
-and sending out IR signals with the Kinect/Xtion
-and with the IR distance sensors. :)
-It is cool though to have it watch for people and alert
-ROS when someone is around. Then ROS can initialize the ArloBot,
-start up the motors with a USB Relay Board
-and start chasing them . . . or something.
-*/
-const int hasPIR = 1;  // Set this to 0 if you do not have PIR sensor mounted
-const int PIRpin = 11; // Set this to the Activity Board pin that your PIR signal line is connected to
-
 int main() {
 
     simpleterm_close(); // Close simplex serial terminal
     term = fdserial_open(31, 30, 0, 115200); // Open Full Duplex serial connection
 
     /* Wait for ROS to give us the robot parameters,
-     broadcasting 'i' until it does to tell ROS that we
-     are ready */
+       broadcasting 'i' until it does to tell ROS that we
+       are ready */
     int robotInitialized = 0; // Do not compute odometry until we have the trackWidth and distancePerCount
 
     // For Debugging without ROS:
     // See encoders.yaml for most up to date values
-/*
-    trackWidth = 0.403000; // from measurement and then testing
-    distancePerCount = 0.006760; // http://forums.parallax.com/showthread.php/154274-The-quot-Artist-quot-robot?p=1271544&viewfull=1#post1271544
-    robotInitialized = 1;
-*/
+    /*
+       trackWidth = 0.403000; // from measurement and then testing
+       distancePerCount = 0.006760; // http://forums.parallax.com/showthread.php/154274-The-quot-Artist-quot-robot?p=1271544&viewfull=1#post1271544
+       robotInitialized = 1;
+       */
     // Comment out above lines for use with ROS
 
     // For PIRsensor
-    int PIRhitCounter = 0;
+       int PIRhitCounter = 0;
     int personThreshhold = 15; // Must get more than this number of hits before we call it a person.
     int personDetected = 0;
 
@@ -196,6 +391,10 @@ int main() {
                 token = strtok(NULL, delimiter);
                 distancePerCount = strtod(token, &unconverted);
                 token = strtok(NULL, delimiter);
+                ignoreProximity = strtod(token, &unconverted);
+                token = strtok(NULL, delimiter);
+                ignoreCliffSensors = strtod(token, &unconverted);
+                token = strtok(NULL, delimiter);
                 // Set initial location from ROS, in case we want to recover our last location!
                 X = strtod(token, &unconverted);
                 token = strtok(NULL, delimiter);
@@ -207,9 +406,9 @@ int main() {
                     robotInitialized = 1;
             }
         } else {
-            if (hasPIR == 1) {
+            #ifdef hasPIR
                 for (int i = 0; i < 5; i++) { // 5 x 200ms pause = 1000 between updates
-                    int PIRstate = input(PIRpin); // Check sensor (1) motion, (0) no motion
+                    int PIRstate = input(PIR_PIN); // Check sensor (1) motion, (0) no motion
                     // Count positive hits and make a call:
                     if (PIRstate == 0) {
                         PIRhitCounter = 0;
@@ -223,18 +422,23 @@ int main() {
                     }
                     pause(200); // Pause 1/5 second before repeat
                 }
-            } else {
+            #else
                 pause(1000); // Longer pauses when robot is uninitialized
+            #endif
             }
         }
-    }
 
+    #ifdef hasQuickStartBoard
+    // Start 2nd Propeller Board Communication cog
+        cogstart(&pollPropBoard2, NULL, prop2stack, sizeof prop2stack);
+    #else
     // Start the local sensor polling cog
-    cogstart(&pollPingSensors, NULL, pstack, sizeof pstack);
+        cogstart(&pollPingSensors, NULL, pstack, sizeof pstack);
+    #endif
 
-    if (hasGyro == 1) {
+    #ifdef hasGyro
         // Initialize Gyro in the main program
-        bus = i2c_newbus(gyroSCLpin, gyroSDApin, 0);        //New I2C bus SCL = Pin 1, SDA = Pin 0
+        bus = i2c_newbus(GYRO_SCL_PIN, GYRO_SDA_PIN, 0);        //New I2C bus SCL = Pin 1, SDA = Pin 0
         int n;
         n = i2c_out(bus, i2cAddr, ctrl3, 1, &cfg3, 1);
         n += i2c_out(bus, i2cAddr, ctrl4, 1, &cfg4, 1);
@@ -249,7 +453,7 @@ int main() {
         }
         // Start Gyro polling in another cog
         cogstart(&pollGyro, NULL, gyrostack, sizeof gyrostack);
-    }
+    #endif
 
     // Now initialize the Motors
     // abdrive settings:
@@ -298,6 +502,22 @@ int main() {
                 token = strtok(NULL, delimiter);
                 CommandedAngularVelocity = strtod(token, &unconverted);
                 angularVelocityOffset = CommandedAngularVelocity * (trackWidth * 0.5);
+                // Adding ability to chnage robot geometry in real time.
+            } else if (buf[0] == 'd') {
+                char *token;
+                token = strtok(buf, delimiter);
+                token = strtok(NULL, delimiter);
+                char *unconverted;
+                trackWidth = strtod(token, &unconverted);
+                token = strtok(NULL, delimiter);
+                distancePerCount = strtod(token, &unconverted);
+                token = strtok(NULL, delimiter);
+                ignoreProximity = strtod(token, &unconverted);
+                token = strtok(NULL, delimiter);
+                ignoreCliffSensors = strtod(token, &unconverted);
+                //TODO: Should I break the loop now or let the loop
+                //continue with the previous CommandedVelocity
+                //and CommandedANguarlVelocity variable values?
             }
         }
 
@@ -314,35 +534,35 @@ int main() {
            This is because arlodrive.c just cuts off each wheel at the set max speed
            with no regard for the expected left to right wheel speed ratio.
            Here is the code from arlodrive.c:
-            int abd_speedLimit = 100;
-            static int encoderFeedback = 1;
+           int abd_speedLimit = 100;
+           static int encoderFeedback = 1;
 
-            void drive_setMaxSpeed(int maxTicksPerSec) {
-                  abd_speedLimit = maxTicksPerSec;
-                }
-            ...
-            void set_drive_speed(int left, int right) {
-              if(encoderFeedback) {
-                    if(left > abd_speedLimit) left = abd_speedLimit;
-                    if(left < -abd_speedLimit) left = -abd_speedLimit;
-                    if(right > abd_speedLimit) right = abd_speedLimit;
-                    if(right < -abd_speedLimit) right = -abd_speedLimit;
-                  }
-                  ...
+           void drive_setMaxSpeed(int maxTicksPerSec) {
+           abd_speedLimit = maxTicksPerSec;
+           }
+           ...
+           void set_drive_speed(int left, int right) {
+           if(encoderFeedback) {
+           if(left > abd_speedLimit) left = abd_speedLimit;
+           if(left < -abd_speedLimit) left = -abd_speedLimit;
+           if(right > abd_speedLimit) right = abd_speedLimit;
+           if(right < -abd_speedLimit) right = -abd_speedLimit;
+           }}
+           ...
 
-            So clearly we need to "normalize" the speed so that if one number is truncated,
-            the other is brought down the same amount, in order to accomplish the same turn
-            ratio at a slower speed!
-            Especially if the max speed is variable based on parameters within this code,
-            such as proximity to walls, etc.
-        */
+           So clearly we need to "normalize" the speed so that if one number is truncated,
+           the other is brought down the same amount, in order to accomplish the same turn
+           ratio at a slower speed!
+           Especially if the max speed is variable based on parameters within this code,
+           such as proximity to walls, etc.
+           */
 
         //dprint(term, "\nd1:%f\n", CommandedVelocity); // For Debugging
         // Not doing this on in place rotations (Velocity = 0)
         if (CommandedVelocity > 0) { // Use forward speed limit for rotate in place.
             if ((abd_speedLimit * distancePerCount) - fabs(angularVelocityOffset) < CommandedVelocity)
                 CommandedVelocity = (abd_speedLimit * distancePerCount) - fabs(angularVelocityOffset);
-        // Use abdR_speedLimit for reverse movement.
+            // Use abdR_speedLimit for reverse movement.
         } else if (CommandedVelocity < 0){ // In theory ROS never requests a negative angular velocity, only teleop
             if (-((abdR_speedLimit * distancePerCount) - fabs(angularVelocityOffset)) > CommandedVelocity)
                 CommandedVelocity = -((abdR_speedLimit * distancePerCount) - fabs(angularVelocityOffset));
@@ -382,9 +602,9 @@ int main() {
 }
 
 /* Some of the code below came from Dr. Rainer Hessmer's robot.pde
- The rest was heavily inspired/copied from here:
- http://forums.parallax.com/showthread.php/154963-measuring-speed-of-the-ActivityBot?p=1260800&viewfull=1#post1260800
- */
+   The rest was heavily inspired/copied from here:
+http://forums.parallax.com/showthread.php/154963-measuring-speed-of-the-ActivityBot?p=1260800&viewfull=1#post1260800
+*/
 void broadcastOdometry(void *par) {
 
     int dt = CLKFREQ / 10;
@@ -433,30 +653,30 @@ void displayTicks(void) {
 
     // Odometry for ROS
     /*
-    I sending ALL of the proximity data (IR and PING sensors) to ROS
-    over the "odometry" line, since it is real time data which is just as important
-    as the odometry, and it seems like it would be faster to send and deal with one packet
-    per cycle rather than two.
+       I sending ALL of the proximity data (IR and PING sensors) to ROS
+       over the "odometry" line, since it is real time data which is just as important
+       as the odometry, and it seems like it would be faster to send and deal with one packet
+       per cycle rather than two.
 
-    In the propeller node I will convert this to fake laser data.
-    I have two goals here:
-    1. I want to be able to visualize in RVIZ what the sensors are reporting. This will help with debugging
-    situations where the robot gets stalled in doorways and such due to odd sensor readings from angled
-    surfaces near the sides.
-    2. I also want to use at least some of this for obstacle avoidance in AMCL.
-    Note that I do not think that IR and PING data will be useful for gmapping, although it is possible.
-    It is just too granular and non specific. It would be nice to be able to use the PING (UltraSonic) data
-    to deal with mirrors and targets below the Kinect/Xtion, but I'm not sure how practical that is.
-    */
-    dprint(term, "o\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t", X, Y, Heading, gyroHeading, V, Omega);
+       In the propeller node I will convert this to fake laser data.
+       I have two goals here:
+       1. I want to be able to visualize in RVIZ what the sensors are reporting. This will help with debugging
+       situations where the robot gets stalled in doorways and such due to odd sensor readings from angled
+       surfaces near the sides.
+       2. I also want to use at least some of this for obstacle avoidance in AMCL.
+       Note that I do not think that IR and PING data will be useful for gmapping, although it is possible.
+       It is just too granular and non specific. It would be nice to be able to use the PING (UltraSonic) data
+       to deal with mirrors and targets below the Kinect/Xtion, but I'm not sure how practical that is.
+       */
+       dprint(term, "o\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t", X, Y, Heading, gyroHeading, V, Omega);
     // Send the PING/IR sensor data as a JSON packet:
-    dprint(term, "{");
-    for (int i = 0; i < numberOfPINGsensors; i++) { // Loop through all of the sensors
+       dprint(term, "{");
+    for (int i = 0; i < NUMBER_OF_PING_SENSORS; i++) { // Loop through all of the sensors
         if (i > 0)
             dprint(term, ",");
         dprint(term, "\"p%d\":%d", i, pingArray[i]);
     }
-    for (int i = 0; i < irArrayLength; i++) { // Loop through all of the sensors
+    for (int i = 0; i < NUMBER_OF_IR_SENSORS; i++) { // Loop through all of the sensors
         if (irArray[i] > 0) // Don't pass the empty IR entries, as we know there are some.
             dprint(term, ",\"i%d\":%d", i, irArray[i]);
     }
@@ -465,7 +685,16 @@ void displayTicks(void) {
     // Send a regular "status" update to ROS including information that does not need to be refreshed as often as the odometry.
     throttleStatus = throttleStatus + 1;
     if (throttleStatus > 9) {
-        dprint(term, "s\t%d\t%d\t%d\t%d\t%d\t%d\n", safeToProceed, safeToRecede, Escaping, abd_speedLimit, abdR_speedLimit, minDistanceSensor);
+        // Check Motor Power
+        double leftMotorPower = 4.69;
+        double rightMotorPower = 4.69;
+        #ifdef hasMotorPowerMonitorCircuit
+        // The input numbers for adc_init are printed right on the Activity Board.
+        adc_init(21, 20, 19, 18);
+        leftMotorPower = adc_volts(LEFT_MOTOR_ADC_PIN);
+        rightMotorPower = adc_volts(RIGHT_MOTOR_ADC_PIN);
+        #endif
+        dprint(term, "s\t%d\t%d\t%d\t%d\t%d\t%d\t%.2f\t%.2f\n", safeToProceed, safeToRecede, Escaping, abd_speedLimit, abdR_speedLimit, minDistanceSensor, leftMotorPower, rightMotorPower);
         throttleStatus = 0;
     }
 }
@@ -475,63 +704,121 @@ volatile int abd_speedR;
 
 // Built into arlodrive.h, not abdrive.h
 /*
-void drive_getSpeedCalc(int *left, int *right) {
-	*left = abd_speedL;
-	*right = abd_speedR;
+   void drive_getSpeedCalc(int *left, int *right) {
+ *left = abd_speedL;
+ *right = abd_speedR;
+ }
+ */
+
+// For ADC built into Activity Board
+/*
+   int adc_IR_cm(int channel) {
+// http://www.parallax.com/sites/default/files/downloads/28995-Sharp-IR-Datasheet.pdf
+int i, goodSamples = 0;
+float j, k = 0.0;
+for (i=0;i<IRsamples;i++) {
+j = adc_volts(channel);                        // Check A/D 0
+if(j > 0.395507813) { // Anything lower is probably beyond the sensor's range
+k = k + j;
+goodSamples = goodSamples + 1;
+}
+}
+float ADCreading = 0.366210938; // Set default to 0.366210938 (same as 300 from MCP3208), Consider 0.366210938, aka. 88cm Out of Range! (Anything over 80 really)
+if(goodSamples > 0) {
+ADCreading = k/goodSamples;
+}
+int adc_cm = 27.86 * pow(ADCreading, -1.15); // https://www.tindie.com/products/upgradeindustries/sharp-10-80cm-infrared-distance-sensor-gp2y0a21yk0f/
+return(adc_cm);
 }
 */
 
+#ifdef hasQuickStartBoard
+void pollPropBoard2(void *par) {
+    propterm = fdserial_open(QUICKSTART_RX_PIN, QUICKSTART_TX_PIN, 0, 115200);
+    pause(100); // Give the serial connection time to come up. Perhaps this is not required?
+    const int bufferLength = 10; // Longer than longest possible received line
+    char buf[bufferLength];
+    int count = 0, pingSensorNumber = 0, irSensorNumber = 0;
+    int rateLimit = 10; // This is the incoming rate limiter. Without some limit the entire Propeller will hang.
+    while (1) {
+        pause(rateLimit);
+        // Tell the other end we are alive, so it doesn't just spin pointlessly.
+        // It also keeps the sensors quiet when this end is in an idle state.
+        dprint(propterm, "i");
+        //Do not put any delay here.
+        if (fdserial_rxReady(propterm) != 0) {
+            //high(26); // LEDs for debugging
+            count = 0;
+            while (count < bufferLength) {
+                buf[count] = readChar(propterm);
+                if (buf[count] == '.') // Using . for end of line instead of line break
+                    break;
+                count++;
+            }
+            // For Debugging - Test for failing lines
+            /* if (buf[0] != 'p' && buf[0] != 'i')
+               dprint(term, "%c\n", buf[0]); */
+
+            if (buf[0] == 'p') {
+                char *token;
+                token = strtok(buf, delimiter);
+                token = strtok(NULL, delimiter);
+                char *unconverted;
+                pingSensorNumber = strtod(token, &unconverted);
+                token = strtok(NULL, delimiter);
+                if (pingSensorNumber < NUMBER_OF_PING_SENSORS) {
+                    pingArray[pingSensorNumber] = strtod(token, &unconverted);
+                    // For Debugging:
+                    /* dprint(term, "p%d:%3d ", pingSensorNumber, pingArray[pingSensorNumber]);
+                       if(pingSensorNumber == 9)
+                       dprint(term, "\n"); */
+                   }
+           } else if (buf[0] == 'i') {
+            char *token;
+            token = strtok(buf, delimiter);
+            token = strtok(NULL, delimiter);
+            char *unconverted;
+            irSensorNumber = strtod(token, &unconverted);
+            token = strtok(NULL, delimiter);
+            if (irSensorNumber < NUMBER_OF_IR_SENSORS) {
+                irArray[irSensorNumber] = strtod(token, &unconverted);
+                    // For Debugging:
+                    //dprint(term, "i%d:%3d ", irSensorNumber, irArray[irSensorNumber]);
+            }
+        }
+            //low(26); // LEDs for debugging
+    }
+}
+}
+#else
 void pollPingSensors(void *par) {
     int ir = 0;
     while (1)                                    // Repeat indefinitely
     {
-        for (int i = 0; i < numberOfPINGsensors; i++) {
-            pingArray[i] = ping_cm(firtPINGsensorPIN + i);
-            if (i < numberOfIRonMC3208) { // If there is also an IR sensor at this number check it too
-                ir = mcp3208_IR_cm(i);
-                if (i == numberOfIRonMC3208 - 1) {// Last IR is actually in position 7, convert it here!
-                    irArray[rearIRsensor] = ir;
-                } else {
-                    irArray[i] = ir;
-                }
+        for (int i = 0; i < NUMBER_OF_PING_SENSORS; i++) {
+            pingArray[i] = ping_cm(FIRST_PING_SENSOR_PIN + i);
+            #ifdef hasMCP3208
+            // If there is also an IR sensor at this number check it too
+            if (i < NUMBER_OF_IR_ON_MCP3208) {
+                irArray[i] = mcp3208_IR_cm(i);
             }
+            #endif
         }
     }
 }
 
+#ifdef hasMCP3208
 int mcp3208_IR_cm(int channel) {
-    const int MCP3208_dinoutPIN = 3;
-    const int MCP3208_clkPIN = 4;
-    const int MCP3208_csPIN = 2;
-    const float referenceVoltage = 5.0; // MCP3208 reference voltage setting. I use 5.0v for the 5.0v IR sensors from Parallax
-    int mcp3208reading = readADC(channel, MCP3208_dinoutPIN, MCP3208_clkPIN, MCP3208_csPIN);
-    float mcp3208volts = (float) mcp3208reading * referenceVoltage / 4096.0;
+    int mcp3208reading = readADC(channel, MCP3208_DINOUT_PIN, MCP3208_CLK_PIN, MCP3208_CS_PIN);
+    float mcp3208volts = (float) mcp3208reading * MCP3208_REFERENCE_VOLTAGE / 4096.0;
     int mcp3208cm = 27.86 * pow(mcp3208volts, -1.15); // https://www.tindie.com/products/upgradeindustries/sharp-10-80cm-infrared-distance-sensor-gp2y0a21yk0f/
     return (mcp3208cm);
 }
+#endif
 
-// For ADC built into Activity Board
-/*
-int adc_IR_cm(int channel) {
-// http://www.parallax.com/sites/default/files/downloads/28995-Sharp-IR-Datasheet.pdf
-  	int i, goodSamples = 0;
-   float j, k = 0.0;
-	for (i=0;i<IRsamples;i++) {
-    j = adc_volts(channel);                        // Check A/D 0
-    if(j > 0.395507813) { // Anything lower is probably beyond the sensor's range
-      k = k + j;
-      goodSamples = goodSamples + 1;
-    }
-  }
-  float ADCreading = 0.366210938; // Set default to 0.366210938 (same as 300 from MCP3208), Consider 0.366210938, aka. 88cm Out of Range! (Anything over 80 really)
-  if(goodSamples > 0) {
-    ADCreading = k/goodSamples;
-  }
-  int adc_cm = 27.86 * pow(ADCreading, -1.15); // https://www.tindie.com/products/upgradeindustries/sharp-10-80cm-infrared-distance-sensor-gp2y0a21yk0f/
-  return(adc_cm);
-}
-*/
+#endif
 
+#ifdef hasGyro
 void pollGyro(void *par) {
     while (1) {
         int ready = 0;                    //Wait until ready
@@ -581,235 +868,372 @@ void pollGyro(void *par) {
         //pause(250); // Pause between reads, or do we need this? Should we read faster? The !ready loop should handle the Gyro's frequency right?
     }
 }
+#endif
 
-void safetyOverride(void *par) {
-    const int maxDistance = 70;
-    const int IRMaxDistance = 50; // Because IR is less reliable at long distances
-    const int haltDistance[10] = {5, 10, 12, 10, 5, 5, 10, 12, 10, 5};
-    const int minimumSpeed = 10;
-    const int throttleStop = 5; // Determines how fast speed limit changes happen.
+/* TESTS:
+   1. Make sure output sensor readings to ROS are near real time.
+   2. Make sure "escape" operations are fast and accurate.
+   */
+   void safetyOverride(void *par) {
     int throttleRamp = 0;
-    // Each sensor needs to have its own response because of their various angles.
-    // We cannot use the same distance response for each, and we may want different max speeds and escape sequences.
-    int startSlowDownDistance[10] = {8, 40, maxDistance, 40, 8, 8, 40, maxDistance, 40, 8};
-    int IRstartSlowDownDistance[10] = {8, 20, IRMaxDistance, 20, 8, 8, 20, maxDistance, 20, 8};
     // Declare all variables up front so they do not have to be created in the loop, only set.
     // This may or may not improve performance.
-    int blockedSensor[10] = {0};
+    int blockedSensor[NUMBER_OF_PING_SENSORS] = {0};
     int i, blockedF = 0, blockedR = 0, pleaseEscape = 0, minDistance = 255, minRDistance = 255, newSpeedLimit = 100;
     while (1) {
-        // Rest blockedSensor array to all zeros.
-        memset(blockedSensor, 0, sizeof(blockedSensor));
-        blockedF = 0;
-        blockedR = 0;
-        pleaseEscape = 0;
-        minDistance = 255;
-        // Walk Front Sensor Array to find blocked paths and halt immediately
-        for (i = 0; i < 5; i++) { // Only use the front sensors
-            // PING Sensors
-            if (pingArray[i] < startSlowDownDistance[i]) {
-                if (pingArray[i] <= haltDistance[i] + 1) { // Halt just before.
-                    safeToProceed = 0; // Prevent main thread from setting any drive_speed
-                    // Stop robot if it is currently moving forward and not escaping
-                    //if ((Escaping == 0) && (speedLeft > 0 || speedRight > 0)) {
-                    if ((Escaping == 0) && ((speedLeft + speedRight) > 0)) {
-                        drive_speed(0, 0);
-                    }
-                    blockedF = 1; // Use this to give the "all clear" later if it never gets set
-                    blockedSensor[i] = 1; // Keep track of which sensors are blocked for intelligent escape sequences.
-                    if (pingArray[i] < haltDistance[i]) // Escape just after, to try make a buffer to avoid back and forthing.
+        if (ignoreProximity == 0) {
+            // Reset blockedSensor array to all zeros.
+            memset(blockedSensor, 0, sizeof(blockedSensor));
+            blockedF = 0;
+            blockedR = 0;
+            pleaseEscape = 0;
+            minDistance = 255;
+
+            #ifdef hasCliffSensors
+                if (ignoreCliffSensors == 0) {
+                    // Check Cliff Sensors first
+                    for (i = FIRST_CLIFF_SENSOR; i < FIRST_CLIFF_SENSOR + NUMBER_OF_CLIFF_SENSORS; i++) {
+                        if (irArray[i] > FLOOR_DISTANCE) {
+                        safeToProceed = 0; // Prevent main thread from setting any drive_speed
+                        // Stop robot if it is currently moving forward and not escaping
+                        // TODO: Can we "chase" the robot off of a cliff, because the rear sensor
+                        // would put us into an "Escaping == 1" situation, but we would be moving forward
+                        // OVER the cliff instead of back, and thus really need to stop now?!
+                        if ((Escaping == 0) && ((speedLeft + speedRight) > 0)) {
+                            drive_speed(0, 0);
+                        }
+                        blockedF = 1; // Use this to give the "all clear" later if it never gets set
+                        blockedSensor[2] = 1; // Pretend this is the front sensor, since it needs to back up NOW!
                         pleaseEscape = 1;
-                }
-                // For speed restriction:
-                if (pingArray[i] < minDistance) {
-                    minDistance = pingArray[i];
-                    minDistanceSensor = i;
-                }
-            }
-            // IR Sensors
-            if (irArray[i] < IRstartSlowDownDistance[i]) {
-                if (irArray[i] <= haltDistance[i] + 1) {
-                    safeToProceed = 0; // Prevent main thread from setting any drive_speed
-                    // Stop robot if it is currently moving forward and not escaping
-                    //if ((Escaping == 0) && (speedLeft > 0 || speedRight > 0)) {
-                    if ((Escaping == 0) && ((speedLeft + speedRight) > 0)) {
-                        drive_speed(0, 0);
                     }
-                    blockedF = 1; // Use this to give the "all clear" later if it never gets set
-                    blockedSensor[i] = 1; // Keep track of which sensors are blocked for intelligent escape sequences.
-                    if (irArray[i] < haltDistance[i])
-                        pleaseEscape = 1;
-                }
-                // For speed restriction:
-                if (irArray[i] < minDistance) {
-                    minDistance = irArray[i];
-                    minDistanceSensor = i;
                 }
             }
-        }
+            #endif
 
-        minRDistance = 255;
-        // Check the REAR PING sensor to find blocked paths and halt immediately
-        if (pingArray[rearPINGsensor] < startSlowDownDistance[rearPINGsensor]) {
-            if (pingArray[rearPINGsensor] <= haltDistance[rearPINGsensor] + 1) { // Halt just before.
-                safeToRecede = 0; // Prevent main thread from setting any drive_speed
-                // Stop robot if it is currently moving forward and not escaping
-                //if ((Escaping == 0) && (speedLeft < 0 || speedRight < 0)) {
-                if ((Escaping == 0) && ((speedLeft + speedRight) < 0)) {
-                    drive_speed(0, 0);
-                }
-                blockedR = 1; // Use this to give the "all clear" later if it never gets set
-                blockedSensor[rearPINGsensor] = 1; // Keep track of which sensors are blocked for intelligent escape sequences.
-                if (pingArray[rearPINGsensor] < haltDistance[rearPINGsensor]) // Escape just after, to try make a buffer to avoid back and forthing.
-                    pleaseEscape = 1;
-            }
-            // For speed restriction:
-            if (pingArray[rearPINGsensor] < minRDistance) {
-                minRDistance = pingArray[rearPINGsensor];
-                minDistanceSensor = rearPINGsensor;
-            }
-        }
-        // IR Sensor - Only one of these
-        if (irArray[rearIRsensor] < IRstartSlowDownDistance[rearIRsensor]) {
-            if (irArray[rearIRsensor] <= haltDistance[rearIRsensor] + 1) {
-                safeToRecede = 0; // Prevent main thread from setting any drive_speed
-                // Stop robot if it is currently moving forward and not escaping
-                //if ((Escaping == 0) && (speedLeft < 0 || speedRight < 0)) {
-                if ((Escaping == 0) && ((speedLeft + speedRight) < 0)) {
-                    drive_speed(0, 0);
-                }
-                blockedR = 1; // Use this to give the "all clear" later if it never gets set
-                blockedSensor[rearIRsensor] = 1; // Keep track of which sensors are blocked for intelligent escape sequences.
-                if (irArray[rearIRsensor] < haltDistance[rearIRsensor])
-                    pleaseEscape = 1;
-            }
-            // For speed restriction:
-            if (irArray[rearIRsensor] < minRDistance) {
-                minRDistance = irArray[rearIRsensor];
-                minDistanceSensor = i;
-            }
-        }
-
-        // Reduce Speed Limit when we are close to an obstruction
-        /* Explanation: minDistance won't be set unless a given sensor is closer than its particular
-        startSlowDownDistance value, so we won't be slowing down if sensor 0 is 40, only if it is
-        under 10 */
-        if (minDistance < maxDistance) {
-            // Set based on percentage of range
-            // TODO: Is this a good method?
-            newSpeedLimit = (minDistance - haltDistance[minDistanceSensor]) * (100 / (maxDistance - haltDistance[minDistanceSensor]));
-            // Limit maximum and minimum speed.
-            if (newSpeedLimit < minimumSpeed) {
-                newSpeedLimit = minimumSpeed;
-            } else if (newSpeedLimit > 100) {
-                newSpeedLimit = 100;
-            }
-            // Ramp and limit affect of random hits
-            if (newSpeedLimit > abd_speedLimit) {
-                if (throttleRamp == throttleStop)
-                    abd_speedLimit = abd_speedLimit + 1;
-            } else if (newSpeedLimit < abd_speedLimit) {
-                if (throttleRamp == throttleStop)
-                    abd_speedLimit = abd_speedLimit - 1;
-            }
-        } else {
-            // Ramp return to full if all obstacles are clear
-            if (abd_speedLimit < 100) {
-                if (throttleRamp == throttleStop) // Slow ramping down
-                    abd_speedLimit = abd_speedLimit + 1;
-            }
-        }
-
-        // Same for REVERSE Speed Limit
-        if (minRDistance < maxDistance) {
-            // Set based on percentage of range
-            // TODO: Is this a good method?
-            newSpeedLimit = (minRDistance - haltDistance[minDistanceSensor]) * (100 / (maxDistance - haltDistance[minDistanceSensor]));
-            // Limit maximum and minimum speed.
-            if (newSpeedLimit < minimumSpeed) {
-                newSpeedLimit = minimumSpeed;
-            } else if (newSpeedLimit > 100) {
-                newSpeedLimit = 100;
-            }
-            // Ramp and limit affect of random hits
-            if (newSpeedLimit > abdR_speedLimit) {
-                if (throttleRamp == throttleStop)
-                    abdR_speedLimit = abdR_speedLimit + 1;
-            } else if (newSpeedLimit < abdR_speedLimit) {
-                if (throttleRamp == throttleStop)
-                    abdR_speedLimit = abdR_speedLimit - 1;
-            }
-        } else {
-            // Ramp return to full if all obstacles are clear
-            if (abdR_speedLimit < 100) {
-                if (throttleRamp == throttleStop) // Slow ramping down
-                    abdR_speedLimit = abdR_speedLimit + 1;
-            }
-        }
-
-        // Clear forward and backward individually now.
-        if (blockedF == 0) {
-            safeToProceed = 1;
-        }
-        if (blockedR == 0) {
-            safeToRecede = 1;
-        }
-        // If NO sensors are blocked, give the all clear!
-        if (blockedF == 0 && blockedR == 0) {
-            if (Escaping == 1) {// If it WAS escaping before stop it before releasing it
-                drive_speed(0, 0); // return to stopped before giving control back to main thread
-            }
-            Escaping = 0; // Have fun!
-        } else {
-            if (pleaseEscape == 1) {
-                Escaping = 1; // This will stop main thread from driving the motors.
-                /* At this point we are blocked, so it is OK to take over control
-                   of the robot (safeToProceed == 0, so the main thread won't do anything),
-                   and it is safe to do work ignoring the need to slow down or stop
-                   because we know our position pretty well.
-                   HOWEVER, you will have to RECHECK distances yourself if you are going to move
-                   in this program location.
-                */
-                if (safeToRecede == 1) {
-                    // The order here determines priority.
-                    if (blockedSensor[2] == 1) {
-                        drive_speed(-minimumSpeed, -minimumSpeed);
-                    } else if (blockedSensor[1] == 1) { // block on sensor left of center
-                        drive_speed(-minimumSpeed, -(minimumSpeed * 2)); // Curve out to the right
-                    } else if (blockedSensor[3] == 1) { // blocked on sensor right of center
-                        drive_speed(-(minimumSpeed * 2), -minimumSpeed); // Curve out to the left
-                    } else if (blockedSensor[0] == 1) { // Blocked on far left side or near wall
-                        drive_speed(0, -minimumSpeed); // Turn out to the right slowly
-                    } else if (blockedSensor[4] == 1) { // Blocked on far right side or near wall
-                        drive_speed(-minimumSpeed, 0); // Turn out to the left slowly
+            #ifdef hasFrontPingSensors
+            // Walk Front PING Sensors to find blocked paths and halt immediately
+            for (i = FIRST_FRONT_PING_SENSOR_NUMBER; i < HOW_MANY_FRONT_PING_SENSORS + FIRST_FRONT_PING_SENSOR_NUMBER; i++) {
+                // PING Sensors
+                if (pingArray[i] < startSlowDownDistance[i]) {
+                    if (pingArray[i] <= haltDistance[i] + 1) { // Halt just before.
+                        safeToProceed = 0; // Prevent main thread from setting any drive_speed
+                        // Stop robot if it is currently moving forward and not escaping
+                        if ((Escaping == 0) && ((speedLeft + speedRight) > 0)) {
+                            drive_speed(0, 0);
+                        }
+                        blockedF = 1; // Use this to give the "all clear" later if it never gets set
+                        blockedSensor[i] = 1; // Keep track of which sensors are blocked for intelligent escape sequences.
+                        // Escape just after, to try make a buffer to avoid back and forthing.
+                        if (pingArray[i] < haltDistance[i]) {
+                            pleaseEscape = 1;
+                        }
                     }
-                } else if (safeToProceed == 1) { // Escaping for rear sensors, these will move more generically forward.
-                    if (blockedSensor[7] == 1) {
-                        drive_speed(minimumSpeed, minimumSpeed);
-                    } else if (blockedSensor[6] == 1) { // block on sensor left of center
-                        drive_speed(minimumSpeed, minimumSpeed);
-                    } else if (blockedSensor[8] == 1) { // blocked on sensor right of center
-                        drive_speed(minimumSpeed, minimumSpeed);
-                    } else if (blockedSensor[5] == 1) { // Blocked on far left side or near wall
-                        drive_speed(minimumSpeed, minimumSpeed);
-                    } else if (blockedSensor[9] == 1) { // Blocked on far right side or near wall
-                        drive_speed(minimumSpeed, minimumSpeed);
+                    // For speed restriction:
+                    if (pingArray[i] < minDistance) {
+                        minDistance = pingArray[i];
+                        minDistanceSensor = i;
                     }
-                } else { // We are trapped, be still.
-                    drive_speed(0, 0);
                 }
-            } else { // This is the "halt" but don't "escape" action.
-                if (Escaping == 1) {// If it WAS Escaping, stop it now.
+            }
+            #endif
+
+            #ifdef hasFrontIRSensors
+            // Walk front IR Sensors
+            for (i = FIRST_FRONT_IR_SENSOR_NUMBER; i < HOW_MANY_FRONT_IR_SENSORS + FIRST_FRONT_IR_SENSOR_NUMBER; i++) {
+                if (irArray[i] < IRstartSlowDownDistance[i])  {
+                    if (irArray[i] <= haltDistance[i] + 1) {
+                        // Prevent main thread from setting any drive_speed
+                        safeToProceed = 0;
+                        // Stop robot if it is currently moving forward and not escaping
+                        if ((Escaping == 0) && ((speedLeft + speedRight) > 0)) {
+                            drive_speed(0, 0);
+                        }
+                        // Use this to give the "all clear" later if it never gets set
+                        blockedF = 1;
+                        // Keep track of which sensors are blocked for intelligent escape sequences.
+                        blockedSensor[i] = 1;
+                        if (irArray[i] < haltDistance[i]) {
+                            pleaseEscape = 1;
+                        }
+                    }
+                    // For speed restriction:
+                    if (irArray[i] < minDistance) {
+                        minDistance = irArray[i];
+                        minDistanceSensor = i;
+                    }
+                }
+            }
+            #endif
+
+            #ifdef hasFrontUpperDeckSensors
+            // Walk Upper Deck Sensors
+            for (i = FIRST_FRONT_UPPER_SENSOR_NUMBER; i < HOW_MANY_FRONT_UPPER_SENSORS + FIRST_FRONT_UPPER_SENSOR_NUMBER; i++) {
+                // PING Sensors
+                if (pingArray[i] < startSlowDownDistance[i]) {
+                    // Halt just before.
+                    if (pingArray[i] <= haltDistance[i] + 1) {
+                        // Prevent main thread from setting any drive_speed
+                        safeToProceed = 0;
+                        // Stop robot if it is currently moving forward and not escaping
+                        if ((Escaping == 0) && ((speedLeft + speedRight) > 0)) {
+                            drive_speed(0, 0);
+                        }
+                         // Use this to give the "all clear" later if it never gets set
+                        blockedF = 1;
+                         // Keep track of which sensors are blocked for intelligent escape sequences.
+                        blockedSensor[i] = 1;
+                        if (pingArray[i] < haltDistance[i]) {
+                            // Escape just after, to try make a buffer to avoid back and forthing.
+                            pleaseEscape = 1;
+                        }
+                    }
+                    // For speed restriction:
+                    if (pingArray[i] < minDistance) {
+                        minDistance = pingArray[i];
+                        minDistanceSensor = i;
+                    }
+                }
+            }
+            #endif
+
+            #ifdef hasRearUpperDeckSensors
+            for (i = FIRST_REAR_UPPER_SENSOR_NUMBER; i < FIRST_REAR_UPPER_SENSOR_NUMBER + HOW_MANY_REAR_UPPER_SENSORS; i++) { // Only use the rear sensors
+                // PING Sensors
+                if (pingArray[i] < startSlowDownDistance[i]) {
+                    if (pingArray[i] <= haltDistance[i] + 1) { // Halt just before.
+                        safeToRecede = 0; // Prevent main thread from setting any drive_speed
+                        // Stop robot if it is currently moving forward and not escaping
+                        if ((Escaping == 0) && ((speedLeft + speedRight) < 0)) {
+                            drive_speed(0, 0);
+                        }
+                        blockedR = 1; // Use this to give the "all clear" later if it never gets set
+                        blockedSensor[i] = 1; // Keep track of which sensors are blocked for intelligent escape sequences.
+                        if (pingArray[i] < haltDistance[i]) // Escape just after, to try make a buffer to avoid back and forthing.
+                            pleaseEscape = 1;
+                    }
+                    // For speed restriction:
+                    if (pingArray[i] < minRDistance) {
+                        minRDistance = pingArray[i];
+                        minDistanceSensor = i;
+                    }
+                }
+            }
+            #endif
+
+            minRDistance = 255;
+            #ifdef hasRearPingSensors
+            // Walk REAR Sensor Array to find blocked paths and halt immediately
+            for (i = FIRST_REAR_PING_SENSOR_NUMBER; i < FIRST_REAR_PING_SENSOR_NUMBER + HOW_MANY_REAR_PING_SENSORS; i++) {
+                if (pingArray[i] < startSlowDownDistance[i]) {
+                    if (pingArray[i] <= haltDistance[i] + 1) { // Halt just before.
+                        safeToRecede = 0; // Prevent main thread from setting any drive_speed
+                        // Stop robot if it is currently moving forward and not escaping
+                        if ((Escaping == 0) && ((speedLeft + speedRight) < 0)) {
+                            drive_speed(0, 0);
+                        }
+                        blockedR = 1; // Use this to give the "all clear" later if it never gets set
+                        blockedSensor[i] = 1; // Keep track of which sensors are blocked for intelligent escape sequences.
+                        if (pingArray[i] < haltDistance[i]) // Escape just after, to try make a buffer to avoid back and forthing.
+                            pleaseEscape = 1;
+                    }
+                    // For speed restriction:
+                    if (pingArray[i] < minRDistance) {
+                        minRDistance = pingArray[i];
+                        minDistanceSensor = i;
+                    }
+                }
+            }
+            #endif
+
+            #ifdef hasRearIRSensors
+            for (i = FIRST_REAR_IR_SENSOR_NUMBER; i < FIRST_REAR_IR_SENSOR_NUMBER + HOW_MANY_REAR_IR_SENSORS; i++) {
+                #ifdef RENAME_REAR_IR_SENSOR
+                int sensorFakeIndex = RENAME_REAR_IR_SENSOR;
+                #else
+                int sensorFakeIndex = i;
+                #endif
+                if (irArray[i] < IRstartSlowDownDistance[i]) {
+                   if (irArray[i] <= haltDistance[sensorFakeIndex] + 1) {
+                        safeToRecede = 0; // Prevent main thread from setting any drive_speed
+                        // Stop robot if it is currently moving forward and not escaping
+                        if ((Escaping == 0) && ((speedLeft + speedRight) < 0)) {
+                            drive_speed(0, 0);
+                        }
+                        blockedR = 1; // Use this to give the "all clear" later if it never gets set
+                        blockedSensor[sensorFakeIndex] = 1; // Keep track of which sensors are blocked for intelligent escape sequences.
+                        if (irArray[i] < haltDistance[sensorFakeIndex])
+                            pleaseEscape = 1;
+                    }
+                    // For speed restriction:
+                    if (irArray[i] < minRDistance) {
+                        minRDistance = irArray[i];
+                        minDistanceSensor = i;
+                    }
+                }
+            }
+            #endif
+
+            // Reduce Speed Limit when we are close to an obstruction
+            /* EXPLANATION minDistance won't be set unless a given sensor is closer than its particular startSlowDownDistance value, so we won't be slowing down if sensor 0 is 40, only if it is under 10 */
+            if (minDistance < MAX_DISTANCE) {
+                // Set based on percentage of range
+                // TODO: Is this a good method?
+                newSpeedLimit = (minDistance - haltDistance[minDistanceSensor]) * (100 / (MAX_DISTANCE - haltDistance[minDistanceSensor]));
+                // Limit maximum and minimum speed.
+                if (newSpeedLimit < MINIMUM_SPEED) {
+                    newSpeedLimit = MINIMUM_SPEED;
+                } else if (newSpeedLimit > 100) {
+                    newSpeedLimit = 100;
+                }
+                // Ramp and limit affect of random hits
+                if (newSpeedLimit > abd_speedLimit) {
+                    if (throttleRamp == THROTTLE_STOP) {
+                        abd_speedLimit = abd_speedLimit + 1;
+                    }
+                } else if (newSpeedLimit < abd_speedLimit) {
+                    if (throttleRamp == THROTTLE_STOP) {
+                        abd_speedLimit = abd_speedLimit - 1;
+                    }
+                }
+            } else {
+                // Ramp return to full if all obstacles are clear
+                if (abd_speedLimit < 100) {
+                    if (throttleRamp == THROTTLE_STOP) // Slow ramping down
+                        abd_speedLimit = abd_speedLimit + 1;
+                }
+            }
+
+            // Same for REVERSE Speed Limit
+            if (minRDistance < MAX_DISTANCE) {
+                // Set based on percentage of range
+                // TODO: Is this a good method?
+                newSpeedLimit = (minRDistance - haltDistance[minDistanceSensor]) * (100 / (MAX_DISTANCE - haltDistance[minDistanceSensor]));
+                // Limit maximum and minimum speed.
+                if (newSpeedLimit < MINIMUM_SPEED) {
+                    newSpeedLimit = MINIMUM_SPEED;
+                } else if (newSpeedLimit > 100) {
+                    newSpeedLimit = 100;
+                }
+                // Ramp and limit affect of random hits
+                if (newSpeedLimit > abdR_speedLimit) {
+                    if (throttleRamp == THROTTLE_STOP) {
+                        abdR_speedLimit = abdR_speedLimit + 1;
+                    }
+                } else if (newSpeedLimit < abdR_speedLimit) {
+                    if (throttleRamp == THROTTLE_STOP) {
+                        abdR_speedLimit = abdR_speedLimit - 1;
+                    }
+                }
+            } else {
+                // Ramp return to full if all obstacles are clear
+                if (abdR_speedLimit < 100) {
+                    if (throttleRamp == THROTTLE_STOP) // Slow ramping down
+                        abdR_speedLimit = abdR_speedLimit + 1;
+                }
+            }
+
+            // Clear forward and backward individually now.
+            if (blockedF == 0) {
+                safeToProceed = 1;
+            }
+            if (blockedR == 0) {
+                safeToRecede = 1;
+            }
+            // If NO sensors are blocked, give the all clear!
+            if (blockedF == 0 && blockedR == 0) {
+                if (Escaping == 1) {// If it WAS escaping before stop it before releasing it
                     drive_speed(0, 0); // return to stopped before giving control back to main thread
                 }
-                Escaping = 0; // Blocked, but not escaping.
+                Escaping = 0; // Have fun!
+            } else {
+                if (pleaseEscape == 1) {
+                    Escaping = 1; // This will stop main thread from driving the motors.
+                    /* At this point we are blocked, so it is OK to take over control
+                       of the robot (safeToProceed == 0, so the main thread won't do anything),
+                       and it is safe to do work ignoring the need to slow down or stop
+                       because we know our position pretty well.
+                       HOWEVER, you will have to RECHECK distances yourself if you are going to move
+                       in this program location.
+                       */
+                       if (safeToRecede == 1) {
+                        // The order here determines priority.
+                        #ifdef FRONT_CENTER_SENSOR
+                        if (blockedSensor[FRONT_CENTER_SENSOR] == 1) {
+                            drive_speed(-MINIMUM_SPEED, -MINIMUM_SPEED);
+                        #ifdef FRONT_3D_MOUNTED_SENSOR
+                        } else if (blockedSensor[FRONT_3D_MOUNTED_SENSOR] == 1) {
+                            drive_speed(-MINIMUM_SPEED, -MINIMUM_SPEED);
+                        #endif
+                        #ifdef FRONT_UPPER_DECK_SENSOR
+                        } else if (blockedSensor[FRONT_UPPER_DECK_SENSOR] == 1) {
+                            drive_speed(-MINIMUM_SPEED, -MINIMUM_SPEED);
+                        #endif
+                        #ifdef FRONT_NEAR_LEFT_SENSOR
+                        } else if (blockedSensor[FRONT_NEAR_LEFT_SENSOR] == 1) {
+                            drive_speed(-MINIMUM_SPEED, -(MINIMUM_SPEED * 2)); // Curve out to the right
+                        #endif
+                        #ifdef FRONT_NEAR_RIGHT_SENSOR
+                        } else if (blockedSensor[FRONT_NEAR_RIGHT_SENSOR] == 1) {
+                            drive_speed(-(MINIMUM_SPEED * 2), -MINIMUM_SPEED); // Curve out to the left
+                        #endif
+                        #ifdef FRONT_FAR_LEFT_SENSOR
+                        } else if (blockedSensor[FRONT_FAR_LEFT_SENSOR] == 1) {
+                            drive_speed(0, -MINIMUM_SPEED); // Turn out to the right slowly
+                        #endif
+                        #ifdef FRONT_FAR_RIGHT_SENSOR
+                        } else if (blockedSensor[FRONT_FAR_RIGHT_SENSOR] == 1) {
+                            drive_speed(-MINIMUM_SPEED, 0); // Turn out to the left slowly
+                        #endif
+                        }
+                        #endif
+                    } else if (safeToProceed == 1) { // Escaping for rear sensors, these will move more generically forward.
+                        #ifdef REAR_CENTER_SENSOR
+                        if (blockedSensor[REAR_CENTER_SENSOR] == 1) {
+                            drive_speed(MINIMUM_SPEED, MINIMUM_SPEED);
+                        #ifdef REAR_NEAR_RIGHT_SENSOR
+                        } else if (blockedSensor[REAR_NEAR_RIGHT_SENSOR] == 1) {
+                            drive_speed(MINIMUM_SPEED, MINIMUM_SPEED);
+                        #endif
+                        #ifdef REAR_NEAR_LEFT_SENSOR
+                        } else if (blockedSensor[REAR_NEAR_LEFT_SENSOR] == 1) {
+                            drive_speed(MINIMUM_SPEED, MINIMUM_SPEED);
+                        #endif
+                        #ifdef REAR_FAR_RIGHT_SENSOR
+                        } else if (blockedSensor[REAR_FAR_RIGHT_SENSOR] == 1) {
+                            drive_speed(MINIMUM_SPEED, MINIMUM_SPEED);
+                        #endif
+                        #ifdef REAR_FAR_LEFT_SENSOR
+                        } else if (blockedSensor[REAR_FAR_LEFT_SENSOR] == 1) {
+                            drive_speed(MINIMUM_SPEED, MINIMUM_SPEED);
+                        #endif
+                        }
+                        #endif
+                    } else { // We are trapped!!
+                        // Turns out we cannot escape, so turn off "Escaping",
+                        // and now drive control should refuse to move forward or back,
+                        // due to safeToRecede & safeToProceed both == 1,
+                        // but it should be willing to rotate in place,
+                        // which is a normal function of both arlobot_explore
+                        // and the navigation stack's "clearing" function.
+                        Escaping = 0;
+                    }
+                } else { // This is the "halt" but don't "escape" action for that middle ground.
+                    if (Escaping == 1) {// If it WAS Escaping, stop it now.
+                        drive_speed(0, 0); // return to stopped before giving control back to main thread
+                    }
+                    Escaping = 0; // Blocked, but not close enough to Escape yet
+                }
             }
+
+            throttleRamp = throttleRamp + 1;
+            if(throttleRamp > THROTTLE_STOP)
+                throttleRamp = 0;
+
+        } else {
+            Escaping = 0;
+            abd_speedLimit = 100;
+            abdR_speedLimit = 100;
         }
-
-        throttleRamp = throttleRamp + 1;
-        if(throttleRamp > throttleStop)
-            throttleRamp = 0;
-
         pause(1); // Just throttles this cog a little.
     }
 }
