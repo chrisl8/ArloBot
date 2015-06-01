@@ -1,0 +1,20 @@
+<launch>
+  <!-- https://github.com/ros-planning/navigation/issues/206 -->
+  <rosparam command="delete" ns="move_base" />
+  <include file="$(find turtlebot_bringup)/launch/3dsensor.launch">
+    <arg name="rgb_processing" value="false" />
+    <arg name="depth_registration" value="false" />
+    <arg name="depth_processing" value="false" />
+
+    <!-- We must specify an absolute topic name because if not it will be prefixed by "$(arg camera)".
+         Probably is a bug in the nodelet manager: https://github.com/ros/nodelet_core/issues/7 --> 
+    <arg name="scan_topic" value="/scan" />
+  </include>
+  <include file="$(find arlobot_bringup)/launch/xv11_remap_for_dual_use.launch" />
+  <!-- <node name="laser_filter" pkg="arlobot_navigation" type="laser_filter.py" /> -->
+
+  <include file="$(find arlobot_navigation)/launch/includes/gmapping.launch.xml"/>
+
+  <include file="$(find arlobot_navigation)/launch/includes/move_base_wXV11.launch.xml"/>
+
+</launch>

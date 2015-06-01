@@ -1,0 +1,6 @@
+<launch>
+  <node pkg="xv_11_laser_driver" type="neato_laser_publisher" name="xv11" respawn="true" args="--respawnable">
+    <param name="~firmware_version" value="2" />
+    <remap from="/scan" to="/xv11" />
+  </node>
+</launch>
