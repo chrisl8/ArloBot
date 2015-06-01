@@ -183,6 +183,14 @@ If you don't want to do this, just comment this setting out:
 // at 30 it was stalling when crossing half inch bumps.
 #define FLOOR_DISTANCE 40
 
+/* END OF QUESTION SECTION!
+That is all, you are ready to attempt to build this code and load it
+onto your Propeller Activity board!
+You should not have to edit any of the code below here to make your robot work.
+
+Of course, you are encouraged to tweak and improve and send me pull requests!
+*/
+
 /*
 This is the code to run on a Parallax Propeller based Activity Board
 in order to interface ROS with an ArloBot.
