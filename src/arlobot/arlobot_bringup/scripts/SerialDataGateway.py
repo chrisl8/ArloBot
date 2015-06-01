@@ -30,8 +30,11 @@ class SerialDataGateway(object):
         self._KeepRunning = False
 
     def Start(self):
-        self._Serial = serial.Serial(port=self._Port, baudrate=self._Baudrate, timeout=1)
-
+        try:
+            self._Serial = serial.Serial(port=self._Port, baudrate=self._Baudrate, timeout=1)
+        except:
+            rospy.loginfo("SERIAL PORT Start Error")
+            raise
         self._KeepRunning = True
         self._ReceiverThread = threading.Thread(target=self._Listen)
         self._ReceiverThread.setDaemon(True)
@@ -41,12 +44,20 @@ class SerialDataGateway(object):
         rospy.loginfo("Stopping serial gateway")
         self._KeepRunning = False
         time.sleep(.1)
-        self._Serial.close()
+        try:
+            self._Serial.close()
+        except:
+            rospy.loginfo("SERIAL PORT Stop Error")
+            raise
 
     def _Listen(self):
         stringIO = StringIO()
         while self._KeepRunning:
-            data = self._Serial.read()
+            try:
+                data = self._Serial.read()
+            except:
+                rospy.loginfo("SERIAL PORT Listen Error")
+                raise
             if data == '\r':
                 pass
             if data == '\n':
@@ -61,7 +72,8 @@ class SerialDataGateway(object):
         try:
             self._Serial.write(data)
         except AttributeError:
-            rospy.loginfo("Serial Port not ready")
+            rospy.loginfo("SERIAL PORT Write Error")
+            raise
 
 if __name__ == '__main__':
     dataReceiver = SerialDataGateway("/dev/ttyUSB1", 115200)

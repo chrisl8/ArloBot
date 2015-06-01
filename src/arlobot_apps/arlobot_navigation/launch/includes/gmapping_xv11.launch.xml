@@ -1,14 +1,12 @@
 <launch>
-  <arg name="scan_topic"  default="scan" />
-  <arg name="base_frame"  default="base_footprint"/>
-  <arg name="odom_frame"  default="odom"/>
+  <arg name="scan_topic" default="scan_filtered" />
 
-  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
-    <param name="base_frame" value="$(arg base_frame)"/>
-    <param name="odom_frame" value="$(arg odom_frame)"/>
+  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" respawn="true" output="screen">
+    <param name="base_frame" value="base_footprint"/>
+    <param name="odom_frame" value="odom"/>
     <param name="map_update_interval" value="5.0"/>
-    <param name="maxUrange" value="6.0"/>
-    <param name="maxRange" value="8.0"/>
+    <param name="maxUrange" value="4.9"/>
+    <param name="maxRange" value="6.0"/>
     <param name="sigma" value="0.05"/>
     <param name="kernelSize" value="1"/>
     <param name="lstep" value="0.05"/>
@@ -17,16 +15,16 @@
     <param name="lsigma" value="0.075"/>
     <param name="ogain" value="3.0"/>
     <param name="lskip" value="0"/>
-    <param name="minimumScore" value="200"/>
-    <param name="srr" value="0.01"/>
-    <param name="srt" value="0.02"/>
-    <param name="str" value="0.01"/>
-    <param name="stt" value="0.02"/>
-    <param name="linearUpdate" value="0.5"/>
-    <param name="angularUpdate" value="0.436"/>
+    <param name="minimumScore" value="10000"/>
+    <param name="srr" value="0.1"/>
+    <param name="srt" value="0.2"/>
+    <param name="str" value="0.1"/>
+    <param name="stt" value="0.2"/>
+    <param name="linearUpdate" value="1.0"/>
+    <param name="angularUpdate" value="0.5"/>
     <param name="temporalUpdate" value="-1.0"/>
     <param name="resampleThreshold" value="0.5"/>
-    <param name="particles" value="80"/>
+    <param name="particles" value="30"/>
   <!--
     <param name="xmin" value="-50.0"/>
     <param name="ymin" value="-50.0"/>
