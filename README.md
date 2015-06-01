@@ -1,6 +1,17 @@
 ArloBot Package for ROS
 ===========================
 
+Update JUne 1, 2015: I finally merged my dev branch into master. Hopefully it all works, but obviously the world is my beta testers, since I'm the only alpha tester.
+
+I've made a lot of changes to the C code for the Propeller board to try to make it easily work for various configurations without you having to rewrite the C code yourself. Still, it may not work out. Please let me know how it works.
+
+I've also tried to enhance the self explore functions.
+
+My next steps are:
+1. A clean setup script.
+2. A GUI web interface that works across various configurations.
+3. Updated setup instructions.
+
 Update February 24, 2015: I am still actively developing and using my "ArloBot", so if you have any questions or problems feel free to let me know!
 The two initial goals for this package are:
 
