@@ -45,7 +45,7 @@ miniterm.py  /dev/ttyUSB1 115200
 It will reset the Prop board and then start spitting out:
 i 0
 This tells you to initialize it, just send it:
-d,0.403000,0.006760,0,0,0.0,0.0,0.0
+d,0.403000,0.006760,0,0,0,0.0,0.0,0.0
 and then it should start sending odometry info in the form of:
 o       0.000   0.000   0.000   0.000   0.000   0.000   7       19      84      23      142     1249    227     13      143     60      9       7
 The last 12 numbers are the distances from the PING and InfraRed sensors, they should change as you move around the ArloBot.

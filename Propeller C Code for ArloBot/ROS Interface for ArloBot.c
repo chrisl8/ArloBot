@@ -344,7 +344,8 @@ safeToRecede = 0,
 Escaping = 0,
 minDistanceSensor = 0,
 ignoreProximity = 0,
-ignoreCliffSensors = 0;
+ignoreCliffSensors = 0,
+ignoreIRSensors = 0;
 
 void safetyOverride(void *par); // Use a cog to squelch incoming commands and perform safety procedures like halting, backing off, avoiding cliffs, calling for help, etc.
 // This can use proximity sensors to detect obstacles (including people) and cliffs
@@ -402,6 +403,8 @@ int main() {
                 ignoreProximity = strtod(token, &unconverted);
                 token = strtok(NULL, delimiter);
                 ignoreCliffSensors = strtod(token, &unconverted);
+                token = strtok(NULL, delimiter);
+                ignoreIRSensors = strtod(token, &unconverted);
                 token = strtok(NULL, delimiter);
                 // Set initial location from ROS, in case we want to recover our last location!
                 X = strtod(token, &unconverted);
@@ -483,7 +486,7 @@ int main() {
     // Declaring variables outside of loop
     // This may or may not improve performance
     // Some of these we want to hold and use later too
-    char buf[20]; // A Buffer long enough to hold the longest line ROS may send.
+    char buf[30]; // A Buffer long enough to hold the longest line ROS may send.
     int count = 0;
     double angularVelocityOffset = 0.0, expectedLeftSpeed = 0.0, expectedRightSpeed = 0.0;
 
@@ -523,6 +526,8 @@ int main() {
                 ignoreProximity = strtod(token, &unconverted);
                 token = strtok(NULL, delimiter);
                 ignoreCliffSensors = strtod(token, &unconverted);
+                token = strtok(NULL, delimiter);
+                ignoreIRSensors = strtod(token, &unconverted);
                 //TODO: Should I break the loop now or let the loop
                 //continue with the previous CommandedVelocity
                 //and CommandedANguarlVelocity variable values?
@@ -945,34 +950,6 @@ void pollGyro(void *par) {
             }
             #endif
 
-            #ifdef hasFrontIRSensors
-            // Walk front IR Sensors
-            for (i = FIRST_FRONT_IR_SENSOR_NUMBER; i < HOW_MANY_FRONT_IR_SENSORS + FIRST_FRONT_IR_SENSOR_NUMBER; i++) {
-                if (irArray[i] < IRstartSlowDownDistance[i])  {
-                    if (irArray[i] <= haltDistance[i] + 1) {
-                        // Prevent main thread from setting any drive_speed
-                        safeToProceed = 0;
-                        // Stop robot if it is currently moving forward and not escaping
-                        if ((Escaping == 0) && ((speedLeft + speedRight) > 0)) {
-                            drive_speed(0, 0);
-                        }
-                        // Use this to give the "all clear" later if it never gets set
-                        blockedF = 1;
-                        // Keep track of which sensors are blocked for intelligent escape sequences.
-                        blockedSensor[i] = 1;
-                        if (irArray[i] < haltDistance[i]) {
-                            pleaseEscape = 1;
-                        }
-                    }
-                    // For speed restriction:
-                    if (irArray[i] < minDistance) {
-                        minDistance = irArray[i];
-                        minDistanceSensor = i;
-                    }
-                }
-            }
-            #endif
-
             #ifdef hasFrontUpperDeckSensors
             // Walk Upper Deck Sensors
             for (i = FIRST_FRONT_UPPER_SENSOR_NUMBER; i < HOW_MANY_FRONT_UPPER_SENSORS + FIRST_FRONT_UPPER_SENSOR_NUMBER; i++) {
@@ -1028,34 +1005,6 @@ void pollGyro(void *par) {
             }
             #endif
 
-            #ifdef hasRearIRSensors
-            for (i = FIRST_REAR_IR_SENSOR_NUMBER; i < FIRST_REAR_IR_SENSOR_NUMBER + HOW_MANY_REAR_IR_SENSORS; i++) {
-                #ifdef RENAME_REAR_IR_SENSOR
-                int sensorFakeIndex = RENAME_REAR_IR_SENSOR;
-                #else
-                int sensorFakeIndex = i;
-                #endif
-                if (irArray[i] < IRstartSlowDownDistance[i]) {
-                   if (irArray[i] <= haltDistance[sensorFakeIndex] + 1) {
-                        safeToRecede = 0; // Prevent main thread from setting any drive_speed
-                        // Stop robot if it is currently moving forward and not escaping
-                        if ((Escaping == 0) && ((speedLeft + speedRight) < 0)) {
-                            drive_speed(0, 0);
-                        }
-                        blockedR = 1; // Use this to give the "all clear" later if it never gets set
-                        blockedSensor[sensorFakeIndex] = 1; // Keep track of which sensors are blocked for intelligent escape sequences.
-                        if (irArray[i] < haltDistance[sensorFakeIndex])
-                            pleaseEscape = 1;
-                    }
-                    // For speed restriction:
-                    if (irArray[i] < minRDistance) {
-                        minRDistance = irArray[i];
-                        minDistanceSensor = i;
-                    }
-                }
-            }
-            #endif
-
             #ifdef hasRearUpperDeckSensors
             for (i = FIRST_REAR_UPPER_SENSOR_NUMBER; i < FIRST_REAR_UPPER_SENSOR_NUMBER + HOW_MANY_REAR_UPPER_SENSORS; i++) { // Only use the rear sensors
                 // PING Sensors
@@ -1079,6 +1028,64 @@ void pollGyro(void *par) {
                 }
             }
             #endif
+
+            if (ignoreIRSensors == 0) {
+              #ifdef hasFrontIRSensors
+              // Walk front IR Sensors
+              for (i = FIRST_FRONT_IR_SENSOR_NUMBER; i < HOW_MANY_FRONT_IR_SENSORS + FIRST_FRONT_IR_SENSOR_NUMBER; i++) {
+                  if (irArray[i] < IRstartSlowDownDistance[i])  {
+                      if (irArray[i] <= haltDistance[i] + 1) {
+                          // Prevent main thread from setting any drive_speed
+                          safeToProceed = 0;
+                          // Stop robot if it is currently moving forward and not escaping
+                          if ((Escaping == 0) && ((speedLeft + speedRight) > 0)) {
+                              drive_speed(0, 0);
+                          }
+                          // Use this to give the "all clear" later if it never gets set
+                          blockedF = 1;
+                          // Keep track of which sensors are blocked for intelligent escape sequences.
+                          blockedSensor[i] = 1;
+                          if (irArray[i] < haltDistance[i]) {
+                              pleaseEscape = 1;
+                          }
+                      }
+                      // For speed restriction:
+                      if (irArray[i] < minDistance) {
+                          minDistance = irArray[i];
+                          minDistanceSensor = i;
+                      }
+                  }
+              }
+              #endif
+
+              #ifdef hasRearIRSensors
+              for (i = FIRST_REAR_IR_SENSOR_NUMBER; i < FIRST_REAR_IR_SENSOR_NUMBER + HOW_MANY_REAR_IR_SENSORS; i++) {
+                  #ifdef RENAME_REAR_IR_SENSOR
+                  int sensorFakeIndex = RENAME_REAR_IR_SENSOR;
+                  #else
+                  int sensorFakeIndex = i;
+                  #endif
+                  if (irArray[i] < IRstartSlowDownDistance[i]) {
+                     if (irArray[i] <= haltDistance[sensorFakeIndex] + 1) {
+                          safeToRecede = 0; // Prevent main thread from setting any drive_speed
+                          // Stop robot if it is currently moving forward and not escaping
+                          if ((Escaping == 0) && ((speedLeft + speedRight) < 0)) {
+                              drive_speed(0, 0);
+                          }
+                          blockedR = 1; // Use this to give the "all clear" later if it never gets set
+                          blockedSensor[sensorFakeIndex] = 1; // Keep track of which sensors are blocked for intelligent escape sequences.
+                          if (irArray[i] < haltDistance[sensorFakeIndex])
+                              pleaseEscape = 1;
+                      }
+                      // For speed restriction:
+                      if (irArray[i] < minRDistance) {
+                          minRDistance = irArray[i];
+                          minDistanceSensor = i;
+                      }
+                  }
+              }
+            #endif
+            }
 
             // Reduce Speed Limit when we are close to an obstruction
             /* EXPLANATION minDistance won't be set unless a given sensor is closer than its particular startSlowDownDistance value, so we won't be slowing down if sensor 0 is 40, only if it is under 10 */

@@ -74,6 +74,7 @@ class PropellerComm(object):
         self.distance_per_count = rospy.get_param("~driveGeometry/distancePerCount", "0")
         self.ignore_proximity = rospy.get_param("~ignoreProximity", False);
         self.ignore_cliff_sensors = rospy.get_param("~ignoreCliffSensors", False);
+        self.ignore_ir_sensors = rospy.get_param("~ignoreIRSensors", False);
         self.robotParamChanged = False
 
         # Get motor relay numbers for use later in _HandleUSBRelayStatus if USB Relay is in use:
@@ -736,7 +737,11 @@ class PropellerComm(object):
                     ignore_cliff_sensors = 1
                 else:
                     ignore_cliff_sensors = 0
-                message = 'd,%f,%f,%d,%d\r' % (self.track_width, self.distance_per_count, ignore_proximity, ignore_cliff_sensors)
+                if (self.ignore_ir_sensors):
+                    ignore_ir_sensors = 1
+                else:
+                    ignore_ir_sensors = 0
+                message = 'd,%f,%f,%d,%d,%d\r' % (self.track_width, self.distance_per_count, ignore_proximity, ignore_cliff_sensors, ignore_ir_sensors)
                 self.robotParamChanged = False
                 self._write_serial(message)
         elif self._clear_to_go("to_stop"):
@@ -755,7 +760,11 @@ class PropellerComm(object):
                 ignore_cliff_sensors = 1
             else:
                 ignore_cliff_sensors = 0
-            message = 'd,%f,%f,%d,%d,%f,%f,%f\r' % (self.track_width, self.distance_per_count, ignore_proximity, ignore_cliff_sensors, self.lastX, self.lastY, self.lastHeading)
+            if (self.ignore_ir_sensors):
+                ignore_ir_sensors = 1
+            else:
+                ignore_ir_sensors = 0
+            message = 'd,%f,%f,%d,%d,%d,%f,%f,%f\r' % (self.track_width, self.distance_per_count, ignore_proximity, ignore_cliff_sensors, ignore_ir_sensors, self.lastX, self.lastY, self.lastHeading)
             rospy.logdebug("Sending drive geometry params message: " + message)
             self._write_serial(message)
         else:
@@ -867,11 +876,15 @@ class PropellerComm(object):
             self.ignore_proximity = rospy.get_param("~ignoreProximity", False);
             if not old_ignore_proximity == self.ignore_proximity:
                 self.robotParamChanged = True
-            self.r.sleep()
             old_ignore_cliff_sensors = self.ignore_cliff_sensors
             self.ignore_cliff_sensors = rospy.get_param("~ignoreCliffSensors", False);
             if not old_ignore_cliff_sensors == self.ignore_cliff_sensors:
                 self.robotParamChanged = True
+            old_ignore_ir_sensors = self.ignore_ir_sensors
+            self.ignore_ir_sensors = rospy.get_param("~ignoreIRSensors", False);
+            if not old_ignore_ir_sensors == self.ignore_ir_sensors:
+                self.robotParamChanged = True
+            self.r.sleep()
 
     def UnplugRobot(self):
         if self._unPlugging and \

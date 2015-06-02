@@ -36,4 +36,10 @@ monitorACconnection: True
 # and simply operate 100% under ROS control.
 # This should also work if changed on the fly.
 ignoreProximity: False
+# If you have Cliff sensors, you can use this to tell the Activity Board
+# to ignore them.
 ignoreCliffSensors: False
+# Use this to tell the Activity Board to ignore JUST the IR sensors,
+# while still utilizing the PING sensors
+# NOTE this will not ignore the IR Cliff Sensors. Use ignoreCliffSensors to do that.
+ignoreIRSensors: False
