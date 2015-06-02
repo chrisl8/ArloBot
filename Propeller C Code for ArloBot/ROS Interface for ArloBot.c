@@ -1004,31 +1004,6 @@ void pollGyro(void *par) {
             }
             #endif
 
-            #ifdef hasRearUpperDeckSensors
-            for (i = FIRST_REAR_UPPER_SENSOR_NUMBER; i < FIRST_REAR_UPPER_SENSOR_NUMBER + HOW_MANY_REAR_UPPER_SENSORS; i++) { // Only use the rear sensors
-                // PING Sensors
-                if (pingArray[i] < startSlowDownDistance[i]) {
-                    if (pingArray[i] <= haltDistance[i] + 1) { // Halt just before.
-                        safeToRecede = 0; // Prevent main thread from setting any drive_speed
-                        // Stop robot if it is currently moving forward and not escaping
-                        if ((Escaping == 0) && ((speedLeft + speedRight) < 0)) {
-                            drive_speed(0, 0);
-                        }
-                        blockedR = 1; // Use this to give the "all clear" later if it never gets set
-                        blockedSensor[i] = 1; // Keep track of which sensors are blocked for intelligent escape sequences.
-                        if (pingArray[i] < haltDistance[i]) // Escape just after, to try make a buffer to avoid back and forthing.
-                            pleaseEscape = 1;
-                    }
-                    // For speed restriction:
-                    if (pingArray[i] < minRDistance) {
-                        minRDistance = pingArray[i];
-                        minDistanceSensor = i;
-                    }
-                }
-            }
-            #endif
-
-            minRDistance = 255;
             #ifdef hasRearPingSensors
             // Walk REAR Sensor Array to find blocked paths and halt immediately
             for (i = FIRST_REAR_PING_SENSOR_NUMBER; i < FIRST_REAR_PING_SENSOR_NUMBER + HOW_MANY_REAR_PING_SENSORS; i++) {
@@ -1075,6 +1050,30 @@ void pollGyro(void *par) {
                     // For speed restriction:
                     if (irArray[i] < minRDistance) {
                         minRDistance = irArray[i];
+                        minDistanceSensor = i;
+                    }
+                }
+            }
+            #endif
+
+            #ifdef hasRearUpperDeckSensors
+            for (i = FIRST_REAR_UPPER_SENSOR_NUMBER; i < FIRST_REAR_UPPER_SENSOR_NUMBER + HOW_MANY_REAR_UPPER_SENSORS; i++) { // Only use the rear sensors
+                // PING Sensors
+                if (pingArray[i] < startSlowDownDistance[i]) {
+                    if (pingArray[i] <= haltDistance[i] + 1) { // Halt just before.
+                        safeToRecede = 0; // Prevent main thread from setting any drive_speed
+                        // Stop robot if it is currently moving forward and not escaping
+                        if ((Escaping == 0) && ((speedLeft + speedRight) < 0)) {
+                            drive_speed(0, 0);
+                        }
+                        blockedR = 1; // Use this to give the "all clear" later if it never gets set
+                        blockedSensor[i] = 1; // Keep track of which sensors are blocked for intelligent escape sequences.
+                        if (pingArray[i] < haltDistance[i]) // Escape just after, to try make a buffer to avoid back and forthing.
+                            pleaseEscape = 1;
+                    }
+                    // For speed restriction:
+                    if (pingArray[i] < minRDistance) {
+                        minRDistance = pingArray[i];
                         minDistanceSensor = i;
                     }
                 }
@@ -1198,6 +1197,14 @@ void pollGyro(void *par) {
                         #ifdef REAR_CENTER_SENSOR
                         if (blockedSensor[REAR_CENTER_SENSOR] == 1) {
                             drive_speed(MINIMUM_SPEED, MINIMUM_SPEED);
+                        #ifdef REAR_3D_MOUNTED_SENSOR
+                        } else if (blockedSensor[REAR_3D_MOUNTED_SENSOR] == 1) {
+                            drive_speed(MINIMUM_SPEED, MINIMUM_SPEED);
+                        #endif
+                        #ifdef REAR_UPPER_DECK_SENSOR
+                        } else if (blockedSensor[REAR_UPPER_DECK_SENSOR] == 1) {
+                            drive_speed(MINIMUM_SPEED, MINIMUM_SPEED);
+                        #endif
                         #ifdef REAR_NEAR_RIGHT_SENSOR
                         } else if (blockedSensor[REAR_NEAR_RIGHT_SENSOR] == 1) {
                             drive_speed(MINIMUM_SPEED, MINIMUM_SPEED);
