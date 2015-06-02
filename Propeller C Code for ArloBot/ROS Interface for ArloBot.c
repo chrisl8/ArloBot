@@ -176,7 +176,7 @@ If you don't want to do this, just comment this setting out:
 // QUESTION: Do you have IR "cliff" sensors mounted to the front of the robot?
 #define hasCliffSensors
 // SETTING: Which IR sensor number (counting from 0) is the first cliff sensor?
-#define FIRST_CLIFF_SENSOR 5
+#define FIRST_CLIFF_SENSOR 6
 // SETTING: How many cliff sensors are there?
 #define NUMBER_OF_CLIFF_SENSORS 2
 // SETTING: What is the maximum distance before the robot should consider it to be a cliff?
