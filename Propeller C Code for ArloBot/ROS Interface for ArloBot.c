@@ -343,6 +343,7 @@ static double gyroHeading = 0.0;
 // For "Safety Override" Cog
 static volatile int safeToProceed = 0,
 safeToRecede = 0,
+cliff = 0,
 Escaping = 0,
 minDistanceSensor = 0,
 ignoreProximity = 0,
@@ -715,7 +716,7 @@ void displayTicks(void) {
         leftMotorPower = adc_volts(LEFT_MOTOR_ADC_PIN);
         rightMotorPower = adc_volts(RIGHT_MOTOR_ADC_PIN);
         #endif
-        dprint(term, "s\t%d\t%d\t%d\t%d\t%d\t%d\t%.2f\t%.2f\n", safeToProceed, safeToRecede, Escaping, abd_speedLimit, abdR_speedLimit, minDistanceSensor, leftMotorPower, rightMotorPower);
+        dprint(term, "s\t%d\t%d\t%d\t%d\t%d\t%d\t%.2f\t%.2f\t%d\n", safeToProceed, safeToRecede, Escaping, abd_speedLimit, abdR_speedLimit, minDistanceSensor, leftMotorPower, rightMotorPower, cliff);
         throttleStatus = 0;
     }
     #ifdef debugModeOn
@@ -914,23 +915,33 @@ void pollGyro(void *par) {
             minDistance = 255;
 
             #ifdef hasCliffSensors
-                if (ignoreCliffSensors == 0) {
-                    // Check Cliff Sensors first
-                    for (i = FIRST_CLIFF_SENSOR; i < FIRST_CLIFF_SENSOR + NUMBER_OF_CLIFF_SENSORS; i++) {
-                        if (irArray[i] > FLOOR_DISTANCE) {
-                        safeToProceed = 0; // Prevent main thread from setting any drive_speed
-                        // Stop robot if it is currently moving forward and not escaping
-                        // TODO: Can we "chase" the robot off of a cliff, because the rear sensor
-                        // would put us into an "Escaping == 1" situation, but we would be moving forward
-                        // OVER the cliff instead of back, and thus really need to stop now?!
-                        if ((Escaping == 0) && ((speedLeft + speedRight) > 0)) {
-                            drive_speed(0, 0);
-                        }
-                        blockedF = 1; // Use this to give the "all clear" later if it never gets set
-                        blockedSensor[2] = 1; // Pretend this is the front sensor, since it needs to back up NOW!
-                        pleaseEscape = 1;
-                    }
-                }
+            foundCliff = 0;
+            if (ignoreCliffSensors == 0) {
+              // Check Cliff Sensors first
+              for (i = FIRST_CLIFF_SENSOR; i < FIRST_CLIFF_SENSOR + NUMBER_OF_CLIFF_SENSORS; i++) {
+                if (irArray[i] > FLOOR_DISTANCE) {
+                  safeToProceed = 0; // Prevent main thread from setting any drive_speed
+                  // Stop robot if it is currently moving forward and not escaping
+                  // TODO: Can we "chase" the robot off of a cliff, because the rear sensor
+                  // would put us into an "Escaping == 1" situation, but we would be moving forward
+                  // OVER the cliff instead of back, and thus really need to stop now?!
+                  if ((Escaping == 0) && ((speedLeft + speedRight) > 0)) {
+                    drive_speed(0, 0);
+                  }
+                  // Use this to give the "all clear" later if it never gets set
+                  blockedF = 1;
+                  // Use this to clear the 'cliff' variable later if this never gets set.
+                  foundCliff = 1;
+                  // Set the global 'cliff' variable so we can see this in ROS.
+                  cliff = 1;
+                  blockedSensor[2] = 1; // Pretend this is the front sensor, since it needs to back up NOW!
+                  pleaseEscape = 1;
+                  }
+              }
+            }
+            // Clear the global 'cliff' variable if no cliff was seen.
+            if (foundCliff == 0) {
+                cliff = 0;
             }
             #endif
 

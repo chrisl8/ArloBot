@@ -197,6 +197,10 @@ class PropellerComm(object):
             arlo_status.robotBatteryLow = False
         arlo_status.laptopBatteryPercent = self._laptop_battery_percent
         arlo_status.acPower = self._acPower
+        if int(line_parts[9]) == 1:
+            arlo_status.cliff = True
+        else:
+            arlo_status.cliff = False
         self._arlo_status_publisher.publish(arlo_status)
 
     def _handle_usb_relay_status(self, status):
