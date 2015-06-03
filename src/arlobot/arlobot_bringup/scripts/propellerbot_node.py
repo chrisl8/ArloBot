@@ -741,10 +741,12 @@ class PropellerComm(object):
                     ignore_ir_sensors = 1
                 else:
                     ignore_ir_sensors = 0
+                # WARNING! If you change this check the buffer length in the Propeller C code!
                 message = 'd,%f,%f,%d,%d,%d\r' % (self.track_width, self.distance_per_count, ignore_proximity, ignore_cliff_sensors, ignore_ir_sensors)
-                self.robotParamChanged = False
                 self._write_serial(message)
+                self.robotParamChanged = False
         elif self._clear_to_go("to_stop"):
+            # WARNING! If you change this check the buffer length in the Propeller C code!
             message = 's,0.0,0.0\r'  # Tell it to be still if it is not safe to operate
             # rospy.logdebug("Sending speed command message: " + message)
             self._write_serial(message)
@@ -764,6 +766,7 @@ class PropellerComm(object):
                 ignore_ir_sensors = 1
             else:
                 ignore_ir_sensors = 0
+            # WARNING! If you change this check the buffer length in the Propeller C code!
             message = 'd,%f,%f,%d,%d,%d,%f,%f,%f\r' % (self.track_width, self.distance_per_count, ignore_proximity, ignore_cliff_sensors, ignore_ir_sensors, self.lastX, self.lastY, self.lastHeading)
             rospy.logdebug("Sending drive geometry params message: " + message)
             self._write_serial(message)

@@ -191,6 +191,8 @@ You should not have to edit any of the code below here to make your robot work.
 Of course, you are encouraged to tweak and improve and send me pull requests!
 */
 
+//#define debugModeOn
+
 /*
 This is the code to run on a Parallax Propeller based Activity Board
 in order to interface ROS with an ArloBot.
@@ -382,9 +384,10 @@ int main() {
         dprint(term, "i\t%d\n", personDetected); // Request Robot distancePerCount and trackWidth NOTE: Python code cannot deal with a line with no divider characters on it.
         pause(10); // Give ROS time to respond, but not too much or we bump into other stuff that may be coming in from ROS.
         if (fdserial_rxReady(term) != 0) { // Non blocking check for data in the input buffer
-            char buf[51]; // A Buffer long enough to hold the longest line ROS may send.
+          const int bufferLength = 61; // A Buffer long enough to hold the longest line ROS may send.
+            char buf[bufferLength];
             int count = 0;
-            while (count < 51) {
+            while (count < bufferLength) {
                 buf[count] = fdserial_rxTime(term, 100); // fdserial_rxTime will time out. Otherwise a spurious character on the line will cause us to get stuck forever
                 if (buf[count] == '\r' || buf[count] == '\n')
                     break;
@@ -400,11 +403,11 @@ int main() {
                 token = strtok(NULL, delimiter);
                 distancePerCount = strtod(token, &unconverted);
                 token = strtok(NULL, delimiter);
-                ignoreProximity = strtod(token, &unconverted);
+                ignoreProximity = (int)(strtod(token, &unconverted));
                 token = strtok(NULL, delimiter);
-                ignoreCliffSensors = strtod(token, &unconverted);
+                ignoreCliffSensors = (int)(strtod(token, &unconverted));
                 token = strtok(NULL, delimiter);
-                ignoreIRSensors = strtod(token, &unconverted);
+                ignoreIRSensors = (int)(strtod(token, &unconverted));
                 token = strtok(NULL, delimiter);
                 // Set initial location from ROS, in case we want to recover our last location!
                 X = strtod(token, &unconverted);
@@ -486,7 +489,9 @@ int main() {
     // Declaring variables outside of loop
     // This may or may not improve performance
     // Some of these we want to hold and use later too
-    char buf[30]; // A Buffer long enough to hold the longest line ROS may send.
+    // A Buffer long enough to hold the longest line ROS may send.
+    const int bufferLength = 31;
+    char buf[bufferLength];
     int count = 0;
     double angularVelocityOffset = 0.0, expectedLeftSpeed = 0.0, expectedRightSpeed = 0.0;
 
@@ -497,7 +502,7 @@ int main() {
 
         if (fdserial_rxReady(term) != 0) { // Non blocking check for data in the input buffer
             count = 0;
-            while (count < 20) {
+            while (count < bufferLength) {
                 buf[count] = readChar(term);
                 if (buf[count] == '\r' || buf[count] == '\n')
                     break;
@@ -523,11 +528,14 @@ int main() {
                 token = strtok(NULL, delimiter);
                 distancePerCount = strtod(token, &unconverted);
                 token = strtok(NULL, delimiter);
-                ignoreProximity = strtod(token, &unconverted);
+                ignoreProximity = (int)(strtod(token, &unconverted));
                 token = strtok(NULL, delimiter);
-                ignoreCliffSensors = strtod(token, &unconverted);
+                ignoreCliffSensors = (int)(strtod(token, &unconverted));
                 token = strtok(NULL, delimiter);
-                ignoreIRSensors = strtod(token, &unconverted);
+                ignoreIRSensors = (int)(strtod(token, &unconverted));
+                #ifdef debugModeOn
+                dprint(term, "GOT D! %d %d %d\n", ignoreProximity, ignoreCliffSensors, ignoreIRSensors); // For Debugging
+                #endif
                 //TODO: Should I break the loop now or let the loop
                 //continue with the previous CommandedVelocity
                 //and CommandedANguarlVelocity variable values?
@@ -710,6 +718,9 @@ void displayTicks(void) {
         dprint(term, "s\t%d\t%d\t%d\t%d\t%d\t%d\t%.2f\t%.2f\n", safeToProceed, safeToRecede, Escaping, abd_speedLimit, abdR_speedLimit, minDistanceSensor, leftMotorPower, rightMotorPower);
         throttleStatus = 0;
     }
+    #ifdef debugModeOn
+    dprint(term, "DEBUG: %d %d %d\n", ignoreProximity, ignoreCliffSensors, ignoreIRSensors);
+    #endif
 }
 
 volatile int abd_speedL;
