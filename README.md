@@ -41,15 +41,20 @@ http://ekpyroticfrood.net/?p=162
 Depending on what you want to do there are different ways to "bring up" the robot.<br/>These are the "recipes" that are well tested so far:
 ```
 A good way to test your Propeller code is to run:
-miniterm.py  /dev/ttyUSB1 115200
+miniterm.py  /dev/ttyUSB0 115200
 It will reset the Prop board and then start spitting out:
 i 0
 This tells you to initialize it, just send it:
 d,0.403000,0.006760,0,0,0,0.0,0.0,0.0
 and then it should start sending odometry info in the form of:
-o       0.000   0.000   0.000   0.000   0.000   0.000   7       19      84      23      142     1249    227     13      143     60      9       7
-The last 12 numbers are the distances from the PING and InfraRed sensors, they should change as you move around the ArloBot.
-If you want to get really fancy you can send it twist commands from the terminal.
+o       0.000   0.000   0.000   0.000   0.068   0.000   {"p0":135,"p1":90,"p2":78,"p3":78,"p4":107,"p5":34,"p6":15,"p7":11,"p8":16,"p9":67,"p10":77,"p11":120,"p12":9,"p13":10,"i0":1991,"i1":212,"i2":153,"i3":82,"i4":99,"i5":24,"i6":25,"i7":12}
+With the occasional:
+s       1       0       1       100     10      12      0.05    0.06    0
+You may have fewer "p#" and "i#" instances. Those are the distance readings from your PING an IR sensors. They should change as you move around your robot.
+The "s" line is handy because it tells you about some of the robots decisions. 1 = True and 0 = False
+The meanings of each number are:
+safeToProceed safeToRecede RobotIsEscaping ForwardSpeedLimit ReverseSpeedLimit SensorWithShortestDistanceReading LeftMotorPower RightMotorPower CliffDetected
+If you want to get really fancy you can send it twist commands from the terminal too! Just remember to turn on the motors first for that to work!
 
 NOTE:
 If you want to force arlobot_bringup to initialize the board even when the laptop
