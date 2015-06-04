@@ -183,6 +183,12 @@ If you don't want to do this, just comment this setting out:
 // at 30 it was stalling when crossing half inch bumps.
 #define FLOOR_DISTANCE 40
 
+// FLOOR OBSTACLE SENSORS:
+// QUESTION: Do you have digital infrared sensors on the front of the robot?
+#define hasFloorObstacleSensors
+#define FIRST_FLOOR_SENSOR_PIN 7
+#define NUMBER_OF_FLOOR_SENSORS 4
+
 /* END OF QUESTION SECTION!
 That is all, you are ready to attempt to build this code and load it
 onto your Propeller Activity board!
@@ -293,6 +299,9 @@ static int fstack[256]; // If things get weird make this number bigger!
 // Global Storage for PING & IR Sensor Data:
 int pingArray[NUMBER_OF_PING_SENSORS] = {0};
 int irArray[NUMBER_OF_IR_SENSORS] = {0};
+#ifdef hasFloorObstacleSensors
+int floorArray[NUMBER_OF_FLOOR_SENSORS] = {0};
+#endif
 
 #ifdef hasQuickStartBoard
 // For Quickstart Board communication
@@ -344,10 +353,12 @@ static double gyroHeading = 0.0;
 static volatile int safeToProceed = 0,
 safeToRecede = 0,
 cliff = 0,
+floorO = 0,
 Escaping = 0,
 minDistanceSensor = 0,
 ignoreProximity = 0,
 ignoreCliffSensors = 0,
+ignoreFloorSensors = 0,
 ignoreIRSensors = 0;
 
 void safetyOverride(void *par); // Use a cog to squelch incoming commands and perform safety procedures like halting, backing off, avoiding cliffs, calling for help, etc.
@@ -702,6 +713,11 @@ void displayTicks(void) {
         if (irArray[i] > 0) // Don't pass the empty IR entries, as we know there are some.
             dprint(term, ",\"i%d\":%d", i, irArray[i]);
     }
+    #ifdef hasFloorObstacleSensors
+    for (int i = 0; i < NUMBER_OF_FLOOR_SENSORS; i++) { // Loop through all of the sensors
+        dprint(term, ",\"f%d\":%d", i, floorArray[i]);
+    }
+    #endif
     dprint(term, "}\n");
 
     // Send a regular "status" update to ROS including information that does not need to be refreshed as often as the odometry.
@@ -716,7 +732,7 @@ void displayTicks(void) {
         leftMotorPower = adc_volts(LEFT_MOTOR_ADC_PIN);
         rightMotorPower = adc_volts(RIGHT_MOTOR_ADC_PIN);
         #endif
-        dprint(term, "s\t%d\t%d\t%d\t%d\t%d\t%d\t%.2f\t%.2f\t%d\n", safeToProceed, safeToRecede, Escaping, abd_speedLimit, abdR_speedLimit, minDistanceSensor, leftMotorPower, rightMotorPower, cliff);
+        dprint(term, "s\t%d\t%d\t%d\t%d\t%d\t%d\t%.2f\t%.2f\t%d\t%d\n", safeToProceed, safeToRecede, Escaping, abd_speedLimit, abdR_speedLimit, minDistanceSensor, leftMotorPower, rightMotorPower, cliff, floorO);
         throttleStatus = 0;
     }
     #ifdef debugModeOn
@@ -813,6 +829,11 @@ void pollPropBoard2(void *par) {
         }
             //low(26); // LEDs for debugging
     }
+    #ifdef hasFloorObstacleSensors
+    for (int i = 0; i < NUMBER_OF_FLOOR_SENSORS; i++) {
+        floorArray[i] = input(FIRST_FLOOR_SENSOR_PIN + i);
+    }
+    #endif
 }
 }
 #else
@@ -904,7 +925,7 @@ void pollGyro(void *par) {
     // Declare all variables up front so they do not have to be created in the loop, only set.
     // This may or may not improve performance.
     int blockedSensor[NUMBER_OF_PING_SENSORS] = {0};
-    int i, blockedF = 0, blockedR = 0, foundCliff = 0, pleaseEscape = 0, minDistance = 255, minRDistance = 255, newSpeedLimit = 100;
+    int i, blockedF = 0, blockedR = 0, foundCliff = 0, floorObstacle = 0, pleaseEscape = 0, minDistance = 255, minRDistance = 255, newSpeedLimit = 100;
     while (1) {
         if (ignoreProximity == 0) {
             // Reset blockedSensor array to all zeros.
@@ -942,6 +963,36 @@ void pollGyro(void *par) {
             // Clear the global 'cliff' variable if no cliff was seen.
             if (foundCliff == 0) {
                 cliff = 0;
+            }
+            #endif
+
+            #ifdef hasFloorObstacleSensors
+            floorObstacle = 0;
+            if (ignoreFloorSensors == 0) {
+              for (i = 0; i < NUMBER_OF_FLOOR_SENSORS; i++) {
+                if (floorArray[i] == 0) {
+                  safeToProceed = 0; // Prevent main thread from setting any drive_speed
+                  // Stop robot if it is currently moving forward and not escaping
+                  // TODO: Can we "chase" the robot off of a cliff, because the rear sensor
+                  // would put us into an "Escaping == 1" situation, but we would be moving forward
+                  // OVER the cliff instead of back, and thus really need to stop now?!
+                  if ((Escaping == 0) && ((speedLeft + speedRight) > 0)) {
+                    drive_speed(0, 0);
+                  }
+                  // Use this to give the "all clear" later if it never gets set
+                  blockedF = 1;
+                  // Use this to clear the 'floorO' variable later if this never gets set.
+                  floorObstacle = 1;
+                  // Set the global 'floorO' variable so we can see this in ROS.
+                  floorO = 1;
+                  blockedSensor[2] = 1; // Pretend this is the front sensor, since it needs to back up NOW!
+                  pleaseEscape = 1;
+                  }
+              }
+            }
+            // Clear the global 'floorO' variable if no floor obstacle was seen.
+            if (floorObstacle == 0) {
+                floorO = 0;
             }
             #endif
 

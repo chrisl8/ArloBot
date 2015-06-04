@@ -13,3 +13,4 @@ bool      robotBatteryLow
 int16     laptopBatteryPercent
 bool      acPower
 bool      cliff
+bool      floorObstacle

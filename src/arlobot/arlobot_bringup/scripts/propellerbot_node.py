@@ -201,6 +201,10 @@ class PropellerComm(object):
             arlo_status.cliff = True
         else:
             arlo_status.cliff = False
+        if int(line_parts[10]) == 1:
+            arlo_status.floorObstacle = True
+        else:
+            arlo_status.floorObstacle = False
         self._arlo_status_publisher.publish(arlo_status)
 
     def _handle_usb_relay_status(self, status):
