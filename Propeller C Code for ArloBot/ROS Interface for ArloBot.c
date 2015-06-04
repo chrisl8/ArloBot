@@ -78,7 +78,7 @@ By using the #define lines, code for items you do not have is never seen by the 
 
 // QUESTION: Do you have IR sensors on the back of your robot?
 #define hasRearIRSensors
-#define FIRST_REAR_IR_SENSOR_NUMBER 5 // Count from 0
+#define FIRST_REAR_IR_SENSOR_NUMBER 7 // Count from 0
 #define HOW_MANY_REAR_IR_SENSORS 1
 
 // QUESTION: Do you have PING sensors on the front "upper deck" of your robot?
@@ -138,7 +138,7 @@ I only have 1 rear IR sensor. So the escape options for the one rear
 IR sensor should match the rear center PING sensor.
 If you don't want to do this, just comment this setting out:
 */
-#define RENAME_REAR_IR_SENSOR REAR_CENTER_SENSOR
+//#define RENAME_REAR_IR_SENSOR REAR_CENTER_SENSOR
 
 
 // QUESTION: Does your robot have a PIR (Passive Infrared) sensor connected to the Activity Board?
@@ -176,7 +176,7 @@ If you don't want to do this, just comment this setting out:
 // QUESTION: Do you have IR "cliff" sensors mounted to the front of the robot?
 #define hasCliffSensors
 // SETTING: Which IR sensor number (counting from 0) is the first cliff sensor?
-#define FIRST_CLIFF_SENSOR 6
+#define FIRST_CLIFF_SENSOR 5
 // SETTING: How many cliff sensors are there?
 #define NUMBER_OF_CLIFF_SENSORS 2
 // SETTING: What is the maximum distance before the robot should consider it to be a cliff?
