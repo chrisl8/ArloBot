@@ -18,7 +18,6 @@ Set the variable as required, noting that usually these are ignored if the prece
 // Which pin on the QuickStart Board is the TX pin connected in from the Activity board?
 #define QUICKSTART_TX_PIN 1
 
-
 /* 2nd Propeller Board (QuickStart Board) Code for ArloBot
 
    This code should run on the 2nd board and send data to the primary

@@ -122,7 +122,7 @@ class PropellerComm(object):
         # You can use the ~/metatron/scripts/find_propeller.sh script to find this, and
         # You can set it by running this before starting this:
         # rosparam set /arlobot/port $(~/metatron/scripts/find_propeller.sh)
-        port = rospy.get_param("~port", "/dev/ttyUSB1")
+        port = rospy.get_param("~port", "/dev/ttyUSB0")
         baud_rate = int(rospy.get_param("~baudRate", 115200))
 
         rospy.loginfo("Starting with serial port: " + port + ", baud rate: " + str(baud_rate))
