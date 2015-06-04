@@ -904,7 +904,7 @@ void pollGyro(void *par) {
     // Declare all variables up front so they do not have to be created in the loop, only set.
     // This may or may not improve performance.
     int blockedSensor[NUMBER_OF_PING_SENSORS] = {0};
-    int i, blockedF = 0, blockedR = 0, pleaseEscape = 0, minDistance = 255, minRDistance = 255, newSpeedLimit = 100;
+    int i, blockedF = 0, blockedR = 0, foundCliff = 0, pleaseEscape = 0, minDistance = 255, minRDistance = 255, newSpeedLimit = 100;
     while (1) {
         if (ignoreProximity == 0) {
             // Reset blockedSensor array to all zeros.
