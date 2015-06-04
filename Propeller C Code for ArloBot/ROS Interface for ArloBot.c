@@ -1236,19 +1236,19 @@ void pollGyro(void *par) {
                         #endif
                         #ifdef REAR_NEAR_RIGHT_SENSOR
                         } else if (blockedSensor[REAR_NEAR_RIGHT_SENSOR] == 1) {
-                            drive_speed(MINIMUM_SPEED, MINIMUM_SPEED);
+                            drive_speed(MINIMUM_SPEED, MINIMUM_SPEED * 2);
                         #endif
                         #ifdef REAR_NEAR_LEFT_SENSOR
                         } else if (blockedSensor[REAR_NEAR_LEFT_SENSOR] == 1) {
-                            drive_speed(MINIMUM_SPEED, MINIMUM_SPEED);
+                            drive_speed(MINIMUM_SPEED * 2, MINIMUM_SPEED);
                         #endif
                         #ifdef REAR_FAR_RIGHT_SENSOR
                         } else if (blockedSensor[REAR_FAR_RIGHT_SENSOR] == 1) {
-                            drive_speed(MINIMUM_SPEED, MINIMUM_SPEED);
+                            drive_speed(MINIMUM_SPEED, 0);
                         #endif
                         #ifdef REAR_FAR_LEFT_SENSOR
                         } else if (blockedSensor[REAR_FAR_LEFT_SENSOR] == 1) {
-                            drive_speed(MINIMUM_SPEED, MINIMUM_SPEED);
+                            drive_speed(0, MINIMUM_SPEED);
                         #endif
                         }
                         #endif
