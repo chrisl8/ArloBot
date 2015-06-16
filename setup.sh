@@ -5,22 +5,23 @@
 # The BSD License
 # Copyright (c) 2014 OROCA and ROS Korea Users Group
 
+echo ""
 echo "Setting up Robot Operating System for your ArloBot!"
-
-echo "You will be asked for your password for running commands via sudo."
+echo ""
+echo "You will be asked for your password for running commands as root!"
 
 version=`lsb_release -sc`
 
 echo "[Checking the ubuntu version]"
 case $version in
   "saucy" | "trusty")
-  ;;
-  *)
-    echo "[This script will only work on ubuntu saucy(13.10) or trusty(14.04)]"
-    exit 0
+;;
+*)
+echo "[This script will only work on ubuntu saucy(13.10) or trusty(14.04)]"
+exit 0
 esac
 
-echo "[Update & upgrade all existing packages]"
+echo "[Updating & upgrading all existing Ubuntu packages]"
 echo "silently . . ."
 sudo apt-get update -qq
 sudo apt-get upgrade -qq
@@ -31,9 +32,10 @@ sudo apt-get upgrade -qq
 #sudo ntpdate ntp.ubuntu.com
 
 echo "[Checking for ROS repository]"
-if [ ! -e /etc/apt/sources.list.d/ros-latest.list ]; then
-  echo "[Adding the ROS repository]"
-  sudo sh -c "echo \"deb http://packages.ros.org/ros/ubuntu ${version} main\" > /etc/apt/sources.list.d/ros-latest.list"
+if ! [ -e /etc/apt/sources.list.d/ros-latest.list ]
+    then
+    echo "[Adding the ROS repository]"
+    sudo sh -c "echo \"deb http://packages.ros.org/ros/ubuntu ${version} main\" > /etc/apt/sources.list.d/ros-latest.list"
     echo "[Checking the ROS keys]"
     roskey=`apt-key list | grep -i "ROS builder"`
     if [ -z "$roskey" ]
@@ -161,7 +163,7 @@ fi
 # Arlobot Specific settings:
 
 if ! (id|grep dialout>/dev/null)
-then
+    then
     echo "Adding your user to the dialout group,"
     echo "You may be asked for your password."
     sudo adduser ${USER} dialout
@@ -180,12 +182,12 @@ echo "Installing additional required Ubuntu packages for Arlobot"
 #If you have a USB Relay board attached via USB.
 
 sudo apt-get install -qy python-ftdi python-pip python-serial ros-indigo-openni-* ros-indigo-openni2-* \
-    ros-indigo-freenect-* ros-indigo-vision-opencv libopencv-dev python-opencv
+ros-indigo-freenect-* ros-indigo-vision-opencv libopencv-dev python-opencv
 # For 8-CH USB Relay board:
 sudo pip install pylibftdi
 
 if ! [ -f /etc/udev/rules.d/99-libftdi.rules ]
-then
+    then
     echo "Adding required sudo rule to reset USB ports."
     echo "You may be asked for your password."
     sudo ~/catkin_ws/src/ArloBot/addRuleForUSBRelayBoard.sh
@@ -197,7 +199,7 @@ fi
 # the public github repo like user tokens,
 # sounds, and room maps and per robot settings
 if ! [ -d ${HOME}/.arlobot ]
-then
+    then
     mkdir ${HOME}/.arlobot
 fi
 
@@ -205,11 +207,28 @@ ARLOHOME=${HOME}/.arlobot
 
 if [ -e ${ARLOHOME}/arlobot.yaml ]
     then
-    diff -u ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/arlobot.yaml
-    cp -i ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/
+    if ! (diff ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/arlobot.yaml)
+        then
+        echo ""
+        echo "The arlobot.yaml file in the repository is different from the one"
+        echo "in your local settings."
+        echo "This is expected, but just in case, please look over the differences,"
+        echo "and see if you need to copy in any new settings, or overwrite the file completely:"
+        diff ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/arlobot.yaml
+        cp -i ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/
+        echo ""
+    fi
 else
+    echo ""
     cp ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/
+    echo "A brand new ~/.arlobot/arlobot.yaml file has been created,"
+    echo "please edit this file to customize according to your robot!"
+    echo ""
 fi
 
 echo "All done! Reboot and start testing!"
 echo "Look at README.md for testing ideas."
+echo ""
+echo "See here for your next step:"
+echo "http://ekpyroticfrood.net/?p=165"
+echo ""
