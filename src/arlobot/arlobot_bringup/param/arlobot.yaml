@@ -16,7 +16,7 @@ driveGeometry: {trackWidth: 0.403, distancePerCount: 0.00676}
 # In which case it will be assumed they are always on, or at least that you turn them on by hand
 # This is the board I use: http://www.sainsmart.com/sainsmart-4-channel-12-v-usb-relay-board-module-controller-for-automation-robotics-1.html
 # and there are several other models that should all work. File an issue if you need me to help modify the program to include your board
-usbRelayInstalled: True
+usbRelayInstalled: False
 # The other usbRelay... settings do not matter if usbRelayInstalled is False
 # For the port numbers and other specics about the USB Realy setup see and chnage arlobot_usbrelay/param/usbrelay.yaml
 # Get this serial number running ~/arlobot/src/arlobot/arlobot_bringup/scripts/drcontrol.py -l
