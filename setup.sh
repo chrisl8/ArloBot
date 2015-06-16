@@ -34,28 +34,30 @@ echo "[Checking for ROS repository]"
 if [ ! -e /etc/apt/sources.list.d/ros-latest.list ]; then
   echo "[Adding the ROS repository]"
   sudo sh -c "echo \"deb http://packages.ros.org/ros/ubuntu ${version} main\" > /etc/apt/sources.list.d/ros-latest.list"
+    echo "[Checking the ROS keys]"
+    roskey=`apt-key list | grep -i "ROS builder"`
+    if [ -z "$roskey" ]
+        then
+        echo "[Adding the ROS keys]"
+        wget --quiet https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -O - | sudo apt-key add -
+        echo "[Update & upgrade the packages with the new repository]"
+        echo "silently . . ."
+        sudo apt-get update -qq
+        sudo apt-get upgrade -qq
+    fi
 fi
-
-echo "[Checking the ROS keys]"
-roskey=`apt-key list | grep "ROS builder"`
-if [ -z "$roskey" ]; then
-  echo "[Adding the ROS keys]"
-  wget --quiet https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -O - | sudo apt-key add -
-fi
-
-echo "[Update & upgrade the packages with the new repository]"
-echo "silently . . ."
-sudo apt-get update -qq
-sudo apt-get upgrade -qq
 
 echo "[Installing ROS!]"
 sudo apt-get install -qy ros-indigo-desktop-full ros-indigo-rqt-*
 echo "[ROS installed.]"
 
 echo "[rosdep init and python-rosinstall]"
-sudo sh -c "rosdep init"
+if ! [ -e /etc/ros/rosdep/sources.list.d/20-default.list ]
+    then
+    sudo sh -c "rosdep init"
+fi
 rosdep update
-. /opt/ros/indigo/setup.sh
+source /opt/ros/indigo/setup.bash
 sudo apt-get install -qy python-rosinstall
 
 echo "[Installing ROS Packages for Arlo]"
@@ -194,19 +196,19 @@ fi
 # That is data that doesn't need to be part of
 # the public github repo like user tokens,
 # sounds, and room maps and per robot settings
-if [ ! -d ${HOME}/.arlobot ]
+if ! [ -d ${HOME}/.arlobot ]
 then
     mkdir ${HOME}/.arlobot
 fi
 
 ARLOHOME=${HOME}/.arlobot
 
-if [ ! -e ${ARLOHOME}/arlobot.yaml]
+if [ -e ${ARLOHOME}/arlobot.yaml ]
     then
-    cp ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/
-else
-    diff -u ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/
+    diff -u ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/arlobot.yaml
     cp -i ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/
+else
+    cp ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/
 fi
 
 echo "All done! Reboot and start testing!"
