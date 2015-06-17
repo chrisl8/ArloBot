@@ -4,11 +4,29 @@
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 
+BLACK='\033[0;30m'
+BLUE='\033[0;34m'
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+RED='\033[0;31m'
+PURPLE='\033[0;35m'
+ORANGE='\033[0;33m' # or brown
+LIGHTGRAY='\033[0;37m'
+DARKGRAY='\033[1;30m'
+LIGHTBLUE='\033[1;34m'
+LIGHTGREEN='\033[1;32m'
+LIGHTCYAN='\033[1;36m'
+LIGHTRED='\033[1;31m'
+LIGHTPURPLE='\033[1;35m'
+YELLOW='\033[1;33m'
+WHITE='\033[1;37m'
+NC='\033[0m' # NoColor
+
 # Check for node.js installation
 if [ ! -e  ${HOME}/.nvm/nvm.sh ]
-then
-    echo "Installing Node Version Manager"
-wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | bash
+    then
+    printf "\n${YELLOW}[Installing Node Version Manager${NC}\n"
+    wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | bash
 fi
 
 export NVM_DIR="${HOME}/.nvm"
@@ -25,7 +43,7 @@ nvm use stable
 #echo "Fix personal npm folder permissions"
 #sudo chown -R `whoami` ${HOME}/.npm/
 
-echo "Grabbing dependencies for node packages."
+printf "\n${YELLOW}[Grabbing dependencies for node packages.${NC}\n"
 cd ${SCRIPTDIR}/../node
 npm install
 cd ${SCRIPTDIR}
@@ -44,18 +62,20 @@ cd ${SCRIPTDIR}
 #fi
 
 if [ ! -d  ${SCRIPTDIR}/../node/public/lcars/ ]
-then
-    echo "Cloning in lcars CSS Framework"
+    then
+    printf "\n${YELLOW}[Cloning in lcars CSS Framework${NC}\n"
     cd ${SCRIPTDIR}/../node/public/
     git clone https://github.com/Garrett-/lcars.git
 fi
 
+printf "\n${YELLOW}[Setting up .arlobot folder]${NC}\n"
+printf "${BLUE}This holds personal data for your robot.${NC}\n"
 # We will use ~/.arlobot to store "private" data
 # That is data that doesn't need to be part of
 # the public github repo like user tokens,
 # sounds, and room maps and per robot settings
 if [ ! -d ${HOME}/.arlobot ]
-then
+    then
     mkdir ${HOME}/.arlobot
 fi
 
@@ -64,43 +84,52 @@ ARLOHOME=${HOME}/.arlobot
 for i in `ls ${SCRIPTDIR}/dotarlobot/`
 do
     if [ -e  ${ARLOHOME}/${i} ]
-    then
-        diff -u ${SCRIPTDIR}/dotarlobot/${i} ${ARLOHOME}/${i}
+        then
+        if ! (diff ${SCRIPTDIR}/dotarlobot/${i} ${ARLOHOME}/${i})
+            then
+        printf "\n${GREEN}The ${i} file in the repository is different from the one${NC}\n"
+        printf "${GREEN}in your local settings.${NC}\n"
+        printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
+        printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
+        diff ${SCRIPTDIR}/dotarlobot/${i} ${ARLOHOME}/${i}
+        cp -i ${SCRIPTDIR}/dotarlobot/${i} ${ARLOHOME}/
+        printf "\n"
+    else
+        printf "\n"
+        cp ${SCRIPTDIR}/dotarlobot/${i} ${ARLOHOME}/
+            printf "${GREEN}A brand new ${ARLOHOME}/${i} file has been created,${NC}\n"
+    printf "${GREEN}please edit this file to customize according to your robot!\n${NC}\n"
     fi
-    cp -i ${SCRIPTDIR}/dotarlobot/${i} ${ARLOHOME}/
 done
 
 if [ ! -d ${ARLOHOME}/rosmaps ]
-then
+    then
     mkdir ${ARLOHOME}/rosmaps
 fi
 
 if [ ! -d ${ARLOHOME}/sounds ]
-then
+    then
     mkdir ${ARLOHOME}/sounds
 fi
 
 if [ ! -d ${ARLOHOME}/status ]
-then
+    then
     mkdir ${ARLOHOME}/status
 fi
 chmod -R 777 ${ARLOHOME}/status
 
 # Install required Ubuntu packages
-echo "Installing required Ubuntu packages . . ."
-echo "You may be asked for your password"
-echo "In order to run apt-get install."
+printf "\n${YELLOW}[Installing required Ubuntu packages]${NC}\n"
 # NOTE: You have to pipe /dev/null INTO apt-get to make it work from wget.
 sudo apt-get install -qy ros-indigo-rosbridge-server imagemagick fswebcam festival festvox-en1 python-ftdi python-pip python-serial libv4l-dev jq unbuffer < /dev/null
 
 # Install required Python packages
-echo "Installing required Python packages . . ."
-echo "You may be asked for your password"
+printf "\n${YELLOW}[Installing required Python packages]${NC}\n"
 sudo pip install twilio pylibftdi
 
 # Install mjpg-streamer
 if ! (which mjpg_streamer)
-then
+    then
     cd ${SCRIPTDIR}
     svn co https://svn.code.sf.net/p/mjpg-streamer/code/ mjpg-streamer
     cd mjpg-streamer/mjpg-streamer
@@ -112,30 +141,29 @@ then
 fi
 
 if ! (id|grep dialout>/dev/null)
-then
+    then
     sudo adduser ${USER} dialout
     echo "You may have to reboot before you can use the Propeller Board."
 fi
 
 if ! [ -f /etc/udev/rules.d/99-libftdi.rules ]
-then
+    then
     sudo ${SCRIPTDIR}/addRuleForUSBRelayBoard.sh
     echo "You may have to reboot before the USB Relay board will function!"
 fi
 
 if ! (grep mbrola /etc/festival.scm>/dev/null)
-then
-    echo "Updating default Festival voice"
-    echo "You may be asked for your password"
-    echo "To allow updates to /etc/festival.scm"
+    then
+    printf "\n${YELLOW}[Updating default Festival voice]${NC}\n"
+    printf "${BLUE}You may be asked for your password\nTo allow updates to /etc/festival.scm${NC}\n"
     sudo ${SCRIPTDIR}/updateFestivalDefaults.sh
 fi
 
-# Set up required sudo entries.
+printf "\n${YELLOW}[Set up required sudo entries.]${NC}\n"
 sudo -nl|grep resetUSB > /dev/null
 if [ $? -ne 0 ]
-then
-    echo "Sudo entries already in place."
+    then
+    printf "${BLUE}Sudo entries already in place.${NC}\n"
 else
     echo "${USER} ALL = NOPASSWD: ${SCRIPTDIR}/resetUSB.sh" >> /tmp/arlobot_sudoers
     chmod 0440 /tmp/arlobot_sudoers
@@ -144,10 +172,10 @@ else
 fi
 
 if [ ${USER} == chrisl8 ]
-then
-    if ! [-f /home/robotStatusUser ]
     then
-        echo "Adding robotStatusUser."
+    if ! [-f /home/robotStatusUser ]
+        then
+        printf "\n${YELLOW}[Adding robotStatusUser.${NC}\n"
         echo "(This is NOT required for Arlobot, just a personal thing.)"
         sudo useradd -m robotStatusUser
         echo "Be sure to add your key to ~robotStatusUser/.ssh/authorized_keys"
@@ -163,8 +191,6 @@ then
 fi
 
 if ! [ -f ${HOME}/Desktop/arlobot.desktop ]
-then
-    echo "Modify and copy arlobot.desktop"
-    echo "to your Desktop folder to create an icon"
-    echo "in XWindows to start up the Robot!"
+    then
+    printf "\n${GREEN}Modify and copy arlobot.desktop\nto your Desktop folder to create an icon\nin XWindows to start up the Robot!${NC}\n"
 fi
