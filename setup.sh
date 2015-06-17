@@ -24,7 +24,7 @@ WHITE='\033[1;37m'
 NC='\033[0m' # NoColor
 
 printf "\n${YELLOW}Setting up Robot Operating System for your ArloBot!${NC}\n"
-printf "${GREEN}You will be asked for your password for running commands as root!${NC}\n\n"
+printf "${GREEN}You will be asked for your password for running commands as root!${NC}\n"
 
 version=`lsb_release -sc`
 
@@ -37,7 +37,7 @@ printf "${RED}[This script will only work on ubuntu saucy(13.10) or trusty(14.04
 exit 0
 esac
 
-printf "\n ${YELLOW}[Updating & upgrading all existing Ubuntu packages]${NC}\n"
+printf "\n${YELLOW}[Updating & upgrading all existing Ubuntu packages]${NC}\n"
 printf "${BLUE}silently . . .${NC}\n"
 # NOTE: You have to pipe /dev/null INTO apt-get to make it work from wget.
 sudo apt-get update -qq < /dev/null
@@ -64,11 +64,13 @@ if ! [ -e /etc/apt/sources.list.d/ros-latest.list ]
         sudo apt-get update -qq < /dev/null
         sudo apt-get upgrade -qq < /dev/null
     fi
+else
+    printf "${BLUE}Found existing ROS repository. No need to recreate.${NC}\n"
 fi
 
-printf "\n${YELLOW}[Installing ROS!]${NC}\n"
+printf "\n${YELLOW}[Installing ROS:]${NC}\n"
 sudo apt-get install -qy ros-indigo-desktop-full ros-indigo-rqt-* < /dev/null
-printf "${YELLOW}[ROS installed.]${NC}\n"
+printf "${YELLOW}[ROS installed!]${NC}\n"
 
 printf "\n${YELLOW}[rosdep init and python-rosinstall]${NC}\n"
 if ! [ -e /etc/ros/rosdep/sources.list.d/20-default.list ]
@@ -79,25 +81,25 @@ rosdep update
 source /opt/ros/indigo/setup.bash
 sudo apt-get install -qy python-rosinstall < /dev/null
 
-printf "\n${YELLOW}[Installing ROS Packages for Arlo]${NC}\n"
+printf "\n${YELLOW}[Installing additional Ubuntu and ROS Packages for Arlo]${NC}\n"
 sudo apt-get install -qy ros-indigo-turtlebot ros-indigo-turtlebot-apps ros-indigo-turtlebot-interactions ros-indigo-turtlebot-simulator ros-indigo-kobuki-ftdi < /dev/null
 source /opt/ros/indigo/setup.bash
 
 if ! [ -d ~/catkin_ws/src ]
     then
-    printf "${BLUE}[Making the catkin workspace and testing the catkin_make]${NC}\n"
+    printf "${BLUE}[Creating the catkin workspace and testing with catkin_make]${NC}\n"
     mkdir -p ~/catkin_ws/src
     cd ~/catkin_ws/src
     catkin_init_workspace
     cd ~/catkin_ws/
     catkin_make
+    source ~/catkin_ws/devel/setup.bash
+    rospack profile
 fi
 
-source ~/catkin_ws/devel/setup.bash
-rospack profile
-cd ~/catkin_ws/src
 
 printf "\n${YELLOW}[Cloning or Updating git repositories]${NC}\n"
+cd ~/catkin_ws/src
 if ! [ -d ~/catkin_ws/src/hector_slam ]
     then
     git clone https://github.com/chrisl8/hector_slam.git
@@ -178,7 +180,7 @@ if ! (grep catkin_ws ~/.bashrc>/dev/null)
     sh -c "echo \"source ~/catkin_ws/devel/setup.bash\" >> ~/.bashrc"
 fi
 
-printf "\n${YELLOW}[Setting up the Metatron Package.${NC}\n"
+printf "\n${YELLOW}[Setting up the Metatron Package.]${NC}\n"
 # Run Metatron Setup Script:
 ~/catkin_ws/src/Metatron/scripts/setup.sh
 
@@ -246,5 +248,4 @@ fi
 printf "\n${YELLOW}-----------------------------------${NC}\n"
 printf "${YELLOW}ALL DONE! REBOOT AND START TESTING!${NC}\n"
 printf "${GREEN}Look at README.md for testing ideas.${NC}\n"
-printf "${GREEN}See here for your next step:${NC}\n"
-printf "${BLUE}http://ekpyroticfrood.net/?p=165\n${NC}\n"
+printf "${GREEN}See here for your next step: ${BLUE}http://ekpyroticfrood.net/?p=165\n${NC}\n"
