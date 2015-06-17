@@ -23,12 +23,12 @@ YELLOW='\033[1;33m'
 WHITE='\033[1;37m'
 NC='\033[0m' # NoColor
 
-printf "\n${YELLOW}Setting up Robot Operating System for your ArloBot!\n${NC}\n"
-printf "${GREEN}You will be asked for your password for running commands as root!${NC}\n"
+printf "\n${YELLOW}Setting up Robot Operating System for your ArloBot!${NC}\n"
+printf "${GREEN}You will be asked for your password for running commands as root!${NC}\n\n"
 
 version=`lsb_release -sc`
 
-printf "${YELLOW}[Checking the ubuntu version]${NC}\n"
+printf "\n${YELLOW}[Checking the ubuntu version]${NC}\n"
 case $version in
   "saucy" | "trusty")
 ;;
@@ -37,7 +37,7 @@ printf "${RED}[This script will only work on ubuntu saucy(13.10) or trusty(14.04
 exit 0
 esac
 
-printf "${YELLOW}[Updating & upgrading all existing Ubuntu packages]${NC}\n"
+printf "\n ${YELLOW}[Updating & upgrading all existing Ubuntu packages]${NC}\n"
 printf "${BLUE}silently . . .${NC}\n"
 # NOTE: You have to pipe /dev/null INTO apt-get to make it work from wget.
 sudo apt-get update -qq < /dev/null
@@ -48,7 +48,7 @@ sudo apt-get upgrade -qq < /dev/null
 #sudo apt-get install -y chrony
 #sudo ntpdate ntp.ubuntu.com
 
-printf "${YELLOW}[Checking for ROS repository]${NC}\n"
+printf "\n${YELLOW}[Checking for ROS repository]${NC}\n"
 if ! [ -e /etc/apt/sources.list.d/ros-latest.list ]
     then
     printf "${BLUE}[Adding the ROS repository]${NC}\n"
@@ -66,11 +66,11 @@ if ! [ -e /etc/apt/sources.list.d/ros-latest.list ]
     fi
 fi
 
-printf "${YELLOW}[Installing ROS!]${NC}\n"
+printf "\n${YELLOW}[Installing ROS!]${NC}\n"
 sudo apt-get install -qy ros-indigo-desktop-full ros-indigo-rqt-* < /dev/null
 printf "${YELLOW}[ROS installed.]${NC}\n"
 
-printf "${YELLOW}[rosdep init and python-rosinstall]${NC}\n"
+printf "\n${YELLOW}[rosdep init and python-rosinstall]${NC}\n"
 if ! [ -e /etc/ros/rosdep/sources.list.d/20-default.list ]
     then
     sudo sh -c "rosdep init"
@@ -79,13 +79,13 @@ rosdep update
 source /opt/ros/indigo/setup.bash
 sudo apt-get install -qy python-rosinstall < /dev/null
 
-printf "${YELLOW}[Installing ROS Packages for Arlo]${NC}\n"
+printf "\n${YELLOW}[Installing ROS Packages for Arlo]${NC}\n"
 sudo apt-get install -qy ros-indigo-turtlebot ros-indigo-turtlebot-apps ros-indigo-turtlebot-interactions ros-indigo-turtlebot-simulator ros-indigo-kobuki-ftdi < /dev/null
 source /opt/ros/indigo/setup.bash
 
 if ! [ -d ~/catkin_ws/src ]
     then
-    printf "${YELLOW}[Making the catkin workspace and testing the catkin_make]${NC}\n"
+    printf "${BLUE}[Making the catkin workspace and testing the catkin_make]${NC}\n"
     mkdir -p ~/catkin_ws/src
     cd ~/catkin_ws/src
     catkin_init_workspace
@@ -97,7 +97,7 @@ source ~/catkin_ws/devel/setup.bash
 rospack profile
 cd ~/catkin_ws/src
 
-printf "${YELLOW}[Cloning or Updating git repositories]${NC}\n"
+printf "\n${YELLOW}[Cloning or Updating git repositories]${NC}\n"
 if ! [ -d ~/catkin_ws/src/hector_slam ]
     then
     git clone https://github.com/chrisl8/hector_slam.git
@@ -158,12 +158,13 @@ else
     git pull
 fi
 
+printf "\n${YELLOW}[(Re)Building ROS Source files.]${NC}\n"
 cd ~/catkin_ws
 catkin_make
 source ~/catkin_ws/devel/setup.bash
 rospack profile
 
-printf "${YELLOW}[Setting the ROS environment in your .bashrc file]${NC}\n"
+printf "\n${YELLOW}[Setting the ROS environment in your .bashrc file]${NC}\n"
 if ! (grep ROS_HOSTNAME ~/.bashrc>/dev/null)
     then
     sh -c "echo \"export ROS_HOSTNAME=`uname -n`.local\" >> ~/.bashrc"
@@ -177,7 +178,7 @@ if ! (grep catkin_ws ~/.bashrc>/dev/null)
     sh -c "echo \"source ~/catkin_ws/devel/setup.bash\" >> ~/.bashrc"
 fi
 
-printf "${YELLOW}[Setting the Metatron Package.${NC}\n"
+printf "\n${YELLOW}[Setting up the Metatron Package.${NC}\n"
 # Run Metatron Setup Script:
 ~/catkin_ws/src/Metatron/scripts/setup.sh
 
@@ -186,12 +187,11 @@ printf "${YELLOW}[Setting the Metatron Package.${NC}\n"
 if ! (id|grep dialout>/dev/null)
     then
     printf "${RED}Adding your user to the dialout group,${NC}\n"
-    printf "${GREEN}You may be asked for your password.${NC}\n"
     sudo adduser ${USER} dialout
     printf "${RED}You may have to reboot before you can use the Propeller Board.${NC}\n"
 fi
 
-printf "${YELLOW}Installing additional required Ubuntu packages for Arlobot${NC}\n"
+printf "\n${YELLOW}[Installing additional required Ubuntu packages for Arlobot]${NC}\n"
 
 # For 8-CH USB Relay board:
 # Reference: https://code.google.com/p/drcontrol/wiki/Install_RaspberryPi">https://code.google.com/p/drcontrol/wiki/Install_RaspberryPi
@@ -208,8 +208,7 @@ sudo pip install pylibftdi
 
 if ! [ -f /etc/udev/rules.d/99-libftdi.rules ]
     then
-    printf "${RED}Adding required sudo rule to reset USB ports."
-    printf "${GREEN}You may be asked for your password."
+    printf "\n${RED}Adding required sudo rule to reset USB ports."
     sudo ~/catkin_ws/src/ArloBot/addRuleForUSBRelayBoard.sh
     printf "${RED}You may have to reboot before the USB Relay board will function!"
 fi
@@ -229,7 +228,7 @@ if [ -e ${ARLOHOME}/arlobot.yaml ]
     then
     if ! (diff ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/arlobot.yaml)
         then
-        printf "${GREEN}\nThe arlobot.yaml file in the repository is different from the one${NC}\n"
+        printf "\n${GREEN}The arlobot.yaml file in the repository is different from the one${NC}\n"
         printf "${GREEN}in your local settings.${NC}\n"
         printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
         printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
@@ -244,7 +243,8 @@ else
     printf "${GREEN}please edit this file to customize according to your robot!\n${NC}\n"
 fi
 
-printf "${YELLOW}All done! Reboot and start testing!${NC}\n"
-printf "${GREEN}Look at README.md for testing ideas.\n${NC}\n"
+printf "\n${YELLOW}-----------------------------------${NC}\n"
+printf "${YELLOW}ALL DONE! REBOOT AND START TESTING!${NC}\n"
+printf "${GREEN}Look at README.md for testing ideas.${NC}\n"
 printf "${GREEN}See here for your next step:${NC}\n"
 printf "${BLUE}http://ekpyroticfrood.net/?p=165\n${NC}\n"
