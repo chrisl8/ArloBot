@@ -87,6 +87,9 @@ sudo apt-get install -qy python-rosinstall < /dev/null
 # END Offical ROS Install section
 
 printf "\n${YELLOW}[Installing additional Ubuntu and ROS Packages for Arlo]${NC}\n"
+
+# Notes on what the packages are for:
+
 # For 8-CH USB Relay board:
 # Reference: https://code.google.com/p/drcontrol/wiki/Install_RaspberryPi">https://code.google.com/p/drcontrol/wiki/Install_RaspberryPi
 # python-ftdi,  python-pip and sudo pip install pylibftdi
@@ -95,7 +98,15 @@ printf "\n${YELLOW}[Installing additional Ubuntu and ROS Packages for Arlo]${NC}
 #Should return:
 #FTDI:FT245R USB FIFO:A9026EI5
 #If you have a USB Relay board attached via USB.
-sudo apt-get install -qy ros-indigo-turtlebot ros-indigo-turtlebot-apps ros-indigo-turtlebot-interactions ros-indigo-turtlebot-simulator ros-indigo-kobuki-ftdi python-ftdi python-pip python-serial ros-indigo-openni-* ros-indigo-openni2-* ros-indigo-freenect-* ros-indigo-vision-opencv libopencv-dev python-opencv < /dev/null
+
+#TLP: http://linrunner.de/en/tlp/tlp.html
+# tlp tlp-rdw
+# For better battery life!
+sudo add-apt-repository ppa:linrunner/tlp -y &> /dev/null
+sudo apt-get update -qq
+
+sudo apt-get install -qy ros-indigo-turtlebot ros-indigo-turtlebot-apps ros-indigo-turtlebot-interactions ros-indigo-turtlebot-simulator ros-indigo-kobuki-ftdi python-ftdi python-pip python-serial ros-indigo-openni-* ros-indigo-openni2-* ros-indigo-freenect-* ros-indigo-vision-opencv libopencv-dev python-opencv tlp tlp-rdw < /dev/null
+
 # For 8-CH USB Relay board:
 sudo pip install pylibftdi
 
@@ -233,7 +244,7 @@ else
     printf "\n"
     cp ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/
     printf "${GREEN}A brand new ${RED}~/.arlobot/arlobot.yaml${GREEN} file has been created,${NC}\n"
-    printf "${LIGHTPURPLE}Please edit this file to customize according to your robot!\n${NC}\n"
+    printf "${LIGHTPURPLE}Please edit this file to customize according to your robot!${NC}\n"
 fi
 
 printf "\n${PURPLE}Anytime you want to update ArloBot code from the web you can run this same script again. It will pull down and compile new code without wiping out custom configs in ~/.arlarbot. I run this script myself almost every day.\n"
