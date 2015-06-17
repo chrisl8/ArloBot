@@ -92,7 +92,6 @@ fi
 if [ ! -d  ${SCRIPTDIR}/../node/public/lcars/ ]
     then
     printf "\n${YELLOW}[Cloning in lcars CSS Framework]${NC}\n"
-    echo "${SCRIPTDIR}/../node/public/"
     cd ${SCRIPTDIR}/../node/public/
     pwd
     git clone https://github.com/Garrett-/lcars.git
