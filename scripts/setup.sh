@@ -208,4 +208,4 @@ if [ ${USER} == chrisl8 ]
     echo STOP > ${HOME}/.arlobot/status/room-MainFloorHome
 fi
 
-echo "DONE"
+printf "${BLUE}Metatron Setup.sh Script done.${NC}\n"
