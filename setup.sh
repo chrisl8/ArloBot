@@ -3,7 +3,7 @@
 # Blame goes to ChrisL8
 
 # Run this straight off of github like this:
-# bash <(wget -qO- https://raw.githubusercontent.com/chrisl8/ArloBot/master/setup.sh)
+# bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/master/setup.sh)
 
 BLACK='\033[0;30m'
 BLUE='\033[0;34m'
@@ -28,7 +28,7 @@ printf "${GREEN}You will be asked for your password for running commands as root
 
 version=`lsb_release -sc`
 
-printf "\n${YELLOW}[Checking the ubuntu version]${NC}\n"
+printf "\n${YELLOW}[Checking the Ubuntu version]${NC}\n"
 case $version in
   "saucy" | "trusty")
 ;;
@@ -82,7 +82,17 @@ source /opt/ros/indigo/setup.bash
 sudo apt-get install -qy python-rosinstall < /dev/null
 
 printf "\n${YELLOW}[Installing additional Ubuntu and ROS Packages for Arlo]${NC}\n"
-sudo apt-get install -qy ros-indigo-turtlebot ros-indigo-turtlebot-apps ros-indigo-turtlebot-interactions ros-indigo-turtlebot-simulator ros-indigo-kobuki-ftdi < /dev/null
+# For 8-CH USB Relay board:
+# Reference: https://code.google.com/p/drcontrol/wiki/Install_RaspberryPi">https://code.google.com/p/drcontrol/wiki/Install_RaspberryPi
+# python-ftdi,  python-pip and sudo pip install pylibftdi
+# TEST:
+#python -m pylibftdi.examples.list_devices
+#Should return:
+#FTDI:FT245R USB FIFO:A9026EI5
+#If you have a USB Relay board attached via USB.
+sudo apt-get install -qy ros-indigo-turtlebot ros-indigo-turtlebot-apps ros-indigo-turtlebot-interactions ros-indigo-turtlebot-simulator ros-indigo-kobuki-ftdi python-ftdi python-pip python-serial ros-indigo-openni-* ros-indigo-openni2-* ros-indigo-freenect-* ros-indigo-vision-opencv libopencv-dev python-opencv < /dev/null
+# For 8-CH USB Relay board:
+sudo pip install pylibftdi
 source /opt/ros/indigo/setup.bash
 
 if ! [ -d ~/catkin_ws/src ]
@@ -192,21 +202,6 @@ if ! (id|grep dialout>/dev/null)
     sudo adduser ${USER} dialout
     printf "${RED}You may have to reboot before you can use the Propeller Board.${NC}\n"
 fi
-
-printf "\n${YELLOW}[Installing additional required Ubuntu packages for Arlobot]${NC}\n"
-
-# For 8-CH USB Relay board:
-# Reference: https://code.google.com/p/drcontrol/wiki/Install_RaspberryPi">https://code.google.com/p/drcontrol/wiki/Install_RaspberryPi
-# python-ftdi,  python-pip and sudo pip install pylibftdi
-# TEST:
-#python -m pylibftdi.examples.list_devices
-#Should return:
-#FTDI:FT245R USB FIFO:A9026EI5
-#If you have a USB Relay board attached via USB.
-
-sudo apt-get install -qy python-ftdi python-pip python-serial ros-indigo-openni-* ros-indigo-openni2-* ros-indigo-freenect-* ros-indigo-vision-opencv libopencv-dev python-opencv < /dev/null
-# For 8-CH USB Relay board:
-sudo pip install pylibftdi
 
 if ! [ -f /etc/udev/rules.d/99-libftdi.rules ]
     then
