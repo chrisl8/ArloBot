@@ -32,7 +32,7 @@ fi
 export NVM_DIR="${HOME}/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 nvm install stable
-nvm use stable
+#nvm use stable # Redundant
 
 # Install required node packages
 #echo "Installing required node packages . . ."
@@ -43,7 +43,7 @@ nvm use stable
 #echo "Fix personal npm folder permissions"
 #sudo chown -R `whoami` ${HOME}/.npm/
 
-printf "\n${YELLOW}[Grabbing dependencies for node packages.${NC}\n"
+printf "\n${YELLOW}[Grabbing dependencies for node packages.]${NC}\n"
 cd ${SCRIPTDIR}/../node
 npm install
 cd ${SCRIPTDIR}
@@ -63,9 +63,13 @@ cd ${SCRIPTDIR}
 
 if [ ! -d  ${SCRIPTDIR}/../node/public/lcars/ ]
     then
-    printf "\n${YELLOW}[Cloning in lcars CSS Framework${NC}\n"
+    printf "\n${YELLOW}[Cloning in lcars CSS Framework]${NC}\n"
     cd ${SCRIPTDIR}/../node/public/
     git clone https://github.com/Garrett-/lcars.git
+else
+    printf "\n${YELLOW}[Updating lcars CSS Framework repo]${NC}\n"
+    cd ${SCRIPTDIR}/../node/public/lcars
+    git pull
 fi
 
 printf "\n${YELLOW}[Setting up .arlobot folder]${NC}\n"
@@ -87,18 +91,19 @@ do
         then
         if ! (diff ${SCRIPTDIR}/dotarlobot/${i} ${ARLOHOME}/${i})
             then
-        printf "\n${GREEN}The ${i} file in the repository is different from the one${NC}\n"
-        printf "${GREEN}in your local settings.${NC}\n"
-        printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
-        printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
-        diff ${SCRIPTDIR}/dotarlobot/${i} ${ARLOHOME}/${i}
-        cp -i ${SCRIPTDIR}/dotarlobot/${i} ${ARLOHOME}/
-        printf "\n"
+            printf "\n${GREEN}The ${i} file in the repository is different from the one${NC}\n"
+            printf "${GREEN}in your local settings.${NC}\n"
+            printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
+            printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
+            diff ${SCRIPTDIR}/dotarlobot/${i} ${ARLOHOME}/${i}
+            cp -i ${SCRIPTDIR}/dotarlobot/${i} ${ARLOHOME}/
+            printf "\n"
+        fi
     else
         printf "\n"
         cp ${SCRIPTDIR}/dotarlobot/${i} ${ARLOHOME}/
-            printf "${GREEN}A brand new ${ARLOHOME}/${i} file has been created,${NC}\n"
-    printf "${GREEN}please edit this file to customize according to your robot!\n${NC}\n"
+        printf "${GREEN}A brand new ${ARLOHOME}/${i} file has been created,${NC}\n"
+        printf "${GREEN}please edit this file to customize according to your robot!\n${NC}\n"
     fi
 done
 
@@ -119,7 +124,7 @@ fi
 chmod -R 777 ${ARLOHOME}/status
 
 # Install required Ubuntu packages
-printf "\n${YELLOW}[Installing required Ubuntu packages]${NC}\n"
+printf "\n${YELLOW}[Installing additional Ubuntu packages for Metatron]${NC}\n"
 # NOTE: You have to pipe /dev/null INTO apt-get to make it work from wget.
 sudo apt-get install -qy ros-indigo-rosbridge-server imagemagick fswebcam festival festvox-en1 python-ftdi python-pip python-serial libv4l-dev jq unbuffer < /dev/null
 
