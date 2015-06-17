@@ -127,7 +127,7 @@ do
         printf "\n"
         cp ${SCRIPTDIR}/dotarlobot/${i} ${ARLOHOME}/
         printf "${GREEN}A brand new ${RED}${ARLOHOME}/${i}${GREEN} file has been created,${NC}\n"
-        printf "${RED}please edit this file to customize according to your robot!\n${NC}\n"
+        printf "${LIGHTPURPLE}Please edit this file to customize according to your robot!\n${NC}\n"
     fi
 done
 
@@ -146,13 +146,6 @@ if [ ! -d ${ARLOHOME}/status ]
     mkdir ${ARLOHOME}/status
 fi
 chmod -R 777 ${ARLOHOME}/status
-
-if ! (id|grep dialout>/dev/null)
-    then
-    printf "\n${GREEN}Adding your user to the 'dialout' group.${NC}\n"
-    sudo adduser ${USER} dialout > /dev/null
-    printf "${RED}You may have to reboot before you can use the Propeller Board.${NC}\n"
-fi
 
 if ! [ -f /etc/udev/rules.d/99-libftdi.rules ]
     then
@@ -184,7 +177,7 @@ if [ ${USER} == chrisl8 ]
     then
     if ! [ -d /home/robotStatusUser ]
         then
-        printf "\n${YELLOW}[Adding robotStatusUser.${NC}\n"
+        printf "\n${YELLOW}[Adding robotStatusUser.]${NC}\n"
         printf "${GREEN}(This is NOT required for Arlobot, just a personal thing.)${NC}\n"
         sudo useradd -m robotStatusUser
         printf "${GREEN}Be sure to add your key to ~robotStatusUser/.ssh/authorized_keys${NC}\n"
