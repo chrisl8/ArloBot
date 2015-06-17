@@ -126,7 +126,8 @@ chmod -R 777 ${ARLOHOME}/status
 # Install required Ubuntu packages
 printf "\n${YELLOW}[Installing additional Ubuntu packages for Metatron]${NC}\n"
 # NOTE: You have to pipe /dev/null INTO apt-get to make it work from wget.
-sudo apt-get install -qy ros-indigo-rosbridge-server imagemagick fswebcam festival festvox-en1 python-ftdi python-pip python-serial libv4l-dev jq unbuffer < /dev/null
+# expect-dev required to get 'unbuffer' which is required by node to spawn ROS commands and get real time stdout data
+sudo apt-get install -qy ros-indigo-rosbridge-server imagemagick fswebcam festival festvox-en1 python-ftdi python-pip python-serial libv4l-dev jq expect-dev < /dev/null
 
 # Install required Python packages
 printf "\n${YELLOW}[Installing required Python packages]${NC}\n"
@@ -178,7 +179,7 @@ fi
 
 if [ ${USER} == chrisl8 ]
     then
-    if ! [-f /home/robotStatusUser ]
+    if ! [ -f /home/robotStatusUser ]
         then
         printf "\n${YELLOW}[Adding robotStatusUser.${NC}\n"
         echo "(This is NOT required for Arlobot, just a personal thing.)"
