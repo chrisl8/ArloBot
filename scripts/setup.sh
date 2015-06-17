@@ -3,6 +3,7 @@
 # and user environment for Metatron and Arlobot to work
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
+echo "${SCRIPTDIR}"
 
 BLACK='\033[0;30m'
 BLUE='\033[0;34m'
@@ -44,6 +45,8 @@ nvm install stable
 #sudo chown -R `whoami` ${HOME}/.npm/
 
 printf "\n${YELLOW}[Grabbing dependencies for node packages.]${NC}\n"
+cd
+npm install -g forever
 cd ${SCRIPTDIR}/../node
 npm install
 cd ${SCRIPTDIR}
@@ -89,7 +92,9 @@ fi
 if [ ! -d  ${SCRIPTDIR}/../node/public/lcars/ ]
     then
     printf "\n${YELLOW}[Cloning in lcars CSS Framework]${NC}\n"
+    echo "${SCRIPTDIR}/../node/public/"
     cd ${SCRIPTDIR}/../node/public/
+    pwd
     git clone https://github.com/Garrett-/lcars.git
 else
     printf "\n${YELLOW}[Updating lcars CSS Framework repo]${NC}\n"
@@ -106,7 +111,7 @@ if ! [ -f ${HOME}/Desktop/arlobot.desktop ]
     echo "GenericName=ArloBot" >> ${HOME}/Desktop/arlobot.desktop
     echo "Comment=Start the robot" >> ${HOME}/Desktop/arlobot.desktop
     echo "Exec=lxterminal --command \"${HOME}/catkin_ws/src/Metatron/scripts/arlobotXwindows.sh\"" >> ${HOME}/Desktop/arlobot.desktop
-    echo "Icon=${HOME}/catkin_ws/src/Metatron/node/webserver/public/icons/mstile-70x70.png" >> ${HOME}/Desktop/arlobot.desktop
+    echo "Icon=${HOME}/catkin_ws/src/Metatron/node/public/icons/mstile-70x70.png" >> ${HOME}/Desktop/arlobot.desktop
     echo "Type=Application" >> ${HOME}/Desktop/arlobot.desktop
     echo "Path=${HOME}/catkin_ws/src/Metatron/scripts/" >> ${HOME}/Desktop/arlobot.desktop
     echo "Terminal=false" >> ${HOME}/Desktop/arlobot.desktop
