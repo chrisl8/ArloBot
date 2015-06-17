@@ -76,9 +76,9 @@ sudo apt-get install -qy ros-indigo-rosbridge-server imagemagick fswebcam festiv
 #printf "\n${YELLOW}[Installing required Python packages for Metatron]${NC}\n"
 #sudo pip install twilio pylibftdi
 
-printf "\n${YELLOW}[Installing mjpg_streamer for Web Page camera viewing]${NC}\n"
-if ! (which mjpg_streamer)
+if ! (which mjpg_streamer > /dev/null)
     then
+    printf "\n${YELLOW}[Installing mjpg_streamer for Web Page camera viewing]${NC}\n"
     cd ${SCRIPTDIR}
     svn co https://svn.code.sf.net/p/mjpg-streamer/code/ mjpg-streamer
     cd mjpg-streamer/mjpg-streamer
@@ -180,12 +180,9 @@ if ! (grep mbrola /etc/festival.scm>/dev/null)
     sudo ${SCRIPTDIR}/updateFestivalDefaults.sh
 fi
 
-printf "\n${YELLOW}[Setting up required sudo entries.]${NC}\n"
-sudo -nl|grep resetUSB > /dev/null
-if [ $? -ne 0 ]
+if ! (sudo -nl|grep resetUSB > /dev/null)
     then
-    printf "${BLUE}Sudo entries already in place.${NC}\n"
-else
+    printf "\n${YELLOW}[Setting up required sudo entries.]${NC}\n"
     echo "${USER} ALL = NOPASSWD: ${SCRIPTDIR}/resetUSB.sh" >> /tmp/arlobot_sudoers
     chmod 0440 /tmp/arlobot_sudoers
     sudo mv /tmp/arlobot_sudoers /etc/sudoers.d/
