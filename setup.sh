@@ -1,9 +1,9 @@
 #!/bin/bash
+# ROS Indigo Automated Install - credit goes to everyone
+# Blame goes to ChrisL8
 
-# ROS Indigo Automated Install:
-
-# The BSD License
-# Copyright (c) 2014 OROCA and ROS Korea Users Group
+# Run this straight off of github like this:
+# wget -qO- https://raw.githubusercontent.com/chrisl8/ArloBot/master/setup.sh | bash
 
 echo ""
 echo "Setting up Robot Operating System for your ArloBot!"
@@ -23,8 +23,10 @@ esac
 
 echo "[Updating & upgrading all existing Ubuntu packages]"
 echo "silently . . ."
-sudo apt-get update -qq
-sudo apt-get upgrade -qq
+# NOTE: You have to pipe /dev/null INTO apt-get to make it work from wget.
+#
+sudo apt-get update -qq < /dev/null
+sudo apt-get upgrade -qq < /dev/null
 
 # I never use this, but if you are having time issues maybe uncomment this.
 #echo "[Installing chrony and setting the ntpdate]"
@@ -44,13 +46,13 @@ if ! [ -e /etc/apt/sources.list.d/ros-latest.list ]
         wget --quiet https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -O - | sudo apt-key add -
         echo "[Update & upgrade the packages with the new repository]"
         echo "silently . . ."
-        sudo apt-get update -qq
-        sudo apt-get upgrade -qq
+        sudo apt-get update -qq < /dev/null
+        sudo apt-get upgrade -qq < /dev/null
     fi
 fi
 
 echo "[Installing ROS!]"
-sudo apt-get install -qy ros-indigo-desktop-full ros-indigo-rqt-*
+sudo apt-get install -qy ros-indigo-desktop-full ros-indigo-rqt-* < /dev/null
 echo "[ROS installed.]"
 
 echo "[rosdep init and python-rosinstall]"
@@ -60,10 +62,10 @@ if ! [ -e /etc/ros/rosdep/sources.list.d/20-default.list ]
 fi
 rosdep update
 source /opt/ros/indigo/setup.bash
-sudo apt-get install -qy python-rosinstall
+sudo apt-get install -qy python-rosinstall < /dev/null
 
 echo "[Installing ROS Packages for Arlo]"
-sudo apt-get install -qy ros-indigo-turtlebot ros-indigo-turtlebot-apps ros-indigo-turtlebot-interactions ros-indigo-turtlebot-simulator ros-indigo-kobuki-ftdi
+sudo apt-get install -qy ros-indigo-turtlebot ros-indigo-turtlebot-apps ros-indigo-turtlebot-interactions ros-indigo-turtlebot-simulator ros-indigo-kobuki-ftdi < /dev/null
 source /opt/ros/indigo/setup.bash
 
 if ! [ -d ~/catkin_ws/src ]
@@ -181,8 +183,7 @@ echo "Installing additional required Ubuntu packages for Arlobot"
 #FTDI:FT245R USB FIFO:A9026EI5
 #If you have a USB Relay board attached via USB.
 
-sudo apt-get install -qy python-ftdi python-pip python-serial ros-indigo-openni-* ros-indigo-openni2-* \
-ros-indigo-freenect-* ros-indigo-vision-opencv libopencv-dev python-opencv
+sudo apt-get install -qy python-ftdi python-pip python-serial ros-indigo-openni-* ros-indigo-openni2-* ros-indigo-freenect-* ros-indigo-vision-opencv libopencv-dev python-opencv < /dev/null
 # For 8-CH USB Relay board:
 sudo pip install pylibftdi
 
