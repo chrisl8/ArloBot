@@ -179,7 +179,7 @@ fi
 
 if [ ${USER} == chrisl8 ]
     then
-    if ! [ -f /home/robotStatusUser ]
+    if ! [ -d /home/robotStatusUser ]
         then
         printf "\n${YELLOW}[Adding robotStatusUser.${NC}\n"
         echo "(This is NOT required for Arlobot, just a personal thing.)"
