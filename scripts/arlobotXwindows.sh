@@ -1,3 +1,6 @@
+export NVM_DIR="${HOME}/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+nvm use stable
 cd ../node
 forever start --killSignal=SIGINT --minUptime=5000 --spinSleepTime=10000 --l="/tmp/arloBehavior.log" --o="/tmp/arloBehavior.log" --e="/tmp/arloBehavior.log" arloBehavior.js
 forever list

@@ -99,8 +99,17 @@ fi
 
 if ! [ -f ${HOME}/Desktop/arlobot.desktop ]
     then
-    printf "\n${YELLOW}[Copy Desktop Icon]${NC}\n"
-    cp ${SCRIPTDIR}/arlobot.desktop ${HOME}/Desktop/
+    printf "\n${YELLOW}[Create Desktop Icon]${NC}\n"
+    echo "[Desktop Entry]" > ${HOME}/Desktop/arlobot.desktop
+    echo "Encoding=UTF-8" >> ${HOME}/Desktop/arlobot.desktop
+    echo "Name=ArloBot" >> ${HOME}/Desktop/arlobot.desktop
+    echo "GenericName=ArloBot" >> ${HOME}/Desktop/arlobot.desktop
+    echo "Comment=Start the robot" >> ${HOME}/Desktop/arlobot.desktop
+    echo "Exec=lxterminal --command \"${HOME}/catkin_ws/src/Metatron/scripts/arlobotXwindows.sh\"" >> ${HOME}/Desktop/arlobot.desktop
+    echo "Icon=${HOME}/catkin_ws/src/Metatron/node/webserver/public/icons/mstile-70x70.png" >> ${HOME}/Desktop/arlobot.desktop
+    echo "Type=Application" >> ${HOME}/Desktop/arlobot.desktop
+    echo "Path=${HOME}/catkin_ws/src/Metatron/scripts/" >> ${HOME}/Desktop/arlobot.desktop
+    echo "Terminal=false" >> ${HOME}/Desktop/arlobot.desktop
 fi
 
 printf "\n${YELLOW}[Setting up .arlobot folder]${NC}\n"
