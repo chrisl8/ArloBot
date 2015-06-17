@@ -9,4 +9,4 @@ src/CMakeLists.txt
 node/node_modules/
 node/build/
 scripts/mjpg-streamer/
-node/webserver/lcars/
+node/public/lcars/

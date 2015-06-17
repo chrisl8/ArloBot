@@ -3,7 +3,6 @@
 # and user environment for Metatron and Arlobot to work
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
-echo "${SCRIPTDIR}"
 
 BLACK='\033[0;30m'
 BLUE='\033[0;34m'
@@ -23,13 +22,13 @@ YELLOW='\033[1;33m'
 WHITE='\033[1;37m'
 NC='\033[0m' # NoColor
 
-# Check for node.js installation
 if [ ! -e  ${HOME}/.nvm/nvm.sh ]
     then
     printf "\n${YELLOW}[Installing Node Version Manager${NC}\n"
     wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | bash
 fi
 
+printf "\n${YELLOW}[Initializing Latest Stable Node version]${NC}\n"
 export NVM_DIR="${HOME}/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 nvm install stable
@@ -44,7 +43,7 @@ nvm install stable
 #echo "Fix personal npm folder permissions"
 #sudo chown -R `whoami` ${HOME}/.npm/
 
-printf "\n${YELLOW}[Grabbing dependencies for node packages.]${NC}\n"
+printf "\n${YELLOW}[Grabbing dependencies for node packages]${NC}\n"
 cd
 npm install -g forever log.io
 cd ${SCRIPTDIR}/../node
@@ -133,9 +132,9 @@ for i in `ls ${SCRIPTDIR}/dotarlobot/`
 do
     if [ -e  ${ARLOHOME}/${i} ]
         then
-        if ! (diff ${SCRIPTDIR}/dotarlobot/${i} ${ARLOHOME}/${i})
+        if ! (diff ${SCRIPTDIR}/dotarlobot/${i} ${ARLOHOME}/${i} > /dev/null)
             then
-            printf "\n${GREEN}The ${i} file in the repository is different from the one${NC}\n"
+            printf "\n${GREEN}The ${RED}${i}${GREEN} file in the repository is different from the one${NC}\n"
             printf "${GREEN}in your local settings.${NC}\n"
             printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
             printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
@@ -208,3 +207,5 @@ if [ ${USER} == chrisl8 ]
     # which will cause the robot to stop.
     echo STOP > ${HOME}/.arlobot/status/room-MainFloorHome
 fi
+
+echo "DONE"
