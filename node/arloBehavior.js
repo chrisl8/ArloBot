@@ -9,11 +9,19 @@
 //   this.b3 = this.b3 || {};
 //  +b3 = {};
 
+var webModel = require('./webModel');
+
+var fs = require('fs');
+
+// Load personal settings not included in git repo
+var personalDataFile = process.env.HOME + '/.arlobot/personalDataForBehavior.json';
+var personalData = JSON.parse(fs.readFileSync(personalDataFile, 'utf8'));
+
+b3 = {};
 var behavior3js = require('behavior3js');
 
 var exec = require('child_process').exec;
 var spawn = require('child_process').spawn;
-var ROSLIB = require('roslib');
 // Note that tts will convert text to speech,
 // or it will send a ".wav" string (path, etc)
 // to aplay.
@@ -21,6 +29,7 @@ var ROSLIB = require('roslib');
 // system wide "bequiet" requests.
 // The same modele is used by ROS Python scripts.
 var tts = require('./tts');
+var LaunchScript = require('./launch_script');
 
 var textme = require('./textme');
 var arloTree = new b3.BehaviorTree();
@@ -33,6 +42,7 @@ var killROS = function(exitWhenDone) {
     // It is rather catastrophic if this repeats!
     if (!kill_rosHasRun) {
         kill_rosHasRun = true;
+        webModel.ROSstart = false;
         console.log("Running kill_ros.sh . . .");
         var shutdownCommand = exec(command);
         shutdownCommand.stdout.on('data', function(data) {
@@ -49,6 +59,7 @@ var killROS = function(exitWhenDone) {
                 process.exit();
             } else {
                 kill_rosHasRun = false;
+                webModel.ROSisRunning = false;
             }
         });
         shutdownCommand.on('error', function(err) {
@@ -97,7 +108,7 @@ webserver.on('exit', function() {
 console.log("Starting web server.");
 webserver.start();
 */
-var webServer = require('./webserver/webserver');
+var webServer = require('./webserver');
 var io = webServer.start();
 
 var ROSrunRequested = b3.Class(b3.Condition);
@@ -106,103 +117,36 @@ ROSrunRequested.prototype.tick = function(tick) {
     if (webServer.webModel.ROSstart) {
         return b3.SUCCESS;
     } else {
-        if (arloBot.metatronProcessStartupComplete) {
-            arloBot.metatronProcessStartupComplete = false;
+        if (arloBot.ROSprocess.startupComplete) {
+            arloBot.ROSprocess.startupComplete = false;
             killROS(false);
         }
-        console.log(this.name);
+        console.log(this.name + ': FAILURE');
         return b3.FAILURE;
     }
 };
 
+// TODO: Copy pattern from load map to here to make it resilient
+// to process death!
 var StartROS = b3.Class(b3.Action);
 StartROS.prototype.name = 'StartROS';
 StartROS.prototype.tick = function(tick) {
-    if (arloBot.metatronProcessStarted) {
-        if (arloBot.metatronStartupNoError) {
-            if (arloBot.metatronProcessStartupComplete) {
-                return b3.SUCCESS;
+    if (arloBot.ROSprocess.started) {
+        if (arloBot.ROSprocess.startupComplete) {
+            if (arloBot.ROSprocess.hasExited) {
+                webModel.ROSisRunning = false;
+                console.log(this.name + "FAILURE");
+                return b3.FAILURE;
             } else {
-                console.log(this.name + " RUNNING!");
-                return b3.RUNNING;
+                webModel.ROSisRunning = true;
+                return b3.SUCCESS;
             }
         } else {
-            console.log(this.name + "FAILURE");
-            return b3.FAILURE;
+            console.log(this.name + " RUNNING!");
+            return b3.RUNNING;
         }
     } else {
-        console.log(this.name);
-        console.log("Running child process . . .");
-        arloBot.metatronProcessStartupComplete = false;
-        arloBot.metatronProcessStarted = true;
-        webServer.updateWebModel('ROSisRunning', false);
-        webServer.updateWebModel('status', 'ROS is starting up . . .');
-        // node suffers from similar user environment issues
-        // as running via PHP from the web,
-        // so PHP's start script works well,
-        // although we can run it as me, so no need for the
-        // stub to call with sudo
-        // TODO: Make sure kill_ros.sh doesn't kill anything
-        // that we started or need in the node app!
-        var rosProcess = spawn('./startROS.sh');
-
-        rosProcess.stdout.setEncoding('utf8');
-        rosProcess.stdout.on('data', function(data) {
-            //console.log('stdout: ' + data);
-            // We can search the output for text:
-            // if (data.indexOf('SUCCESS: ROS Started') > -1) {
-            //     arloBot.metatronProcessStartupComplete = true;
-            // }
-
-            // This is what we get if ROS exits, such as
-            // if killed externally.
-            if (data.indexOf('[master] killing on exit') > -1) {
-                tts('What happened?');
-                arloBot.metatronStartupNoError = false;
-                // Require user to request a restart
-                webServer.webModel.ROSstart = false;
-                // , and then do it.
-                arloBot.metatronProcessStarted = false;
-                webServer.updateWebModel('ROSisRunning', false);
-                webServer.updateWebModel('status', 'ROS is Not Running.');
-            }
-        });
-        // rosProcess.stderr.setEncoding('utf8');
-        // rosProcess.stderr.on('data', function (data) {
-        //     console.log('stderr: ' + data);
-        // });
-        rosProcess.on('exit', function(code) {
-            // Will catch multiple exit codes I think:
-            //console.log('ROS Startup exit with code: ' + code);
-            if (code === 0) {
-                // SUCCESS
-                arloBot.metatronStartupNoError = true;
-                arloBot.metatronProcessStartupComplete = true;
-                webServer.updateWebModel('ROSisRunning', true);
-                webServer.updateWebModel('status', 'ROS is Running!');
-            } else {
-                tts('It hates me.');
-                // FAILURE
-                arloBot.metatronStartupNoError = false;
-                // Require user to request a restart
-                webServer.updateWebModel('ROSstart', false);
-                // , and then do it.
-                arloBot.metatronProcessStarted = false;
-                webServer.updateWebModel('ROSisRunning', false);
-                webServer.updateWebModel('status', 'ROS failed to start.');
-            }
-        });
-
-        // This doesn't work because it never returns if the ROS process
-        // works and stays alive! We have to use spawn.
-        // exec('../../arloweb/startROS.sh', function(error, stdout) {
-        //     if (error.code > 0) {
-        //         arloBot.metatronStartupNoError = false;
-        //         arloBot.metaTronStartupERROR = stdout;
-        //     } else {
-        //         arloBot.metatronProcessStartupComplete = true;
-        //     }
-        // });
+        arloBot.ROSprocess.start();
         console.log(this.name);
         return b3.RUNNING;
     }
@@ -228,7 +172,8 @@ getMapOrExploreRequest.prototype.tick = function(tick) {
 var UnPlugRobot = b3.Class(b3.Action);
 UnPlugRobot.prototype.name = 'UnPlugRobot';
 UnPlugRobot.prototype.tick = function(tick) {
-    if (!arloBot.pluggedIn) return b3.SUCCESS;
+    if (!webModel.pluggedIn) return b3.SUCCESS;
+    if (webModel.ignorePluggedIn) return b3.SUCCESS;
     if (webServer.webModel.laptopFullyCharged) {
         if (!arloBot.unplugMeTextSent) {
             textme('Please unplug me!');
@@ -243,92 +188,37 @@ var AutoExplore = b3.Class(b3.Action);
 AutoExplore.prototype.name = 'AutoExplore';
 AutoExplore.prototype.tick = function(tick) {
     if (webServer.webModel.autoExplore) {
-        if (arloBot.AutoExploreProcessStarted) {
+        if (arloBot.exploreProcess.started) {
+
             // Catch changes in pauseExplore and send them to the arlobot_explore pause_explorer service
             if (arloBot.pauseExplore !== webServer.webModel.pauseExplore) {
+                // TODO: Should this use the LaunchScript object?
                 arloBot.pauseExplore = webServer.webModel.pauseExplore;
                 var command = '/opt/ros/indigo/bin/rosservice call /arlobot_explore/pause_explorer ' + arloBot.pauseExplore;
                 exec(command);
             }
-            if (arloBot.AutoExploreStartupNoError) {
-                if (arloBot.AutoExploreProcessStartupComplete) {
-                    webServer.updateWebModel('status', 'Robot is Exploring!');
-                    return b3.RUNNING;
+
+            if (arloBot.exploreProcess.startupComplete) {
+                if (arloBot.exploreProcess.hasExited) {
+                    webServer.webModel.autoExplore = false;
+                    arloBot.exploreProcess.started = false;
+                    console.log(this.name + "FAILURE");
+                    return b3.FAILURE;
                 } else {
-                    console.log("Exploring!");
+                    webModel.status = 'Robot is Exploring!';
+                    console.log('Robot is Exploring!');
                     return b3.RUNNING;
                 }
             } else {
-                console.log("Explore process failed!");
-                return b3.FAILURE;
+                webModel.status = 'Explore process is starting...';
+                console.log('Explore process is starting...');
+                return b3.RUNNING;
             }
         } else {
+            arloBot.exploreProcess.start();
             console.log(this.name);
-            console.log("Running Explore child process . . .");
-            arloBot.AutoExploreProcessStartupComplete = false;
-            arloBot.AutoExploreProcessStarted = true;
-            webServer.updateWebModel('status', 'Auto Explore is starting up . . .');
-            //var rosExploreCommand = '/opt/ros/indigo/bin/roslaunch';
-            //var rosExploreArgs = ['metatron_launchers'];
-            //if (personalData.use_xv11) rosExploreArgs.push('add_autonomous_explore_xv11.launch');
-            //else rosExploreArgs.push('add_autonomous_explore.launch');
-            var autoExploreProcess = spawn('./startExplore.sh');
-
-            // TODO: I don't think we actually need this part:
-            autoExploreProcess.stdout.setEncoding('utf8');
-            autoExploreProcess.stdout.on('data', function(data) {
-                console.log(data);
-                //console.log('stdout: ' + data);
-                // We can search the output for text:
-                // if (data.indexOf('SUCCESS: ROS Started') > -1) {
-                //     arloBot.metatronProcessStartupComplete = true;
-                // }
-
-                // This is what we get if ROS exits, such as
-                // if killed externally.
-                // TODO: What do we get if EXPLORE is killed?!
-                /*
-                if (data.indexOf('[master] killing on exit') > -1) {
-                    arloBot.AutoExploreStartupNoError = false;
-                    // Require user to request a restart
-                    webServer.updateWebModel('autoExplore', false);
-                    // , and then do it.
-                    arloBot.AutoExploreProcessStarted = false;
-                    webServer.updateWebModel('status', 'Auto Explore ROS node shut down.');
-                }
-                */
-            });
-            // unless we are going to parse the output and update the web sites?
-
-            autoExploreProcess.on('error', function(err) {
-                console.log(err);
-                // FAILURE
-                arloBot.AutoExploreStartupNoError = false;
-                // Require user to request a restart
-                webServer.updateWebModel('autoExplore', false);
-                // , and then do it.
-                arloBot.AutoExploreProcessStarted = false;
-                webServer.updateWebModel('status', 'Auto Explore process error: ' + err);
-            });
-            autoExploreProcess.on('exit', function(code) {
-                console.log('Explore exited with code: ' + code);
-                // Will catch multiple exit codes I think:
-                if (code === 0) {
-                    arloBot.AutoExploreStartupNoError = true;
-                    arloBot.AutoExploreProcessStartupComplete = true;
-                } else {
-                    tts('It hates me.');
-                    // FAILURE
-                    arloBot.AutoExploreStartupNoError = false;
-                    // Require user to request a restart
-                    webServer.updateWebModel('autoExplore', false);
-                    // , and then do it.
-                    arloBot.AutoExploreProcessStarted = false;
-                    webServer.updateWebModel('status', 'Auto Explore failed to start.');
-                }
-            });
+            return b3.RUNNING;
         }
-        return b3.RUNNING;
     } else {
         // Return success if we were NOT asked to explore,
         // thus passing behavior tree on to LoadMap
@@ -336,15 +226,55 @@ AutoExplore.prototype.tick = function(tick) {
     }
 };
 
+// TODO: Turn the LaunchgScript process running into a clear pattern.
 var LoadMap = b3.Class(b3.Action);
 LoadMap.prototype.name = 'LoadMap';
 LoadMap.prototype.tick = function(tick) {
+    // ROS Process launch behavior pattern:
+    // FIRST: This decides if we run this process or not:
     if (webServer.webModel.mapName === '') {
         // This fails if we have no map name.
-        console.log(this.name);
+        console.log(this.name + ' FAILURE');
         return b3.FAILURE;
+    } else {
+        if (arloBot.loadMapProcess.started) {
+            if (arloBot.loadMapProcess.startupComplete) {
+                if (arloBot.loadMapProcess.hasExited) {
+                    // Once the process has exited:
+                    // 1. DISABLE whatever user action causes it to be called,
+                    // so that it won't loop.
+                    webServer.webModel.mapName = '';
+                    // 2. Now that it won't loop, set .started to false,
+                    // so that it can be run again.
+                    arloBot.loadMapProcess.started = false;
+                    // 3. Send a status to the web site:
+                    webModel.status = 'Map process has closed.';
+                    // 4. Log the closure to the console,
+                    // because this is significant.
+                    console.log(this.name + "Process Closed.");
+                    // Leave it 'RUNNING' and
+                    // let the next Behavior tick respond as it would,
+                    // if this function was never requested.
+                    return b3.RUNNING;
+                } else {
+                    // This will repeat on every tick!
+                    webModel.status = 'Map is Loaded.';
+                    // Whether we return 'RUNNING' or 'SUCCESS',
+                    // is dependent on how this Behavior node works.
+                    return b3.RUNNING;
+                }
+            }
+        } else {
+            // IF the process is supposed to start, but wasn't,
+            // then run it:
+            console.log('Map: ' + webServer.webModel.mapName);
+            //arloBot.loadMapProcess.scriptArguments = [webServer.webModel.mapName];
+            arloBot.loadMapProcess.ROScommand = arloBot.loadMapProcess.ROScommand + process.env.HOME + '/.arlobot/rosmaps/' + webModel.mapName + '.yaml';
+            console.log(arloBot.loadMapProcess.ROScommand);
+            arloBot.loadMapProcess.start();
+            return b3.RUNNING;
+        }
     }
-    return b3.RUNNING;
 };
 
 var MyAction2 = b3.Class(b3.Action);
@@ -355,7 +285,6 @@ MyAction2.prototype.tick = function(tick) {
 };
 
 // Build this file with http://behavior3js.guineashots.com/editor/#
-var fs = require('fs');
 // and you can LOAD this data into the editor to start where you left off again
 var arloNodeData = JSON.parse(fs.readFileSync('arloTreeData.json', 'utf8'));
 
@@ -377,10 +306,6 @@ arloNodeData.custom_nodes.forEach(parseCustomNodes);
 
 arloTree.load(arloNodeData, customNodeNames);
 
-// Load personal settings not included in git repo
-var personalDataFile = process.env.HOME + '/.arlobot/personalDataForBehavior.json';
-var personalData = JSON.parse(fs.readFileSync(personalDataFile, 'utf8'));
-
 // This is the Arlobot "object" we will use to track everything,
 // note that there is also a "blackboard" where nodes can track
 // their internal status, even amongst multiple calls
@@ -391,23 +316,46 @@ var personalData = JSON.parse(fs.readFileSync(personalDataFile, 'utf8'));
 // Rather track things we can only know from inside of here,
 // such as last action or speech time, etc.
 var arloBot = {
-    metatronProcessStarted: false,
-    metatronStartupNoError: true,
-    metatronProcessStartupComplete: false,
-    metatronStartupERROR: '',
-
-    AutoExploreProcessStarted: false,
-    AutoExploreStartupNoError: true,
-    AutoExploreProcessStartupComplete: false,
-    AutoExploreStartupERROR: '',
-
     whereamiTextSent: false,
     unplugMeTextSent: false,
-    pluggedIn: true,
     fullyCharged: false,
 
     pauseExplore: false
 };
+
+// TODO: Be sure to put 'unbuffer ' in front of any ROS commands
+// if you hope to monitor the output,
+// otherwise they never flush!
+
+arloBot.ROSprocess = new LaunchScript({
+    name: 'ROS',
+    scriptName: '../scripts/start-metatron.sh',
+    successString: 'process[arlobot-6]: started with pid'
+});
+
+var exploreCommand;
+if (personalData.use_xv11) {
+    exploreCommand = 'unbuffer roslaunch metatron_launchers add_autonomous_explore_xv11.launch';
+} else {
+    exploreCommand = 'unbuffer roslaunch metatron_launchers add_autonomous_explore.launch';
+}
+arloBot.exploreProcess = new LaunchScript({
+    name: 'Explore',
+    ROScommand: exploreCommand,
+    successString: 'odom received'
+});
+
+var loadMapCommand;
+if (personalData.use_xv11) {
+    loadMapCommand = 'unbuffer roslaunch metatron_launchers load_map_xv11.launch map_file:=';
+} else {
+    loadMapCommand = 'unbuffer roslaunch metatron_launchers load_map.launch map_file:=';
+}
+arloBot.loadMapProcess = new LaunchScript({
+    name: 'LoadMap',
+    ROScommand: loadMapCommand,
+    successString: 'odom received'
+});
 
 var blackboard = new b3.Blackboard();
 
@@ -440,15 +388,17 @@ setInterval(function() {
     var powerCheck = exec(powerCommand);
     powerCheck.stdout.on('data', function(data) {
         if (data.match('no')) {
-            arloBot.pluggedIn = false;
+            webModel.pluggedIn = false;
         }
         if (data.match('yes')) {
-            arloBot.pluggedIn = true;
+            webModel.pluggedIn = true;
         }
     });
-    webServer.updateWebModel('pluggedIn', arloBot.pluggedIn);
 
     //console.log(blackboard);
+
+    if (webServer.webModel.shutdownRequested) killROS(true);
+
     console.log("---");
 }, 1000);
 //tree.tick(arloBot,blackboard);
@@ -476,9 +426,20 @@ var connectedToROS = false, // Track my opinion of the connection
     RightMotorName = "RightMotor", // Found in arlobot_usbrelay/param/usbrelay.yaml
     LeftMotorRelay = -1,
     LeftMotorName = "LeftMotor"; // Found in arlobot_usbrelay/param/usbrelay.yaml
+
+/* TODO: This is all offline until this "bug" is fixed:
+https://github.com/RobotWebTools/roslibjs/issues/160
+var ROSLIB = require('roslib');
 // Copied from arloweb.js
 // Be sure to set url to point to localhost,
 // and change any references to web objects with console.log (i.e. setActionField)
+
+var talkToROS = function() {
+    ros.getParams(function(params) {
+        console.log(params);
+    });
+};
+
 var pollROS = function() {
     console.log('ROSLIB pollROS run');
     connectedToROS = false;
@@ -494,6 +455,7 @@ var pollROS = function() {
         //connectRequested = true;
         //updateConnectedButton();
         //checkROSServices();
+        talkToROS();
     });
 
     ros.on('error', function(error) {
@@ -515,4 +477,5 @@ var pollROS = function() {
 };
 
 pollROS();
+*/
 console.log('arloBehavior.js is done, behold the power of async!');

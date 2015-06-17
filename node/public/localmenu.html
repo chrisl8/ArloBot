@@ -24,9 +24,9 @@
 
       <!-- TOP LEFT ELBOW
       =========================================================== -->
-      <div class="lcars-column u-1-8 lcars-elbow left bottom lcars-blue-bg">
-        <a href="#" data-bind="visible: ROSisRunning, click:stopROS">Stop ROS</a>
-        <a href="#" data-bind="visible: !ROSisRunning(), click:startROS">Start ROS</a>
+      <div class="lcars-column u-1-8 lcars-elbow left bottom lcars-blue-bg" data-bind="visible: !ROSisRunning(), click:startROS"><a>Start ROS</a>
+      </div>
+      <div class="lcars-column u-1-8 lcars-elbow left bottom lcars-blue-bg" data-bind="visible: ROSisRunning, click:stopROS"><a>Stop ROS</a>
       </div>
 
       <!-- TOP DIVIDER AND BUTTONS
@@ -89,6 +89,13 @@
               </div>
               <label class="toggler switch-on">Pause</label>
             </div>
+            <div class="lcarish-toggle-button" id="ignore-pluggedIn-button">
+              <label class="toggler toggler--is-inactive switch-off">Monitor</label>
+              <div class="toggle toggle-off">
+                <p><input type="checkbox" class="check" data-bind="checked: ignorePluggedIn"><b class="b switch">AC</b></p>
+              </div>
+              <label class="toggler switch-on">Ignore</label>
+            </div>
             <br/>
             <div data-bind="visible: autoExplore">
               <form id='saveMapForm' name='saveMapForm'>
@@ -118,7 +125,7 @@
           <li class="lcars-blue-bg tall large-gap" data-bind="click: stopLogStreamer, visible: logStreamerRunning">Kill Log Streamer</li>
           <li class="lcars-blue-bg"></li>
           <li class="lcars-blue-bg tall"></li>
-          <li class="lcars-blue-bg"></li>
+          <li class="lcars-blue-bg"><a data-bind="click: exitWebServer">Kill Webserver</a></li>
         </ul>
       </div>
     </div>

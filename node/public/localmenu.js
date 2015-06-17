@@ -87,6 +87,12 @@ window.onload = function() {
         unPauseAutoExplore: function() {
             socket.emit('unPauseAutoExplore');
         },
+        monitorAC: function() {
+            socket.emit('monitorAC');
+        },
+        ignoreAC: function() {
+            socket.emit('ignoreAC');
+        },
         newMapName: ko.observable(),
         saveMap: function() {
             socket.emit('saveMap', webModel.newMapName());
@@ -119,6 +125,9 @@ window.onload = function() {
         },
         reloadPage: function() {
             document.location.reload(true);
+        },
+        exitWebServer: function() {
+            socket.emit('exit');
         }
     };
 
@@ -141,6 +150,7 @@ window.onload = function() {
             //LCARishButton('button-id', koWatchItem, koOffAction, koOnAction)
             LCARishButton('talk-bequiet-button', webModel.beQuiet, webModel.talk, webModel.quiet);
             LCARishButton('explore-pause-button', webModel.pauseExplore, webModel.unPauseAutoExplore, webModel.pauseAutoExplore);
+            LCARishButton('ignore-pluggedIn-button', webModel.ignorePluggedIn, webModel.monitorAC, webModel.ignoreAC);
             ko.applyBindings(webModel);
         }
         if (webModel.autoExplore()) webModel.selectedMap('Explore!');

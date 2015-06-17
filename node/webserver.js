@@ -1,32 +1,25 @@
-var webModel = {
-    ROSstart: false,
-    ROSisRunning: false,
-    pluggedIn: 'unknown',
-    autoExplore: false,
-    pauseExplore: false,
-    beQuiet: false,
-    haltRobot: false,
-    basementDoorOpen: true,
-    laptopFullyCharged: 'unknown',
-    laptopBatteryPercentage: '???%',
-    logStreamerRunning: false,
-    status: 'Arlo behavior is not running.',
-    mapList: ['Explore!'],
-    mapName: ''
-};
+var webModel = require('./webModel');
+var O = require('observed');
+var webModelWatcher = O(webModel);
+var LaunchScript = require('./launch_script');
 
 var processTracker = {
     logStreamerProcess: ''
 };
 
 // Set map list based on file names in the map folder
-var getMapList = require('../getMapList');
+var getMapList = require('./getMapList');
 var mapDir = process.env.HOME + '/.arlobot/rosmaps/';
-getMapList(mapDir, function(err, data) {
-    data.forEach(function(value) {
-        webModel.mapList.push(value.replace('.yaml', ''));
+var updateMapList = function() {
+    webModel.mapList = ['Explore!'];
+    getMapList(mapDir, function(err, data) {
+        data.forEach(function(value) {
+            webModel.mapList.push(value.replace('.yaml', ''));
+        });
     });
-});
+};
+
+updateMapList();
 
 var fs = require('fs');
 // Load personal settings not included in git repo
@@ -66,77 +59,67 @@ var setSemaphoreFiles = function(text) {
         } else {
             if (text === 'talk') {
                 webModel.beQuiet = false;
-                fs.unlink(quietFile);
+                fs.unlink(quietFile, readSemaphoreFiles);
             } else if (text === 'beQuiet') {
                 webModel.beQuiet = true;
                 fs.writeFile(quietFile, 'quiet\n');
+            } else if (text === 'go') {
+                webModel.haltRobot = false;
+                fs.unlink(stopFile, readSemaphoreFiles);
             } else if (text === 'stop') {
                 webModel.haltRobot = true;
                 fs.writeFile(stopFile, 'STOP\n');
-            } else if (text === 'go') {
-                webModel.haltRobot = false;
-                fs.unlink(stopFile);
             } else if (text === 'markBasementClosed') {
-                fs.unlink(basementDoorFile);
-                readSemaphoreFiles();
+                fs.unlink(basementDoorFile, readSemaphoreFiles);
             }
         }
     });
 };
 
-var readSemaphoreFiles = function() {
-    fs.readFile(stopFile, function(err) {
-        if (err) webModel.haltRobot = false;
-        else webModel.haltRobot = true;
-    });
-    fs.readFile(quietFile, function(err) {
-        if (err) webModel.beQuiet = false;
-        else webModel.beQuiet = true;
-    });
-    fs.readFile(basementDoorFile, 'utf8', function(err, data) {
-        if (err) webModel.basementDoorOpen = false;
-        else {
-            // Alarm system puts the word 'GO' in the file when the door is closed.
-            if (data === 'GO') webModel.basementDoorOpen = false;
-            // We will consider anything else a 'STOP'
-            else webModel.basementDoorOpen = true;
-        }
-    });
+var readSemaphoreFiles = function(callbackIfChanged) {
+
+    var checkFileAndSetValue = function(file, value) {
+        fs.readFile(file, 'utf8', function(err, data) {
+            var oldValue = webModel[value];
+            if (err) webModel[value] = false;
+            else {
+                /* For basement door open,
+                alarm system puts the word 'GO'
+                into the file instead of deleting it.
+                */
+                if (data.indexOf('GO') > -1) webModel[value] = false;
+                // We will consider anything else a 'STOP'
+                else webModel[value] = true;
+            }
+            if (oldValue !== webModel[value]) {
+                if (callbackIfChanged !== undefined) {
+                    callbackIfChanged();
+                }
+            }
+        });
+    };
+
+    checkFileAndSetValue(stopFile, 'haltRobot');
+    checkFileAndSetValue(quietFile, 'beQuiet');
+    checkFileAndSetValue(basementDoorFile, 'basementDoorOpen');
+
 };
 
 readSemaphoreFiles();
 
 var saveMap = function(newMapName) {
-    console.log(newMapName);
-    var command = __dirname + '/../../scripts/save-map.sh';
-    var saveMapProcess = spawn(command, newMapName);
-    saveMapProcess.stdout.setEncoding('utf8');
-    saveMapProcess.stdout.on('data', function(data) {
-        console.log(data);
-        //TODO: Parse this for a success code?
-        if (data.indexOf('[master] killing on exit') > -1) {
-            console.log('Save map process gave this data.');
-        }
+    serverMapProcess = new LaunchScript({
+        name: 'SaveMap',
+        callback: updateMapList,
+        ROScommand: 'rosrun map_server map_saver -f ' + mapDir + newMapName,
+        scriptArguments: newMapName
     });
-    saveMapProcess.stderr.setEncoding('utf8');
-    saveMapProcess.stderr.on('data', function(data) {
-        console.log(data);
-    });
-    saveMapProcess.on('error', function(err) {
-        console.log(err);
-    });
-    saveMapProcess.on('exit', function(code) {
-        // Will catch multiple exit codes I think:
-        if (code === 0) {
-            console.log('Save map exited with code 0.');
-        } else {
-            console.log('Save map failed with code: ' + code);
-        }
-    });
+    console.log(serverMapProcess.ROScommand);
+    serverMapProcess.start();
 };
 
 var startLogStreamer = function() {
-    var command = __dirname + '/../../scripts/log-watcher.sh';
+    var command = __dirname + '../scripts/log-watcher.sh';
     var logStreamerProcess = spawn(command);
     logStreamerProcess.stdout.setEncoding('utf8');
     logStreamerProcess.stdout.on('data', function(data) {
@@ -249,15 +232,21 @@ function start() {
             webModel[variable] = value;
             io.sockets.emit('webModel', webModel);
         }
+        readSemaphoreFiles(function() {
+            io.sockets.emit('webModel', webModel);
+        });
     };
+
+    webModelWatcher.on('change', function() {
+        io.sockets.emit('webModel', webModel);
+    });
 
     // Socket listeners
     io.on('connection', function(socket) {
         socket.emit('startup', webModel);
-        console.log('Connection!');
+        console.log('Web Page Connection!');
 
         socket.on('setMap', function(data) {
-            console.log('Set map: ' + data);
             if (data != null) {
                 if (data === 'Explore!') {
                     webModel.mapName = '';
@@ -273,44 +262,42 @@ function start() {
         // LocalMenu button handlers:
         socket.on('startROS', function() {
             webModel.ROSstart = true;
-            io.sockets.emit('webModel', webModel);
         });
         socket.on('stopROS', function() {
             webModel.ROSstart = false;
-            io.sockets.emit('webModel', webModel);
         });
         socket.on('haltRobot', function() {
             webModel.haltRobot = true;
             setSemaphoreFiles('stop');
-            io.sockets.emit('webModel', webModel);
         });
         socket.on('unHaltRobot', function() {
             webModel.haltRobot = false;
             setSemaphoreFiles('go');
-            io.sockets.emit('webModel', webModel);
         });
         socket.on('beQuiet', function() {
             webModel.beQuiet = true;
             setSemaphoreFiles('beQuiet');
-            io.sockets.emit('webModel', webModel);
         });
         socket.on('talk', function() {
             webModel.beQuiet = false;
             setSemaphoreFiles('talk');
-            io.sockets.emit('webModel', webModel);
         });
         socket.on('markBasementClosed', function() {
             setSemaphoreFiles('markBasementClosed');
             webModel.basementDoorOpen = false;
-            io.sockets.emit('webModel', webModel);
         });
         socket.on('pauseAutoExplore', function() {
             webModel.pauseExplore = true;
-            io.sockets.emit('webModel', webModel);
         });
         socket.on('unPauseAutoExplore', function() {
             webModel.pauseExplore = false;
-            io.sockets.emit('webModel', webModel);
+        });
+        // TODO: This should also affect the ROS safety setting parameter.
+        socket.on('monitorAC', function() {
+            webModel.ignorePluggedIn = false;
+        });
+        socket.on('ignoreAC', function() {
+            webModel.ignorePluggedIn = true;
         });
         socket.on('saveMap', function(data) {
             console.log('Save map as: ' + data);
@@ -319,12 +306,13 @@ function start() {
         socket.on('startLogStreamer', function() {
             startLogStreamer();
             webModel.logStreamerRunning = true;
-            io.sockets.emit('webModel', webModel);
         });
         socket.on('stopLogStreamer', function() {
             stopLogStreamer();
             webModel.logStreamerRunning = false;
-            io.sockets.emit('webModel', webModel);
+        });
+        socket.on('exit', function() {
+            webModel.shutdownRequested = true;
         });
     });
 

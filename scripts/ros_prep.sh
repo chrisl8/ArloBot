@@ -1,3 +1,4 @@
+#!/bin/bash
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 if (pgrep -f simpleide>/dev/null)
 then
