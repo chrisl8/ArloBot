@@ -130,7 +130,7 @@ printf "\n${YELLOW}[Installing additional Ubuntu packages for Metatron]${NC}\n"
 sudo apt-get install -qy ros-indigo-rosbridge-server imagemagick fswebcam festival festvox-en1 python-ftdi python-pip python-serial libv4l-dev jq expect-dev < /dev/null
 
 # Install required Python packages
-printf "\n${YELLOW}[Installing required Python packages]${NC}\n"
+printf "\n${YELLOW}[Installing required Python packages for Metatron]${NC}\n"
 sudo pip install twilio pylibftdi
 
 # Install mjpg-streamer
@@ -148,14 +148,16 @@ fi
 
 if ! (id|grep dialout>/dev/null)
     then
+    printf "\n${RED}Adding your user to the 'dialout' group."
     sudo adduser ${USER} dialout
-    echo "You may have to reboot before you can use the Propeller Board."
+    printf "${RED}You may have to reboot before you can use the Propeller Board.${NC}\n"
 fi
 
 if ! [ -f /etc/udev/rules.d/99-libftdi.rules ]
     then
+    printf "\n${RED}Adding required sudo rule to reset USB ports."
     sudo ${SCRIPTDIR}/addRuleForUSBRelayBoard.sh
-    echo "You may have to reboot before the USB Relay board will function!"
+    printf "${RED}You may have to reboot before the USB Relay board will function!"
 fi
 
 if ! (grep mbrola /etc/festival.scm>/dev/null)
