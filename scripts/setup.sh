@@ -122,13 +122,12 @@ do
             printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
             diff ${SCRIPTDIR}/dotarlobot/${i} ${ARLOHOME}/${i}
             cp -i ${SCRIPTDIR}/dotarlobot/${i} ${ARLOHOME}/
-            printf "\n"
         fi
     else
         printf "\n"
         cp ${SCRIPTDIR}/dotarlobot/${i} ${ARLOHOME}/
-        printf "${GREEN}A brand new ${ARLOHOME}/${i} file has been created,${NC}\n"
-        printf "${GREEN}please edit this file to customize according to your robot!\n${NC}\n"
+        printf "${GREEN}A brand new ${RED}${ARLOHOME}/${i}${GREEN} file has been created,${NC}\n"
+        printf "${RED}please edit this file to customize according to your robot!\n${NC}\n"
     fi
 done
 
@@ -186,14 +185,14 @@ if [ ${USER} == chrisl8 ]
     if ! [ -d /home/robotStatusUser ]
         then
         printf "\n${YELLOW}[Adding robotStatusUser.${NC}\n"
-        printf "\n${GREEN}(This is NOT required for Arlobot, just a personal thing.)${NC}\n"
+        printf "${GREEN}(This is NOT required for Arlobot, just a personal thing.)${NC}\n"
         sudo useradd -m robotStatusUser
-        printf "\n${GREEN}Be sure to add your key to ~robotStatusUser/.ssh/authorized_keys${NC}\n"
-        printf "\n${GREEN}for anyone who needs to use it!${NC}\n"
-        printf "\n${RED}sudo su - robotStatusUser${NC}\n"
-        printf "\n${RED}mkdir .ssh${NC}\n"
-        printf "\n${RED}vim .ssh/authorized_keys${NC}\n"
-        printf "\n${GREEN}(This is NOT required for Arlobot, just a personal thing.)${NC}\n"
+        printf "${GREEN}Be sure to add your key to ~robotStatusUser/.ssh/authorized_keys${NC}\n"
+        printf "${GREEN}for anyone who needs to use it!${NC}\n"
+        printf "${RED}sudo su - robotStatusUser${NC}\n"
+        printf "${RED}mkdir .ssh${NC}\n"
+        printf "${RED}vim .ssh/authorized_keys${NC}\n"
+        printf "${GREEN}(This is NOT required for Arlobot, just a personal thing.)${NC}\n"
     fi
     # This simulates the basement door being open,
     # which will cause the robot to stop.
