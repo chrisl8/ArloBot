@@ -28,49 +28,49 @@ printf "${GREEN}You will be asked for your password for running commands as root
 
 version=`lsb_release -sc`
 
-printf "[Checking the ubuntu version]"
+printf "[Checking the ubuntu version]\n"
 case $version in
   "saucy" | "trusty")
 ;;
 *)
-printf "[This script will only work on ubuntu saucy(13.10) or trusty(14.04)]"
+printf "[This script will only work on ubuntu saucy(13.10) or trusty(14.04)]\n"
 exit 0
 esac
 
-printf "[Updating & upgrading all existing Ubuntu packages]"
-printf "silently . . ."
+printf "[Updating & upgrading all existing Ubuntu packages]\n"
+printf "silently . . .\n"
 # NOTE: You have to pipe /dev/null INTO apt-get to make it work from wget.
 sudo apt-get update -qq < /dev/null
 sudo apt-get upgrade -qq < /dev/null
 
 # I never use this, but if you are having time issues maybe uncomment this.
-#printf "[Installing chrony and setting the ntpdate]"
+#printf "[Installing chrony and setting the ntpdate]\n"
 #sudo apt-get install -y chrony
 #sudo ntpdate ntp.ubuntu.com
 
-printf "[Checking for ROS repository]"
+printf "[Checking for ROS repository]\n"
 if ! [ -e /etc/apt/sources.list.d/ros-latest.list ]
     then
-    printf "[Adding the ROS repository]"
+    printf "[Adding the ROS repository]\n"
     sudo sh -c "echo \"deb http://packages.ros.org/ros/ubuntu ${version} main\" > /etc/apt/sources.list.d/ros-latest.list"
-    printf "[Checking the ROS keys]"
+    printf "[Checking the ROS keys]\n"
     roskey=`apt-key list | grep -i "ROS builder"`
     if [ -z "$roskey" ]
         then
-        printf "[Adding the ROS keys]"
+        printf "[Adding the ROS keys]\n"
         wget --quiet https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -O - | sudo apt-key add -
-        printf "[Update & upgrade the packages again with the new repository]"
-        printf "silently . . ."
+        printf "[Update & upgrade the packages again with the new repository]\n"
+        printf "silently . . .\n"
         sudo apt-get update -qq < /dev/null
         sudo apt-get upgrade -qq < /dev/null
     fi
 fi
 
-printf "[Installing ROS!]"
+printf "[Installing ROS!]\n"
 sudo apt-get install -qy ros-indigo-desktop-full ros-indigo-rqt-* < /dev/null
-printf "[ROS installed.]"
+printf "[ROS installed.]\n"
 
-printf "[rosdep init and python-rosinstall]"
+printf "[rosdep init and python-rosinstall]\n"
 if ! [ -e /etc/ros/rosdep/sources.list.d/20-default.list ]
     then
     sudo sh -c "rosdep init"
@@ -79,13 +79,13 @@ rosdep update
 source /opt/ros/indigo/setup.bash
 sudo apt-get install -qy python-rosinstall < /dev/null
 
-printf "[Installing ROS Packages for Arlo]"
+printf "[Installing ROS Packages for Arlo]\n"
 sudo apt-get install -qy ros-indigo-turtlebot ros-indigo-turtlebot-apps ros-indigo-turtlebot-interactions ros-indigo-turtlebot-simulator ros-indigo-kobuki-ftdi < /dev/null
 source /opt/ros/indigo/setup.bash
 
 if ! [ -d ~/catkin_ws/src ]
     then
-    printf "[Making the catkin workspace and testing the catkin_make]"
+    printf "[Making the catkin workspace and testing the catkin_make]\n"
     mkdir -p ~/catkin_ws/src
     cd ~/catkin_ws/src
     catkin_init_workspace
@@ -97,7 +97,7 @@ source ~/catkin_ws/devel/setup.bash
 rospack profile
 cd ~/catkin_ws/src
 
-printf "[Cloning or Updating git repositories]"
+printf "[Cloning or Updating git repositories]\n"
 if ! [ -d ~/catkin_ws/src/hector_slam ]
     then
     git clone https://github.com/chrisl8/hector_slam.git
@@ -163,7 +163,7 @@ catkin_make
 source ~/catkin_ws/devel/setup.bash
 rospack profile
 
-printf "[Setting the ROS evironment]"
+printf "[Setting the ROS evironment]\n"
 if ! (grep ROS_HOSTNAME ~/.bashrc>/dev/null)
     then
     sh -c "echo \"export ROS_HOSTNAME=`uname -n`.local\" >> ~/.bashrc"
@@ -184,13 +184,13 @@ fi
 
 if ! (id|grep dialout>/dev/null)
     then
-    printf "Adding your user to the dialout group,"
-    printf "You may be asked for your password."
+    printf "Adding your user to the dialout group,\n"
+    printf "You may be asked for your password.\n"
     sudo adduser ${USER} dialout
-    printf "You may have to reboot before you can use the Propeller Board."
+    printf "You may have to reboot before you can use the Propeller Board.\n"
 fi
 
-printf "Installing additional required Ubuntu packages for Arlobot"
+printf "Installing additional required Ubuntu packages for Arlobot\n"
 
 # For 8-CH USB Relay board:
 # Reference: https://code.google.com/p/drcontrol/wiki/Install_RaspberryPi">https://code.google.com/p/drcontrol/wiki/Install_RaspberryPi
@@ -228,26 +228,22 @@ if [ -e ${ARLOHOME}/arlobot.yaml ]
     then
     if ! (diff ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/arlobot.yaml)
         then
-        printf ""
-        printf "The arlobot.yaml file in the repository is different from the one"
-        printf "in your local settings."
-        printf "This is expected, but just in case, please look over the differences,"
-        printf "and see if you need to copy in any new settings, or overwrite the file completely:"
+        printf "\nThe arlobot.yaml file in the repository is different from the one\n"
+        printf "in your local settings.\n"
+        printf "This is expected, but just in case, please look over the differences,\n"
+        printf "and see if you need to copy in any new settings, or overwrite the file completely:\n"
         diff ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/arlobot.yaml
         cp -i ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/
-        printf ""
+        printf "\n"
     fi
 else
-    printf ""
+    printf "\n"
     cp ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/
-    printf "A brand new ~/.arlobot/arlobot.yaml file has been created,"
-    printf "please edit this file to customize according to your robot!"
-    printf ""
+    printf "A brand new ~/.arlobot/arlobot.yaml file has been created,\n"
+    printf "please edit this file to customize according to your robot!\n\n"
 fi
 
-printf "All done! Reboot and start testing!"
-printf "Look at README.md for testing ideas."
-printf ""
-printf "See here for your next step:"
-printf "http://ekpyroticfrood.net/?p=165"
-printf ""
+printf "All done! Reboot and start testing!\n"
+printf "Look at README.md for testing ideas.\n\n"
+printf "See here for your next step:\n"
+printf "http://ekpyroticfrood.net/?p=165\n\n"
