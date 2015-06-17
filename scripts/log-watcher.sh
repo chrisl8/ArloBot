@@ -1,3 +1,6 @@
+export NVM_DIR="${HOME}/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+nvm install stable
 echo "set your browser to http://${HOSTNAME}:28778/ to watch logs"
 echo "NOTE: This does not add new logs in real time,"
 echo "so if new nodes start up you will have to restart this."

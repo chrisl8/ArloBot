@@ -46,7 +46,7 @@ nvm install stable
 
 printf "\n${YELLOW}[Grabbing dependencies for node packages.]${NC}\n"
 cd
-npm install -g forever
+npm install -g forever log.io
 cd ${SCRIPTDIR}/../node
 npm install
 cd ${SCRIPTDIR}
