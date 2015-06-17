@@ -3,7 +3,7 @@
 # Blame goes to ChrisL8
 
 # Run this straight off of github like this:
-# wget -qO- https://raw.githubusercontent.com/chrisl8/ArloBot/master/setup.sh | bash
+# bash <(wget -qO- https://raw.githubusercontent.com/chrisl8/ArloBot/master/setup.sh)
 
 echo ""
 echo "Setting up Robot Operating System for your ArloBot!"
@@ -24,7 +24,6 @@ esac
 echo "[Updating & upgrading all existing Ubuntu packages]"
 echo "silently . . ."
 # NOTE: You have to pipe /dev/null INTO apt-get to make it work from wget.
-#
 sudo apt-get update -qq < /dev/null
 sudo apt-get upgrade -qq < /dev/null
 
@@ -44,7 +43,7 @@ if ! [ -e /etc/apt/sources.list.d/ros-latest.list ]
         then
         echo "[Adding the ROS keys]"
         wget --quiet https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -O - | sudo apt-key add -
-        echo "[Update & upgrade the packages with the new repository]"
+        echo "[Update & upgrade the packages again with the new repository]"
         echo "silently . . ."
         sudo apt-get update -qq < /dev/null
         sudo apt-get upgrade -qq < /dev/null
@@ -161,6 +160,9 @@ if ! (grep catkin_ws ~/.bashrc>/dev/null)
     then
     sh -c "echo \"source ~/catkin_ws/devel/setup.bash\" >> ~/.bashrc"
 fi
+
+# Run Metatron Setup Script:
+~/catkin_ws/src/Metatron/scripts/setup.sh
 
 # Arlobot Specific settings:
 
