@@ -92,7 +92,7 @@ var readSemaphoreFiles = function(callbackIfChanged) {
                 else webModel[value] = true;
             }
             if (oldValue !== webModel[value]) {
-                if (callbackIfChanged !== undefined) {
+                if (callbackIfChanged) {
                     callbackIfChanged();
                 }
             }
@@ -119,7 +119,7 @@ var saveMap = function(newMapName) {
 };
 
 var startLogStreamer = function() {
-    var command = __dirname + '../scripts/log-watcher.sh';
+    var command = __dirname + '/../scripts/log-watcher.sh';
     var logStreamerProcess = spawn(command);
     logStreamerProcess.stdout.setEncoding('utf8');
     logStreamerProcess.stdout.on('data', function(data) {

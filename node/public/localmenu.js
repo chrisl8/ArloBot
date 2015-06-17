@@ -128,6 +128,11 @@ window.onload = function() {
         },
         exitWebServer: function() {
             socket.emit('exit');
+        },
+        openLogStreamer: function() {
+            var logStreamerURL = 'http://' + location.hostname + ':28778/';
+            console.log(logStreamerURL);
+            window.open(logStreamerURL, '_blank');
         }
     };
 
