@@ -232,8 +232,8 @@ if [ -e ${ARLOHOME}/arlobot.yaml ]
 else
     printf "\n"
     cp ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/
-    printf "${GREEN}A brand new ~/.arlobot/arlobot.yaml file has been created,${NC}\n"
-    printf "${GREEN}please edit this file to customize according to your robot!\n${NC}\n"
+    printf "${GREEN}A brand new ${RED}~/.arlobot/arlobot.yaml${GREEN} file has been created,${NC}\n"
+    printf "${RED}please edit this file to customize according to your robot!\n${NC}\n"
 fi
 
 printf "\n${YELLOW}-----------------------------------${NC}\n"
