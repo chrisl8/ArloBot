@@ -1,70 +1,59 @@
+#!/bin/bash
 # This script is meant to help set up your machine
 # and user environment for Metatron and Arlobot to work
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 
 # Check for node.js installation
-if ! (which node>/dev/null)
+if [ ! -e  ${HOME}/.nvm/nvm.sh ]
 then
-    echo "You do not have node.js installed."
-    echo "Please run the following commands to install node.js,"
-    echo "or use instructions from http://nodejs.org/ if you prefer,"
-    echo "and then run this setup script again."
-    echo ""
-    echo "cd"
-    echo "# Currently roslib does not work with node 0.12.0"
-    echo "wget http://nodejs.org/dist/v0.10.35/node-v0.10.35.tar.gz"
-    echo "tar xzf node-v0.10.35.tar.gz"
-    echo "cd node-v0.10.35"
-    echo "./configure"
-    echo "make"
-    echo "sudo make install"
-    echo "# And you had better install roslib by hand too!"
-    echo "cd ~/metatron/behavior"
-    echo "npm install roslib"
-    exit 1
+    echo "Installing Node Version Manager"
+wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | bash
 fi
 
-# Install required node packages
-echo "Installing required node packages . . ."
-echo "You may be asked for your password"
-echo "In order to run npm install -g"
-sudo npm install -g grunt forever
+export NVM_DIR="${HOME}/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+nvm install stable
+nvm use stable
 
-echo "Fix personal npm folder permissions"
-sudo chown -R `whoami` ${HOME}/.npm/
+# Install required node packages
+#echo "Installing required node packages . . ."
+#echo "You may be asked for your password"
+#echo "In order to run npm install -g"
+#sudo npm install -g grunt forever
+
+#echo "Fix personal npm folder permissions"
+#sudo chown -R `whoami` ${HOME}/.npm/
 
 echo "Grabbing dependencies for node packages."
-cd ${SCRIPTDIR}/../node/webserver
-npm install
 cd ${SCRIPTDIR}/../node
 npm install
 cd ${SCRIPTDIR}
 
-if [ ! -d  ${SCRIPTDIR}/../node/node_modules/roslibjs ]
-then
-    echo "Installing roslibjs for arloBehavior.js"
-    echo "You may be asked for your password"
-    echo "in order to run sudo commands."
-    echo "Fix personal npm folder permissions"
-    sudo chown -R `whoami` ${HOME}/.npm/
-    cd ${SCRIPTDIR}/../node/node_modules/
-    git clone git@github.com:RobotWebTools/roslibjs.git
-    cd roslibjs
-    npm install
-fi
-../node/webserver/public/lcars/
-if [ ! -d  ${SCRIPTDIR}/../node/webserver/public/lcars/ ]
+#if [ ! -d  ${SCRIPTDIR}/../node/node_modules/roslibjs ]
+#then
+#    echo "Installing roslibjs for arloBehavior.js"
+#    echo "You may be asked for your password"
+#    echo "in order to run sudo commands."
+#    echo "Fix personal npm folder permissions"
+#    sudo chown -R `whoami` ${HOME}/.npm/
+#    cd ${SCRIPTDIR}/../node/node_modules/
+#    git clone git@github.com:RobotWebTools/roslibjs.git
+#    cd roslibjs
+#    npm install
+#fi
+
+if [ ! -d  ${SCRIPTDIR}/../node/public/lcars/ ]
 then
     echo "Cloning in lcars CSS Framework"
-    cd ${SCRIPTDIR}/../node/node_modules/public/
-    git clone git@github.com:Garrett-/lcars.git
+    cd ${SCRIPTDIR}/../node/public/
+    git clone https://github.com/Garrett-/lcars.git
 fi
 
 # We will use ~/.arlobot to store "private" data
 # That is data that doesn't need to be part of
 # the public github repo like user tokens,
-# sounds, and room maps
+# sounds, and room maps and per robot settings
 if [ ! -d ${HOME}/.arlobot ]
 then
     mkdir ${HOME}/.arlobot
@@ -76,7 +65,7 @@ for i in `ls ${SCRIPTDIR}/dotarlobot/`
 do
     if [ -e  ${ARLOHOME}/${i} ]
     then
-        git diff ${SCRIPTDIR}/dotarlobot/${i} ${ARLOHOME}/${i}
+        diff -u ${SCRIPTDIR}/dotarlobot/${i} ${ARLOHOME}/${i}
     fi
     cp -i ${SCRIPTDIR}/dotarlobot/${i} ${ARLOHOME}/
 done
@@ -101,7 +90,8 @@ chmod -R 777 ${ARLOHOME}/status
 echo "Installing required Ubuntu packages . . ."
 echo "You may be asked for your password"
 echo "In order to run apt-get install."
-sudo apt-get install ros-indigo-rosbridge-server imagemagick fswebcam festival festvox-en1 python-ftdi python-pip python-serial libv4l-dev jq
+# NOTE: You have to pipe /dev/null INTO apt-get to make it work from wget.
+sudo apt-get install -qy ros-indigo-rosbridge-server imagemagick fswebcam festival festvox-en1 python-ftdi python-pip python-serial libv4l-dev jq unbuffer < /dev/null
 
 # Install required Python packages
 echo "Installing required Python packages . . ."
@@ -120,7 +110,6 @@ then
     # mjpg_streamer usage example:
     #mjpg_streamer -i "/usr/local/lib/input_uvc.so -d /dev/video0 -f 30 -r 640x480" -o "/usr/local/lib/output_http.so -p 58180 -w ${SCRIPTDIR}/mjpg-streamer/mjpg-streamer/www"
 fi
-
 
 if ! (id|grep dialout>/dev/null)
 then
@@ -154,18 +143,28 @@ else
     sudo chown root:root /etc/sudoers.d/arlobot_sudoers
 fi
 
-echo "Chris, did you add the robotStatusUser user,"
-echo "and his key?"
-echo "(This is NOT required for Arlobot, just a personal thing.)"
-#sudo useradd -m robotStatusUser
-#sudo su - robotStatusUser
-#mkdir .ssh
-#vim .ssh/authorized_keys
-echo STOP > ${HOME}/.arlobot/status/room-MainFloorHome
+if [ ${USER} == chrisl8 ]
+then
+    if ! [-f /home/robotStatusUser ]
+    then
+        echo "Adding robotStatusUser."
+        echo "(This is NOT required for Arlobot, just a personal thing.)"
+        sudo useradd -m robotStatusUser
+        echo "Be sure to add your key to ~robotStatusUser/.ssh/authorized_keys"
+        echo "for anyone who needs to use it!"
+        echo "sudo su - robotStatusUser"
+        echo "mkdir .ssh"
+        echo "vim .ssh/authorized_keys"
+        echo "(This is NOT required for Arlobot, just a personal thing.)"
+    fi
+    # This simulates the basement door being open,
+    # which will cause the robot to stop.
+    echo STOP > ${HOME}/.arlobot/status/room-MainFloorHome
+fi
+
 if ! [ -f ${HOME}/Desktop/arlobot.desktop ]
 then
     echo "Modify and copy arlobot.desktop"
     echo "to your Desktop folder to create an icon"
     echo "in XWindows to start up the Robot!"
 fi
-
