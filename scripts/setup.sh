@@ -61,6 +61,31 @@ cd ${SCRIPTDIR}
 #    npm install
 #fi
 
+# Install required Ubuntu packages
+printf "\n${YELLOW}[Installing additional Ubuntu packages for Metatron]${NC}\n"
+# NOTE: You have to pipe /dev/null INTO apt-get to make it work from wget.
+# expect-dev required to get 'unbuffer' which is required by node to spawn ROS commands and get real time stdout data
+sudo apt-get install -qy ros-indigo-rosbridge-server imagemagick fswebcam festival festvox-en1 python-ftdi python-pip python-serial libv4l-dev jq expect-dev < /dev/null
+
+# Install required Python packages
+# pylibftdi is in the arlo setup script,
+# and I don't think I use twilio in python anymore!
+#printf "\n${YELLOW}[Installing required Python packages for Metatron]${NC}\n"
+#sudo pip install twilio pylibftdi
+
+printf "\n${YELLOW}[Installing mjpg_streamer for Web Page camera viewing]${NC}\n"
+if ! (which mjpg_streamer)
+    then
+    cd ${SCRIPTDIR}
+    svn co https://svn.code.sf.net/p/mjpg-streamer/code/ mjpg-streamer
+    cd mjpg-streamer/mjpg-streamer
+    # sudo apt-get install libv4l-dev # Installed earlier, left here for documentation of why
+    make USE_LIBV4L2=true clean all
+    sudo make install
+    # mjpg_streamer usage example:
+    #mjpg_streamer -i "/usr/local/lib/input_uvc.so -d /dev/video0 -f 30 -r 640x480" -o "/usr/local/lib/output_http.so -p 58180 -w ${SCRIPTDIR}/mjpg-streamer/mjpg-streamer/www"
+fi
+
 if [ ! -d  ${SCRIPTDIR}/../node/public/lcars/ ]
     then
     printf "\n${YELLOW}[Cloning in lcars CSS Framework]${NC}\n"
@@ -123,41 +148,18 @@ if [ ! -d ${ARLOHOME}/status ]
 fi
 chmod -R 777 ${ARLOHOME}/status
 
-# Install required Ubuntu packages
-printf "\n${YELLOW}[Installing additional Ubuntu packages for Metatron]${NC}\n"
-# NOTE: You have to pipe /dev/null INTO apt-get to make it work from wget.
-# expect-dev required to get 'unbuffer' which is required by node to spawn ROS commands and get real time stdout data
-sudo apt-get install -qy ros-indigo-rosbridge-server imagemagick fswebcam festival festvox-en1 python-ftdi python-pip python-serial libv4l-dev jq expect-dev < /dev/null
-
-# Install required Python packages
-printf "\n${YELLOW}[Installing required Python packages for Metatron]${NC}\n"
-sudo pip install twilio pylibftdi
-
-# Install mjpg-streamer
-if ! (which mjpg_streamer)
-    then
-    cd ${SCRIPTDIR}
-    svn co https://svn.code.sf.net/p/mjpg-streamer/code/ mjpg-streamer
-    cd mjpg-streamer/mjpg-streamer
-    # sudo apt-get install libv4l-dev # Installed earlier, left here for documentation of why
-    make USE_LIBV4L2=true clean all
-    sudo make install
-    # mjpg_streamer usage example:
-    #mjpg_streamer -i "/usr/local/lib/input_uvc.so -d /dev/video0 -f 30 -r 640x480" -o "/usr/local/lib/output_http.so -p 58180 -w ${SCRIPTDIR}/mjpg-streamer/mjpg-streamer/www"
-fi
-
 if ! (id|grep dialout>/dev/null)
     then
-    printf "\n${RED}Adding your user to the 'dialout' group."
-    sudo adduser ${USER} dialout
+    printf "\n${GREEN}Adding your user to the 'dialout' group.${NC}\n"
+    sudo adduser ${USER} dialout > /dev/null
     printf "${RED}You may have to reboot before you can use the Propeller Board.${NC}\n"
 fi
 
 if ! [ -f /etc/udev/rules.d/99-libftdi.rules ]
     then
-    printf "\n${RED}Adding required sudo rule to reset USB ports."
+    printf "\n${RED}Adding required sudo rule to reset USB ports.${NC}\n"
     sudo ${SCRIPTDIR}/addRuleForUSBRelayBoard.sh
-    printf "${RED}You may have to reboot before the USB Relay board will function!"
+    printf "${RED}You may have to reboot before the USB Relay board will function!${NC}\n"
 fi
 
 if ! (grep mbrola /etc/festival.scm>/dev/null)
@@ -184,14 +186,14 @@ if [ ${USER} == chrisl8 ]
     if ! [ -d /home/robotStatusUser ]
         then
         printf "\n${YELLOW}[Adding robotStatusUser.${NC}\n"
-        echo "(This is NOT required for Arlobot, just a personal thing.)"
+        printf "\n${GREEN}(This is NOT required for Arlobot, just a personal thing.)${NC}\n"
         sudo useradd -m robotStatusUser
-        echo "Be sure to add your key to ~robotStatusUser/.ssh/authorized_keys"
-        echo "for anyone who needs to use it!"
-        echo "sudo su - robotStatusUser"
-        echo "mkdir .ssh"
-        echo "vim .ssh/authorized_keys"
-        echo "(This is NOT required for Arlobot, just a personal thing.)"
+        printf "\n${GREEN}Be sure to add your key to ~robotStatusUser/.ssh/authorized_keys${NC}\n"
+        printf "\n${GREEN}for anyone who needs to use it!${NC}\n"
+        printf "\n${RED}sudo su - robotStatusUser${NC}\n"
+        printf "\n${RED}mkdir .ssh${NC}\n"
+        printf "\n${RED}vim .ssh/authorized_keys${NC}\n"
+        printf "\n${GREEN}(This is NOT required for Arlobot, just a personal thing.)${NC}\n"
     fi
     # This simulates the basement door being open,
     # which will cause the robot to stop.
