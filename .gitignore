@@ -9,6 +9,4 @@ src/CMakeLists.txt
 node/node_modules/
 node/build/
 scripts/mjpg-streamer/
-node/webserver/public/xscreen.png
-node/webserver/node_modules/
-node/webserver/public/lcars/
+node/webserver/lcars/

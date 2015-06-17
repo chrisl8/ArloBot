@@ -103,7 +103,7 @@ fi
 
 if ! [ -f ${HOME}/Desktop/arlobot.desktop ]
     then
-    printf "\n${YELLOW}[Create Desktop Icon]${NC}\n"
+    printf "\n${YELLOW}[Creating Desktop Icon]${NC}\n"
     echo "[Desktop Entry]" > ${HOME}/Desktop/arlobot.desktop
     echo "Encoding=UTF-8" >> ${HOME}/Desktop/arlobot.desktop
     echo "Name=ArloBot" >> ${HOME}/Desktop/arlobot.desktop
@@ -146,7 +146,7 @@ do
         printf "\n"
         cp ${SCRIPTDIR}/dotarlobot/${i} ${ARLOHOME}/
         printf "${GREEN}A brand new ${RED}${ARLOHOME}/${i}${GREEN} file has been created,${NC}\n"
-        printf "${LIGHTPURPLE}Please edit this file to customize according to your robot!\n${NC}\n"
+        printf "${LIGHTPURPLE}Please edit this file to customize according to your robot!${NC}\n"
     fi
 done
 
@@ -168,7 +168,7 @@ chmod -R 777 ${ARLOHOME}/status
 
 if ! [ -f /etc/udev/rules.d/99-libftdi.rules ]
     then
-    printf "\n${RED}Adding required sudo rule to reset USB ports.${NC}\n"
+    printf "\n${YELLOW}[Adding required sudo rule to reset USB ports.]${NC}\n"
     sudo ${SCRIPTDIR}/addRuleForUSBRelayBoard.sh
     printf "${RED}You may have to reboot before the USB Relay board will function!${NC}\n"
 fi
@@ -180,7 +180,7 @@ if ! (grep mbrola /etc/festival.scm>/dev/null)
     sudo ${SCRIPTDIR}/updateFestivalDefaults.sh
 fi
 
-printf "\n${YELLOW}[Set up required sudo entries.]${NC}\n"
+printf "\n${YELLOW}[Setting up required sudo entries.]${NC}\n"
 sudo -nl|grep resetUSB > /dev/null
 if [ $? -ne 0 ]
     then
