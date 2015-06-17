@@ -116,7 +116,7 @@ if ! [ -f ${HOME}/Desktop/arlobot.desktop ]
 fi
 
 printf "\n${YELLOW}[Setting up .arlobot folder]${NC}\n"
-printf "${BLUE}This holds personal data for your robot.${NC}\n"
+printf "${GREEN}This holds personal data for your robot.${NC}\n"
 # We will use ~/.arlobot to store "private" data
 # That is data that doesn't need to be part of
 # the public github repo like user tokens,
@@ -207,5 +207,3 @@ if [ ${USER} == chrisl8 ]
     # which will cause the robot to stop.
     echo STOP > ${HOME}/.arlobot/status/room-MainFloorHome
 fi
-
-printf "${BLUE}Metatron Setup.sh Script done.${NC}\n"
