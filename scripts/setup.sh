@@ -185,6 +185,7 @@ if ! (sudo -nl|grep resetUSB > /dev/null)
     printf "\n${YELLOW}[Setting up required sudo entries.]${NC}\n"
     echo "${USER} ALL = NOPASSWD: ${SCRIPTDIR}/resetUSB.sh" >> /tmp/arlobot_sudoers
     chmod 0440 /tmp/arlobot_sudoers
+    sudo chown root:root /tmp/arlobot_sudoers
     sudo mv /tmp/arlobot_sudoers /etc/sudoers.d/
     sudo chown root:root /etc/sudoers.d/arlobot_sudoers
 fi
