@@ -24,7 +24,7 @@ WHITE='\033[1;37m'
 NC='\033[0m' # NoColor
 
 printf "\n${YELLOW}SETTING UP ROBOT OPERATING SYSTEM FOR YOUR ARLOBOT!${NC}\n"
-printf "\n${YELLOW}---------------------------------------------------${NC}\n"
+printf "${YELLOW}---------------------------------------------------${NC}\n"
 printf "${GREEN}You will be asked for your password for running commands as root!${NC}\n"
 
 version=`lsb_release -sc`
@@ -233,7 +233,7 @@ else
     printf "\n"
     cp ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/
     printf "${GREEN}A brand new ${RED}~/.arlobot/arlobot.yaml${GREEN} file has been created,${NC}\n"
-    printf "${RED}please edit this file to customize according to your robot!\n${NC}\n"
+    printf "${LIGHTPURPLE}Please edit this file to customize according to your robot!\n${NC}\n"
 fi
 
 printf "\n${YELLOW}-----------------------------------${NC}\n"
