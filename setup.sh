@@ -23,7 +23,8 @@ YELLOW='\033[1;33m'
 WHITE='\033[1;37m'
 NC='\033[0m' # NoColor
 
-printf "\n${YELLOW}Setting up Robot Operating System for your ArloBot!${NC}\n"
+printf "\n${YELLOW}SETTING UP ROBOT OPERATING SYSTEM FOR YOUR ARLOBOT!${NC}\n"
+printf "\n${YELLOW}---------------------------------------------------${NC}\n"
 printf "${GREEN}You will be asked for your password for running commands as root!${NC}\n"
 
 version=`lsb_release -sc`
@@ -60,6 +61,7 @@ if ! [ -e /etc/apt/sources.list.d/ros-latest.list ]
         then
         printf "${BLUE}[Adding the ROS keys]${NC}\n"
         wget --quiet https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -O - | sudo apt-key add -
+        printf "${BLUE}^^ He says it is 'OK'.${NC}\n"
         printf "${YELLOW}[Update & upgrade the packages again with the new repository]${NC}\n"
         printf "${BLUE}silently . . .${NC}\n"
         sudo apt-get update -qq < /dev/null
@@ -69,10 +71,11 @@ else
     printf "${BLUE}Found existing ROS repository. No need to recreate.${NC}\n"
 fi
 
+# This should follow the official ROS install instructions closely.
+# That is why there is a separate section for extra packages that I need for Arlo.
 printf "\n${YELLOW}[Installing ROS:]${NC}\n"
 sudo apt-get install -qy ros-indigo-desktop-full ros-indigo-rqt-* < /dev/null
 printf "${YELLOW}[ROS installed!]${NC}\n"
-
 printf "\n${YELLOW}[rosdep init and python-rosinstall]${NC}\n"
 if ! [ -e /etc/ros/rosdep/sources.list.d/20-default.list ]
     then
@@ -81,6 +84,7 @@ fi
 rosdep update
 source /opt/ros/indigo/setup.bash
 sudo apt-get install -qy python-rosinstall < /dev/null
+# END Offical ROS Install section
 
 printf "\n${YELLOW}[Installing additional Ubuntu and ROS Packages for Arlo]${NC}\n"
 # For 8-CH USB Relay board:
@@ -94,11 +98,10 @@ printf "\n${YELLOW}[Installing additional Ubuntu and ROS Packages for Arlo]${NC}
 sudo apt-get install -qy ros-indigo-turtlebot ros-indigo-turtlebot-apps ros-indigo-turtlebot-interactions ros-indigo-turtlebot-simulator ros-indigo-kobuki-ftdi python-ftdi python-pip python-serial ros-indigo-openni-* ros-indigo-openni2-* ros-indigo-freenect-* ros-indigo-vision-opencv libopencv-dev python-opencv < /dev/null
 # For 8-CH USB Relay board:
 sudo pip install pylibftdi
-source /opt/ros/indigo/setup.bash
 
 if ! [ -d ~/catkin_ws/src ]
     then
-    printf "${BLUE}[Creating the catkin workspace and testing with catkin_make]${NC}\n"
+    printf "\n${YELLOW}[Creating the catkin workspace and testing with catkin_make]${NC}\n"
     mkdir -p ~/catkin_ws/src
     cd ~/catkin_ws/src
     catkin_init_workspace
@@ -107,7 +110,6 @@ if ! [ -d ~/catkin_ws/src ]
     source ~/catkin_ws/devel/setup.bash
     rospack profile
 fi
-
 
 printf "\n${YELLOW}[Cloning or Updating git repositories]${NC}\n"
 cd ~/catkin_ws/src
@@ -199,16 +201,9 @@ printf "\n${YELLOW}[Setting up the Metatron Package.]${NC}\n"
 
 if ! (id|grep dialout>/dev/null)
     then
-    printf "${RED}Adding your user to the dialout group,${NC}\n"
-    sudo adduser ${USER} dialout
+    printf "\n${GREEN}Adding your user to the 'dialout' group.${NC}\n"
+    sudo adduser ${USER} dialout > /dev/null
     printf "${RED}You may have to reboot before you can use the Propeller Board.${NC}\n"
-fi
-
-if ! [ -f /etc/udev/rules.d/99-libftdi.rules ]
-    then
-    printf "\n${RED}Adding required sudo rule to reset USB ports."
-    sudo ~/catkin_ws/src/ArloBot/addRuleForUSBRelayBoard.sh
-    printf "${RED}You may have to reboot before the USB Relay board will function!"
 fi
 
 # We will use ~/.arlobot to store "private" data
