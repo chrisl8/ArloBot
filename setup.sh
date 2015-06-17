@@ -236,6 +236,8 @@ else
     printf "${LIGHTPURPLE}Please edit this file to customize according to your robot!\n${NC}\n"
 fi
 
+printf "\n${PURPLE}Anytime you want to update ArloBot code from the web you can run this same script again. It will pull down and compile new code without wiping out custom configs in ~/.arlarbot. I run this script myself almost every day.\n"
+
 printf "\n${YELLOW}-----------------------------------${NC}\n"
 printf "${YELLOW}ALL DONE! REBOOT AND START TESTING!${NC}\n"
 printf "${GREEN}Look at README.md for testing ideas.${NC}\n"

@@ -1,26 +1,6 @@
 ArloBot Package for ROS
 ===========================
 
-Update June 1, 2015: I finally merged my dev branch into master. Hopefully it all works, but obviously the world is my beta testers, since I'm the only alpha tester.
-
-I've made a lot of changes to the C code for the Propeller board to try to make it easily work for various configurations without you having to rewrite the C code yourself. Still, it may not work out. Please let me know how it works.
-
-I've also tried to enhance the self explore functions.
-
-My next steps are:
-1. A clean setup script.
-2. A GUI web interface that works across various configurations.
-3. Updated setup instructions.
-
-Update February 24, 2015: I am still actively developing and using my "ArloBot", so if you have any questions or problems feel free to let me know!
-The two initial goals for this package are:
-
-1. To allow all of the functions of the TurtleBot from this tutorial: http://wiki.ros.org/Robots/TurtleBot to run on the "Arlo Platform". I believe that is possible now. If you find anything that doesn't work, open an issue!
-
-2. I have purchased and am working though "ROS By Example INDIGO". All of the exmamples in this book should work on the Arlo Platform. As I'm working through the book now, I will update my code if I find anything that doesn't work properly. I highly recommend purchasing this book and working through it if you have or wish to build a ROS based robot! http://www.lulu.com/shop/r-patrick-goebel/ros-by-example-indigo-volume-1/ebook/product-22015937.html
-
-3. Once these two goals are accomplished, the "ArloBot" becomes an open ended mobile development platform where anything is possible. I have a lot of ideas and it is just a matter of time and interest as to what specifically I will do. I have sevearl irons in the fire. This repository, however, will focus on goals 1 & 2 and I will put other more specialized functions into other repositories.
-
 The goal of this project is to allow a Parallax Arlo Platform robot http://www.parallax.com/product/arlo-robotic-platform-system to run all of the demonstration projects for the Robot Operating System (ROS) based TurtleBot http://wiki.ros.org/Robots/TurtleBot
 
 Because the Arlo robot is also a circular differential drive robot it behaves similarly to the Turtlebot. It just needs a set of C code to run on the Propeller based controller and a proper ROS node to communicate with it.
@@ -28,12 +8,19 @@ Because the Arlo robot is also a circular differential drive robot it behaves si
 Here is a demonstration video of this code on my ArloBot:
 http://youtu.be/7qJaA6K_WPE
 
-Please note that you will need the code to run on your Propeller board. This is stored in the "Propeller C Code for ArloBot" folder.
+## Quick Install: ##
+There is now a script to install everything. Just run:
 
-Before running this code please adjust settings for your robot in:
-    ~/arlobot/src/arlobot/arlobot_bringup/param/arlobot.yaml
+```
+bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/master/setup.sh)
+```
+and you are done!
 
-## Arlobot Setup Instructions: ##
+To update your code just run the same script again and it will pull down and compile anything new without erasing custom settings.
+
+Please note that you will need the code to run on your Propeller board. This is stored in the "Propeller C Code for ArloBot" folder. Details on the Propeller code are here: http://ekpyroticfrood.net/?p=165
+
+## Full Arlobot Setup Instructions: ##
 Complete setup and usage instructions are at my blog:
 http://ekpyroticfrood.net/?p=162
 
