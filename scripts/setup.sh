@@ -97,6 +97,12 @@ else
     git pull
 fi
 
+if ! [ -f ${HOME}/Desktop/arlobot.desktop ]
+    then
+    printf "\n${YELLOW}[Copy Desktop Icon]${NC}\n"
+    cp ${SCRIPTDIR}/arlobot.desktop ${HOME}/Desktop/
+fi
+
 printf "\n${YELLOW}[Setting up .arlobot folder]${NC}\n"
 printf "${BLUE}This holds personal data for your robot.${NC}\n"
 # We will use ~/.arlobot to store "private" data
@@ -190,9 +196,4 @@ if [ ${USER} == chrisl8 ]
     # This simulates the basement door being open,
     # which will cause the robot to stop.
     echo STOP > ${HOME}/.arlobot/status/room-MainFloorHome
-fi
-
-if ! [ -f ${HOME}/Desktop/arlobot.desktop ]
-    then
-    printf "\n${GREEN}Modify and copy arlobot.desktop\nto your Desktop folder to create an icon\nin XWindows to start up the Robot!${NC}\n"
 fi
