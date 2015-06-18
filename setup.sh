@@ -39,18 +39,14 @@ printf "${RED}[This script will only work on ubuntu saucy(13.10) or trusty(14.04
 exit 0
 esac
 
-printf "\n${YELLOW}[Updating & upgrading all existing Ubuntu packages]${NC}\n"
-printf "${BLUE}silently . . .${NC}\n"
-# NOTE: You have to pipe /dev/null INTO apt-get to make it work from wget.
-sudo apt-get update -qq < /dev/null
-sudo apt-get upgrade -qq < /dev/null
-
 # I never use this, but if you are having time issues maybe uncomment this.
 #printf "${YELLOW}[Installing chrony and setting the ntpdate]${NC}\n"
 #sudo apt-get install -y chrony
 #sudo ntpdate ntp.ubuntu.com
 
 printf "\n${YELLOW}[Checking for ROS repository]${NC}\n"
+# This should follow the official ROS install instructions closely.
+# That is why there is a separate section for extra packages that I need for Arlo.
 if ! [ -e /etc/apt/sources.list.d/ros-latest.list ]
     then
     printf "${BLUE}[Adding the ROS repository]${NC}\n"
@@ -62,14 +58,22 @@ if ! [ -e /etc/apt/sources.list.d/ros-latest.list ]
         printf "${BLUE}[Adding the ROS keys]${NC}\n"
         wget --quiet https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -O - | sudo apt-key add -
         printf "${BLUE}^^ He says it is 'OK'.${NC}\n"
-        printf "${YELLOW}[Update & upgrade the packages again with the new repository]${NC}\n"
-        printf "${BLUE}silently . . .${NC}\n"
-        sudo apt-get update -qq < /dev/null
-        sudo apt-get upgrade -qq < /dev/null
     fi
 else
     printf "${BLUE}Found existing ROS repository. No need to recreate.${NC}\n"
 fi
+
+printf "\n${YELLOW}[Adding TLP repository for better battery life]${NC}\n"
+#TLP: http://linrunner.de/en/tlp/tlp.html
+# tlp tlp-rdw
+# For better battery life!
+sudo add-apt-repository ppa:linrunner/tlp -y &> /dev/null
+
+printf "\n${YELLOW}[Updating & upgrading all existing Ubuntu packages]${NC}\n"
+printf "${BLUE}silently . . .${NC}\n"
+# NOTE: You have to pipe /dev/null INTO apt-get to make it work from wget.
+sudo apt-get update -qq < /dev/null
+sudo apt-get upgrade -qq < /dev/null
 
 # This should follow the official ROS install instructions closely.
 # That is why there is a separate section for extra packages that I need for Arlo.
@@ -87,8 +91,9 @@ sudo apt-get install -qy python-rosinstall < /dev/null
 # END Offical ROS Install section
 
 printf "\n${YELLOW}[Installing additional Ubuntu and ROS Packages for Arlo]${NC}\n"
-
 # Notes on what the packages are for:
+
+# python-serial is required for ROS to talk to the Propeller board
 
 # For 8-CH USB Relay board:
 # Reference: https://code.google.com/p/drcontrol/wiki/Install_RaspberryPi">https://code.google.com/p/drcontrol/wiki/Install_RaspberryPi
@@ -102,10 +107,14 @@ printf "\n${YELLOW}[Installing additional Ubuntu and ROS Packages for Arlo]${NC}
 #TLP: http://linrunner.de/en/tlp/tlp.html
 # tlp tlp-rdw
 # For better battery life!
-sudo add-apt-repository ppa:linrunner/tlp -y &> /dev/null
-sudo apt-get update -qq
 
-sudo apt-get install -qy ros-indigo-turtlebot ros-indigo-turtlebot-apps ros-indigo-turtlebot-interactions ros-indigo-turtlebot-simulator ros-indigo-kobuki-ftdi python-ftdi python-pip python-serial ros-indigo-openni-* ros-indigo-openni2-* ros-indigo-freenect-* ros-indigo-vision-opencv libopencv-dev python-opencv tlp tlp-rdw < /dev/null
+# These are for the Metatron package:
+
+# expect-dev required to get 'unbuffer' which is required by node to spawn ROS commands and get real time stdout data
+# jq allows shell scripts to read .json formatted config files.
+# festival and fsetvox-en1 are for text to speech
+
+sudo apt-get install -qy ros-indigo-turtlebot ros-indigo-turtlebot-apps ros-indigo-turtlebot-interactions ros-indigo-turtlebot-simulator ros-indigo-kobuki-ftdi python-ftdi python-pip python-serial ros-indigo-openni-* ros-indigo-openni2-* ros-indigo-freenect-* ros-indigo-vision-opencv libopencv-dev python-opencv tlp tlp-rdw ros-indigo-rosbridge-server imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev < /dev/null
 
 # For 8-CH USB Relay board:
 sudo pip install pylibftdi
