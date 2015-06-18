@@ -16,8 +16,12 @@
         "port": 8080
     },
     "use_xv11": false,
+    "camera0": true,
+    "camera0name": "C615",
+    "camera1": true,
+    "camera1name": "HP",
     "wait_for_door_confirmation": false,
     "speech_engine": "~/catkin_ws/src/Metatron/scripts/tts.sh",
     "script_location": "~/catkin_ws/src/Metatron/scripts",
-    "web_folder": "~/catkin_ws/src/Metatron/node/webserver/public"
+    "web_folder": "~/catkin_ws/src/Metatron/node/public"
 }

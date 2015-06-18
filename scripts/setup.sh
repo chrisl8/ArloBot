@@ -64,10 +64,11 @@ cd ${SCRIPTDIR}
 #fi
 
 # Install required Ubuntu packages
-printf "\n${YELLOW}[Installing additional Ubuntu packages for Metatron]${NC}\n"
+# All required Ubuntu packages have been moved to the Arlobot setup.sh file,
+# in order to consolidate and avoid running apt-get twice.
+#printf "\n${YELLOW}[Installing additional Ubuntu packages for Metatron]${NC}\n"
 # NOTE: You have to pipe /dev/null INTO apt-get to make it work from wget.
-# expect-dev required to get 'unbuffer' which is required by node to spawn ROS commands and get real time stdout data
-sudo apt-get install -qy ros-indigo-rosbridge-server imagemagick fswebcam festival festvox-en1 python-ftdi python-pip python-serial libv4l-dev jq expect-dev < /dev/null
+#sudo apt-get install -qy ros-indigo-rosbridge-server imagemagick fswebcam festival festvox-en1 python-ftdi python-pip python-serial libv4l-dev jq expect-dev < /dev/null
 
 # Install required Python packages
 # pylibftdi is in the arlo setup script,
@@ -174,8 +175,6 @@ fi
 
 if ! (grep mbrola /etc/festival.scm>/dev/null)
     then
-    printf "\n${YELLOW}[Updating default Festival voice]${NC}\n"
-    printf "${BLUE}You may be asked for your password\nTo allow updates to /etc/festival.scm${NC}\n"
     sudo ${SCRIPTDIR}/updateFestivalDefaults.sh
 fi
 
@@ -203,7 +202,4 @@ if [ ${USER} == chrisl8 ]
         printf "${RED}vim .ssh/authorized_keys${NC}\n"
         printf "${GREEN}(This is NOT required for Arlobot, just a personal thing.)${NC}\n"
     fi
-    # This simulates the basement door being open,
-    # which will cause the robot to stop.
-    echo STOP > ${HOME}/.arlobot/status/room-MainFloorHome
 fi

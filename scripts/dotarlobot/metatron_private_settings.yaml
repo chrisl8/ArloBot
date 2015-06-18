@@ -1,3 +1,3 @@
 speech_engine: "~/catkin_ws/src/Metatron/scripts/tts.sh"
 script_location: "~/catkin_ws/src/Metatron/scripts"
-web_folder: "~/catkin_ws/src/Metatron/node/webserver/public"
+web_folder: "~/catkin_ws/src/Metatron/node/public"

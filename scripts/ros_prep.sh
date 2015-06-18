@@ -30,7 +30,10 @@ do
     echo "Waiting for USB ports to come on line . . ."
     sleep 1
 done
-${SCRIPTDIR}/XVLidarStartMotor.sh
+if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true
+    then
+    ${SCRIPTDIR}/XVLidarStartMotor.sh
+fi
 /opt/ros/indigo/bin/roscore &
 while ! (rosparam list &> /dev/null)
 do
@@ -43,7 +46,10 @@ then
 fi
 chmod 777 ${HOME}/.arlobot/status/ &> /dev/null
 rosparam set /arlobot/port $(${SCRIPTDIR}/find_ActivityBoard.sh)
-rosparam set /xv11/port $(${SCRIPTDIR}/find_XVLidar.sh)
+if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true
+    then
+    rosparam set /xv11/port $(${SCRIPTDIR}/find_XVLidar.sh)
+fi
 rosparam set /joystick/dev $(${SCRIPTDIR}/find_xbox_controller.sh)
 rosparam set /camera1 $(${SCRIPTDIR}/find_camera.sh C615)
 rosparam set /camera2 $(${SCRIPTDIR}/find_camera.sh HP)
