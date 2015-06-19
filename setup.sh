@@ -96,7 +96,7 @@ if ! (dpkg -s ros-indigo-desktop-full|grep "Status: install ok installed" &> /de
 fi
 
 # In case .bashrc wasn't set up, or you didn't reboot
-if ! (which catkin_make)
+if ! (which catkin_make > /dev/null)
     then
     source /opt/ros/indigo/setup.bash
 fi
