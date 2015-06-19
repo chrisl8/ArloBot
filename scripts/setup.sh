@@ -45,7 +45,14 @@ nvm install stable
 
 printf "\n${YELLOW}[Grabbing dependencies for node packages]${NC}\n"
 cd
-npm install -g forever log.io
+if ! (which forever > /dev/null)
+    then
+    npm install -g forever
+fi
+if ! (which log.io-harvester > /dev/null)
+    then
+    npm install -g log.io
+fi
 cd ${SCRIPTDIR}/../node
 npm install
 cd ${SCRIPTDIR}
@@ -116,13 +123,13 @@ if ! [ -f ${HOME}/Desktop/arlobot.desktop ]
     echo "Terminal=false" >> ${HOME}/Desktop/arlobot.desktop
 fi
 
-printf "\n${YELLOW}[Setting up .arlobot folder]${NC}\n"
-printf "${GREEN}This holds personal data for your robot.${NC}\n"
-# We will use ~/.arlobot to store "private" data
-# That is data that doesn't need to be part of
-# the public github repo like user tokens,
-# sounds, and room maps and per robot settings
 if [ ! -d ${HOME}/.arlobot ]
+    printf "\n${YELLOW}[Setting up .arlobot folder]${NC}\n"
+    printf "${GREEN}This holds personal data for your robot.${NC}\n"
+    # We will use ~/.arlobot to store "private" data
+    # That is data that doesn't need to be part of
+    # the public github repo like user tokens,
+    # sounds, and room maps and per robot settings
     then
     mkdir ${HOME}/.arlobot
 fi
