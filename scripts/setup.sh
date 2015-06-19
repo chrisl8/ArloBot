@@ -124,13 +124,13 @@ if ! [ -f ${HOME}/Desktop/arlobot.desktop ]
 fi
 
 if [ ! -d ${HOME}/.arlobot ]
+    then
     printf "\n${YELLOW}[Setting up .arlobot folder]${NC}\n"
     printf "${GREEN}This holds personal data for your robot.${NC}\n"
     # We will use ~/.arlobot to store "private" data
     # That is data that doesn't need to be part of
     # the public github repo like user tokens,
     # sounds, and room maps and per robot settings
-    then
     mkdir ${HOME}/.arlobot
 fi
 
