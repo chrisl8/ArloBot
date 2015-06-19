@@ -85,8 +85,10 @@ if ! [ -e /etc/ros/rosdep/sources.list.d/20-default.list ]
     then
     sudo sh -c "rosdep init"
 fi
+printf "${BLUE}Running rosdep update . . .${NC}\n"
 rosdep update
 source /opt/ros/indigo/setup.bash
+printf "${BLUE}Installing python-rosinstall:${NC}\n"
 sudo apt-get install -qy python-rosinstall < /dev/null
 # END Offical ROS Install section
 
