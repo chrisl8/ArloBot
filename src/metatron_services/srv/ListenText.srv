@@ -1,4 +1,0 @@
-string input_text
-string sender
----
-bool listen_result

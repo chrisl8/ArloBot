@@ -54,7 +54,6 @@ add_message_files(
 add_service_files(
   FILES
   SpeakText.srv
-  ListenText.srv
   AddTwoInts.srv
   ToggleCamera.srv
   ToggleArloMinimal.srv

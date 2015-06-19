@@ -12,8 +12,6 @@ from std_msgs.msg import Bool
 #from metatron_babelfish.srv import *
 # If you do you will get "ImportError: No module named srv"
 from metatron_services.srv import SpeakText, ListenText, SetMap
-# For SMS sending
-from twilio.rest import TwilioRestClient
 # For Pushover - https://pushover.net/faq#library-python
 import httplib, urllib
 import os.path
@@ -31,13 +29,6 @@ class MetatronBabel(object):
         self.speechEngine = expanduser(rospy.get_param("/metatron_id/speech_engine", "echo"))
         self.soundFileLocation = expanduser(rospy.get_param("~dictionary/soundFileLocation", "/"))
         self.script_location = expanduser(rospy.get_param("/metatron_id/script_location", "~"))
-
-        #Twilio setup
-        self.use_twilio = rospy.get_param("/metatron_id/use_twilio", False)
-        self.my_phone_number = rospy.get_param("/metatron_id/my_phone_number", "")
-        self.twilio_account_sid = rospy.get_param("/metatron_id/twilio_account_sid", "")
-        self.twilio_auth_token = rospy.get_param("/metatron_id/twilio_auth_token", "")
-        self.twilio_number = rospy.get_param("/metatron_id/twilio_number", "")
 
         #Pushover setup - https://pushover.net/faq#library-python
         self.use_pushover = rospy.get_param("/metatron_id/use_pushover", False)
@@ -66,9 +57,6 @@ class MetatronBabel(object):
         # http://wiki.ros.org/ROS/Tutorials/CreatingMsgAndSrv
         # http://wiki.ros.org/ROS/Tutorials/WritingServiceClient%28python%29
         speaker = rospy.Service('metatron_speaker', SpeakText, self._handle_speak_request)
-
-        # Create a service that can be called to accept any text and deal with it
-        listener = rospy.Service('metatron_listener', ListenText, self._handle_listen_request)
 
         # Introduction
         text = rospy.get_param("~dictionary/introduction", self.missingDictionaryItem)
@@ -153,29 +141,6 @@ class MetatronBabel(object):
         self._say(text.text_to_speak)
         return True
 
-    # This will get the text messages from Twilio,
-    # and parse and respond to them.
-    def _handle_listen_request(self, text):
-        rospy.loginfo(text.sender[1:] + ":" + text.input_text)
-        if text.input_text[:3].lower() == 'say':
-            self._say(text.input_text[3:].strip())
-            return True
-        # Get the list of maps for use and comparison
-        list_map_script = self.script_location + '/list-maps.sh'
-        map_list_text = ""
-        map_list = subprocess.Popen([list_map_script], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
-        for line in iter(map_list.stdout.readline, ""):
-            map_list_text += line
-        map_list.stdout.close()
-        map_list.wait()
-        if text.input_text in map_list_text:
-            self._say("I am setting the map to: " + text.input_text)
-            return self.set_map_client(text.input_text)
-        if "map" in text.input_text.lower():
-            self._send_text_message(map_list_text)
-            return True
-        return True
-
     def _send_text_message(self, text):
         text_me = self.script_location + '/textme.sh'
         process = subprocess.Popen([text_me, text], close_fds=True)
@@ -195,14 +160,6 @@ class MetatronBabel(object):
             process = subprocess.Popen([self.speechEngine, text], close_fds=True)
         process.wait() # Wait for it to finish, this should be instantaneous.
 
-        # Twilio SMS send - Disabled for now, don't use for everything :)
-        # if not is_wav & self.use_twilio:
-        #     client = TwilioRestClient(self.twilio_account_sid, self.twilio_auth_token)
-        #     client.messages.create(
-        #         to=self.my_phone_number,
-        #         from_=self.twilio_number,
-        #         body=text,
-        #     )
         # Pushover moved to speech node module
         self.isSpeaking = False
         self.lastStatement = rospy.get_time()
