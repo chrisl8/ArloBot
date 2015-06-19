@@ -95,6 +95,12 @@ if ! (dpkg -s ros-indigo-desktop-full|grep "Status: install ok installed" &> /de
     # END Offical ROS Install section
 fi
 
+# In case .bashrc wasn't set up, or you didn't reboot
+if ! (which catkin_make)
+    then
+    source /opt/ros/indigo/setup.bash
+fi
+
 printf "\n${YELLOW}[Installing additional Ubuntu and ROS Packages for Arlo]${NC}\n"
 printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 # Notes on what the packages are for:
