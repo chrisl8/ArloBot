@@ -30,7 +30,7 @@ do
     echo "Waiting for USB ports to come on line . . ."
     sleep 1
 done
-if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true
+if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
     ${SCRIPTDIR}/XVLidarStartMotor.sh
 fi
@@ -46,14 +46,14 @@ then
 fi
 chmod 777 ${HOME}/.arlobot/status/ &> /dev/null
 rosparam set /arlobot/port $(${SCRIPTDIR}/find_ActivityBoard.sh)
-if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true
+if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
     rosparam set /xv11/port $(${SCRIPTDIR}/find_XVLidar.sh)
 fi
 rosparam set /joystick/dev $(${SCRIPTDIR}/find_xbox_controller.sh)
 rosparam set /camera1 $(${SCRIPTDIR}/find_camera.sh C615)
 rosparam set /camera2 $(${SCRIPTDIR}/find_camera.sh HP)
-if [ $(jq '.wait_for_door_confirmation' ${HOME}/.arlobot/personalDataForBehavior.json) == true   ]
+if [ $(jq '.wait_for_door_confirmation' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
 then
     echo "Open and close the basement door to ensure lockout is working."
     echo STOP > ${HOME}/.arlobot/status/room-MainFloorHome

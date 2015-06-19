@@ -2,7 +2,7 @@
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 
 # USB Relay Controller
-if [ $(jq '.useUSBrelay' ${HOME}/.arlobot/personalDataForBehavior.json) == true
+if [ $(jq '.useUSBrelay' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
     ${SCRIPTDIR}/drcontrol.py -l|grep USB &> /dev/null
     if [ $? -gt 0 ]
@@ -13,7 +13,7 @@ if [ $(jq '.useUSBrelay' ${HOME}/.arlobot/personalDataForBehavior.json) == true
 fi
 
 # Camera 0
-if [ $(jq '.camera0' ${HOME}/.arlobot/personalDataForBehavior.json) == true
+if [ $(jq '.camera0' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
     ls /dev/video0 &> /dev/null
     if [ $? -gt 0 ]
@@ -24,7 +24,7 @@ if [ $(jq '.camera0' ${HOME}/.arlobot/personalDataForBehavior.json) == true
 fi
 
 # Camera 1
-if [ $(jq '.camera1' ${HOME}/.arlobot/personalDataForBehavior.json) == true
+if [ $(jq '.camera1' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
     ls /dev/video1 &> /dev/null
     if [ $? -gt 0 ]
@@ -35,7 +35,7 @@ if [ $(jq '.camera1' ${HOME}/.arlobot/personalDataForBehavior.json) == true
 fi
 
 # Activity Board
-if [ $(jq '.hasActivityBoard' ${HOME}/.arlobot/personalDataForBehavior.json) == true
+if [ $(jq '.hasActivityBoard' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
     ${SCRIPTDIR}/find_ActivityBoard.sh |grep USB &> /dev/null
     if [ $? -gt 0 ]
@@ -55,7 +55,7 @@ fi
 #fi
 
 # XV-11
-if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true
+if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
     ${SCRIPTDIR}/find_XVLidar.sh |grep ACM &> /dev/null
     if [ $? -gt 0 ]
