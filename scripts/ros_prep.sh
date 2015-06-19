@@ -50,6 +50,7 @@ if [ $(jq '.hasActivityBoard' ${HOME}/.arlobot/personalDataForBehavior.json) == 
     rosparam set /arlobot/port $(${SCRIPTDIR}/find_ActivityBoard.sh)
 else
     YELLOW='\033[1;33m'
+    NC='\033[0m' # NoColor
     printf "\n${YELLOW}Without an activity board your robot will not function!${NC}\n"
 fi
 if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
