@@ -32,6 +32,8 @@
     "_camera1name": "Run 'fswebcam --verbose --device=/dev/video1 2>&1|grep cap.card' and set this to a unique part of the resulting string.",
     "camera1name": "HP",
     "_wait_for_door_confirmation": "Set to true if you want the robot to always start disabled, waiting for you to confirm a door is shut",
+    "_hasXboxController": "Set to true if you have a USB wireless xBox joystick receiver.",
+    "hasXboxController": false,
     "wait_for_door_confirmation": false,
     "_hasActivityBoard": "This can only be false for a 'dummy' test system that has no actual hardware.",
     "hasActivityBoard": true,
