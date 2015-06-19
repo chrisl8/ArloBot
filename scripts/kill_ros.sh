@@ -54,6 +54,9 @@ if [ -f nohup.out ]
 then
     rm nohup.out
 fi
-${SCRIPTDIR}/XVLidarStopMotor.sh
+if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
+    then
+    ${SCRIPTDIR}/XVLidarStopMotor.sh
+fi
 ${SCRIPTDIR}/callRestUSB.sh
 
