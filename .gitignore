@@ -10,3 +10,4 @@ node/node_modules/
 node/build/
 scripts/mjpg-streamer/
 node/public/lcars/
+node/public/xscreen.png
