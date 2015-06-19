@@ -1,26 +1,40 @@
 {
+    "_comment": "I am using a _ instance of each field for comments.",
+    "_pushover": "If you use pushover include your tokens here.",
     "pushover": {
         "TOKEN": "",
         "USER": "",
         "sound": ""
     },
+    "_twilio": "Required data to use twilio if you want",
     "twilio": {
         "account_sid": "",
         "auth_token": "",
         "number": "",
         "my_phone_number": ""
     },
+    "_ngrok": "This allows you to use a consistent ngrok so twilio can find it",
     "ngrok": {
         "authtoken": "",
         "subdomain": "",
         "port": 8080
     },
+    "_useUSBrelay": "Set to true if you have a USB Relay board",
+    "useUSBrelay": false,
+    "_use_xv11": "Set to true if you have an XV11 neato scanner connected.",
     "use_xv11": false,
-    "camera0": true,
+    "_camera0": "Set to true if you have a USB camera.",
+    "camera0": false,
+    "_camera0name": "Run 'fswebcam --verbose --device=/dev/video0 2>&1|grep cap.card' and set this to a unique part of the resulting string.",
     "camera0name": "C615",
-    "camera1": true,
+    "_camera1": "Set to true if you have a USB 2nd camera.",
+    "camera1": false,
+    "_camera1name": "Run 'fswebcam --verbose --device=/dev/video1 2>&1|grep cap.card' and set this to a unique part of the resulting string.",
     "camera1name": "HP",
+    "_wait_for_door_confirmation": "Set to true if you want the robot to always start disabled, waiting for you to confirm a door is shut",
     "wait_for_door_confirmation": false,
+    "_hasActivityBoard": "This can only be false for a 'dummy' test system that has no actual hardware.",
+    "hasActivityBoard": true,
     "speech_engine": "~/catkin_ws/src/Metatron/scripts/tts.sh",
     "script_location": "~/catkin_ws/src/Metatron/scripts",
     "web_folder": "~/catkin_ws/src/Metatron/node/public"
