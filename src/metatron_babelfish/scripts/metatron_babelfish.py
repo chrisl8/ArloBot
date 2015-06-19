@@ -11,7 +11,7 @@ from std_msgs.msg import Bool
 # So this cannot work:
 #from metatron_babelfish.srv import *
 # If you do you will get "ImportError: No module named srv"
-from metatron_services.srv import SpeakText, ListenText, SetMap
+from metatron_services.srv import SpeakText, SetMap
 # For Pushover - https://pushover.net/faq#library-python
 import httplib, urllib
 import os.path
