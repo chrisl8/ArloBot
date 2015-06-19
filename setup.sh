@@ -44,12 +44,11 @@ esac
 #sudo apt-get install -y chrony
 #sudo ntpdate ntp.ubuntu.com
 
-printf "\n${YELLOW}[Checking for ROS repository]${NC}\n"
-# This should follow the official ROS install instructions closely.
-# That is why there is a separate section for extra packages that I need for Arlo.
 if ! [ -e /etc/apt/sources.list.d/ros-latest.list ]
     then
-    printf "${BLUE}[Adding the ROS repository]${NC}\n"
+    printf "${YELLOW}[Adding the ROS repository]${NC}\n"
+    # This should follow the official ROS install instructions closely.
+    # That is why there is a separate section for extra packages that I need for Arlo.
     sudo sh -c "echo \"deb http://packages.ros.org/ros/ubuntu ${version} main\" > /etc/apt/sources.list.d/ros-latest.list"
     printf "${BLUE}[Checking the ROS keys]${NC}\n"
     roskey=`apt-key list | grep -i "ROS builder"`
@@ -59,15 +58,16 @@ if ! [ -e /etc/apt/sources.list.d/ros-latest.list ]
         wget --quiet https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -O - | sudo apt-key add -
         printf "${BLUE}^^ He says it is 'OK'.${NC}\n"
     fi
-else
-    printf "${BLUE}Found existing ROS repository. No need to recreate.${NC}\n"
 fi
 
-printf "\n${YELLOW}[Adding TLP repository for better battery life]${NC}\n"
-#TLP: http://linrunner.de/en/tlp/tlp.html
-# tlp tlp-rdw
-# For better battery life!
-sudo add-apt-repository ppa:linrunner/tlp -y &> /dev/null
+if ! [ -e /etc/apt/sources.list.d/linrunner-tlp-trusty.list ]
+    then
+    printf "\n${YELLOW}[Adding TLP repository for better battery life]${NC}\n"
+    #TLP: http://linrunner.de/en/tlp/tlp.html
+    # tlp tlp-rdw
+    # For better battery life!
+    sudo add-apt-repository ppa:linrunner/tlp -y &> /dev/null
+fi
 
 printf "\n${YELLOW}[Updating & upgrading all existing Ubuntu packages]${NC}\n"
 printf "${BLUE}silently . . .${NC}\n"
@@ -77,22 +77,26 @@ sudo apt-get upgrade -qq < /dev/null
 
 # This should follow the official ROS install instructions closely.
 # That is why there is a separate section for extra packages that I need for Arlo.
-printf "\n${YELLOW}[Installing ROS:]${NC}\n"
-sudo apt-get install -qy ros-indigo-desktop-full ros-indigo-rqt-* < /dev/null
-printf "${YELLOW}[ROS installed!]${NC}\n"
-printf "\n${YELLOW}[rosdep init and python-rosinstall]${NC}\n"
-if ! [ -e /etc/ros/rosdep/sources.list.d/20-default.list ]
+if ! (dpkg -s ros-indigo-desktop-full|grep "Status: install ok installed" &> /dev/null)
     then
-    sudo sh -c "rosdep init"
+    printf "\n${YELLOW}[Installing ROS]${NC}\n"
+    sudo apt-get install -qy ros-indigo-desktop-full < /dev/null
+    printf "${YELLOW}[ROS installed!]${NC}\n"
+    printf "\n${YELLOW}[rosdep init and python-rosinstall]${NC}\n"
+    if ! [ -e /etc/ros/rosdep/sources.list.d/20-default.list ]
+        then
+        sudo sh -c "rosdep init"
+    fi
+    printf "${BLUE}Running rosdep update . . .${NC}\n"
+    rosdep update
+    source /opt/ros/indigo/setup.bash
+    printf "${BLUE}Installing python-rosinstall:${NC}\n"
+    sudo apt-get install -qy python-rosinstall < /dev/null
+    # END Offical ROS Install section
 fi
-printf "${BLUE}Running rosdep update . . .${NC}\n"
-rosdep update
-source /opt/ros/indigo/setup.bash
-printf "${BLUE}Installing python-rosinstall:${NC}\n"
-sudo apt-get install -qy python-rosinstall < /dev/null
-# END Offical ROS Install section
 
 printf "\n${YELLOW}[Installing additional Ubuntu and ROS Packages for Arlo]${NC}\n"
+printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 # Notes on what the packages are for:
 
 # python-serial is required for ROS to talk to the Propeller board
@@ -116,7 +120,7 @@ printf "\n${YELLOW}[Installing additional Ubuntu and ROS Packages for Arlo]${NC}
 # jq allows shell scripts to read .json formatted config files.
 # festival and fsetvox-en1 are for text to speech
 
-sudo apt-get install -qy ros-indigo-turtlebot ros-indigo-turtlebot-apps ros-indigo-turtlebot-interactions ros-indigo-turtlebot-simulator ros-indigo-kobuki-ftdi python-ftdi python-pip python-serial ros-indigo-openni-* ros-indigo-openni2-* ros-indigo-freenect-* ros-indigo-vision-opencv libopencv-dev python-opencv tlp tlp-rdw ros-indigo-rosbridge-server imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev < /dev/null
+sudo apt-get install -qy ros-indigo-rqt-* ros-indigo-turtlebot ros-indigo-turtlebot-apps ros-indigo-turtlebot-interactions ros-indigo-turtlebot-simulator ros-indigo-kobuki-ftdi python-ftdi python-pip python-serial ros-indigo-openni-* ros-indigo-openni2-* ros-indigo-freenect-* ros-indigo-vision-opencv libopencv-dev python-opencv tlp tlp-rdw ros-indigo-rosbridge-server imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev < /dev/null
 
 # For 8-CH USB Relay board:
 sudo pip install pylibftdi
