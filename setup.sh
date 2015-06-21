@@ -123,6 +123,8 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 # These are for the Metatron package:
 
 # expect-dev required to get 'unbuffer' which is required by node to spawn ROS commands and get real time stdout data
+    # http://stackoverflow.com/a/11337310
+    # http://linux.die.net/man/1/unbuffer
 # jq allows shell scripts to read .json formatted config files.
 # festival and fsetvox-en1 are for text to speech
 
