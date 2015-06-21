@@ -1,5 +1,17 @@
 #!/bin/bash
-SCRIPTDIR=$(cd $(dirname "$0") && pwd)
+# This script prepares the system to run ROS
+
+# Grab and save the path to this script
+# http://stackoverflow.com/a/246128
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+# echo ${SCRIPTDIR} # For debugging
+
 if (pgrep -f simpleide>/dev/null)
 then
     echo "SimpleIDE is running,"
@@ -30,21 +42,29 @@ do
     echo "Waiting for USB ports to come on line . . ."
     sleep 1
 done
+
 if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
     ${SCRIPTDIR}/XVLidarStartMotor.sh
 fi
+
+# Start roscore separately so that we can set parameters
+# before launching any ROS .launch files.
 /opt/ros/indigo/bin/roscore &
+
 while ! (rosparam list &> /dev/null)
 do
     echo "Waiting for roscore to start . . ."
     sleep 1
 done
+
 if [ ! -d ${HOME}/.arlobot/status/ ]
 then
     mkdir ${HOME}/.arlobot/status/
 fi
+
 chmod 777 ${HOME}/.arlobot/status/ &> /dev/null
+
 if [ $(jq '.hasActivityBoard' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
     rosparam set /arlobot/port $(${SCRIPTDIR}/find_ActivityBoard.sh)
@@ -53,14 +73,17 @@ else
     NC='\033[0m' # NoColor
     printf "\n${YELLOW}Without an activity board your robot will not function!${NC}\n"
 fi
+
 if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
     rosparam set /xv11/port $(${SCRIPTDIR}/find_XVLidar.sh)
 fi
+
 if [ $(jq '.hasXboxController' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
     rosparam set /joystick/dev $(${SCRIPTDIR}/find_xbox_controller.sh)
 fi
+
 if [ $(jq '.camera0' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
     rosparam set /camera1 $(${SCRIPTDIR}/find_camera.sh C615)

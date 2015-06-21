@@ -326,6 +326,8 @@ var arloBot = {
 // TODO: Be sure to put 'unbuffer ' in front of any ROS commands
 // if you hope to monitor the output,
 // otherwise they never flush!
+    // http://stackoverflow.com/a/11337310
+    // http://linux.die.net/man/1/unbuffer
 
 arloBot.ROSprocess = new LaunchScript({
     name: 'ROS',
