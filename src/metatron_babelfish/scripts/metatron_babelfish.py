@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # pylint: disable=line-too-long
-#TODO: This requires the Ubuntu espeak package, but I'm not sure how to set up that requirement.
 
 import rospy
 import subprocess

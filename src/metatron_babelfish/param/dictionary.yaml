@@ -4,8 +4,8 @@
 # and then just put the filename in here in place of any text line.
 # metatron_babelfish will use the .wav in the name to decide it is to be played with aplay intead of espeak
 soundFileLocation: "~/.arlobot/sounds"
-myname: ["two flower"]
-introduction: ["HelloMyNameIsTwoFlower.wav"]
+myname: ["Two Flower"]
+introduction: ["Hello, my name is Two Flower."]
 pluggedIn: ["Thank you for plugging me in."]
 unPlugged: ["Thank you for unplugging me.", "I suddenly feel very depressed"]
 PIRsensor1st: ["Hello?", "Hi.", "Greetings!"]

@@ -8,9 +8,14 @@ module.exports = function(sound) {
     fs.open(beQuietFile, 'r', function(err) {
         if (err) {
 
+            // Get personal settings
+            var personalDataFile = process.env.HOME + '/.arlobot/personalDataForBehavior.json';
+            var personalData = JSON.parse(fs.readFileSync(personalDataFile, 'utf8'));
+
             var exec = require('child_process').exec;
             // Set volume at max
-            exec('/usr/bin/amixer -D pulse sset Master 100% on');
+            var setVolumeCommand = '/usr/bin/amixer set Master ' + personalData.speechVolumeLevelDefault + '% on';
+            exec(setVolumeCommand);
 
             // This script can accept text to speak,
             // or .wav files to play.
@@ -20,10 +25,15 @@ module.exports = function(sound) {
             if (possibleExtension === '.wav') {
                 exec('/usr/bin/aplay -q ' + sound);
             } else {
-                // https://github.com/marak/say.js/
-                var say = require('say');
-                // no callback, fire and forget
-                say.speak(null, process.argv[2]);
+                if (personalData.speechProgram === 'nodeSay') {
+                    // https://github.com/marak/say.js/
+                    var say = require('say');
+                    // no callback, fire and forget
+                    say.speak(null, process.argv[2]);
+                } else if (personalData.speechProgram) {
+                    var speechCommand = personalData.speechProgram + ' ' + process.argv[2];
+                    exec(speechCommand);
+                }
             }
         }
     });
