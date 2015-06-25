@@ -1,5 +1,12 @@
+#!/bin/bash
 # Start just the basic ArloBot ROS setup.
 # Use start_metatron.sh to start EVERYTHING instead
+
+# Set up ROS Environment
+export ROS_HOSTNAME=`uname -n`.local
+export ROS_MASTER_URI=http://localhost:11311
+export ROSLAUNCH_SSH_UNKNOWN=1
+source ~/catkin_ws/devel/setup.bash
 
 # Grab and save the path to this script
 # http://stackoverflow.com/a/246128

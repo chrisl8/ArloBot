@@ -1,3 +1,4 @@
+#!/bin/bash
 # This script checks that all required hardware is present
 
 # Grab and save the path to this script
@@ -51,6 +52,9 @@ if [ $(jq '.hasActivityBoard' ${HOME}/.arlobot/personalDataForBehavior.json) == 
     if [ $? -gt 0 ]
         then
         echo "Activity Board missing!"
+        echo "If this is a test install with no Activity Board,"
+        echo "edit ${HOME}/.arlobot/personalDataForBehavior.json"
+        echo "and set 'hasActivityBoard' to false"
         exit 1
     fi
 fi

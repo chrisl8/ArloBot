@@ -1,5 +1,12 @@
 #!/bin/bash
 # This is the primary script to
+# Start the entire robot
+
+# Set up ROS Environment
+export ROS_HOSTNAME=`uname -n`.local
+export ROS_MASTER_URI=http://localhost:11311
+export ROSLAUNCH_SSH_UNKNOWN=1
+source ~/catkin_ws/devel/setup.bash
 
 # Grab and save the path to this script
 # http://stackoverflow.com/a/246128
@@ -12,8 +19,7 @@ done
 SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 # echo ${SCRIPTDIR} # For debugging
 
-# Start the entire robot
-if ! (source ${SCRIPTDIR}/ros_prep.sh)
+if ! (${SCRIPTDIR}/ros_prep.sh)
 then
     echo "ROS Prep Failed, EXITING!"
     exit 1

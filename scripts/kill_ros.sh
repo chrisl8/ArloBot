@@ -1,3 +1,4 @@
+#!/bin/bash
 # Attempt to kill all aspects of ROS if it is already running
 
 # Grab and save the path to this script
