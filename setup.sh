@@ -70,10 +70,6 @@ if ! [ -e /etc/apt/sources.list.d/linrunner-tlp-trusty.list ]
 fi
 
 printf "\n${YELLOW}[Updating & upgrading all existing Ubuntu packages]${NC}\n"
-printf "${BLUE}silently . . .${NC}\n"
-# NOTE: You have to pipe /dev/null INTO apt-get to make it work from wget.
-#sudo apt-get update -qq < /dev/null
-#sudo apt-get upgrade -qq < /dev/null
 sudo apt update
 sudo apt upgrade -y
 
@@ -82,7 +78,7 @@ sudo apt upgrade -y
 if ! (dpkg -s ros-indigo-desktop-full|grep "Status: install ok installed" &> /dev/null)
     then
     printf "\n${YELLOW}[Installing ROS]${NC}\n"
-    sudo apt-get install -qy ros-indigo-desktop-full < /dev/null
+    sudo apt install -y ros-indigo-desktop-full
     printf "${YELLOW}[ROS installed!]${NC}\n"
     printf "\n${YELLOW}[rosdep init and python-rosinstall]${NC}\n"
     if ! [ -e /etc/ros/rosdep/sources.list.d/20-default.list ]
@@ -93,7 +89,7 @@ if ! (dpkg -s ros-indigo-desktop-full|grep "Status: install ok installed" &> /de
     rosdep update
     source /opt/ros/indigo/setup.bash
     printf "${BLUE}Installing python-rosinstall:${NC}\n"
-    sudo apt-get install -qy python-rosinstall < /dev/null
+    sudo apt install -y python-rosinstall
     # END Offical ROS Install section
 fi
 
@@ -130,7 +126,7 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 # jq allows shell scripts to read .json formatted config files.
 # festival and fsetvox-en1 are for text to speech
 
-sudo apt-get install -qy ros-indigo-rqt-* ros-indigo-turtlebot ros-indigo-turtlebot-apps ros-indigo-turtlebot-interactions ros-indigo-turtlebot-simulator ros-indigo-kobuki-ftdi python-ftdi python-pip python-serial ros-indigo-openni-* ros-indigo-openni2-* ros-indigo-freenect-* ros-indigo-vision-opencv libopencv-dev python-opencv tlp tlp-rdw ros-indigo-rosbridge-server imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev < /dev/null
+sudo apt install -y ros-indigo-rqt-* ros-indigo-turtlebot ros-indigo-turtlebot-apps ros-indigo-turtlebot-interactions ros-indigo-turtlebot-simulator ros-indigo-kobuki-ftdi python-ftdi python-pip python-serial ros-indigo-openni-* ros-indigo-openni2-* ros-indigo-freenect-* ros-indigo-vision-opencv libopencv-dev python-opencv tlp tlp-rdw ros-indigo-rosbridge-server imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev
 
 # For 8-CH USB Relay board:
 sudo pip install pylibftdi
