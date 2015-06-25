@@ -126,7 +126,7 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 # jq allows shell scripts to read .json formatted config files.
 # festival and fsetvox-en1 are for text to speech
 
-sudo apt install -y ros-indigo-rqt-* ros-indigo-turtlebot ros-indigo-turtlebot-apps ros-indigo-turtlebot-interactions ros-indigo-turtlebot-simulator ros-indigo-kobuki-ftdi python-ftdi python-pip python-serial ros-indigo-openni-* ros-indigo-openni2-* ros-indigo-freenect-* ros-indigo-vision-opencv libopencv-dev python-opencv tlp tlp-rdw ros-indigo-rosbridge-server imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev
+sudo apt install -y ros-indigo-rqt-* ros-indigo-turtlebot ros-indigo-turtlebot-apps ros-indigo-turtlebot-interactions ros-indigo-turtlebot-simulator ros-indigo-kobuki-ftdi python-ftdi python-pip python-serial ros-indigo-openni-* ros-indigo-openni2-* ros-indigo-freenect-* ros-indigo-vision-opencv libopencv-dev python-opencv tlp tlp-rdw ros-indigo-rosbridge-server imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl
 
 # For 8-CH USB Relay board:
 sudo pip install pylibftdi
