@@ -72,8 +72,10 @@ fi
 printf "\n${YELLOW}[Updating & upgrading all existing Ubuntu packages]${NC}\n"
 printf "${BLUE}silently . . .${NC}\n"
 # NOTE: You have to pipe /dev/null INTO apt-get to make it work from wget.
-sudo apt-get update -qq < /dev/null
-sudo apt-get upgrade -qq < /dev/null
+#sudo apt-get update -qq < /dev/null
+#sudo apt-get upgrade -qq < /dev/null
+sudo apt update
+sudo apt upgrade -y
 
 # This should follow the official ROS install instructions closely.
 # That is why there is a separate section for extra packages that I need for Arlo.
