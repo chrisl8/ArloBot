@@ -1,0 +1,15 @@
+cd ~/catkin_ws/src/ArloBot/
+roslaunch arlobot_bringup minimal.launch --screen
+<ctrl-c>
+
+cd ~/catkin_ws/src/Metatron/scripts/
+./start-arlobot-only.sh
+<ctrl-c>
+
+./kill_ros.sh
+
+./start-metatron.sh
+<ctrl-c>
+
+./kill_ros.sh
+
