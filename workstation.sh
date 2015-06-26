@@ -172,10 +172,14 @@ printf "${BLUE}The unbuilt files are enough to allow RVIZ and other GUI tools to
 source ~/catkin_ws/devel/setup.bash
 
 printf "\n${YELLOW}[Setting the ROS environment in your .bashrc file]${NC}\n"
-if ! (grep ROS_HOSTNAME ~/.bashrc>/dev/null)
+if ! (grep ROS_MASTER_URI ~/.bashrc>/dev/null)
     then
     read -p "What is the host name or IP of your robot? " answer
-    sh -c "echo \"export ROS_HOSTNAME=${answer}\" >> ~/.bashrc"
+    sh -c "echo \"ROS_MASTER_URI=http://${answer}:11311\" >> ~/.bashrc"
+fi
+if ! (grep ROS_HOSTNAME ~/.bashrc>/dev/null)
+    then
+    sh -c "echo \"export ROS_HOSTNAME=`uname -n`.local\" >> ~/.bashrc"
 fi
 if ! (grep ROSLAUNCH_SSH_UNKNOWN ~/.bashrc>/dev/null)
     then
