@@ -51,7 +51,7 @@
       <visual>
         <origin xyz="-0.01 0 0" rpy="${-M_PI/2} -${M_PI} ${-M_PI/2}"/>
         <geometry>
-          <mesh filename="package://turtlebot_description/meshes/sensors/asus_xtion_pro_live.dae" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
+          <mesh filename="package://arlobot_description/meshes/sensors/asus_xtion_pro_live.dae" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
         </geometry>
       </visual>
       <collision>
