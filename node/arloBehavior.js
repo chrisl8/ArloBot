@@ -111,44 +111,74 @@ webserver.start();
 var webServer = require('./webserver');
 var io = webServer.start();
 
+// TODO: REMOVE this.
 var ROSrunRequested = b3.Class(b3.Condition);
 ROSrunRequested.prototype.name = 'ROSrunRequested';
 ROSrunRequested.prototype.tick = function(tick) {
-    if (webServer.webModel.ROSstart) {
-        return b3.SUCCESS;
-    } else {
-        if (arloBot.ROSprocess.startupComplete) {
-            arloBot.ROSprocess.startupComplete = false;
-            killROS(false);
-        }
-        console.log(this.name + ': FAILURE');
-        return b3.FAILURE;
-    }
+    return b3.SUCCESS;
 };
 
-// TODO: Copy pattern from load map to here to make it resilient
-// to process death!
+// TODO: Perfect this pattern and replicate to all script starting behaviors.
 var StartROS = b3.Class(b3.Action);
 StartROS.prototype.name = 'StartROS';
 StartROS.prototype.tick = function(tick) {
-    if (arloBot.ROSprocess.started) {
-        if (arloBot.ROSprocess.startupComplete) {
-            if (arloBot.ROSprocess.hasExited) {
-                webModel.ROSisRunning = false;
-                console.log(this.name + "FAILURE");
-                return b3.FAILURE;
+    // ROS Process launch behavior pattern:
+    // FIRST: This decides if we run this process or not:
+    if (!webModel.ROSstart) {
+        console.log(this.name + ': FAILURE');
+        return b3.FAILURE;
+    } else {
+        if (arloBot.ROSprocess.started) {
+            // startupComplete indicates either:
+                // Script exited
+                // Script threw "success string"
+                // Script returned any data if it wasn't given a "success string"
+            if (arloBot.ROSprocess.startupComplete) {
+                if (arloBot.ROSprocess.hasExited) {
+                    // Once the process has exited:
+                    // 1. DISABLE whatever user action causes it to be called,
+                    // so that it won't loop.
+                    webModel.ROSstart = false;
+                    // 2. Now that it won't loop, set .started to false,
+                    // so that it can be run again.
+                    arloBot.ROSprocess.started = false;
+                    // 3. Send a status to the web site:
+                    webModel.status = 'ROS process has closed.';
+                    // 4. Log the closure to the console,
+                    // because this is significant.
+                    console.log(this.name + "Process Closed.");
+                    // 5. Set any special status flags for this
+                    // process. i.e. ROSisRunning sets the start/stop button position
+                    webModel.ROSisRunning = false;
+                    // 6. Any special "cleanup" required?
+                    // In this case we will run the kill routine.
+                    killROS(false);
+                    // Leave it 'RUNNING' and
+                    // let the next Behavior tick respond as it would,
+                    // if this function was never requested.
+                    return b3.RUNNING;
+                } else {
+                    // This is where we go if the start is complete,
+                    // and did not fail.
+                    // This will repeat on every tick!
+                    // 1. Set any special status flags for this
+                    // process. i.e. ROSisRunning sets the start/stop button position
+                    webModel.ROSisRunning = true;
+                    // Whether we return 'RUNNING' or 'SUCCESS',
+                    // is dependent on how this Behavior node works.
+                    return b3.SUCCESS;
+                }
             } else {
-                webModel.ROSisRunning = true;
-                return b3.SUCCESS;
+                console.log(this.name + " Starting up . . .");
+                return b3.RUNNING;
             }
         } else {
-            console.log(this.name + " RUNNING!");
+            // IF the process is supposed to start, but wasn't,
+            // then run it:
+            arloBot.ROSprocess.start();
+            console.log(this.name + " Process starting!");
             return b3.RUNNING;
         }
-    } else {
-        arloBot.ROSprocess.start();
-        console.log(this.name);
-        return b3.RUNNING;
     }
 };
 
@@ -226,7 +256,7 @@ AutoExplore.prototype.tick = function(tick) {
     }
 };
 
-// TODO: Turn the LaunchgScript process running into a clear pattern.
+// TODO: Turn the LaunchScript process running into a clear pattern.
 var LoadMap = b3.Class(b3.Action);
 LoadMap.prototype.name = 'LoadMap';
 LoadMap.prototype.tick = function(tick) {
@@ -263,6 +293,9 @@ LoadMap.prototype.tick = function(tick) {
                     // is dependent on how this Behavior node works.
                     return b3.RUNNING;
                 }
+            } else {
+                console.log(this.name + " Starting up . . .")
+                return b3.RUNNING;
             }
         } else {
             // IF the process is supposed to start, but wasn't,

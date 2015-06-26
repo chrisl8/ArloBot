@@ -13,6 +13,7 @@ module.exports = {
     logStreamerRunning: false,
     shutdownRequested: false,
     status: 'Arlo behavior is not running.',
+    status2: '',
     mapList: ['Explore!'],
     mapName: ''
 };

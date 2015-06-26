@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # This will start up the motor on the XV11
 # It must be spinning before ROS starts.
 
@@ -13,8 +15,10 @@ SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 # echo ${SCRIPTDIR} # For debugging
 
 XV11PORT=$(${SCRIPTDIR}/find_XVLidar.sh)
-stty -F ${XV11PORT} cs8 115200 ignbrk -brkint -icrnl -imaxbel -opost -onlcr -isig -icanon -iexten -echo -echoe -echok -echoctl -echoke noflsh -ixon -crtscts
-echo "ResetConfig" > ${XV11PORT}
-#echo "MotorOn" > ${XV11PORT}
-#echo "" > ${XV11PORT}
-
+if [ $? -eq 0 ]
+    then
+    stty -F ${XV11PORT} cs8 115200 ignbrk -brkint -icrnl -imaxbel -opost -onlcr -isig -icanon -iexten -echo -echoe -echok -echoctl -echoke noflsh -ixon -crtscts
+    echo "ResetConfig" > ${XV11PORT}
+else
+    echo "XV11 Not Found."
+fi

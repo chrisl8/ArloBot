@@ -32,6 +32,14 @@ LaunchScript.prototype.start = function() {
     }
     this.process.stdout.setEncoding('utf8');
     this.process.stdout.on('data', function(data) {
+        if (self.successString && !self.startupComplete) {
+            // Report lines before success string found
+            // If they are not too long
+            if (data.length < 50) {
+                // Append to 2nd status line
+                webModel.status2 = data + '<br/>' + webModel.status2;
+            }
+        }
         if (self.successString) {
             if (data.indexOf(self.successString) > -1) {
                 self.startupComplete = true;

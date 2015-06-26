@@ -29,7 +29,7 @@ if [ $(jq '.camera0' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     ls /dev/video0 &> /dev/null
     if [ $? -gt 0 ]
         then
-        echo "Camera 0 Missing!"
+        echo "Camera 0 missing!"
         exit 1
     fi
 fi

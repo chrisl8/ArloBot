@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Use this to stop the motor on the XV11
 # I find it annoying to have it spinning 24x7 all of the time
 # when ROS isn't even running.
@@ -17,12 +19,17 @@ SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 # echo ${SCRIPTDIR} # For debugging
 
 XV11PORT=$(${SCRIPTDIR}/find_XVLidar.sh)
-stty -F ${XV11PORT} cs8 115200 ignbrk -brkint -icrnl -imaxbel -opost -onlcr -isig -icanon -iexten -echo -echoe -echok -echoctl -echoke noflsh -ixon -crtscts
-echo "MotorOff" > ${XV11PORT}
-# Experience tells me one time is not enough.
-sleep 1
-stty -F ${XV11PORT} cs8 115200 ignbrk -brkint -icrnl -imaxbel -opost -onlcr -isig -icanon -iexten -echo -echoe -echok -echoctl -echoke noflsh -ixon -crtscts
-echo "MotorOff" > ${XV11PORT}
-sleep 1
-stty -F ${XV11PORT} cs8 115200 ignbrk -brkint -icrnl -imaxbel -opost -onlcr -isig -icanon -iexten -echo -echoe -echok -echoctl -echoke noflsh -ixon -crtscts
-echo "MotorOff" > ${XV11PORT}
+if [ $? -eq 0 ]
+    then
+    stty -F ${XV11PORT} cs8 115200 ignbrk -brkint -icrnl -imaxbel -opost -onlcr -isig -icanon -iexten -echo -echoe -echok -echoctl -echoke noflsh -ixon -crtscts
+    echo "MotorOff" > ${XV11PORT}
+    # Experience tells me one time is not enough.
+    sleep 1
+    stty -F ${XV11PORT} cs8 115200 ignbrk -brkint -icrnl -imaxbel -opost -onlcr -isig -icanon -iexten -echo -echoe -echok -echoctl -echoke noflsh -ixon -crtscts
+    echo "MotorOff" > ${XV11PORT}
+    sleep 1
+    stty -F ${XV11PORT} cs8 115200 ignbrk -brkint -icrnl -imaxbel -opost -onlcr -isig -icanon -iexten -echo -echoe -echok -echoctl -echoke noflsh -ixon -crtscts
+    echo "MotorOff" > ${XV11PORT}
+else
+    echo "XV11 Not Found."
+fi
