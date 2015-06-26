@@ -175,7 +175,7 @@ printf "\n${YELLOW}[Setting the ROS environment in your .bashrc file]${NC}\n"
 if ! (grep ROS_MASTER_URI ~/.bashrc>/dev/null)
     then
     read -p "What is the host name or IP of your robot? " answer
-    sh -c "echo \"ROS_MASTER_URI=http://${answer}:11311\" >> ~/.bashrc"
+    sh -c "echo \"export ROS_MASTER_URI=http://${answer}:11311\" >> ~/.bashrc"
 fi
 if ! (grep ROS_HOSTNAME ~/.bashrc>/dev/null)
     then
