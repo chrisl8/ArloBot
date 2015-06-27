@@ -55,9 +55,12 @@ class ArlobotExplore(object):
         # http://wiki.ros.org/ROS/Tutorials/WritingServiceClient%28python%29
         self._explorer_paused = False
         pauseExplorer = rospy.Service('~pause_explorer', pause_explorer, self._pause_explorer)
+        # /arlobot_explore/pause
+        rospy.set_param("~pause", self._explorer_paused);
 
     def _pause_explorer(self, pause_explorer):
         self._explorer_paused = pause_explorer.pause_explorer
+        rospy.set_param("~pause", self._explorer_paused);
         return self._explorer_paused
 
     def _SetCurrentOdom(self, currentOdom):
