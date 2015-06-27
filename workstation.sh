@@ -194,4 +194,6 @@ printf "\n${PURPLE}Anytime you want to update ArloBot code from the web you can 
 
 printf "\n${YELLOW}-----------------------------------${NC}\n"
 printf "${YELLOW}ALL DONE! REBOOT AND TRY RVIZ${NC}\n"
+printf "${BLUE}Fire up your Arlobot on its machine, and then try these on here:${NC}\n"
 printf "${BLUE}~/catkin_ws/src/Metatron/scripts/view-navigation.sh${NC}\n"
+printf "${BLUE}rqt_graph${NC}\n"
