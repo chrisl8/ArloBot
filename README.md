@@ -23,6 +23,8 @@ bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/ma
 ```
 and you are done! (Remember, you must use Ubuntu 14.04 LTS for ROS Indigo! Arlobot does not work on Jade yet!)
 
+Be sure to read the instructions that the script will print at the end about editing the config files in ~/.arlobot
+
 To update your code just run the same script again and it will pull down and compile anything new without erasing custom settings.
 
 Please note that you will need the code to run on your Propeller board. This is stored in the "Propeller C Code for ArloBot" folder. Details on the Propeller code are here: http://ekpyroticfrood.net/?p=165
