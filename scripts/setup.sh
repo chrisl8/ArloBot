@@ -125,11 +125,18 @@ if ! [ -f ${HOME}/Desktop/arlobot.desktop ]
     echo "Name=ArloBot" >> ${HOME}/Desktop/arlobot.desktop
     echo "GenericName=ArloBot" >> ${HOME}/Desktop/arlobot.desktop
     echo "Comment=Start the robot" >> ${HOME}/Desktop/arlobot.desktop
-    echo "Exec=lxterminal --command \"${HOME}/catkin_ws/src/Metatron/scripts/arlobotXwindows.sh\"" >> ${HOME}/Desktop/arlobot.desktop
+    if (which lxterminal)
+        then
+        echo "Exec=lxterminal --command \"${HOME}/catkin_ws/src/Metatron/scripts/arlobotXwindows.sh\"" >> ${HOME}/Desktop/arlobot.desktop
+    elif (which gnome-terminal)
+        then
+        echo "Exec=gnome-terminal --command \"${HOME}/catkin_ws/src/Metatron/scripts/arlobotXwindows.sh\"" >> ${HOME}/Desktop/arlobot.desktop
+    fi
     echo "Icon=${HOME}/catkin_ws/src/Metatron/node/public/icons/mstile-70x70.png" >> ${HOME}/Desktop/arlobot.desktop
     echo "Type=Application" >> ${HOME}/Desktop/arlobot.desktop
     echo "Path=${HOME}/catkin_ws/src/Metatron/scripts/" >> ${HOME}/Desktop/arlobot.desktop
     echo "Terminal=false" >> ${HOME}/Desktop/arlobot.desktop
+    chmod +x ${HOME}/Desktop/arlobot.desktop
 fi
 
 if [ ! -d ${HOME}/.arlobot ]
