@@ -238,6 +238,12 @@ if ! (id|grep dialout>/dev/null)
     printf "${RED}You may have to reboot before you can use the Propeller Board.${NC}\n"
 fi
 
+if ! (id|grep video>/dev/null)
+    then
+    printf "\n${GREEN}Adding your user to the 'video' group for access to cameras.${NC}\n"
+    sudo adduser ${USER} video > /dev/null
+fi
+
 # We will use ~/.arlobot to store "private" data
 # That is data that doesn't need to be part of
 # the public github repo like user tokens,
