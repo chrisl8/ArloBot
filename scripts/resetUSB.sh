@@ -7,4 +7,5 @@ for i in $(lspci|grep USB|grep Enhanced|awk '{ print $1}');do echo -n "0000:${i}
 for i in $(lspci|grep USB|grep EHCI|awk '{ print $1}');do echo -n "0000:${i}" > /sys/bus/pci/drivers/ehci-pci/unbind;echo -n "0000:${i}" > /sys/bus/pci/drivers/ehci-pci/bind;done
 for i in $(lspci|grep USB|grep SuperSpeed|awk '{ print $1}');do echo -n "0000:${i}" > /sys/bus/pci/drivers/xhci_hcd/unbind;echo -n "0000:${i}" > /sys/bus/pci/drivers/xhci_hcd/bind;done
 for i in $(lspci|grep USB|grep xHCI|awk '{ print $1}');do echo -n "0000:${i}" > /sys/bus/pci/drivers/xhci_hcd/unbind;echo -n "0000:${i}" > /sys/bus/pci/drivers/xhci_hcd/bind;done
-echo "All USB ports reset."
+echo "All USB ports reset, sleeping for 10 seconds..."
+sleep 10
