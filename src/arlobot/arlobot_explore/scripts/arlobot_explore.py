@@ -266,12 +266,10 @@ class ArlobotExplore(object):
             # Use double timeout, but cancel if timeout is met
             while count < (timeoutSeconds * 2) and not finished and not rospy.is_shutdown():
                 if count > timeoutSeconds:
-                    self._MoveBaseClient.cancel_goal()
-                    # NOTE: Do not use cancel_all_goals here as it can cancel future goals sometimes!
-                    rospy.loginfo("Time-out reached while attempting to reach goal, cancelling!")
+                    finished = True
+                    rospy.loginfo("Time-out reached while attempting to reach goal, canceling!")
                 if count > 5 and self._active_controller == "idle":
-                    self._MoveBaseClient.cancel_goal()
-                    # NOTE: Do not use cancel_all_goals here as it can cancel future goals sometimes!
+                    finished = True
                     rospy.loginfo("Navigation is idle, canceling!")
                 count += 1
                 rospy.sleep(1) # Set this delay as you see fit. If the robot is extremely fast this could be slowing you down!
@@ -308,6 +306,12 @@ class ArlobotExplore(object):
                     finished = True
                     resultText = "PAUSED"
                 rospy.loginfo("Pending result:" + str(result) + " " + resultText + " Time-out in :" + str(timeoutSeconds - count))
+                # If it was determined that we are "finished" then cancel
+                # any pending goals right now, because the loop will not
+                # repeat.
+                if finished:
+                    # NOTE: Do not use cancel_all_goals here as it can cancel future goals sometimes!
+                    self._MoveBaseClient.cancel_goal()
         #self._MoveBaseClient.send_goal(goal)
         #rospy.loginfo("Waiting for response . . .");
         #self._MoveBaseClient.wait_for_result()
