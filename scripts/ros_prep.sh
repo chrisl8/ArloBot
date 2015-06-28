@@ -18,8 +18,7 @@ then
     echo "please close it and try again."
     exit 1
 fi
-# Attempt to kill ROS if it is already running and reset USB Ports
-${SCRIPTDIR}/kill_ros.sh
+
 if (ls ${HOME}/.ros/log/* &> /dev/null)
     then
     echo "Clearing ROS Logs . . ."
