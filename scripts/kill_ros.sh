@@ -70,5 +70,5 @@ if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
     ${SCRIPTDIR}/XVLidarStopMotor.sh
 fi
-${SCRIPTDIR}/callRestUSB.sh
+${SCRIPTDIR}/callResetUSB.sh
 
