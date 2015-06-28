@@ -78,7 +78,7 @@ if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
         exit 1
     fi
     # XV-11 Ready
-    ${SCRIPTDIR}/XVLidarStopMotor.sh
+    ${SCRIPTDIR}/XVLidar.sh check
     if [ $? -gt 0 ]
         then
         echo "XV-11 not ready!"

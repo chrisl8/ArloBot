@@ -47,7 +47,7 @@ done
 
 if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
-    ${SCRIPTDIR}/XVLidarStartMotor.sh
+    ${SCRIPTDIR}/XVLidar.sh start
 fi
 
 # Start roscore separately so that we can set parameters
