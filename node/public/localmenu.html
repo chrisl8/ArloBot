@@ -35,6 +35,8 @@
         <div class="lcars-row">
           <div class="lcars-column u-1-4">
             <span data-bind="text: status">Status Here</span>
+            <br/>
+            <span data-bind="text: behaviorStatus">Behavior status Here</span>
           </div>
           <div class="lcars-column u-2-4">
             Which Map?<select data-bind='options: mapList, optionsCaption:"Choose a map...", value:selectedMap'></select>
@@ -107,8 +109,8 @@
               </form>
               <button class="lcars-button radius" data-bind="click:saveMap">Save Map</button>
             </div>
-            <div id="statusScroller">
-            <span data-bind="html: status2"></span>
+            <div id="statusScrollBox">
+            <span data-bind="html: scrollingStatus"></span>
             </div>
           </div>
 

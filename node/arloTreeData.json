@@ -6,8 +6,8 @@
         "camera_x": 444.5,
         "camera_y": 247.5,
         "camera_z": 1,
-        "x": -80,
-        "y": 144
+        "x": 0,
+        "y": 0
     },
     "properties": {},
     "nodes": {
@@ -35,7 +35,6 @@
             "parameters": {},
             "properties": {},
             "children": [
-                "2a155636-ab63-482e-9547-f26840487fec",
                 "7a6d8234-598c-4315-8c6f-002334f14aa0",
                 "2860749d-6fed-48ef-9483-337cdd66ede6",
                 "bf259898-4236-4667-9b88-ffa161ba1b9e",
@@ -79,18 +78,6 @@
             "parameters": {},
             "properties": {},
             "children": []
-        },
-        "2a155636-ab63-482e-9547-f26840487fec": {
-            "id": "2a155636-ab63-482e-9547-f26840487fec",
-            "name": "ROSrunRequested",
-            "title": "ROSrunRequested",
-            "description": "",
-            "display": {
-                "x": 336,
-                "y": -16
-            },
-            "parameters": {},
-            "properties": {}
         },
         "fabf3f81-c1c7-4af1-a75b-db85c1dfd634": {
             "id": "fabf3f81-c1c7-4af1-a75b-db85c1dfd634",
@@ -140,11 +127,6 @@
             "name": "StartROS",
             "title": "",
             "category": "action"
-        },
-        {
-            "name": "ROSrunRequested",
-            "title": "",
-            "category": "condition"
         },
         {
             "name": "AutoExplore",

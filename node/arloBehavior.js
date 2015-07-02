@@ -1,14 +1,3 @@
-// http://behavior3js.guineashots.com/
-// Setup:
-// npm install behavior3js
-// Modifications:
-// node_modules/behavior3js/package.json:
-//  -"main": "libs/b3core.0.1.0.min.js",
-//  +"main": "libs/b3core.0.1.0.js",
-// node_modules/behavior3js/libs/b3core.0.1.0.js:
-//   this.b3 = this.b3 || {};
-//  +b3 = {};
-
 var webModel = require('./webModel');
 
 var fs = require('fs');
@@ -34,6 +23,14 @@ var LaunchScript = require('./launch_script');
 var textme = require('./textme');
 var arloTree = new b3.BehaviorTree();
 
+var scrollingStatusUpdate = function(input) {
+    webModel.scrollingStatus = input + '<br/>' + webModel.scrollingStatus;
+};
+
+var behaviorStatusUpdate = function(input) {
+    webModel.behaviorStatus = input;
+};
+
 // Cleanup on shutdown
 // http://stackoverflow.com/questions/14031763/doing-a-cleanup-action-just-before-node-js-exits
 var kill_rosHasRun = false;
@@ -43,17 +40,22 @@ var killROS = function(exitWhenDone) {
     if (!kill_rosHasRun) {
         kill_rosHasRun = true;
         webModel.ROSstart = false;
+        scrollingStatusUpdate("Running kill_ros.sh . . .");
+        // Logging to console too, because feedback on shutdown is nice.
         console.log("Running kill_ros.sh . . .");
         var shutdownCommand = exec(command);
         shutdownCommand.stdout.on('data', function(data) {
+            scrollingStatusUpdate('kill_ros: ' + data);
             console.log('kill_ros: ' + data);
         });
 
         shutdownCommand.stderr.on('data', function(data) {
+            scrollingStatusUpdate('kill_ros: ' + data);
             console.log('kill_ros: ' + data);
         });
 
         shutdownCommand.on('close', function(code) {
+            scrollingStatusUpdate('kill_ros.sh closed with code ' + code);
             console.log('kill_ros.sh closed with code ' + code);
             if (exitWhenDone) {
                 process.exit();
@@ -63,16 +65,17 @@ var killROS = function(exitWhenDone) {
             }
         });
         shutdownCommand.on('error', function(err) {
-            console.log('kill_ros process error' + err);
+            scrollingStatusUpdate('kill_ros process error' + err);
         });
     }
 };
 
 function exitHandler(options, err) {
-    if (options.cleanup) console.log('arloBehavior has been told to "cleanup", doing nothing.');
-    if (err) console.log(err.stack);
+    if (options.cleanup) scrollingStatusUpdate('arloBehavior has been told to "cleanup"');
+    if (err) scrollingStatusUpdate(err.stack);
     //if (options.exit) process.exit();
     if (options.exit) {
+        scrollingStatusUpdate('arloBehavior has been asked to exit, calling killROS');
         console.log('arloBehavior has been asked to exit, calling killROS');
         killROS(true);
     }
@@ -111,13 +114,6 @@ webserver.start();
 var webServer = require('./webserver');
 var io = webServer.start();
 
-// TODO: REMOVE this.
-var ROSrunRequested = b3.Class(b3.Condition);
-ROSrunRequested.prototype.name = 'ROSrunRequested';
-ROSrunRequested.prototype.tick = function(tick) {
-    return b3.SUCCESS;
-};
-
 // TODO: Perfect this pattern and replicate to all script starting behaviors.
 var StartROS = b3.Class(b3.Action);
 StartROS.prototype.name = 'StartROS';
@@ -142,7 +138,7 @@ StartROS.prototype.tick = function(tick) {
                 webModel.status = 'ROS process has closed.';
                 // 4. Log the closure to the console,
                 // because this is significant.
-                console.log(this.name + "Process Closed.");
+                scrollingStatusUpdate(this.name + "Process Closed.");
                 // 5. Set any special status flags for this
                 // process. i.e. ROSisRunning sets the start/stop button position
                 webModel.ROSisRunning = false;
@@ -176,18 +172,18 @@ StartROS.prototype.tick = function(tick) {
                 return b3.SUCCESS;
             }
         } else {
-            console.log(this.name + " Starting up . . .");
+            behaviorStatusUpdate(this.name + " Starting up . . .");
             return b3.RUNNING;
         }
     } else if (webModel.ROSstart) {
         // IF the process is supposed to start, but wasn't,
         // then run it:
         arloBot.ROSprocess.start();
-        console.log(this.name + " Process starting!");
+        scrollingStatusUpdate(this.name + " Process starting!");
         return b3.RUNNING;
     }
     // If the process isn't running and wasn't requested to run:
-    console.log(this.name + ': FAILURE');
+    behaviorStatusUpdate(this.name + ': FAILURE');
     return b3.FAILURE;
 };
 
@@ -204,7 +200,7 @@ getMapOrExploreRequest.prototype.tick = function(tick) {
         textme('Where am I?');
         arloBot.whereamiTextSent = true;
     }
-    console.log(this.name);
+    behaviorStatusUpdate(this.name);
     return b3.RUNNING;
 };
 
@@ -219,7 +215,7 @@ UnPlugRobot.prototype.tick = function(tick) {
             arloBot.unplugMeTextSent = true;
         }
     }
-    console.log(this.name);
+    behaviorStatusUpdate(this.name);
     return b3.FAILURE;
 };
 
@@ -241,21 +237,21 @@ AutoExplore.prototype.tick = function(tick) {
                 if (arloBot.exploreProcess.hasExited) {
                     webServer.webModel.autoExplore = false;
                     arloBot.exploreProcess.started = false;
-                    console.log(this.name + "FAILURE");
+                    behaviorStatusUpdate(this.name + "FAILURE");
                     return b3.FAILURE;
                 } else {
                     webModel.status = 'Robot is Exploring!';
-                    console.log('Robot is Exploring!');
+                    scrollingStatusUpdate('Robot is Exploring!');
                     return b3.RUNNING;
                 }
             } else {
                 webModel.status = 'Explore process is starting...';
-                console.log('Explore process is starting...');
+                scrollingStatusUpdate('Explore process is starting...');
                 return b3.RUNNING;
             }
         } else {
             arloBot.exploreProcess.start();
-            console.log(this.name);
+            behaviorStatusUpdate(this.name);
             return b3.RUNNING;
         }
     } else {
@@ -265,7 +261,6 @@ AutoExplore.prototype.tick = function(tick) {
     }
 };
 
-// TODO: Turn the LaunchScript process running into a clear pattern.
 var LoadMap = b3.Class(b3.Action);
 LoadMap.prototype.name = 'LoadMap';
 LoadMap.prototype.tick = function(tick) {
@@ -273,7 +268,7 @@ LoadMap.prototype.tick = function(tick) {
     // FIRST: This decides if we run this process or not:
     if (webServer.webModel.mapName === '') {
         // This fails if we have no map name.
-        console.log(this.name + ' FAILURE');
+        behaviorStatusUpdate(this.name + ' FAILURE');
         return b3.FAILURE;
     } else {
         if (arloBot.loadMapProcess.started) {
@@ -290,7 +285,7 @@ LoadMap.prototype.tick = function(tick) {
                     webModel.status = 'Map process has closed.';
                     // 4. Log the closure to the console,
                     // because this is significant.
-                    console.log(this.name + "Process Closed.");
+                    scrollingStatusUpdate(this.name + "Process Closed.");
                     // Leave it 'RUNNING' and
                     // let the next Behavior tick respond as it would,
                     // if this function was never requested.
@@ -303,16 +298,16 @@ LoadMap.prototype.tick = function(tick) {
                     return b3.RUNNING;
                 }
             } else {
-                console.log(this.name + " Starting up . . .")
+                behaviorStatusUpdate(this.name + " Starting up . . .");
                 return b3.RUNNING;
             }
         } else {
             // IF the process is supposed to start, but wasn't,
             // then run it:
-            console.log('Map: ' + webServer.webModel.mapName);
+            scrollingStatusUpdate('Map: ' + webServer.webModel.mapName);
             //arloBot.loadMapProcess.scriptArguments = [webServer.webModel.mapName];
             arloBot.loadMapProcess.ROScommand = arloBot.loadMapProcess.ROScommand + process.env.HOME + '/.arlobot/rosmaps/' + webModel.mapName + '.yaml';
-            console.log(arloBot.loadMapProcess.ROScommand);
+            scrollingStatusUpdate(arloBot.loadMapProcess.ROScommand);
             arloBot.loadMapProcess.start();
             return b3.RUNNING;
         }
@@ -322,7 +317,7 @@ LoadMap.prototype.tick = function(tick) {
 var MyAction2 = b3.Class(b3.Action);
 MyAction2.prototype.name = 'MyAction2';
 MyAction2.prototype.tick = function(tick) {
-    console.log(this.name);
+    behaviorStatusUpdate(this.name);
     return b3.FAILURE;
 };
 
@@ -342,7 +337,7 @@ var arloNodeData = JSON.parse(fs.readFileSync('arloTreeData.json', 'utf8'));
 var customNodeNames = {};
 
 function parseCustomNodes(element, index, array) {
-    customNodeNames[element.name] = eval(element.name);
+    customNodeNames[element.name] = eval(element.name); // jshint ignore:line
 }
 arloNodeData.custom_nodes.forEach(parseCustomNodes);
 
@@ -365,9 +360,8 @@ var arloBot = {
     pauseExplore: false
 };
 
-// TODO: Be sure to put 'unbuffer ' in front of any ROS commands
-// if you hope to monitor the output,
-// otherwise they never flush!
+// NOTE: Be sure to put 'unbuffer ' at the beginning of any ROScommand
+// if you hope to monitor the output, otherwise they never flush!
 // http://stackoverflow.com/a/11337310
 // http://linux.die.net/man/1/unbuffer
 
@@ -403,7 +397,6 @@ arloBot.loadMapProcess = new LaunchScript({
 
 var blackboard = new b3.Blackboard();
 
-console.log('start');
 webModel.status = 'Behavior Tree is running.';
 setInterval(function() {
     arloTree.tick(arloBot, blackboard);
@@ -443,7 +436,6 @@ setInterval(function() {
 
     if (webServer.webModel.shutdownRequested) killROS(true);
 
-    console.log("---");
 }, 1000);
 //tree.tick(arloBot,blackboard);
 // Copied from arloweb.js
@@ -500,10 +492,11 @@ var rosParameters = {
     };
 
 var talkToROS = function() {
-    ros.getParams(function(params) {
-        console.log('ROSLIB Params:');
-        console.log(params);
-    });
+    // If you wanted to dump ALL params:
+    //ros.getParams(function(params) {
+    //    console.log('ROSLIB Params:');
+    //    console.log(params);
+    //});
 
     for (var prop in rosParameters) {
         rosParameters[prop].param = new ROSLIB.Param({
@@ -518,7 +511,7 @@ var talkToROS = function() {
 var pollParams = function() {
     function checkParameter(prop) {
         rosParameters[prop].param.get(function(value) {
-            console.log(rosParameters[prop].label + ': ' + value);
+            //console.log(rosParameters[prop].label + ': ' + value);
             // Assign state to webModel object for view by web page.
             if (webModel.rosParameters.hasOwnProperty(prop)) {
                 webModel.rosParameters[prop] = value;
@@ -547,7 +540,7 @@ var pollROS = function() {
     });
 
     ros.on('connection', function() {
-        console.log('ROSLIB Websocket connected.');
+        scrollingStatusUpdate('ROSLIB Websocket connected.');
         //connectRequested = true;
         //updateConnectedButton();
         //checkROSServices();
@@ -556,7 +549,7 @@ var pollROS = function() {
 
     ros.on('error', function(error) {
         //console.log('Error connecting to websocket server: ', error);
-        console.log('ROSLIB Websocket error');
+        //console.log('ROSLIB Websocket error');
         if (ros !== undefined) {
             ros.close();
         }
@@ -565,7 +558,7 @@ var pollROS = function() {
 
     ros.on('close', function() {
         //console.log('Connection to websocket server closed.');
-        console.log('ROSLIB Websocket closed');
+        scrollingStatusUpdate('ROSLIB Websocket closed');
         connectedToROS = false;
         //updateConnectedButton();
         setTimeout(pollROS, shortDelay);
@@ -574,4 +567,5 @@ var pollROS = function() {
 
 pollROS();
 
-console.log('arloBehavior.js is done, behold the power of async!');
+var os = require('os');
+console.log('Go to: http://' + os.hostname() + ':' + personalData.webServerPort + '/localmenu.html');

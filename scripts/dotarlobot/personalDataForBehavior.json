@@ -37,7 +37,12 @@
     "wait_for_door_confirmation": false,
     "_hasActivityBoard": "This can only be false for a 'dummy' test system that has no actual hardware.",
     "hasActivityBoard": true,
+    "_speechVolumeLevelDefault": "Default volume level for speech. 0 to 100",
+    "speechVolumeLevelDefault": 85,
+    "-speechProgram": "Set this to a script that will convert text to speech and play it. Use 'nodeSay' if you do not have one. You can also use 'espeak' if you install it on your system.",
+    "speechProgram": "nodeSay",
     "speech_engine": "~/catkin_ws/src/Metatron/scripts/tts.sh",
     "script_location": "~/catkin_ws/src/Metatron/scripts",
-    "web_folder": "~/catkin_ws/src/Metatron/node/public"
+    "web_folder": "~/catkin_ws/src/Metatron/node/public",
+    "webServerPort": 8080
 }

@@ -41,16 +41,6 @@ printf "\n${YELLOW}[Initializing Latest Stable Node version]${NC}\n"
 export NVM_DIR="${HOME}/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 nvm install stable
-#nvm use stable # Redundant
-
-# Install required node packages
-#echo "Installing required node packages . . ."
-#echo "You may be asked for your password"
-#echo "In order to run npm install -g"
-#sudo npm install -g grunt forever
-
-#echo "Fix personal npm folder permissions"
-#sudo chown -R `whoami` ${HOME}/.npm/
 
 printf "\n${YELLOW}[Grabbing dependencies for node packages]${NC}\n"
 cd
@@ -66,31 +56,9 @@ cd ${SCRIPTDIR}/../node
 npm install
 cd ${SCRIPTDIR}
 
-#if [ ! -d  ${SCRIPTDIR}/../node/node_modules/roslibjs ]
-#then
-#    echo "Installing roslibjs for arloBehavior.js"
-#    echo "You may be asked for your password"
-#    echo "in order to run sudo commands."
-#    echo "Fix personal npm folder permissions"
-#    sudo chown -R `whoami` ${HOME}/.npm/
-#    cd ${SCRIPTDIR}/../node/node_modules/
-#    git clone git@github.com:RobotWebTools/roslibjs.git
-#    cd roslibjs
-#    npm install
-#fi
-
 # Install required Ubuntu packages
 # All required Ubuntu packages have been moved to the Arlobot setup.sh file,
 # in order to consolidate and avoid running apt-get twice.
-#printf "\n${YELLOW}[Installing additional Ubuntu packages for Metatron]${NC}\n"
-# NOTE: You have to pipe /dev/null INTO apt-get to make it work from wget.
-#sudo apt-get install -qy ros-indigo-rosbridge-server imagemagick fswebcam festival festvox-en1 python-ftdi python-pip python-serial libv4l-dev jq expect-dev < /dev/null
-
-# Install required Python packages
-# pylibftdi is in the arlo setup script,
-# and I don't think I use twilio in python anymore!
-#printf "\n${YELLOW}[Installing required Python packages for Metatron]${NC}\n"
-#sudo pip install twilio pylibftdi
 
 if ! (which mjpg_streamer > /dev/null)
     then

@@ -17,7 +17,8 @@ module.exports = {
     logStreamerRunning: false,
     shutdownRequested: false,
     status: 'Arlo behavior is not running.',
-    status2: '',
+    behaviorStatus: '',
+    scrollingStatus: '',
     mapList: ['Explore!'],
     mapName: '',
     rosParameters: { // These are the parameters we will send to the web

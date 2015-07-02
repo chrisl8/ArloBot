@@ -1,25 +1,11 @@
 /* https://github.com/chrisl8
 
-   WARNING: Much of this code was unwittingly written by Google and Stack Overflow!
-
    ROS Info:
    http://robotwebtools.org/jsdoc/roslibjs/current/index.html
    http://wiki.ros.org/roslibjs/Tutorials/BasicRosFunctionality
 
    IMPLEMENTATION NOTES:
-   This is meant to be called by index.php from the ArloWeb web control page.
-   This requires the following code in the PHP file before calling/including this js file:
-       <link rel="stylesheet" type="text/css" href="lcars.css" />
-       <script type="text/javascript" src="jquery-2.1.1.min.js"></script>
-       <link href="jquery-ui-1.10.4.custom.min.css" rel="stylesheet">
-       <script src="jquery-ui-1.10.4.custom.min.js"></script>
-       <script type="text/javascript" src="http://cdn.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
-       <script type="text/javascript" src="http://cdn.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
-       <script type="text/javascript" src="lcars.js"></script>
-       </script>
-   Without the above lines, this js file is incomplete.
-   This was copied by hand, so if in doubt, see the index.php that should have come
-   in the same folder with this file.
+   This is meant to be called by index.html from the ArloWeb web control page.
  */
 
 var connectedToROS = false, // Track my opinion of the connection
@@ -63,9 +49,6 @@ var setActionField = function(newActionFieldText) {
 
 // TELEOP FUNCTIONS
 
-//TODO: Pass arguments instead of using global variables?
-// Global variables that can be set within the button functions
-// and sent from called functions
 var linear_speed = 0.0,
     angular_speed = 0.0,
     actionFieldText = "All Stop";
@@ -373,7 +356,7 @@ $(document).ready(function() {
         // This will "highlight" the buttons on the side panel upon hover,
         // Which I think is important since the cursor change is off
         // I am using addClass instead of setting the background-color directly,
-        // Since I don't know what it was (it is different on every other button,
+        // Since I don't know what it was (it is different on every other button),
         // So I don't know what to set it back to.
         // Note you have to use !important for the class background-color
         // to override the element style
@@ -682,7 +665,6 @@ $(document).ready(function() {
             $(this).removeClass("pressOnButton");
         });
 
-    // TODO: Should be pulled from somewhere else?
     var maxTravelSpeed = 1.0;
     var maxRotateSpeed = 4.0;
 

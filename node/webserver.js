@@ -213,7 +213,7 @@ app.post('/receivemessage', function(req, res) {
 });
 
 function start() {
-    var webServer = app.listen(8080);
+    var webServer = app.listen(personalData.webServerPort);
     var ngrok = require('ngrok');
     var io = require("socket.io").listen(webServer);
     ngrok.connect({
@@ -221,8 +221,9 @@ function start() {
         subdomain: personalData.ngrok.subdomain,
         port: personalData.ngrok.port
     }, function(err, url) {
-        console.log('ngrok URL: ' + url);
-        if (err != null) {
+        // NOTE: If you need this for Twilio:
+        //console.log('ngrok URL: ' + url);
+        if (err) {
             console.log(err);
         }
     });
@@ -237,7 +238,7 @@ function start() {
         console.log('Web Page Connection!');
 
         socket.on('setMap', function(data) {
-            if (data != null) {
+            if (data) {
                 if (data === 'Explore!') {
                     webModel.mapName = '';
                     webModel.autoExplore = true;

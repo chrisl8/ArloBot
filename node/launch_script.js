@@ -37,7 +37,7 @@ LaunchScript.prototype.start = function() {
             // If they are not too long
             if (data.length < 50) {
                 // Append to 2nd status line
-                webModel.status2 = data + '<br/>' + webModel.status2;
+                webModel.scrollingStatus = data + '<br/>' + webModel.scrollingStatus;
             }
         }
         if (self.successString) {
