@@ -227,16 +227,6 @@ function start() {
         }
     });
 
-    exports.updateWebModel = function(variable, value) {
-        if ((webModel[variable] != value)) {
-            webModel[variable] = value;
-            io.sockets.emit('webModel', webModel);
-        }
-        readSemaphoreFiles(function() {
-            io.sockets.emit('webModel', webModel);
-        });
-    };
-
     webModelWatcher.on('change', function() {
         io.sockets.emit('webModel', webModel);
     });

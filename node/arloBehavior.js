@@ -404,7 +404,7 @@ arloBot.loadMapProcess = new LaunchScript({
 var blackboard = new b3.Blackboard();
 
 console.log('start');
-webServer.updateWebModel('status', 'Behavior Tree is running.');
+webModel.status = 'Behavior Tree is running.';
 setInterval(function() {
     arloTree.tick(arloBot, blackboard);
     // Note that we can do stuff between ticks if we want to,
@@ -423,9 +423,9 @@ setInterval(function() {
     var batteryCheck = exec(batteryCommand);
     batteryCheck.stdout.on('data', function(data) {
         var re = /\s+/;
-        webServer.updateWebModel('laptopBatteryPercentage', data.split(re)[2]);
-        if (webServer.webModel.laptopBatteryPercentage.match('100%')) webServer.updateWebModel('laptopFullyCharged', true);
-        else webServer.updateWebModel('laptopFullyCharged', false);
+        webModel.laptopBatteryPercentage = data.split(re)[2];
+        if (webServer.webModel.laptopBatteryPercentage.match('100%')) webModel.laptopFullyCharged = true;
+        else webModel.laptopFullyCharged = false;
     });
     // Check plugged in status
     var powerCommand = '/usr/bin/upower -d|grep online';
