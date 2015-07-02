@@ -471,35 +471,87 @@ var connectedToROS = false, // Track my opinion of the connection
     LeftMotorRelay = -1,
     LeftMotorName = "LeftMotor"; // Found in arlobot_usbrelay/param/usbrelay.yaml
 
-/* TODO: This is all offline until this "bug" is fixed:
-https://github.com/RobotWebTools/roslibjs/issues/160
+// TODO: If this bug is every fixed:
+// https://github.com/RobotWebTools/roslibjs/issues/160
+// Stop using my fork of roslib.
 var ROSLIB = require('roslib');
 // Copied from arloweb.js
 // Be sure to set url to point to localhost,
 // and change any references to web objects with console.log (i.e. setActionField)
 
+// Define a list of ROS Parameters to monitor
+// NOTE: Add an instance to webModel if you want this sent to the web app!
+var rosParameters = {
+        ignoreCliffSensors: {
+            param: null,
+            label: 'ignoreCliffSensors',
+            path: '/arlobot/ignoreCliffSensors'
+        },
+        ignoreProximity: {
+            param: null,
+            label: 'ignoreProximity',
+            path: '/arlobot/ignoreProximity'
+        },
+        ignoreIRSensors: {
+            param: null,
+            label: 'ignoreIRSensors',
+            path: '/arlobot/ignoreIRSensors'
+        }
+    };
+
 var talkToROS = function() {
     ros.getParams(function(params) {
+        console.log('ROSLIB Params:');
         console.log(params);
     });
+
+    for (var prop in rosParameters) {
+        rosParameters[prop].param = new ROSLIB.Param({
+            ros: ros,
+            name: rosParameters[prop].path
+        });
+    }
+
+    pollParams();
+};
+
+var pollParams = function() {
+    function checkParameter(prop) {
+        rosParameters[prop].param.get(function(value) {
+            console.log(rosParameters[prop].label + ': ' + value);
+            // Assign state to webModel object for view by web page.
+            if (webModel.rosParameters.hasOwnProperty(prop)) {
+                webModel.rosParameters[prop] = value;
+                //console.log('For web: ' + webModel.rosParameters[prop]);
+            }
+        });
+    }
+
+    for (var prop in rosParameters) {
+        if (rosParameters.hasOwnProperty(prop)) {
+            checkParameter(prop);
+        }
+    }
+
+    setTimeout(pollParams, longDelay);
 };
 
 var pollROS = function() {
-    console.log('ROSLIB pollROS run');
+    // console.log('ROSLIB pollROS run');
     connectedToROS = false;
 
     ros = new ROSLIB.Ros({
         url: 'ws://localhost:9090',
-        // TODO: This eliminates a warning about utf8, but does it work?
+        // This eliminates a warning about utf8:
         encoding: 'ascii'
     });
 
     ros.on('connection', function() {
-        console.log('Websocket connected.');
+        console.log('ROSLIB Websocket connected.');
         //connectRequested = true;
         //updateConnectedButton();
         //checkROSServices();
-        talkToROS();
+        setTimeout(talkToROS, longDelay);
     });
 
     ros.on('error', function(error) {
@@ -521,5 +573,5 @@ var pollROS = function() {
 };
 
 pollROS();
-*/
+
 console.log('arloBehavior.js is done, behold the power of async!');

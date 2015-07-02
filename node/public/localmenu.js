@@ -87,12 +87,35 @@ window.onload = function() {
         unPauseAutoExplore: function() {
             socket.emit('unPauseAutoExplore');
         },
+
         monitorAC: function() {
             socket.emit('monitorAC');
         },
         ignoreAC: function() {
             socket.emit('ignoreAC');
         },
+
+        monitorIR: function() {
+            socket.emit('monitorIR');
+        },
+        ignoreIR: function() {
+            socket.emit('ignoreIR');
+        },
+
+        monitorCliff: function() {
+            socket.emit('monitorCliff');
+        },
+        ignoreCliff: function() {
+            socket.emit('ignoreCliff');
+        },
+
+        monitorProximity: function() {
+            socket.emit('monitorProximity');
+        },
+        ignoreProximity: function() {
+            socket.emit('ignoreProximity');
+        },
+
         newMapName: ko.observable(),
         saveMap: function() {
             socket.emit('saveMap', webModel.newMapName());
@@ -151,11 +174,16 @@ window.onload = function() {
         ko.mapping.fromJS(data, webModel);
         if (firstStart) {
             firstStart = false;
+
             // Run the function once for each button:
             //LCARishButton('button-id', koWatchItem, koOffAction, koOnAction)
             LCARishButton('talk-bequiet-button', webModel.beQuiet, webModel.talk, webModel.quiet);
             LCARishButton('explore-pause-button', webModel.pauseExplore, webModel.unPauseAutoExplore, webModel.pauseAutoExplore);
             LCARishButton('ignore-pluggedIn-button', webModel.ignorePluggedIn, webModel.monitorAC, webModel.ignoreAC);
+            LCARishButton('ignore-IR-button', webModel.rosParameters.ignoreIRSensors, webModel.monitorIR, webModel.ignoreIR);
+            LCARishButton('ignore-cliff-button', webModel.rosParameters.ignoreCliffSensors, webModel.monitorCliff, webModel.ignoreCliff);
+            LCARishButton('ignore-proximity-button', webModel.rosParameters.ignoreProximity, webModel.monitorProximity, webModel.ignoreProximity);
+
             ko.applyBindings(webModel);
         }
         if (webModel.autoExplore()) webModel.selectedMap('Explore!');
@@ -164,6 +192,7 @@ window.onload = function() {
 
     socket.on('webModel', function(data) {
         console.log('.');
+        //console.log(webModel); // For debugging
         ko.mapping.fromJS(data, webModel);
         if (webModel.autoExplore()) {
             webModel.selectedMap('Explore!');

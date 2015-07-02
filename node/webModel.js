@@ -15,5 +15,10 @@ module.exports = {
     status: 'Arlo behavior is not running.',
     status2: '',
     mapList: ['Explore!'],
-    mapName: ''
+    mapName: '',
+    rosParameters: { // These are the parameters we will send to the web
+        ignoreCliffSensors: false, // Use the expected default.
+        ignoreProximity: false,
+        ignoreIRSensors: false
+    }
 };
