@@ -246,7 +246,6 @@ function start() {
                     webModel.mapName = data;
                 }
             }
-            io.sockets.emit('webModel', webModel);
         });
 
         // LocalMenu button handlers:

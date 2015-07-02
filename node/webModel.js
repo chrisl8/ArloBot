@@ -1,3 +1,7 @@
+// This object is sent to the web app via socket.io
+// Do not put deep or complex objects here,
+// Just text based or boolean items to digest in the web.
+
 module.exports = {
     ROSstart: false,
     ROSisRunning: false,
