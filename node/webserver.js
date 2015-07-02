@@ -123,19 +123,20 @@ var startLogStreamer = function() {
     var logStreamerProcess = spawn(command);
     logStreamerProcess.stdout.setEncoding('utf8');
     logStreamerProcess.stdout.on('data', function(data) {
-        console.log(data);
+        //console.log(data);
     });
     logStreamerProcess.stderr.setEncoding('utf8');
     logStreamerProcess.stderr.on('data', function(data) {
-        console.log(data);
+        //console.log(data);
     });
     logStreamerProcess.on('error', function(err) {
-        console.log(err);
+        //console.log(err);
     });
     logStreamerProcess.on('exit', function(code) {
         // Will catch multiple exit codes I think:
         if (code === 0) {
-            console.log('Log streamer exited with code 0.');
+            webModel.scrollingStatus = 'Log streamer exited with code 0.<br/>' + webModel.scrollingStatus;
+            //console.log('Log streamer exited with code 0.');
         } else {
             console.log('Log streamer failed with code: ' + code);
         }
@@ -148,17 +149,17 @@ var stopLogStreamer = function() {
     var process = spawn(command, commandArgs);
     process.stdout.setEncoding('utf8');
     process.stdout.on('data', function(data) {
-        console.log(data);
+        //console.log(data);
     });
     process.stderr.setEncoding('utf8');
     process.stderr.on('data', function(data) {
-        console.log(data);
+        //console.log(data);
     });
     process.on('error', function(err) {
-        console.log(err);
+        //console.log(err);
     });
     process.on('exit', function(code) {
-        console.log(code);
+        //console.log(code);
     });
     return process;
 };
@@ -235,7 +236,8 @@ function start() {
     // Socket listeners
     io.on('connection', function(socket) {
         socket.emit('startup', webModel);
-        console.log('Web Page Connection!');
+        var address = socket.request.connection.remoteAddress;
+        console.log("Web connection from " + address);
 
         socket.on('setMap', function(data) {
             if (data) {
