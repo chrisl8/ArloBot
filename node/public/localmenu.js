@@ -152,6 +152,9 @@ window.onload = function() {
         exitWebServer: function() {
             socket.emit('exit');
         },
+        remoteControlPage: function() {
+            window.open("/");
+        },
         openLogStreamer: function() {
             var logStreamerURL = 'http://' + location.hostname + ':28778/';
             console.log(logStreamerURL);
