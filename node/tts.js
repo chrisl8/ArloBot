@@ -1,10 +1,14 @@
+var fs = require('fs');
+var exec = require('child_process').exec;
+var say = require('say');
+var push = require('pushover-notifications');
+
 module.exports = function(sound) {
 
     // This will not make any noise if the file
     // ~/.arlobot/status/bequiet
     // exists
     var beQuietFile = process.env.HOME + '/.arlobot/status/bequiet';
-    var fs = require('fs');
     fs.open(beQuietFile, 'r', function(err) {
         if (err) {
 
@@ -12,7 +16,6 @@ module.exports = function(sound) {
             var personalDataFile = process.env.HOME + '/.arlobot/personalDataForBehavior.json';
             var personalData = JSON.parse(fs.readFileSync(personalDataFile, 'utf8'));
 
-            var exec = require('child_process').exec;
             // Set volume at max
             var setVolumeCommand = '/usr/bin/amixer set Master ' + personalData.speechVolumeLevelDefault + '% on';
             exec(setVolumeCommand);
@@ -27,7 +30,6 @@ module.exports = function(sound) {
             } else {
                 if (personalData.speechProgram === 'nodeSay') {
                     // https://github.com/marak/say.js/
-                    var say = require('say');
                     // no callback, fire and forget
                     say.speak(null, process.argv[2]);
                 } else if (personalData.speechProgram) {
@@ -44,7 +46,6 @@ module.exports = function(sound) {
         if (!err) {
             var personalData = JSON.parse(data);
             if (personalData.pushover.USER !== "") {
-                var push = require('pushover-notifications');
                 var p = new push({
                     user: personalData.pushover.USER,
                     token: personalData.pushover.TOKEN

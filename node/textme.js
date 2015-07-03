@@ -1,8 +1,9 @@
+var twilio = require('twilio');
+var fs = require('fs');
+
 module.exports = function(message) {
     // Send myself text messages with twilio
     // https://www.twilio.com/blog/2013/03/introducing-the-twilio-module-for-node-js.html
-    var twilio = require('twilio');
-    var fs = require('fs');
 
     var personalDataFile = process.env.HOME + '/.arlobot/personalDataForBehavior.json';
     fs.readFile(personalDataFile, function(err, data) {

@@ -12,7 +12,7 @@ done
 SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 # echo ${SCRIPTDIR} # For debugging
 
-echo "Killing everything, please wait a moment . . ."
+echo "Killing everything, please wait..."
 if (pkill -f log.io)
 then
     while (pkill -f log.io)
@@ -70,4 +70,4 @@ if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
     ${SCRIPTDIR}/XVLidar.sh stop
 fi
-${SCRIPTDIR}/callResetUSB.sh
+#${SCRIPTDIR}/callResetUSB.sh

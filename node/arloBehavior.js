@@ -1,14 +1,7 @@
 var webModel = require('./webModel');
-
 var fs = require('fs');
-
-// Load personal settings not included in git repo
-var personalDataFile = process.env.HOME + '/.arlobot/personalDataForBehavior.json';
-var personalData = JSON.parse(fs.readFileSync(personalDataFile, 'utf8'));
-
 b3 = {};
 var behavior3js = require('behavior3js');
-
 var exec = require('child_process').exec;
 var spawn = require('child_process').spawn;
 // Note that tts will convert text to speech,
@@ -19,17 +12,34 @@ var spawn = require('child_process').spawn;
 // The same modele is used by ROS Python scripts.
 var tts = require('./tts');
 var LaunchScript = require('./launch_script');
-
 var textme = require('./textme');
+var rosInterface = require('./rosInterface');
+var webserver = require('./webserver');
+var os = require('os');
+
 var arloTree = new b3.BehaviorTree();
 
-var scrollingStatusUpdate = function(input) {
-    webModel.scrollingStatus = input + '<br/>' + webModel.scrollingStatus;
+// This is the Arlobot "object" we will use to track everything,
+// note that there is also a "blackboard" where nodes can track
+// their internal status, even amongst multiple calls
+// to the same node type,
+// but this will keep track of broader robot settings.
+// NOTE: Do NOT track things here that the nodes
+// should be collecting from real time status!
+// Rather track things we can only know from inside of here,
+// such as last action or speech time, etc.
+var arloBot = {
+    whereamiTextSent: false,
+    unplugMeTextSent: false,
+    fullyCharged: false,
+    pauseExplore: false
 };
 
-var behaviorStatusUpdate = function(input) {
-    webModel.behaviorStatus = input;
-};
+// Load personal settings not included in git repo
+var personalDataFile = process.env.HOME + '/.arlobot/personalDataForBehavior.json';
+var personalData = JSON.parse(fs.readFileSync(personalDataFile, 'utf8'));
+
+rosInterface.start();
 
 // Cleanup on shutdown
 // http://stackoverflow.com/questions/14031763/doing-a-cleanup-action-just-before-node-js-exits
@@ -40,22 +50,22 @@ var killROS = function(exitWhenDone) {
     if (!kill_rosHasRun) {
         kill_rosHasRun = true;
         webModel.ROSstart = false;
-        scrollingStatusUpdate("Running kill_ros.sh . . .");
+        webserver.scrollingStatusUpdate("Running kill_ros.sh . . .");
         // Logging to console too, because feedback on shutdown is nice.
         console.log("Running kill_ros.sh . . .");
         var shutdownCommand = exec(command);
         shutdownCommand.stdout.on('data', function(data) {
-            scrollingStatusUpdate('kill_ros: ' + data);
-            console.log('kill_ros: ' + data);
+            webserver.scrollingStatusUpdate('kill_ros: ' + data);
+            console.log('kill_ros:' + data.toString().replace(/[\n\r]/g, ""));
         });
 
         shutdownCommand.stderr.on('data', function(data) {
-            scrollingStatusUpdate('kill_ros: ' + data);
-            console.log('kill_ros: ' + data);
+            webserver.scrollingStatusUpdate('kill_ros: ' + data);
+            console.log('kill_ros:' + data.toString().replace(/[\n\r]/g, ""));
         });
 
         shutdownCommand.on('close', function(code) {
-            scrollingStatusUpdate('kill_ros.sh closed with code ' + code);
+            webserver.scrollingStatusUpdate('kill_ros.sh closed with code ' + code);
             console.log('kill_ros.sh closed with code ' + code);
             if (exitWhenDone) {
                 process.exit();
@@ -65,18 +75,26 @@ var killROS = function(exitWhenDone) {
             }
         });
         shutdownCommand.on('error', function(err) {
-            scrollingStatusUpdate('kill_ros process error' + err);
+            webserver.scrollingStatusUpdate('kill_ros process error' + err);
         });
     }
 };
 
 function exitHandler(options, err) {
-    if (options.cleanup) scrollingStatusUpdate('arloBehavior has been told to "cleanup"');
-    if (err) scrollingStatusUpdate(err.stack);
+    if (options.cleanup) {
+        console.log('Process "cleanup" called.');
+        webserver.scrollingStatusUpdate('Process "cleanup" called.');
+    }
+    if (err) {
+        console.log('Process Error:');
+        console.log(err);
+        console.log(err.stack);
+        webserver.scrollingStatusUpdate(err.stack);
+    }
     //if (options.exit) process.exit();
     if (options.exit) {
-        scrollingStatusUpdate('arloBehavior has been asked to exit, calling killROS');
-        console.log('arloBehavior has been asked to exit, calling killROS');
+        webserver.scrollingStatusUpdate('arloBehavior process exit, calling killROS');
+        console.log('arloBehavior process exit, calling killROS');
         killROS(true);
     }
 }
@@ -111,8 +129,7 @@ webserver.on('exit', function() {
 console.log("Starting web server.");
 webserver.start();
 */
-var webServer = require('./webserver');
-var io = webServer.start();
+var io = webserver.start();
 
 // TODO: Perfect this pattern and replicate to all script starting behaviors.
 var StartROS = b3.Class(b3.Action);
@@ -138,7 +155,7 @@ StartROS.prototype.tick = function(tick) {
                 webModel.status = 'ROS process has closed.';
                 // 4. Log the closure to the console,
                 // because this is significant.
-                scrollingStatusUpdate(this.name + "Process Closed.");
+                webserver.scrollingStatusUpdate(this.name + "Process Closed.");
                 // 5. Set any special status flags for this
                 // process. i.e. ROSisRunning sets the start/stop button position
                 webModel.ROSisRunning = false;
@@ -172,35 +189,35 @@ StartROS.prototype.tick = function(tick) {
                 return b3.SUCCESS;
             }
         } else {
-            behaviorStatusUpdate(this.name + " Starting up . . .");
+            webserver.behaviorStatusUpdate(this.name + " Starting up . . .");
             return b3.RUNNING;
         }
     } else if (webModel.ROSstart) {
         // IF the process is supposed to start, but wasn't,
         // then run it:
         arloBot.ROSprocess.start();
-        scrollingStatusUpdate(this.name + " Process starting!");
+        webserver.scrollingStatusUpdate(this.name + " Process starting!");
         return b3.RUNNING;
     }
     // If the process isn't running and wasn't requested to run:
-    behaviorStatusUpdate(this.name + ': FAILURE');
+    webserver.behaviorStatusUpdate(this.name + ': FAILURE');
     return b3.FAILURE;
 };
 
 var getMapOrExploreRequest = b3.Class(b3.Action);
 getMapOrExploreRequest.prototype.name = 'getMapOrExploreRequest';
 getMapOrExploreRequest.prototype.tick = function(tick) {
-    if (webServer.webModel.autoExplore) {
+    if (webModel.autoExplore) {
         return b3.SUCCESS;
     }
-    if (webServer.webModel.mapName !== '') {
+    if (webModel.mapName !== '') {
         return b3.SUCCESS;
     }
     if (!arloBot.whereamiTextSent) {
         textme('Where am I?');
         arloBot.whereamiTextSent = true;
     }
-    behaviorStatusUpdate(this.name);
+    webserver.behaviorStatusUpdate(this.name);
     return b3.RUNNING;
 };
 
@@ -209,49 +226,49 @@ UnPlugRobot.prototype.name = 'UnPlugRobot';
 UnPlugRobot.prototype.tick = function(tick) {
     if (!webModel.pluggedIn) return b3.SUCCESS;
     if (webModel.ignorePluggedIn) return b3.SUCCESS;
-    if (webServer.webModel.laptopFullyCharged) {
+    if (webModel.laptopFullyCharged) {
         if (!arloBot.unplugMeTextSent) {
             textme('Please unplug me!');
             arloBot.unplugMeTextSent = true;
         }
     }
-    behaviorStatusUpdate(this.name);
+    webserver.behaviorStatusUpdate(this.name);
     return b3.FAILURE;
 };
 
 var AutoExplore = b3.Class(b3.Action);
 AutoExplore.prototype.name = 'AutoExplore';
 AutoExplore.prototype.tick = function(tick) {
-    if (webServer.webModel.autoExplore) {
+    if (webModel.autoExplore) {
         if (arloBot.exploreProcess.started) {
 
             // Catch changes in pauseExplore and send them to the arlobot_explore pause_explorer service
-            if (arloBot.pauseExplore !== webServer.webModel.pauseExplore) {
+            if (arloBot.pauseExplore !== webModel.pauseExplore) {
                 // TODO: Should this use the LaunchScript object?
-                arloBot.pauseExplore = webServer.webModel.pauseExplore;
+                arloBot.pauseExplore = webModel.pauseExplore;
                 var command = '/opt/ros/indigo/bin/rosservice call /arlobot_explore/pause_explorer ' + arloBot.pauseExplore;
                 exec(command);
             }
 
             if (arloBot.exploreProcess.startupComplete) {
                 if (arloBot.exploreProcess.hasExited) {
-                    webServer.webModel.autoExplore = false;
+                    webModel.autoExplore = false;
                     arloBot.exploreProcess.started = false;
-                    behaviorStatusUpdate(this.name + "FAILURE");
+                    webserver.behaviorStatusUpdate(this.name + "FAILURE");
                     return b3.FAILURE;
                 } else {
                     webModel.status = 'Robot is Exploring!';
-                    scrollingStatusUpdate('Robot is Exploring!');
+                    webserver.scrollingStatusUpdate('Robot is Exploring!');
                     return b3.RUNNING;
                 }
             } else {
                 webModel.status = 'Explore process is starting...';
-                scrollingStatusUpdate('Explore process is starting...');
+                webserver.scrollingStatusUpdate('Explore process is starting...');
                 return b3.RUNNING;
             }
         } else {
             arloBot.exploreProcess.start();
-            behaviorStatusUpdate(this.name);
+            webserver.behaviorStatusUpdate(this.name);
             return b3.RUNNING;
         }
     } else {
@@ -266,9 +283,9 @@ LoadMap.prototype.name = 'LoadMap';
 LoadMap.prototype.tick = function(tick) {
     // ROS Process launch behavior pattern:
     // FIRST: This decides if we run this process or not:
-    if (webServer.webModel.mapName === '') {
+    if (webModel.mapName === '') {
         // This fails if we have no map name.
-        behaviorStatusUpdate(this.name + ' FAILURE');
+        webserver.behaviorStatusUpdate(this.name + ' FAILURE');
         return b3.FAILURE;
     } else {
         if (arloBot.loadMapProcess.started) {
@@ -277,7 +294,7 @@ LoadMap.prototype.tick = function(tick) {
                     // Once the process has exited:
                     // 1. DISABLE whatever user action causes it to be called,
                     // so that it won't loop.
-                    webServer.webModel.mapName = '';
+                    webModel.mapName = '';
                     // 2. Now that it won't loop, set .started to false,
                     // so that it can be run again.
                     arloBot.loadMapProcess.started = false;
@@ -285,7 +302,7 @@ LoadMap.prototype.tick = function(tick) {
                     webModel.status = 'Map process has closed.';
                     // 4. Log the closure to the console,
                     // because this is significant.
-                    scrollingStatusUpdate(this.name + "Process Closed.");
+                    webserver.scrollingStatusUpdate(this.name + "Process Closed.");
                     // Leave it 'RUNNING' and
                     // let the next Behavior tick respond as it would,
                     // if this function was never requested.
@@ -298,16 +315,16 @@ LoadMap.prototype.tick = function(tick) {
                     return b3.RUNNING;
                 }
             } else {
-                behaviorStatusUpdate(this.name + " Starting up . . .");
+                webserver.behaviorStatusUpdate(this.name + " Starting up . . .");
                 return b3.RUNNING;
             }
         } else {
             // IF the process is supposed to start, but wasn't,
             // then run it:
-            scrollingStatusUpdate('Map: ' + webServer.webModel.mapName);
-            //arloBot.loadMapProcess.scriptArguments = [webServer.webModel.mapName];
+            webserver.scrollingStatusUpdate('Map: ' + webModel.mapName);
+            //arloBot.loadMapProcess.scriptArguments = [webModel.mapName];
             arloBot.loadMapProcess.ROScommand = arloBot.loadMapProcess.ROScommand + process.env.HOME + '/.arlobot/rosmaps/' + webModel.mapName + '.yaml';
-            scrollingStatusUpdate(arloBot.loadMapProcess.ROScommand);
+            webserver.scrollingStatusUpdate(arloBot.loadMapProcess.ROScommand);
             arloBot.loadMapProcess.start();
             return b3.RUNNING;
         }
@@ -317,7 +334,7 @@ LoadMap.prototype.tick = function(tick) {
 var MyAction2 = b3.Class(b3.Action);
 MyAction2.prototype.name = 'MyAction2';
 MyAction2.prototype.tick = function(tick) {
-    behaviorStatusUpdate(this.name);
+    webserver.behaviorStatusUpdate(this.name);
     return b3.FAILURE;
 };
 
@@ -342,23 +359,6 @@ function parseCustomNodes(element, index, array) {
 arloNodeData.custom_nodes.forEach(parseCustomNodes);
 
 arloTree.load(arloNodeData, customNodeNames);
-
-// This is the Arlobot "object" we will use to track everything,
-// note that there is also a "blackboard" where nodes can track
-// their internal status, even amongst multiple calls
-// to the same node type,
-// but this will keep track of broader robot settings.
-// NOTE: Do NOT track things here that the nodes
-// should be collecting from real time status!
-// Rather track things we can only know from inside of here,
-// such as last action or speech time, etc.
-var arloBot = {
-    whereamiTextSent: false,
-    unplugMeTextSent: false,
-    fullyCharged: false,
-
-    pauseExplore: false
-};
 
 // NOTE: Be sure to put 'unbuffer ' at the beginning of any ROScommand
 // if you hope to monitor the output, otherwise they never flush!
@@ -417,7 +417,7 @@ setInterval(function() {
     batteryCheck.stdout.on('data', function(data) {
         var re = /\s+/;
         webModel.laptopBatteryPercentage = data.split(re)[2];
-        if (webServer.webModel.laptopBatteryPercentage.match('100%')) webModel.laptopFullyCharged = true;
+        if (webModel.laptopBatteryPercentage.match('100%')) webModel.laptopFullyCharged = true;
         else webModel.laptopFullyCharged = false;
     });
     // Check plugged in status
@@ -434,138 +434,23 @@ setInterval(function() {
 
     //console.log(blackboard);
 
-    if (webServer.webModel.shutdownRequested) killROS(true);
+    if (webModel.shutdownRequested) {
+        if (!kill_rosHasRun) {
+            console.log('Shutdown Requested via webModel.');
+        }
+        webserver.behaviorStatusUpdate('Shutdown Requested via webModel.');
+b        killROS(true);
+    }
 
 }, 1000);
-//tree.tick(arloBot,blackboard);
-// Copied from arloweb.js
-var connectedToROS = false, // Track my opinion of the connection
-    connectRequested = false, // For when we asked and are waiting patiently.
-    pleaseWait = false, // Display Please Wait on the Connect button
-    ros, // Empty global for actual connection.
-    cmdVel, // Empty global for actual topic
-    wakeScreen, // Empty global for actual topic
-    toggleCamera, // Empty global for actual topic
-    toggleRelay, // Empty global for actual topic
-    sendTextToSpeak, // Empty global for actual topic
-    shortDelay = 1000,
-    longDelay = 3000,
-    camera1On = false, // For tracking Camera status
-    camera2On = false, // For tracking Camera status
-    upperLightOn = false, // For tracking LED light bars
-    lowerLightOn = false, // For tracking LED light bars
-    UpperLightRowRelay = -1,
-    UpperLightRowName = "TopLightRow", // Found in arlobot_usbrelay/param/usbrelay.yaml
-    LowerLightRowRelay = -1,
-    LowerLightRowName = "BottomLightRow", // Found in arlobot_usbrelay/param/usbrelay.yaml
-    RightMotorRelay = -1,
-    RightMotorName = "RightMotor", // Found in arlobot_usbrelay/param/usbrelay.yaml
-    LeftMotorRelay = -1,
-    LeftMotorName = "LeftMotor"; // Found in arlobot_usbrelay/param/usbrelay.yaml
 
-// TODO: If this bug is every fixed:
-// https://github.com/RobotWebTools/roslibjs/issues/160
-// Stop using my fork of roslib.
-var ROSLIB = require('roslib');
-// Copied from arloweb.js
-// Be sure to set url to point to localhost,
-// and change any references to web objects with console.log (i.e. setActionField)
-
-// Define a list of ROS Parameters to monitor
-// NOTE: Add an instance to webModel if you want this sent to the web app!
-var rosParameters = {
-        ignoreCliffSensors: {
-            param: null,
-            label: 'ignoreCliffSensors',
-            path: '/arlobot/ignoreCliffSensors'
-        },
-        ignoreProximity: {
-            param: null,
-            label: 'ignoreProximity',
-            path: '/arlobot/ignoreProximity'
-        },
-        ignoreIRSensors: {
-            param: null,
-            label: 'ignoreIRSensors',
-            path: '/arlobot/ignoreIRSensors'
-        }
-    };
-
-var talkToROS = function() {
-    // If you wanted to dump ALL params:
-    //ros.getParams(function(params) {
-    //    console.log('ROSLIB Params:');
-    //    console.log(params);
-    //});
-
-    for (var prop in rosParameters) {
-        rosParameters[prop].param = new ROSLIB.Param({
-            ros: ros,
-            name: rosParameters[prop].path
-        });
-    }
-
-    pollParams();
-};
-
-var pollParams = function() {
-    function checkParameter(prop) {
-        rosParameters[prop].param.get(function(value) {
-            //console.log(rosParameters[prop].label + ': ' + value);
-            // Assign state to webModel object for view by web page.
-            if (webModel.rosParameters.hasOwnProperty(prop)) {
-                webModel.rosParameters[prop] = value;
-                //console.log('For web: ' + webModel.rosParameters[prop]);
-            }
-        });
-    }
-
-    for (var prop in rosParameters) {
-        if (rosParameters.hasOwnProperty(prop)) {
-            checkParameter(prop);
-        }
-    }
-
-    setTimeout(pollParams, longDelay);
-};
-
-var pollROS = function() {
-    // console.log('ROSLIB pollROS run');
-    connectedToROS = false;
-
-    ros = new ROSLIB.Ros({
-        url: 'ws://localhost:9090',
-        // This eliminates a warning about utf8:
-        encoding: 'ascii'
-    });
-
-    ros.on('connection', function() {
-        scrollingStatusUpdate('ROSLIB Websocket connected.');
-        //connectRequested = true;
-        //updateConnectedButton();
-        //checkROSServices();
-        setTimeout(talkToROS, longDelay);
-    });
-
-    ros.on('error', function(error) {
-        //console.log('Error connecting to websocket server: ', error);
-        //console.log('ROSLIB Websocket error');
-        if (ros !== undefined) {
-            ros.close();
-        }
-        setTimeout(pollROS, shortDelay);
-    });
-
-    ros.on('close', function() {
-        //console.log('Connection to websocket server closed.');
-        scrollingStatusUpdate('ROSLIB Websocket closed');
-        connectedToROS = false;
-        //updateConnectedButton();
-        setTimeout(pollROS, shortDelay);
-    });
-};
-
-pollROS();
-
-var os = require('os');
 console.log('Go to: http://' + os.hostname() + ':' + personalData.webServerPort + '/localmenu.html');
+
+if (personalData.launchBrowser) {
+    var runFirefox = new LaunchScript({
+        name: 'FireFox',
+        scriptName: '../scripts/runFirefox.sh',
+        scriptArguments: 'http://' + os.hostname() + ':' + personalData.webServerPort + '/localmenu.html'
+    });
+    runFirefox.start();
+}

@@ -2,13 +2,21 @@ var webModel = require('./webModel');
 var O = require('observed');
 var webModelWatcher = O(webModel);
 var LaunchScript = require('./launch_script');
+var rosInterface = require('./rosInterface');
+var getMapList = require('./getMapList');
+var fs = require('fs');
+var express = require('express');
+var spawn = require('child_process').spawn;
+var bodyParser = require('body-parser');
+var mkdirp = require('mkdirp');
+var exec = require('child_process').exec;
+var ngrok = require('ngrok');
 
 var processTracker = {
     logStreamerProcess: ''
 };
 
 // Set map list based on file names in the map folder
-var getMapList = require('./getMapList');
 var mapDir = process.env.HOME + '/.arlobot/rosmaps/';
 var updateMapList = function() {
     webModel.mapList = ['Explore!'];
@@ -21,23 +29,17 @@ var updateMapList = function() {
 
 updateMapList();
 
-var fs = require('fs');
 // Load personal settings not included in git repo
 var personalDataFile = process.env.HOME + '/.arlobot/personalDataForBehavior.json';
 var personalData = JSON.parse(fs.readFileSync(personalDataFile, 'utf8'));
 
-var express = require('express');
-var spawn = require('child_process').spawn;
 var app = express();
-var bodyParser = require('body-parser');
 // For json encoded post requests, which I use:
 app.use(bodyParser.json());
 // Required for Twilio:
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-var mkdirp = require('mkdirp');
-var exec = require('child_process').exec;
 
 // All of my static web pages are in the public folder
 app.use(express.static(__dirname + '/public'));
@@ -215,7 +217,6 @@ app.post('/receivemessage', function(req, res) {
 
 function start() {
     var webServer = app.listen(personalData.webServerPort);
-    var ngrok = require('ngrok');
     var io = require("socket.io").listen(webServer);
     ngrok.connect({
         authtoken: personalData.ngrok.authtoken,
@@ -291,6 +292,29 @@ function start() {
         socket.on('ignoreAC', function() {
             webModel.ignorePluggedIn = true;
         });
+
+        // ROS Parameters
+        socket.on('monitorIR', function() {
+            rosInterface.setParam('ignoreIRSensors', false);
+        });
+        socket.on('ignoreIR', function() {
+            rosInterface.setParam('ignoreIRSensors', true);
+        });
+
+        socket.on('monitorCliff', function() {
+            rosInterface.setParam('ignoreCliffSensors', false);
+        });
+        socket.on('ignoreCliff', function() {
+            rosInterface.setParam('ignoreCliffSensors', true);
+        });
+
+        socket.on('monitorProximity', function() {
+            rosInterface.setParam('ignoreProximity', false);
+        });
+        socket.on('ignoreProximity', function() {
+            rosInterface.setParam('ignoreProximity', true);
+        });
+
         socket.on('saveMap', function(data) {
             console.log('Save map as: ' + data);
             saveMap(data);
@@ -312,10 +336,14 @@ function start() {
 }
 
 exports.start = start;
-exports.webModel = webModel;
 
-//var server = app.listen(8080, function() {
-//var host = server.address().address;
-//var port = server.address().port;
-//console.log('Example app listening at http://%s:%s', host, port);
-//});
+var scrollingStatusUpdate = function(input) {
+    webModel.scrollingStatus = input + '<br/>' + webModel.scrollingStatus;
+};
+
+var behaviorStatusUpdate = function(input) {
+    webModel.behaviorStatus = input;
+};
+
+exports.scrollingStatusUpdate = scrollingStatusUpdate;
+exports.behaviorStatusUpdate = behaviorStatusUpdate;

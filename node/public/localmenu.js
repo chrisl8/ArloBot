@@ -210,6 +210,5 @@ window.onload = function() {
     socket.on('disconnect', function() {
         webModel.selectedMap('');
         webModel.status('Robot web server disconnected.');
-        webModel.scrollingStatus('Start ~/catkin_ws/src/Metatron/scripts/behavior.sh');
     });
 };

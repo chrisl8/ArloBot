@@ -1,5 +1,6 @@
+var fs = require('fs');
+
 module.exports = function(dir, callback) {
-    var fs = require('fs');
     // Also check out the path module for help with
     // sanitizing and normalizing paths!
     var extension = 'yaml';

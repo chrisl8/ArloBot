@@ -1,3 +1,6 @@
+var webModel = require('./webModel');
+var spawn = require('child_process').spawn;
+
 function LaunchScript(options) {
     this.name = options.name || undefined;
     this.ROScommand = options.ROScommand || undefined;
@@ -14,8 +17,6 @@ function LaunchScript(options) {
 LaunchScript.prototype.start = function() {
     this.started = true;
     this.hasExited = false;
-    var webModel = require('./webModel');
-    var spawn = require('child_process').spawn;
     var self = this;
     if (this.debugging) {
         console.log('Running ' + this.name + ' child process . . .');
@@ -51,26 +52,28 @@ LaunchScript.prototype.start = function() {
             webModel.status = self.name + ' successfully started.';
         }
         if (self.debugging) {
-            console.log(self.name + ' stdout data: ' + data);
+            process.stdout.write(self.name + ' stdout data:' + data);
         }
     });
     this.process.stderr.setEncoding('utf8');
     this.process.stderr.on('data', function(data) {
         if (self.debugging) {
-            console.log(self.name + ' stderr data: ' + data);
+            console.log(self.name + ' stderr data:' + data);
         }
     });
     this.process.on('error', function(err) {
         if (self.debugging) {
-            console.log(self.name + ' error: ' + err);
+            console.log(self.name + ' error:' + err);
         }
         webModel.status = self.name + ' process error: ' + err;
     });
     this.process.on('exit', function(code) {
-        webModel.status = self.name + ' has been shut down.';
+        webModel.status = self.name + ' exited with code: ' + code;
         self.hasExited = true;
         self.startupComplete = true;
-        console.log(self.name + ' exited with code: ' + code);
+        if (self.debugging) {
+            console.log(self.name + ' exited with code: ' + code);
+        }
         if (self.callback) {
             self.callback();
         }
