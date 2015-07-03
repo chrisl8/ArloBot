@@ -53,6 +53,7 @@ class PropellerComm(object):
         self.r = rospy.Rate(1) # 1hz refresh rate
         self._Counter = 0  # For Propeller code's _HandleReceivedLine and _write_serial
         self._motorsOn = False  # Set to 1 if the motors are on, used with USB Relay Control board
+        self._safeToGo = False  # Use arlobot_safety to set this
         self._SafeToOperate = False  # Use arlobot_safety to set this
         self._acPower = False # Track AC power status internally
         self._unPlugging = False # Used for when arlobot_safety tells us to "UnPlug"!
@@ -229,7 +230,8 @@ class PropellerComm(object):
         Set unPlugging variable to allow for safe unplug operation.
         """
         self._unPlugging = status.unPlugging
-        self._SafeToOperate = status.safeToGo
+        self._SafeToOperate = status.safeToOperate
+        self._safeToGo = status.safeToGo
         self._acPower = status.acPower
         self._laptop_battery_percent = status.laptopBatteryPercent
         if not self._SafeToOperate:
@@ -936,6 +938,7 @@ class PropellerComm(object):
         # Required for all operations
         if self._serialAvailable and \
            self._SafeToOperate and \
+           self._safeToGo and \
            self._motorsOn and \
            self._leftMotorPower and \
            self._rightMotorPower:

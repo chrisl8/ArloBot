@@ -43,17 +43,17 @@ class ArlobotSafety(object):
         # Delete plugged in status, since it is no longer a valid parameter without anyone to monitor it
         if rospy.has_param('~ACpower'):
             rospy.delete_param('~ACpower')
-        
+
     def Run(self):
         while not rospy.is_shutdown():
             #rospy.loginfo("Looping . . .")
-            
+
             # Check computer's AC power status and set it as a ROS parameter
             if rospy.has_param('/arlobot/monitorACconnection'): # If arlobot_bringup is running
                 checkAC = rospy.get_param('/arlobot/monitorACconnection') # Use parameter from arlobot_bringup to decide if we should monitor AC or not
             else:
                 checkAC = True # Otherwise monitor it if arlobot_bringup isn't running
-                
+
             if checkAC: # Unless we were told not to
                 #upower -i /org/freedesktop/UPower/devices/line_power_AC
                 laptopPowerState = subprocess.Popen(['upower', '-d', '/org/freedesktop/UPower/devices/line_power_AC'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
@@ -109,6 +109,14 @@ class ArlobotSafety(object):
                 # If we've been asked to unplug, then set safeToGo
                 safety_status.safeToGo = True
 
+            # This is a new status meant to separate being safe to MOVE,
+            # from being safe to OPERATE, so that the motors and Propeller
+            # do not shut down every time we need to be still,
+            # and instead we can just be still
+            safety_status.safeToOperate = True
+            # For now it is just tagged "True", but if we find
+            # a reason to do a full shutdown, use this!
+
             # Check for external "STOP" calls:
             # Any external calls will override everything else!
             # This allows any program anywhere to put the word "STOP"
@@ -119,7 +127,7 @@ class ArlobotSafety(object):
                 devnull = open(os.devnull, 'w')
                 if not subprocess.call(["grep", "-R", "STOP", status_dir], stdout=devnull, stderr=devnull):
                     safety_status.safeToGo = False
-            
+
             self._safetyStatusPublisher.publish(safety_status) # Publish safety status
 
             self.r.sleep() # Sleep long enough to maintain the rate set in __init__
