@@ -855,7 +855,7 @@ var subscribeToMetatron_idStatus = function() {
                 $('a.camera1Button').find('span').html('ON');
             } else if (!message.camera1) {
                 if (camera1On === true && message.camera2 === false) {
-                    img.src = "http://" + location.host + "/arloweb/xscreen.png";
+                    img.src = "xscreen.png";
                 }
                 camera1On = false;
                 //$('span#camera1').html("Camera 1 OFF");
@@ -871,7 +871,7 @@ var subscribeToMetatron_idStatus = function() {
                 $('a.camera2Button').find('span').html('ON');
             } else if (!message.camera2) {
                 if (camera2On === true && message.camera1 === false) {
-                    img.src = "http://" + location.host + "/arloweb/xscreen.png";
+                    img.src = "xscreen.png";
                 }
                 camera2On = false;
                 //$('span#camera2').html("Camera 2 OFF");
@@ -882,7 +882,7 @@ var subscribeToMetatron_idStatus = function() {
                 /* Force reload:http://stackoverflow.com/questions/1077041/refresh-image-with-a-new-one-at-the-same-url
                  Not cache friendly, but the throttling deals with that anyway.
                  */
-                img.src = "http://" + location.host + "/arloweb/xscreen.png?" + new Date().getTime();
+                img.src = "xscreen.png?" + new Date().getTime();
             }
         });
     });

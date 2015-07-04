@@ -439,7 +439,7 @@ setInterval(function() {
             console.log('Shutdown Requested via webModel.');
         }
         webserver.behaviorStatusUpdate('Shutdown Requested via webModel.');
-b        killROS(true);
+        killROS(true);
     }
 
 }, 1000);
