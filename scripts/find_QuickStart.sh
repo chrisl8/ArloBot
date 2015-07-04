@@ -6,4 +6,3 @@ then
 echo $i
 fi
 done
-
