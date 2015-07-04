@@ -53,7 +53,8 @@ var quietFile = statusFolder + 'bequiet';
 var stopFile = statusFolder + 'webStopRequested';
 var basementDoorFile = statusFolder + 'room-MainFloorHome';
 var setSemaphoreFiles = function(text) {
-    //TODO: This does NOT create world writable folders. :(
+    //NOTE: This does NOT create world writable folders. :(
+    // But the setup program should have already created it for us anyway.
     mkdirp(statusFolder, 0777, function(err) {
         if (err) {
             res.send("{\"STATUS\": \"ERROR\" }");
