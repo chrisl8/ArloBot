@@ -37,6 +37,14 @@ then
         sleep 1
     done
 fi
+if (pkill tf_echo)
+then
+    while (pgrep tf_echo)
+    do
+        echo "Waiting for tf_echo to close . . ."
+        sleep 1
+    done
+fi
 if (pkill roslaunch)
 then
     while (pgrep roslaunch)

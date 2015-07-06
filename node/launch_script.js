@@ -1,4 +1,3 @@
-var webModel = require('./webModel');
 var spawn = require('child_process').spawn;
 
 function LaunchScript(options) {
@@ -15,6 +14,9 @@ function LaunchScript(options) {
 }
 
 LaunchScript.prototype.start = function() {
+    var webserver = require('./webserver'); // Beware of the circular require!
+    // NOTE: IF you require this at the TOP of this module, it breaks,
+    // basically webserver gets a blank copy of this module
     this.started = true;
     this.hasExited = false;
     var self = this;
@@ -25,7 +27,7 @@ LaunchScript.prototype.start = function() {
     if (this.debugging) {
         console.log(this.name + ' is starting up . . .');
     }
-    webModel.status = this.name + ' is starting up . . .';
+    webserver.scrollingStatusUpdate(this.name + ' is starting up . . .');
     if (this.ROScommand) {
         this.process = spawn('./runROScommand.sh', [this.ROScommand]);
     } else if (this.scriptName) {
@@ -38,18 +40,18 @@ LaunchScript.prototype.start = function() {
             // If they are not too long
             if (data.length < 50) {
                 // Append to 2nd status line
-                webModel.scrollingStatus = data + '<br/>' + webModel.scrollingStatus;
+                webserver.scrollingStatusUpdate(data);
             }
         }
         if (self.successString) {
             if (data.indexOf(self.successString) > -1) {
                 self.startupComplete = true;
-                webModel.status = self.name + ' successfully started.';
+                webserver.scrollingStatusUpdate(self.name + ' successfully started.');
             }
         } else {
             // Assume "success" on any return data!
             self.startupComplete = true;
-            webModel.status = self.name + ' successfully started.';
+            webserver.scrollingStatusUpdate(self.name + ' successfully started.');
         }
         if (self.debugging) {
             process.stdout.write(self.name + ' stdout data:' + data);
@@ -65,10 +67,10 @@ LaunchScript.prototype.start = function() {
         if (self.debugging) {
             console.log(self.name + ' error:' + err);
         }
-        webModel.status = self.name + ' process error: ' + err;
+        webserver.scrollingStatusUpdate(self.name + ' process error: ' + err);
     });
     this.process.on('exit', function(code) {
-        webModel.status = self.name + ' exited with code: ' + code;
+        webserver.scrollingStatusUpdate(self.name + ' exited with code: ' + code);
         self.hasExited = true;
         self.startupComplete = true;
         if (self.debugging) {

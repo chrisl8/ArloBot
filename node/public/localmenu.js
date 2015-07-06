@@ -60,6 +60,7 @@ window.onload = function() {
         mapList: ko.observableArray(['Explore!']),
         */
         selectedMap: ko.observable(),
+        selectedWayPoint: ko.observable(),
         showSaveMap: function() {
             mapNameDialogVisible(true);
         },
@@ -134,10 +135,6 @@ window.onload = function() {
         buttonOne: function() {
             this.buttonOneText('Cat is Dead');
         },
-        buttonTwoText: ko.observable('Button'),
-        buttonTwo: function() {
-            this.buttonTwoText('Please do not push this button again!');
-        },
         buttonThreeText: ko.observable('Button'),
         buttonThree: function() {
             this.buttonThreeText("Now you've done it!");
@@ -157,8 +154,16 @@ window.onload = function() {
         },
         openLogStreamer: function() {
             var logStreamerURL = 'http://' + location.hostname + ':28778/';
-            console.log(logStreamerURL);
             window.open(logStreamerURL, '_blank');
+        },
+        setWayPointText: ko.observable('set WayPoint'),
+        setWayPoint: function() {
+            var wayPoint = prompt("Please enter a name for your waypoint", "Gallefrey");
+            if (wayPoint != null) {
+                socket.emit('setWayPoint', wayPoint);
+            } else {
+                console.log('Canceled.');
+            }
         }
     };
 
@@ -167,6 +172,10 @@ window.onload = function() {
 
     robotModel.selectedMap.subscribe(function(newValue) {
         socket.emit('setMap', newValue);
+    });
+
+    robotModel.selectedWayPoint.subscribe(function(newValue) {
+        socket.emit('gotoWayPoint', newValue);
     });
 
     //var sensor = document.getElementById('sensor');
@@ -209,6 +218,7 @@ window.onload = function() {
 
     socket.on('disconnect', function() {
         webModel.selectedMap('');
+        webModel.selectedWayPoint('');
         webModel.status('Robot web server disconnected.');
     });
 };

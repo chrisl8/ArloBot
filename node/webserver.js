@@ -2,6 +2,10 @@ var webModel = require('./webModel');
 var O = require('observed');
 var webModelWatcher = O(webModel);
 var LaunchScript = require('./launch_script');
+
+var WayPoints = require('./WayPoints.js');
+var wayPointEditor = new WayPoints();
+
 var rosInterface = require('./rosInterface');
 var getMapList = require('./getMapList');
 var fs = require('fs');
@@ -249,11 +253,31 @@ function start() {
                 } else if (webModel.mapList.indexOf(data)) {
                     webModel.autoExplore = false;
                     webModel.mapName = data;
+                    wayPointEditor.updateWayPointList();
+                }
+            }
+        });
+
+        socket.on('gotoWayPoint', function(data) {
+            if (data) {
+                if (webModel.wayPoints.indexOf(data) > -1) {
+                    wayPointEditor.getWayPoint(data, function(response) {
+                        var goToMapPositionProcess = new LaunchScript({
+                            debugging: true,
+                            name: 'GoToWaypoint',
+                            ROScommand: 'unbuffer rosservice call /arlobot_goto/go_to_goal "' + response + '"'
+                        });
+                        goToMapPositionProcess.start();
+                    });
                 }
             }
         });
 
         // LocalMenu button handlers:
+        socket.on('setWayPoint', function(data) {
+            wayPointEditor.createWayPoint(data);
+            setTimeout(wayPointEditor.updateWayPointList, 5000);
+        });
         socket.on('startROS', function() {
             webModel.ROSstart = true;
         });

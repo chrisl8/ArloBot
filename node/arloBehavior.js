@@ -221,6 +221,9 @@ getMapOrExploreRequest.prototype.tick = function(tick) {
     return b3.RUNNING;
 };
 
+// TODO: This needs work or something, the tree needs to expand,
+// Dealing with asking to be unplugged should happen independently
+// of loading a map or asking to explore.
 var UnPlugRobot = b3.Class(b3.Action);
 UnPlugRobot.prototype.name = 'UnPlugRobot';
 UnPlugRobot.prototype.tick = function(tick) {
@@ -230,10 +233,13 @@ UnPlugRobot.prototype.tick = function(tick) {
         if (!arloBot.unplugMeTextSent) {
             textme('Please unplug me!');
             arloBot.unplugMeTextSent = true;
+        } else {
+            return b3.SUCCESS;
         }
     }
     webserver.behaviorStatusUpdate(this.name);
-    return b3.FAILURE;
+    // TODO: For now carry on until we reorganize this.
+    return b3.SUCCESS;
 };
 
 var AutoExplore = b3.Class(b3.Action);

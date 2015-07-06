@@ -21,6 +21,7 @@ module.exports = {
     scrollingStatus: '',
     mapList: ['Explore!'],
     mapName: '',
+    wayPoints: [],
     rosParameters: { // These are the parameters we will send to the web
         ignoreCliffSensors: false, // Use the expected default.
         ignoreProximity: false,
