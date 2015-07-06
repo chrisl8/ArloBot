@@ -63,9 +63,6 @@ class ArlobotExplore(object):
         rospy.set_param("~pause", self._explorer_paused);
         return self._explorer_paused
 
-    def _SetCurrentOdom(self, currentOdom):
-        self.currentOdom = currentOdom
-
     def _set_active_controller(self, status):
         """
         Shut down the motors if the SafeToOperate topic goes false.
@@ -105,6 +102,7 @@ class ArlobotExplore(object):
         rospy.loginfo("Waiting for move_base to come up . . . ")
         self._MoveBaseClient.wait_for_server()
         rospy.loginfo("move_base is UP!")
+
         # Wait for tf_listener to be ready.
         # If you call self.tf_listener too soon it has no data in the listener buffer!
         # http://answers.ros.org/question/164911/move_base-and-extrapolation-errors-into-the-future/
