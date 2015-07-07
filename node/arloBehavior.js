@@ -1,4 +1,5 @@
 var webModel = require('./webModel');
+var webModelFunctions = require('./webModelFunctions');
 var fs = require('fs');
 b3 = {};
 var behavior3js = require('behavior3js');
@@ -11,7 +12,7 @@ var spawn = require('child_process').spawn;
 // system wide "bequiet" requests.
 // The same modele is used by ROS Python scripts.
 var tts = require('./tts');
-var LaunchScript = require('./launch_script');
+var LaunchScript = require('./LaunchScript');
 var textme = require('./textme');
 var rosInterface = require('./rosInterface');
 var webserver = require('./webserver');
@@ -50,22 +51,22 @@ var killROS = function(exitWhenDone) {
     if (!kill_rosHasRun) {
         kill_rosHasRun = true;
         webModel.ROSstart = false;
-        webserver.scrollingStatusUpdate("Running kill_ros.sh . . .");
+        webModelFunctions.scrollingStatusUpdate("Running kill_ros.sh . . .");
         // Logging to console too, because feedback on shutdown is nice.
         console.log("Running kill_ros.sh . . .");
         var shutdownCommand = exec(command);
         shutdownCommand.stdout.on('data', function(data) {
-            webserver.scrollingStatusUpdate('kill_ros: ' + data);
+            webModelFunctions.scrollingStatusUpdate('kill_ros: ' + data);
             console.log('kill_ros:' + data.toString().replace(/[\n\r]/g, ""));
         });
 
         shutdownCommand.stderr.on('data', function(data) {
-            webserver.scrollingStatusUpdate('kill_ros: ' + data);
+            webModelFunctions.scrollingStatusUpdate('kill_ros: ' + data);
             console.log('kill_ros:' + data.toString().replace(/[\n\r]/g, ""));
         });
 
         shutdownCommand.on('close', function(code) {
-            webserver.scrollingStatusUpdate('kill_ros.sh closed with code ' + code);
+            webModelFunctions.scrollingStatusUpdate('kill_ros.sh closed with code ' + code);
             console.log('kill_ros.sh closed with code ' + code);
             if (exitWhenDone) {
                 process.exit();
@@ -75,7 +76,7 @@ var killROS = function(exitWhenDone) {
             }
         });
         shutdownCommand.on('error', function(err) {
-            webserver.scrollingStatusUpdate('kill_ros process error' + err);
+            webModelFunctions.scrollingStatusUpdate('kill_ros process error' + err);
         });
     }
 };
@@ -83,17 +84,17 @@ var killROS = function(exitWhenDone) {
 function exitHandler(options, err) {
     if (options.cleanup) {
         console.log('Process "cleanup" called.');
-        webserver.scrollingStatusUpdate('Process "cleanup" called.');
+        webModelFunctions.scrollingStatusUpdate('Process "cleanup" called.');
     }
     if (err) {
         console.log('Process Error:');
         console.log(err);
         console.log(err.stack);
-        webserver.scrollingStatusUpdate(err.stack);
+        webModelFunctions.scrollingStatusUpdate(err.stack);
     }
     //if (options.exit) process.exit();
     if (options.exit) {
-        webserver.scrollingStatusUpdate('arloBehavior process exit, calling killROS');
+        webModelFunctions.scrollingStatusUpdate('arloBehavior process exit, calling killROS');
         console.log('arloBehavior process exit, calling killROS');
         killROS(true);
     }
@@ -114,22 +115,7 @@ process.on('uncaughtException', exitHandler.bind(null, {
     exit: true
 }));
 
-// Start Webserver
-/*
-// This is a good example of using forever, but we do not need it here.
-var webserver = new(forever.Monitor)('webserver.js', {
-    //max: 3,
-    silent: false,
-    sourceDir: 'webserver/',
-    args: [],
-});
-webserver.on('exit', function() {
-    console.log('Webserver has exited after 10 restarts');
-});
-console.log("Starting web server.");
 webserver.start();
-*/
-var io = webserver.start();
 
 // TODO: Perfect this pattern and replicate to all script starting behaviors.
 var StartROS = b3.Class(b3.Action);
@@ -155,7 +141,7 @@ StartROS.prototype.tick = function(tick) {
                 webModel.status = 'ROS process has closed.';
                 // 4. Log the closure to the console,
                 // because this is significant.
-                webserver.scrollingStatusUpdate(this.name + "Process Closed.");
+                webModelFunctions.scrollingStatusUpdate(this.name + "Process Closed.");
                 // 5. Set any special status flags for this
                 // process. i.e. ROSisRunning sets the start/stop button position
                 webModel.ROSisRunning = false;
@@ -189,18 +175,18 @@ StartROS.prototype.tick = function(tick) {
                 return b3.SUCCESS;
             }
         } else {
-            webserver.behaviorStatusUpdate(this.name + " Starting up . . .");
+            webModelFunctions.behaviorStatusUpdate(this.name + " Starting up . . .");
             return b3.RUNNING;
         }
     } else if (webModel.ROSstart) {
         // IF the process is supposed to start, but wasn't,
         // then run it:
         arloBot.ROSprocess.start();
-        webserver.scrollingStatusUpdate(this.name + " Process starting!");
+        webModelFunctions.scrollingStatusUpdate(this.name + " Process starting!");
         return b3.RUNNING;
     }
     // If the process isn't running and wasn't requested to run:
-    webserver.behaviorStatusUpdate(this.name + ': FAILURE');
+    webModelFunctions.behaviorStatusUpdate(this.name + ': FAILURE');
     return b3.FAILURE;
 };
 
@@ -217,7 +203,7 @@ getMapOrExploreRequest.prototype.tick = function(tick) {
         textme('Where am I?');
         arloBot.whereamiTextSent = true;
     }
-    webserver.behaviorStatusUpdate(this.name);
+    webModelFunctions.behaviorStatusUpdate(this.name);
     return b3.RUNNING;
 };
 
@@ -237,7 +223,7 @@ UnPlugRobot.prototype.tick = function(tick) {
             return b3.SUCCESS;
         }
     }
-    webserver.behaviorStatusUpdate(this.name);
+    webModelFunctions.behaviorStatusUpdate(this.name);
     // TODO: For now carry on until we reorganize this.
     return b3.SUCCESS;
 };
@@ -260,21 +246,21 @@ AutoExplore.prototype.tick = function(tick) {
                 if (arloBot.exploreProcess.hasExited) {
                     webModel.autoExplore = false;
                     arloBot.exploreProcess.started = false;
-                    webserver.behaviorStatusUpdate(this.name + "FAILURE");
+                    webModelFunctions.behaviorStatusUpdate(this.name + "FAILURE");
                     return b3.FAILURE;
                 } else {
                     webModel.status = 'Robot is Exploring!';
-                    webserver.scrollingStatusUpdate('Robot is Exploring!');
+                    webModelFunctions.scrollingStatusUpdate('Robot is Exploring!');
                     return b3.RUNNING;
                 }
             } else {
                 webModel.status = 'Explore process is starting...';
-                webserver.scrollingStatusUpdate('Explore process is starting...');
+                webModelFunctions.scrollingStatusUpdate('Explore process is starting...');
                 return b3.RUNNING;
             }
         } else {
             arloBot.exploreProcess.start();
-            webserver.behaviorStatusUpdate(this.name);
+            webModelFunctions.behaviorStatusUpdate(this.name);
             return b3.RUNNING;
         }
     } else {
@@ -291,7 +277,7 @@ LoadMap.prototype.tick = function(tick) {
     // FIRST: This decides if we run this process or not:
     if (webModel.mapName === '') {
         // This fails if we have no map name.
-        webserver.behaviorStatusUpdate(this.name + ' FAILURE');
+        webModelFunctions.behaviorStatusUpdate(this.name + ' FAILURE');
         return b3.FAILURE;
     } else {
         if (arloBot.loadMapProcess.started) {
@@ -308,7 +294,7 @@ LoadMap.prototype.tick = function(tick) {
                     webModel.status = 'Map process has closed.';
                     // 4. Log the closure to the console,
                     // because this is significant.
-                    webserver.scrollingStatusUpdate(this.name + "Process Closed.");
+                    webModelFunctions.scrollingStatusUpdate(this.name + "Process Closed.");
                     // Leave it 'RUNNING' and
                     // let the next Behavior tick respond as it would,
                     // if this function was never requested.
@@ -321,16 +307,16 @@ LoadMap.prototype.tick = function(tick) {
                     return b3.RUNNING;
                 }
             } else {
-                webserver.behaviorStatusUpdate(this.name + " Starting up . . .");
+                webModelFunctions.behaviorStatusUpdate(this.name + " Starting up . . .");
                 return b3.RUNNING;
             }
         } else {
             // IF the process is supposed to start, but wasn't,
             // then run it:
-            webserver.scrollingStatusUpdate('Map: ' + webModel.mapName);
+            webModelFunctions.scrollingStatusUpdate('Map: ' + webModel.mapName);
             //arloBot.loadMapProcess.scriptArguments = [webModel.mapName];
             arloBot.loadMapProcess.ROScommand = arloBot.loadMapProcess.ROScommand + process.env.HOME + '/.arlobot/rosmaps/' + webModel.mapName + '.yaml';
-            webserver.scrollingStatusUpdate(arloBot.loadMapProcess.ROScommand);
+            webModelFunctions.scrollingStatusUpdate(arloBot.loadMapProcess.ROScommand);
             arloBot.loadMapProcess.start();
             return b3.RUNNING;
         }
@@ -340,7 +326,7 @@ LoadMap.prototype.tick = function(tick) {
 var MyAction2 = b3.Class(b3.Action);
 MyAction2.prototype.name = 'MyAction2';
 MyAction2.prototype.tick = function(tick) {
-    webserver.behaviorStatusUpdate(this.name);
+    webModelFunctions.behaviorStatusUpdate(this.name);
     return b3.FAILURE;
 };
 
@@ -444,7 +430,7 @@ setInterval(function() {
         if (!kill_rosHasRun) {
             console.log('Shutdown Requested via webModel.');
         }
-        webserver.behaviorStatusUpdate('Shutdown Requested via webModel.');
+        webModelFunctions.behaviorStatusUpdate('Shutdown Requested via webModel.');
         killROS(true);
     }
 

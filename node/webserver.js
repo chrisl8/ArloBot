@@ -1,7 +1,7 @@
 var webModel = require('./webModel');
 var O = require('observed');
 var webModelWatcher = O(webModel);
-var LaunchScript = require('./launch_script');
+var LaunchScript = require('./LaunchScript');
 
 var WayPoints = require('./WayPoints.js');
 var wayPointEditor = new WayPoints();
@@ -83,7 +83,7 @@ var setSemaphoreFiles = function(text) {
     });
 };
 
-var readSemaphoreFiles = function(callbackIfChanged) {
+var readSemaphoreFiles = function() {
 
     var checkFileAndSetValue = function(file, value) {
         fs.readFile(file, 'utf8', function(err, data) {
@@ -97,11 +97,6 @@ var readSemaphoreFiles = function(callbackIfChanged) {
                 if (data.indexOf('GO') > -1) webModel[value] = false;
                 // We will consider anything else a 'STOP'
                 else webModel[value] = true;
-            }
-            if (oldValue !== webModel[value]) {
-                if (callbackIfChanged) {
-                    callbackIfChanged();
-                }
             }
         });
     };
@@ -356,19 +351,6 @@ function start() {
             webModel.shutdownRequested = true;
         });
     });
-
-    return io;
 }
 
 exports.start = start;
-
-var scrollingStatusUpdate = function(input) {
-    webModel.scrollingStatus = input + '<br/>' + webModel.scrollingStatus;
-};
-
-var behaviorStatusUpdate = function(input) {
-    webModel.behaviorStatus = input;
-};
-
-exports.scrollingStatusUpdate = scrollingStatusUpdate;
-exports.behaviorStatusUpdate = behaviorStatusUpdate;

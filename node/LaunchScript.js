@@ -1,3 +1,4 @@
+var webModelFunctions = require('./webModelFunctions');
 var spawn = require('child_process').spawn;
 
 function LaunchScript(options) {
@@ -27,7 +28,7 @@ LaunchScript.prototype.start = function() {
     if (this.debugging) {
         console.log(this.name + ' is starting up . . .');
     }
-    webserver.scrollingStatusUpdate(this.name + ' is starting up . . .');
+    webModelFunctions.scrollingStatusUpdate(this.name + ' is starting up . . .');
     if (this.ROScommand) {
         this.process = spawn('./runROScommand.sh', [this.ROScommand]);
     } else if (this.scriptName) {
@@ -35,26 +36,26 @@ LaunchScript.prototype.start = function() {
     }
     this.process.stdout.setEncoding('utf8');
     this.process.stdout.on('data', function(data) {
+        if (self.debugging) {
+            process.stdout.write(self.name + ' stdout data:' + data);
+        }
         if (self.successString && !self.startupComplete) {
             // Report lines before success string found
             // If they are not too long
             if (data.length < 50) {
                 // Append to 2nd status line
-                webserver.scrollingStatusUpdate(data);
+                webModelFunctions.scrollingStatusUpdate(data);
             }
         }
         if (self.successString) {
             if (data.indexOf(self.successString) > -1) {
                 self.startupComplete = true;
-                webserver.scrollingStatusUpdate(self.name + ' successfully started.');
+                webModelFunctions.scrollingStatusUpdate(self.name + ' successfully started.');
             }
         } else {
             // Assume "success" on any return data!
             self.startupComplete = true;
-            webserver.scrollingStatusUpdate(self.name + ' successfully started.');
-        }
-        if (self.debugging) {
-            process.stdout.write(self.name + ' stdout data:' + data);
+            webModelFunctions.scrollingStatusUpdate(self.name + ' successfully started.');
         }
     });
     this.process.stderr.setEncoding('utf8');
@@ -67,10 +68,10 @@ LaunchScript.prototype.start = function() {
         if (self.debugging) {
             console.log(self.name + ' error:' + err);
         }
-        webserver.scrollingStatusUpdate(self.name + ' process error: ' + err);
+        webModelFunctions.scrollingStatusUpdate(self.name + ' process error: ' + err);
     });
     this.process.on('exit', function(code) {
-        webserver.scrollingStatusUpdate(self.name + ' exited with code: ' + code);
+        webModelFunctions.scrollingStatusUpdate(self.name + ' exited with code: ' + code);
         self.hasExited = true;
         self.startupComplete = true;
         if (self.debugging) {
