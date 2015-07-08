@@ -92,6 +92,14 @@ if ! (which catkin_make > /dev/null)
     source /opt/ros/jade/setup.bash
 fi
 
+printf "\n${YELLOW}[Installing additional Ubuntu and ROS Packages for Arlo]${NC}\n"
+printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
+# Notes on what the packages are for:
+# vlc-nox is for listening to rebot's microphone.
+# zbar-tools python-qrtools qtqr for generating and reading QR Codes.
+
+sudo apt install -y vlc-nox zbar-tools python-qrtools qtqr
+
 if ! [ -d ~/catkin_ws/src ]
     then
     printf "\n${YELLOW}[Creating the catkin workspace and testing with catkin_make]${NC}\n"
@@ -164,6 +172,28 @@ if ! [ -d ~/catkin_ws/src/usb_cam ]
 else
     cd ~/catkin_ws/src/usb_cam
     git pull
+fi
+
+if ! [ -f ${HOME}/Desktop/listen2robot.desktop ]
+    then
+    printf "\n${YELLOW}[Creating Desktop Icon to Listen to Robot's Microphone]${NC}\n"
+    echo "[Desktop Entry]" > ${HOME}/Desktop/listen2robot.desktop
+    echo "Encoding=UTF-8" >> ${HOME}/Desktop/listen2robot.desktop
+    echo "Name=Listen 2 Robot" >> ${HOME}/Desktop/listen2robot.desktop
+    echo "GenericName=listen2robot" >> ${HOME}/Desktop/listen2robot.desktop
+    echo "Comment=Listen to robot" >> ${HOME}/Desktop/listen2robot.desktop
+    if (which lxterminal)
+        then
+        echo "Exec=lxterminal --command \"${HOME}/catkin_ws/src/Metatron/scripts/listenToArlobot.sh\"" >> ${HOME}/Desktop/listen2robot.desktop
+    elif (which gnome-terminal)
+        then
+        echo "Exec=gnome-terminal --command \"${HOME}/catkin_ws/src/Metatron/scripts/listenToArlobot.sh\"" >> ${HOME}/Desktop/listen2robot.desktop
+    fi
+    echo "Icon=${HOME}/catkin_ws/src/Metatron/node/public/icons/mstile-70x70.png" >> ${HOME}/Desktop/arlobot.desktop
+    echo "Type=Application" >> ${HOME}/Desktop/listen2robot.desktop
+    echo "Path=${HOME}/catkin_ws/src/Metatron/scripts/" >> ${HOME}/Desktop/listen2robot.desktop
+    echo "Terminal=false" >> ${HOME}/Desktop/listen2robot.desktop
+    chmod +x ${HOME}/Desktop/listen2robot.desktop
 fi
 
 printf "\n${YELLOW}[NOT Building ROS Source files.]${NC}\n"
