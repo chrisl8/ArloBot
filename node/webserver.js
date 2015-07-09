@@ -1,4 +1,5 @@
 var webModel = require('./webModel');
+var webModelFunctions = require('./webModelFunctions');
 var O = require('observed');
 var webModelWatcher = O(webModel);
 var LaunchScript = require('./LaunchScript');
@@ -12,7 +13,6 @@ var fs = require('fs');
 var express = require('express');
 var spawn = require('child_process').spawn;
 var bodyParser = require('body-parser');
-var mkdirp = require('mkdirp');
 var exec = require('child_process').exec;
 var ngrok = require('ngrok');
 
@@ -36,6 +36,7 @@ updateMapList();
 // Load personal settings not included in git repo
 var personalDataFile = process.env.HOME + '/.arlobot/personalDataForBehavior.json';
 var personalData = JSON.parse(fs.readFileSync(personalDataFile, 'utf8'));
+webModel.robotName = personalData.robotName;
 
 var app = express();
 // For json encoded post requests, which I use:
@@ -45,69 +46,11 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-// All of my static web pages are in the public folder
+// All of my "static" web pages are in the public folder
 app.use(express.static(__dirname + '/public'));
 
-// This code places 'semaphore' files into the file system
-// that the ROS Python code and other node apps
-// watch and respond to.
-var personalDataFolder = process.env.HOME + '/.arlobot/';
-var statusFolder = personalDataFolder + 'status/';
-var quietFile = statusFolder + 'bequiet';
-var stopFile = statusFolder + 'webStopRequested';
-var basementDoorFile = statusFolder + 'room-MainFloorHome';
-var setSemaphoreFiles = function(text) {
-    //NOTE: This does NOT create world writable folders. :(
-    // But the setup program should have already created it for us anyway.
-    mkdirp(statusFolder, 0777, function(err) {
-        if (err) {
-            res.send("{\"STATUS\": \"ERROR\" }");
-            console.log("Could not create " + statusFolder);
-        } else {
-            if (text === 'talk') {
-                webModel.beQuiet = false;
-                fs.unlink(quietFile, readSemaphoreFiles);
-            } else if (text === 'beQuiet') {
-                webModel.beQuiet = true;
-                fs.writeFile(quietFile, 'quiet\n');
-            } else if (text === 'go') {
-                webModel.haltRobot = false;
-                fs.unlink(stopFile, readSemaphoreFiles);
-            } else if (text === 'stop') {
-                webModel.haltRobot = true;
-                fs.writeFile(stopFile, 'STOP\n');
-            } else if (text === 'markBasementClosed') {
-                fs.unlink(basementDoorFile, readSemaphoreFiles);
-            }
-        }
-    });
-};
-
-var readSemaphoreFiles = function() {
-
-    var checkFileAndSetValue = function(file, value) {
-        fs.readFile(file, 'utf8', function(err, data) {
-            var oldValue = webModel[value];
-            if (err) webModel[value] = false;
-            else {
-                /* For basement door open,
-                alarm system puts the word 'GO'
-                into the file instead of deleting it.
-                */
-                if (data.indexOf('GO') > -1) webModel[value] = false;
-                // We will consider anything else a 'STOP'
-                else webModel[value] = true;
-            }
-        });
-    };
-
-    checkFileAndSetValue(stopFile, 'haltRobot');
-    checkFileAndSetValue(quietFile, 'beQuiet');
-    checkFileAndSetValue(basementDoorFile, 'basementDoorOpen');
-
-};
-
-readSemaphoreFiles();
+var handleSemaphoreFiles = require('./handleSemaphoreFiles');
+handleSemaphoreFiles.readSemaphoreFiles();
 
 var saveMap = function(newMapName) {
     serverMapProcess = new LaunchScript({
@@ -116,7 +59,7 @@ var saveMap = function(newMapName) {
         ROScommand: 'rosrun map_server map_saver -f ' + mapDir + newMapName,
         scriptArguments: newMapName
     });
-    console.log(serverMapProcess.ROScommand);
+    //console.log(serverMapProcess.ROScommand);
     serverMapProcess.start();
 };
 
@@ -137,10 +80,11 @@ var startLogStreamer = function() {
     logStreamerProcess.on('exit', function(code) {
         // Will catch multiple exit codes I think:
         if (code === 0) {
-            webModel.scrollingStatus = 'Log streamer exited with code 0.<br/>' + webModel.scrollingStatus;
-            //console.log('Log streamer exited with code 0.');
+            webModelFunctions.scrollingStatusUpdate('Log streamer started');
+            webModel.logStreamerRunning = true;
         } else {
             console.log('Log streamer failed with code: ' + code);
+            webModel.logStreamerRunning = false;
         }
     });
     return logStreamerProcess;
@@ -162,6 +106,8 @@ var stopLogStreamer = function() {
     });
     process.on('exit', function(code) {
         //console.log(code);
+        webModelFunctions.scrollingStatusUpdate('Log streamer killed');
+        webModel.logStreamerRunning = false;
     });
     return process;
 };
@@ -173,8 +119,9 @@ currently the primary functions are to force the robot to be
 quiet and to stop it. This is useful for allowing third parties in the
 vicinity of the robot to have some safety and convenience control
 over the robot, since it is not responsive to verbal commands. */
+// TODO: Make this socket.io based, or at least help it update its own buttons!
 app.post('/kioskBackEnd', function(req, res) {
-    if (req.body.PLEASE) setSemaphoreFiles(req.body.PLEASE);
+    if (req.body.PLEASE) handleSemaphoreFiles.setSemaphoreFiles(req.body.PLEASE);
     var response = "{ \"QUIET\": " + webModel.beQuiet + ", \"STOP\": " + webModel.haltRobot + " }";
     res.send(response);
 });
@@ -190,29 +137,11 @@ app.post('/receivemessage', function(req, res) {
     }, 200);
     console.log("Body: " + req.body.Body);
     console.log("From: " + req.body.From);
-    /*
-    I'm not going to use ROS to parse these anymore,
-    I'll parse them in node and act on them in node,
-    or direct ROS directly from node.
-    There is no reason for the text parsing code to be in ROS/Python.
-    if (req.body.Body === 's')
-        var command = './runROSthings.sh ' + req.body.Body + ' ' + req.body.From;
-    var ROScommand = exec(command);
-    ROScommand.stdout.on('data', function(data) {
-        console.log('stdout: ' + data);
-    });
-
-    ROScommand.stderr.on('data', function(data) {
-        console.log('stderr: ' + data);
-    });
-
-    ROScommand.on('close', function(code) {
-        console.log('child process exited with code ' + code);
-    });
-    ROScommand.on('error', function(err) {
-        console.log('child process error' + err);
-    });
-*/
+    webModelFunctions.scrollingStatusUpdate('Twilio:');
+    webModelFunctions.scrollingStatusUpdate(req.body.Body);
+    webModelFunctions.scrollingStatusUpdate('from: ' + req.body.From);
+    // TODO: Take action based in incoming messages!
+    // Probably in the behavior tree somewhere.
 });
 
 function start() {
@@ -279,33 +208,31 @@ function start() {
         socket.on('stopROS', function() {
             webModel.ROSstart = false;
         });
+
         socket.on('haltRobot', function() {
-            webModel.haltRobot = true;
-            setSemaphoreFiles('stop');
+            handleSemaphoreFiles.setSemaphoreFiles('stop');
         });
         socket.on('unHaltRobot', function() {
-            webModel.haltRobot = false;
-            setSemaphoreFiles('go');
+            handleSemaphoreFiles.setSemaphoreFiles('go');
         });
         socket.on('beQuiet', function() {
-            webModel.beQuiet = true;
-            setSemaphoreFiles('beQuiet');
+            handleSemaphoreFiles.setSemaphoreFiles('beQuiet');
         });
         socket.on('talk', function() {
-            webModel.beQuiet = false;
-            setSemaphoreFiles('talk');
+            handleSemaphoreFiles.setSemaphoreFiles('talk');
         });
         socket.on('markBasementClosed', function() {
-            setSemaphoreFiles('markBasementClosed');
-            webModel.basementDoorOpen = false;
+            handleSemaphoreFiles.setSemaphoreFiles('markBasementClosed');
         });
+
         socket.on('pauseAutoExplore', function() {
             webModel.pauseExplore = true;
         });
         socket.on('unPauseAutoExplore', function() {
             webModel.pauseExplore = false;
         });
-        // TODO: This should also affect the ROS safety setting parameter.
+
+        // ROS Parameters
         socket.on('monitorAC', function() {
             rosInterface.setParam('monitorACconnection', true);
         });
@@ -313,7 +240,6 @@ function start() {
             rosInterface.setParam('monitorACconnection', false);
         });
 
-        // ROS Parameters
         socket.on('monitorIR', function() {
             rosInterface.setParam('ignoreIRSensors', false);
         });
@@ -341,11 +267,9 @@ function start() {
         });
         socket.on('startLogStreamer', function() {
             startLogStreamer();
-            webModel.logStreamerRunning = true;
         });
         socket.on('stopLogStreamer', function() {
             stopLogStreamer();
-            webModel.logStreamerRunning = false;
         });
         socket.on('exit', function() {
             webModel.shutdownRequested = true;

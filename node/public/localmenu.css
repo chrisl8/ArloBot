@@ -95,4 +95,8 @@ body {
   height: 124px;
   overflow-y: auto;
   overflow-x: hidden;
+  margin-right: 10px;
+}
+#saveMapForm {
+    margin-bottom: 5px;
 }

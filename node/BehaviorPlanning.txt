@@ -6,7 +6,8 @@ Priority runs the next item if one FAILS,
 otherwise it returns SUCCESS/RUNNING/ERROR of the first task that gives it.
 
 Robot Sequence->
-    Startup Sequence: Tasks that must be done before we move on.
+    Poll Node:
+    Startup Sequence: Tasks that must be done before the robot can function.
     -StartROS Node: Wait for start ROS request = FAILURE
                 Starting = RUNNING
                 ROS Up and running = SUCCESS

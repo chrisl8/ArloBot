@@ -1,11 +1,11 @@
 {
     "title": "A Behavior Tree",
     "description": "",
-    "root": "ca5577d6-3ccd-4496-84ec-180672c13962",
+    "root": "705ad525-ca28-4668-97a2-8568e87c6ac5",
     "display": {
         "camera_x": 444.5,
         "camera_y": 247.5,
-        "camera_z": 1,
+        "camera_z": 0.5,
         "x": 0,
         "y": 0
     },
@@ -17,8 +17,8 @@
             "title": "StartROS",
             "description": "",
             "display": {
-                "x": 336,
-                "y": 48
+                "x": 512,
+                "y": -197.33333333333337
             },
             "parameters": {},
             "properties": {}
@@ -26,20 +26,18 @@
         "ca5577d6-3ccd-4496-84ec-180672c13962": {
             "id": "ca5577d6-3ccd-4496-84ec-180672c13962",
             "name": "Sequence",
-            "title": "Sequence",
-            "description": "",
+            "title": "Startup",
+            "description": "Everything required to startup robot.",
             "display": {
-                "x": 128,
-                "y": 144
+                "x": 304,
+                "y": -101.33333333333337
             },
             "parameters": {},
             "properties": {},
             "children": [
                 "7a6d8234-598c-4315-8c6f-002334f14aa0",
-                "2860749d-6fed-48ef-9483-337cdd66ede6",
-                "bf259898-4236-4667-9b88-ffa161ba1b9e",
-                "c868ee6d-db2f-4798-b6e7-97e0d22d2623",
-                "ba78b85a-6dd3-4ca5-bcca-fcbe48c76d38"
+                "fcbe016a-1fbe-4658-8b62-3d6caa68e217",
+                "bf259898-4236-4667-9b88-ffa161ba1b9e"
             ]
         },
         "bf259898-4236-4667-9b88-ffa161ba1b9e": {
@@ -48,49 +46,11 @@
             "title": "UnPlugRobot",
             "description": "",
             "display": {
-                "x": 336,
-                "y": 176
+                "x": 512,
+                "y": -5.333333333333371
             },
             "parameters": {},
             "properties": {}
-        },
-        "2860749d-6fed-48ef-9483-337cdd66ede6": {
-            "id": "2860749d-6fed-48ef-9483-337cdd66ede6",
-            "name": "getMapOrExploreRequest",
-            "title": "getMapOrExploreRequest",
-            "description": "",
-            "display": {
-                "x": 336,
-                "y": 112
-            },
-            "parameters": {},
-            "properties": {}
-        },
-        "0b22a353-4a84-4a10-86c2-18b6001de7db": {
-            "id": "0b22a353-4a84-4a10-86c2-18b6001de7db",
-            "name": "Sequence",
-            "title": "Sequence",
-            "description": "",
-            "display": {
-                "x": -304,
-                "y": -64
-            },
-            "parameters": {},
-            "properties": {},
-            "children": []
-        },
-        "fabf3f81-c1c7-4af1-a75b-db85c1dfd634": {
-            "id": "fabf3f81-c1c7-4af1-a75b-db85c1dfd634",
-            "name": "Sequence",
-            "title": "Sequence",
-            "description": "",
-            "display": {
-                "x": -320,
-                "y": -64
-            },
-            "parameters": {},
-            "properties": {},
-            "children": []
         },
         "c868ee6d-db2f-4798-b6e7-97e0d22d2623": {
             "id": "c868ee6d-db2f-4798-b6e7-97e0d22d2623",
@@ -98,8 +58,8 @@
             "title": "AutoExplore",
             "description": "",
             "display": {
-                "x": 336,
-                "y": 240
+                "x": 720,
+                "y": -133.33333333333337
             },
             "parameters": {},
             "properties": {}
@@ -110,11 +70,112 @@
             "title": "LoadMap",
             "description": "",
             "display": {
-                "x": 336,
-                "y": 304
+                "x": 720,
+                "y": -69.33333333333337
             },
             "parameters": {},
             "properties": {}
+        },
+        "705ad525-ca28-4668-97a2-8568e87c6ac5": {
+            "id": "705ad525-ca28-4668-97a2-8568e87c6ac5",
+            "name": "Sequence",
+            "title": "Robot",
+            "description": "Root node.",
+            "display": {
+                "x": 96,
+                "y": -80.00000000000003
+            },
+            "parameters": {},
+            "properties": {},
+            "children": [
+                "8b870092-59d7-4a84-885d-1fdfeed1447f",
+                "ca5577d6-3ccd-4496-84ec-180672c13962",
+                "1b0647f1-a68e-4f8f-8415-c26f9b3dc0ea"
+            ]
+        },
+        "8b870092-59d7-4a84-885d-1fdfeed1447f": {
+            "id": "8b870092-59d7-4a84-885d-1fdfeed1447f",
+            "name": "Poll",
+            "title": "Poll",
+            "description": "",
+            "display": {
+                "x": 304,
+                "y": -261.33333333333337
+            },
+            "parameters": {},
+            "properties": {}
+        },
+        "1b0647f1-a68e-4f8f-8415-c26f9b3dc0ea": {
+            "id": "1b0647f1-a68e-4f8f-8415-c26f9b3dc0ea",
+            "name": "Priority",
+            "title": "ToDo",
+            "description": "",
+            "display": {
+                "x": 304,
+                "y": 122.66666666666663
+            },
+            "parameters": {},
+            "properties": {},
+            "children": [
+                "50ef3b43-9e82-4974-84ed-6a158a0cd480",
+                "0ff77ecf-1627-4ea3-82f0-7fc6dee685c2",
+                "3d81cbb8-1a79-41bb-9917-e8ee509edad9"
+            ]
+        },
+        "50ef3b43-9e82-4974-84ed-6a158a0cd480": {
+            "id": "50ef3b43-9e82-4974-84ed-6a158a0cd480",
+            "name": "Priority",
+            "title": "Preemption",
+            "description": "",
+            "display": {
+                "x": 512,
+                "y": 58.66666666666663
+            },
+            "parameters": {},
+            "properties": {},
+            "children": []
+        },
+        "0ff77ecf-1627-4ea3-82f0-7fc6dee685c2": {
+            "id": "0ff77ecf-1627-4ea3-82f0-7fc6dee685c2",
+            "name": "MemPriority",
+            "title": "Jobs",
+            "description": "",
+            "display": {
+                "x": 512,
+                "y": 122.66666666666663
+            },
+            "parameters": {},
+            "properties": {},
+            "children": []
+        },
+        "3d81cbb8-1a79-41bb-9917-e8ee509edad9": {
+            "id": "3d81cbb8-1a79-41bb-9917-e8ee509edad9",
+            "name": "MemPriority",
+            "title": "Idle",
+            "description": "",
+            "display": {
+                "x": 512,
+                "y": 186.66666666666663
+            },
+            "parameters": {},
+            "properties": {},
+            "children": []
+        },
+        "fcbe016a-1fbe-4658-8b62-3d6caa68e217": {
+            "id": "fcbe016a-1fbe-4658-8b62-3d6caa68e217",
+            "name": "Priority",
+            "title": "Priority",
+            "description": "",
+            "display": {
+                "x": 512,
+                "y": -101.33333333333337
+            },
+            "parameters": {},
+            "properties": {},
+            "children": [
+                "c868ee6d-db2f-4798-b6e7-97e0d22d2623",
+                "ba78b85a-6dd3-4ca5-bcca-fcbe48c76d38"
+            ]
         }
     },
     "custom_nodes": [
@@ -139,7 +200,7 @@
             "category": "action"
         },
         {
-            "name": "getMapOrExploreRequest",
+            "name": "Poll",
             "title": "",
             "category": "action"
         }

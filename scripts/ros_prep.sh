@@ -88,11 +88,13 @@ fi
 
 if [ $(jq '.camera0' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
-    rosparam set /camera1 $(${SCRIPTDIR}/find_camera.sh C615)
+    CAMERANAME=$(jq '.camera0name' ${HOME}/.arlobot/personalDataForBehavior.json | tr -d '"')
+    rosparam set /camera1 $(${SCRIPTDIR}/find_camera.sh ${CAMERANAME})
 fi
 if [ $(jq '.camera1' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
-    rosparam set /camera2 $(${SCRIPTDIR}/find_camera.sh HP)
+    CAMERANAME=$(jq '.camera1name' ${HOME}/.arlobot/personalDataForBehavior.json | tr -d '"')
+    rosparam set /camera2 $(${SCRIPTDIR}/find_camera.sh ${CAMERANAME})
 fi
 if [ $(jq '.wait_for_door_confirmation' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
 then

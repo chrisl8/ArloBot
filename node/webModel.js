@@ -3,6 +3,8 @@
 // Just text based or boolean items to digest in the web.
 
 module.exports = {
+    robotName: 'ArloBot',
+    debugging: false,
     ROSstart: false,
     ROSisRunning: false,
     pluggedIn: true, // Assume the most restrictive setting.
@@ -19,6 +21,7 @@ module.exports = {
     behaviorStatus: '',
     scrollingStatus: '',
     mapList: ['Explore!'],
+    QRcode: '',
     mapName: '',
     wayPoints: [],
     rosParameters: { // These are the parameters we will send to the web

@@ -204,7 +204,7 @@ window.onload = function() {
 
     socket.on('webModel', function(data) {
         console.log('.');
-        //console.log(webModel); // For debugging
+        //console.log(webModel); // A lot of data
         ko.mapping.fromJS(data, webModel);
         if (webModel.autoExplore()) {
             webModel.selectedMap('Explore!');

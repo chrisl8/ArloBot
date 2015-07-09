@@ -76,10 +76,11 @@ then
 fi
 if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
+    echo "Stopping XV11"
     ${SCRIPTDIR}/XVLidar.sh stop
 fi
 
-#Turn off all relays
+echo "Turning off all relays"
 ${SCRIPTDIR}/drcontrol.py -d $(${SCRIPTDIR}/drcontrol.py -s) -r all -c off
 
 # I am reconsidering this, perhaps only do it in the ros_prep, IF check_hardware fails?

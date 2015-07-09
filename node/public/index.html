@@ -43,7 +43,7 @@
             Destinations:<select data-bind='options: wayPoints, optionsCaption:"Pick a destination.", value:selectedWayPoint'></select>
           </div>
           <div class="lcars-column u-1-4">
-            <h1 class="right">ArloBot</h1>
+            <h1 class="right" data-bind="text: robotName">ArloBot</h1>
           </div>
         </div>
       </div>
@@ -103,13 +103,6 @@
             </div>
 
             <br/>
-            <div data-bind="visible: autoExplore">
-              <form id='saveMapForm' name='saveMapForm'>
-                <label for="saveMap"></label>
-                <input type="text" name="saveMap" id="saveMap" placeholder="Enter new map name . . ." data-bind="textInput: newMapName"/>
-              </form>
-              <button class="lcars-button radius" data-bind="click:saveMap">Save Map</button>
-            </div>
             <div id="statusScrollBox">
             <span data-bind="html: scrollingStatus"></span>
             </div>
@@ -140,8 +133,15 @@
               </div>
               <label class="toggler switch-on">Ignore</label>
             </div>
-
-            <a href="#" class="lcars-button radius" data-bind="text: buttonOneText, click: buttonOne"></a><br/><br/>
+            <br/>
+            <div data-bind="visible: autoExplore">
+              <form id='saveMapForm' name='saveMapForm'>
+                <label for="saveMap"></label>
+                <input type="text" name="saveMap" id="saveMap" placeholder="Enter new map name . . ." data-bind="textInput: newMapName"/>
+              </form>
+              <button class="lcars-button radius" data-bind="click:saveMap">Save Map</button>
+            </div>
+            <br/>
             <a href="#" class="lcars-button radius" data-bind="text: setWayPointText, click: setWayPoint"></a><br/><br/>
           </div>
           <div class="lcars-column u-1-3">
@@ -155,7 +155,7 @@
       =========================================================== -->
       <div class="lcars-column u-1-8">
         <ul class="lcars-menu right">
-          <li class="lcars-tan-bg"><a data-bind="click: openLogStreamer" style="cursor: pointer;">Log Streamer</a></li>
+          <li class="lcars-tan-bg"><a data-bind="click: openLogStreamer, visible: logStreamerRunning" style="cursor: pointer;">View Log Streamer</a></li>
           <li class="lcars-blue-bg tall large-gap" data-bind="click: startLogStreamer, visible: !logStreamerRunning()" style="cursor: pointer;">Start Log Streamer</li>
           <li class="lcars-blue-bg tall large-gap" data-bind="click: stopLogStreamer, visible: logStreamerRunning" style="cursor: pointer;">Kill Log Streamer</li>
           <li class="lcars-blue-bg"></li>
@@ -197,7 +197,7 @@
       </div>
     </div>
   </div>
-  <div id="test-buttons">
+  <div id="test-buttons" data-bind="visible: debugging">
     <br/>Test buttons.<br/>
     <button data-bind="click: quiet, visible: !beQuiet()">Be Quiet</button>
     <button data-bind="click: talk, visible: beQuiet">Talk</button>

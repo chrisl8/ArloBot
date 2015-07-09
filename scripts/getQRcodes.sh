@@ -1,5 +1,5 @@
 #!/bin/bash
-# This one script will start up the entire robot with web interface!
+# Grab QR codes from webcam
 
 # Grab and save the path to this script
 # http://stackoverflow.com/a/246128
@@ -12,7 +12,13 @@ done
 SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 # echo ${SCRIPTDIR} # For debugging
 
-source ~/.nvm/nvm.sh
-nvm use stable
-cd ${SCRIPTDIR}/node
-node index.js
+if [ $(jq '.useQRcodes' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
+    then
+    if (pgrep -f zbarcam > /dev/null)
+        then
+        exit 1
+    fi
+    CAMERANAME=$(jq '.qrCameraName' ${HOME}/.arlobot/personalDataForBehavior.json | tr -d '"')
+    VIDEODEVICE=$(${SCRIPTDIR}/find_camera.sh ${CAMERANAME})
+    zbarcam -q --raw ${VIDEODEVICE}
+fi
