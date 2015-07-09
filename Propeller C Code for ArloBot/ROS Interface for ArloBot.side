@@ -5,6 +5,6 @@ ROS Interface for ArloBot.c
 >-m32bit-doubles
 >-fno-exceptions
 >-enable_pruning
->defs::-std=c99
+>defs::-std=c99 -I../../../../.arlobot/
 >-lm
 >BOARD::ACTIVITYBOARD

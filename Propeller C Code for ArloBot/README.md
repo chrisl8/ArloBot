@@ -3,6 +3,15 @@ Propeller C Code for ArloBot
 
 This is the code to build in SimpleIDE and download to your ArloBot's Activity Board EEPROM in order to communicate with ROS over the USB serial interface.
 
+## Personal Settings ##
+The files in the folder 'dotfiles' should be in
+~/.arlobot/
+where SimpleIDE will look for them when building "ROS Interface for ArloBot.c"
+
+I suggest NOT editing that file, but always edit the copy in
+~/.arlobot/ so that future git pulls will not damage your
+personal edits to this file.
+
 ## One Version Now ##
 Note, I now have a second Propeller based Quickstart board on my Arlo. All PING and Infrared sensors are on this board. This means I have two versions of the code here.
 * ROS Interface for ArloBot - This will work in all cases.
@@ -37,7 +46,7 @@ To perform the calibration:
 5. Shut off the Activity Board.
 6. Turn on the Activity Board.
 7. Press and release Activity Board's reset button.
-8. Wait a couple seconds. 
+8. Wait a couple seconds.
 9. Turn on motor power and wait for it to try to do something.
 10. Press and release Activity Board's reset again after the HB25s are convinced they are getting servo signals. This last step is required only during calibration because it’s crucial to capture all encoder measurements, from the very start of the program.
 11. Wait for both wheels to go through a series of movements.

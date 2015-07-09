@@ -276,6 +276,27 @@ else
     printf "${LIGHTPURPLE}Please edit this file to customize according to your robot!${NC}\n"
 fi
 
+for i in `ls ${HOME}/catkin_ws/src/ArloBot/Propeller\ C\ Code\ for\ ArloBot/dotfiles/`
+do
+    if [ -e  ${ARLOHOME}/${i} ]
+        then
+        if ! (diff ${HOME}/catkin_ws/src/ArloBot/Propeller\ C\ Code\ for\ ArloBot/dotfiles/${i} ${ARLOHOME}/${i} > /dev/null)
+            then
+            printf "\n${GREEN}The ${RED}${i}${GREEN} file in the repository is different from the one${NC}\n"
+            printf "${GREEN}in your local settings.${NC}\n"
+            printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
+            printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
+            diff ${HOME}/catkin_ws/src/ArloBot/Propeller\ C\ Code\ for\ ArloBot/dotfiles/${i} ${ARLOHOME}/${i}
+            cp -i ${HOME}/catkin_ws/src/ArloBot/Propeller\ C\ Code\ for\ ArloBot/dotfiles/${i} ${ARLOHOME}/
+        fi
+    else
+        printf "\n"
+        cp ${HOME}/catkin_ws/src/ArloBot/Propeller\ C\ Code\ for\ ArloBot/dotfiles/${i} ${ARLOHOME}/
+        printf "${GREEN}A brand new ${RED}${ARLOHOME}/${i}${GREEN} file has been created,${NC}\n"
+        printf "${LIGHTPURPLE}Please edit this file to customize according to your robot!${NC}\n"
+    fi
+done
+
 printf "\n${PURPLE}Anytime you want to update ArloBot code from the web you can run this same script again. It will pull down and compile new code without wiping out custom configs in ~/.arlarbot. I run this script myself almost every day.\n"
 
 printf "\n${YELLOW}-----------------------------------${NC}\n"

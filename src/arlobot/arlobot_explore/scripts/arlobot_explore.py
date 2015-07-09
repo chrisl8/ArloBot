@@ -69,7 +69,7 @@ class ArlobotExplore(object):
         Set unPlugging variable to allow for safe unplug operation.
         """
         self._active_controller = status.data
-        print self._active_controller
+        rospy.loginfo(self._active_controller)
 
     def Stop(self):
         rospy.loginfo("ArlobotExplore is shutting down.")
@@ -186,10 +186,10 @@ class ArlobotExplore(object):
                     # Lets just use the LAST pose and let gmapping deal with the path
                     #print(response.trajectory.poses[-1])
                     rospy.loginfo("Pose Divider = " + str(self._poseDivider))
-                    print len(response.trajectory.poses)
-                    print (len(response.trajectory.poses) - 1) / self._poseDivider
+                    #print len(response.trajectory.poses)
+                    #print (len(response.trajectory.poses) - 1) / self._poseDivider
                     i = response.trajectory.poses[(len(response.trajectory.poses) - 1) / self._poseDivider]
-                    print i
+                    #print i
                     explorePosition = [0,0,0]
                     explorePosition[0] = i.pose.position.x
                     explorePosition[1] = i.pose.position.y

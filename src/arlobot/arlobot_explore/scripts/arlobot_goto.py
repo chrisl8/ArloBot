@@ -77,7 +77,7 @@ class ArlobotGoTo(object):
         Set unPlugging variable to allow for safe unplug operation.
         """
         self._active_controller = status.data
-        print 'Active Controller: ' + self._active_controller
+        rospy.loginfo('Active Controller: ' + self._active_controller)
 
     def _go_to_goal(self, new_goal):
 
@@ -121,8 +121,7 @@ class ArlobotGoTo(object):
 
         goal.target_pose.pose = new_goal.pose;
 
-        print("Populated goal:")
-        print(goal);
+        rospy.loginfo("Populated goal.")
 
         #######################################
         #This is the part that sends the goal!#
@@ -190,12 +189,9 @@ class ArlobotGoTo(object):
                     self._MoveBaseClient.cancel_goal()
 
         #current_odom = self.currentOdom
-        #print("New odom:")
-        #print(current_odom.pose)
         t = self.tf_listener.getLatestCommonTime("/map", "/base_link")
         position, quaternion = self.tf_listener.lookupTransform("/map", "/base_link", t)
-        print "New Position: " + str(position)
-        print "New Orientation: " + str(quaternion)
+        rospy.loginfo("New Position: " + str(position) + " New Orientation: " + str(quaternion))
 
         if result == GoalStatus.SUCCEEDED:
             return(True);
@@ -203,7 +199,7 @@ class ArlobotGoTo(object):
             return(False);
 
     def Stop(self, exception):
-        print(exception);
+        #print(exception);
         rospy.loginfo("Arlobot Goto is shutting down.")
         self._MoveBaseClient.cancel_goals_at_and_before_time(rospy.Time.now())
         # In case the poor thing is still stuck trying to go nowhere!

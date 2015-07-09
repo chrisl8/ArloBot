@@ -1,6 +1,6 @@
 /* ATTENTION! ATTENTION! ATTENTION! ATTENTION! ATTENTION! ATTENTION!
 You MUST edit the settings in
-per_robot_settings.h
+~/.arlobot/per_robot_settings_for_propeller_c_code.h
 based on the physical layout of your robot!
 For each QUESTION:
 UNCOMMENT '#define' lines for any included items,
@@ -17,7 +17,16 @@ Example, My robot has a "Thing1", but not a "Thing2"
 and if you do have the thing, adjust the numbers on the other definition as needed.
 By using the #define lines, code for items you do not have is never seen by the compiler and is never even loaded on the Propeller bard, saving memory. */
 
-#include "per_robot_settings.h"
+#include "per_robot_settings_for_propeller_c_code.h"
+/* If SimpleIDE build fails because the above file is missing,
+open up the "Project Manager", then the "Compiler" tab,
+and fix the path to your ~/.arlobot/ folder
+under Other Compiler Options
+and/or copy the above file from the dotfiles folder
+to your ~/.arlobot folder.
+You could also just move the files in the dotfiles folder into
+the folder with this file, but future "git pull" updates
+will erase your changes.*/
 
 /*
 This is the code to run on a Parallax Propeller based Activity Board
@@ -179,7 +188,8 @@ minDistanceSensor = 0,
 ignoreProximity = 0,
 ignoreCliffSensors = 0,
 ignoreFloorSensors = 0,
-ignoreIRSensors = 0;
+ignoreIRSensors = 0,
+pluggedIn = 0;
 
 void safetyOverride(void *par); // Use a cog to squelch incoming commands and perform safety procedures like halting, backing off, avoiding cliffs, calling for help, etc.
 // This can use proximity sensors to detect obstacles (including people) and cliffs
@@ -216,7 +226,7 @@ int main() {
         dprint(term, "i\t%d\n", personDetected); // Request Robot distancePerCount and trackWidth NOTE: Python code cannot deal with a line with no divider characters on it.
         pause(10); // Give ROS time to respond, but not too much or we bump into other stuff that may be coming in from ROS.
         if (fdserial_rxReady(term) != 0) { // Non blocking check for data in the input buffer
-          const int bufferLength = 61; // A Buffer long enough to hold the longest line ROS may send.
+          const int bufferLength = 65; // A Buffer long enough to hold the longest line ROS may send.
             char buf[bufferLength];
             int count = 0;
             while (count < bufferLength) {
@@ -240,6 +250,10 @@ int main() {
                 ignoreCliffSensors = (int)(strtod(token, &unconverted));
                 token = strtok(NULL, delimiter);
                 ignoreIRSensors = (int)(strtod(token, &unconverted));
+                token = strtok(NULL, delimiter);
+                ignoreFloorSensors = (int)(strtod(token, &unconverted));
+                token = strtok(NULL, delimiter);
+                pluggedIn = (int)(strtod(token, &unconverted));
                 token = strtok(NULL, delimiter);
                 // Set initial location from ROS, in case we want to recover our last location!
                 X = strtod(token, &unconverted);
@@ -322,15 +336,16 @@ int main() {
     // This may or may not improve performance
     // Some of these we want to hold and use later too
     // A Buffer long enough to hold the longest line ROS may send.
-    const int bufferLength = 31;
+    const int bufferLength = 35;
     char buf[bufferLength];
     int count = 0;
     double angularVelocityOffset = 0.0, expectedLeftSpeed = 0.0, expectedRightSpeed = 0.0;
 
     // Listen for drive commands
+    int timeoutCounter = 0;
     while (1) {
 
-        // TODO: Should there should be code here to stop the motors if we go too long with no input from ROS?
+        timeoutCounter++;
 
         if (fdserial_rxReady(term) != 0) { // Non blocking check for data in the input buffer
             count = 0;
@@ -350,7 +365,7 @@ int main() {
                 token = strtok(NULL, delimiter);
                 CommandedAngularVelocity = strtod(token, &unconverted);
                 angularVelocityOffset = CommandedAngularVelocity * (trackWidth * 0.5);
-                // Adding ability to chnage robot geometry in real time.
+                timeoutCounter = 0;
             } else if (buf[0] == 'd') {
                 char *token;
                 token = strtok(buf, delimiter);
@@ -365,13 +380,25 @@ int main() {
                 ignoreCliffSensors = (int)(strtod(token, &unconverted));
                 token = strtok(NULL, delimiter);
                 ignoreIRSensors = (int)(strtod(token, &unconverted));
+                token = strtok(NULL, delimiter);
+                ignoreFloorSensors = (int)(strtod(token, &unconverted));
+                token = strtok(NULL, delimiter);
+                pluggedIn = (int)(strtod(token, &unconverted));
                 #ifdef debugModeOn
-                dprint(term, "GOT D! %d %d %d\n", ignoreProximity, ignoreCliffSensors, ignoreIRSensors); // For Debugging
+                dprint(term, "GOT D! %d %d %d %d %d\n", ignoreProximity, ignoreCliffSensors, ignoreIRSensors, ignoreFloorSensors, pluggedIn); // For Debugging
                 #endif
-                //TODO: Should I break the loop now or let the loop
-                //continue with the previous CommandedVelocity
-                //and CommandedANguarlVelocity variable values?
+                timeoutCounter = 0;
             }
+        }
+
+        if (timeoutCounter > ROStimeout) {
+            CommandedVelocity = 0.0;
+            CommandedAngularVelocity = 0.0;
+            angularVelocityOffset = 0.0;
+            #ifdef debugModeOn
+            dprint(term, "DEBUG: Stopping Robot due to serial timeout.\n");
+            #endif
+            timeoutCounter = ROStimeout; // Prevent runaway integer length
         }
 
         /* Restructuring this so that it updates the drive_speed on EVERY
@@ -521,6 +548,7 @@ void displayTicks(void) {
        It is just too granular and non specific. It would be nice to be able to use the PING (UltraSonic) data
        to deal with mirrors and targets below the Kinect/Xtion, but I'm not sure how practical that is.
        */
+    #ifdef enableOutput
        dprint(term, "o\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t", X, Y, Heading, gyroHeading, V, Omega);
     // Send the PING/IR sensor data as a JSON packet:
        dprint(term, "{");
@@ -539,6 +567,7 @@ void displayTicks(void) {
     }
     #endif
     dprint(term, "}\n");
+    #endif
 
     // Send a regular "status" update to ROS including information that does not need to be refreshed as often as the odometry.
     throttleStatus = throttleStatus + 1;
@@ -556,7 +585,7 @@ void displayTicks(void) {
         throttleStatus = 0;
     }
     #ifdef debugModeOn
-    dprint(term, "DEBUG: %d %d %d\n", ignoreProximity, ignoreCliffSensors, ignoreIRSensors);
+    dprint(term, "DEBUG: %d %d %d %d %d\n", ignoreProximity, ignoreCliffSensors, ignoreIRSensors, ignoreFloorSensors, pluggedIn);
     #endif
 }
 
@@ -1053,7 +1082,8 @@ void pollGyro(void *par) {
                 }
                 Escaping = 0; // Have fun!
             } else {
-                if (pleaseEscape == 1) {
+                if (pleaseEscape == 1 && pluggedIn == 0) {
+                    // If it is plugged in, don't escape!
                     Escaping = 1; // This will stop main thread from driving the motors.
                     /* At this point we are blocked, so it is OK to take over control
                        of the robot (safeToProceed == 0, so the main thread won't do anything),
@@ -1145,7 +1175,11 @@ void pollGyro(void *par) {
                 throttleRamp = 0;
 
         } else {
+            /* All limits and blocks must be cleared if we are going to ignore
+            proximity. Otherwise we get stuck! */
             Escaping = 0;
+            safeToProceed = 1;
+            safeToRecede = 1;
             abd_speedLimit = 100;
             abdR_speedLimit = 100;
         }

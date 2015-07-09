@@ -55,7 +55,7 @@ class PropellerComm(object):
         self._motorsOn = False  # Set to 1 if the motors are on, used with USB Relay Control board
         self._safeToGo = False  # Use arlobot_safety to set this
         self._SafeToOperate = False  # Use arlobot_safety to set this
-        self._acPower = False # Track AC power status internally
+        self._acPower = True # Track AC power status internally
         self._unPlugging = False # Used for when arlobot_safety tells us to "UnPlug"!
         self._wasUnplugging = False # Track previous unplugging status for motor control
         self._SwitchingMotors = False  # Prevent overlapping calls to _switch_motors
@@ -76,6 +76,7 @@ class PropellerComm(object):
         self.ignore_proximity = rospy.get_param("~ignoreProximity", False);
         self.ignore_cliff_sensors = rospy.get_param("~ignoreCliffSensors", False);
         self.ignore_ir_sensors = rospy.get_param("~ignoreIRSensors", False);
+        self.ignore_floor_sensors = rospy.get_param("~ignoreFloorSensors", False);
         self.robotParamChanged = False
 
         # Get motor relay numbers for use later in _HandleUSBRelayStatus if USB Relay is in use:
@@ -232,7 +233,12 @@ class PropellerComm(object):
         self._unPlugging = status.unPlugging
         self._SafeToOperate = status.safeToOperate
         self._safeToGo = status.safeToGo
+
+        old_ac_power = self._acPower
         self._acPower = status.acPower
+        if not old_ac_power == self._acPower:
+            self.robotParamChanged = True
+
         self._laptop_battery_percent = status.laptopBatteryPercent
         if not self._SafeToOperate:
             if self._motorsOn:
@@ -270,7 +276,7 @@ class PropellerComm(object):
 
         # rospy.logwarn(partsCount)
         if parts_count != 8:  # Just discard short/long lines, increment this as lines get longer
-            rospy.logwarn("Short line from Propeller board: " + parts_count)
+            rospy.logwarn("Short line from Propeller board: " + str(parts_count))
             return
 
         x = float(line_parts[1])
@@ -739,23 +745,6 @@ class PropellerComm(object):
             # rospy.logdebug("Handling twist command: " + str(v) + "," + str(omega))
             message = 's,%.3f,%.3f\r' % (v, omega)
             self._write_serial(message)
-            if self.robotParamChanged:
-                if (self.ignore_proximity):
-                    ignore_proximity = 1
-                else:
-                    ignore_proximity = 0
-                if (self.ignore_cliff_sensors):
-                    ignore_cliff_sensors = 1
-                else:
-                    ignore_cliff_sensors = 0
-                if (self.ignore_ir_sensors):
-                    ignore_ir_sensors = 1
-                else:
-                    ignore_ir_sensors = 0
-                # WARNING! If you change this check the buffer length in the Propeller C code!
-                message = 'd,%f,%f,%d,%d,%d\r' % (self.track_width, self.distance_per_count, ignore_proximity, ignore_cliff_sensors, ignore_ir_sensors)
-                self._write_serial(message)
-                self.robotParamChanged = False
         elif self._clear_to_go("to_stop"):
             # WARNING! If you change this check the buffer length in the Propeller C code!
             message = 's,0.0,0.0\r'  # Tell it to be still if it is not safe to operate
@@ -777,8 +766,16 @@ class PropellerComm(object):
                 ignore_ir_sensors = 1
             else:
                 ignore_ir_sensors = 0
+            if (self.ignore_floor_sensors):
+                ignore_floor_sensors = 1
+            else:
+                ignore_floor_sensors = 0
+            if (self._acPower):
+                ac_power = 1
+            else:
+                ac_power = 0
             # WARNING! If you change this check the buffer length in the Propeller C code!
-            message = 'd,%f,%f,%d,%d,%d,%f,%f,%f\r' % (self.track_width, self.distance_per_count, ignore_proximity, ignore_cliff_sensors, ignore_ir_sensors, self.lastX, self.lastY, self.lastHeading)
+            message = 'd,%f,%f,%d,%d,%d,%d,%d,%f,%f,%f\r' % (self.track_width, self.distance_per_count, ignore_proximity, ignore_cliff_sensors, ignore_ir_sensors, ignore_floor_sensors, ac_power, self.lastX, self.lastY, self.lastHeading)
             rospy.logdebug("Sending drive geometry params message: " + message)
             self._write_serial(message)
         else:
@@ -878,26 +875,63 @@ class PropellerComm(object):
                 self._reset_serial_connection()
             if self._unPlugging or self._wasUnplugging:
                 self.UnplugRobot()
+
             old_track_width = self.track_width
             self.track_width = rospy.get_param("~driveGeometry/trackWidth", "0")
             if not old_track_width == self.track_width:
                 self.robotParamChanged = True
+
             old_distance_per_count = self.distance_per_count
             self.distance_per_count = rospy.get_param("~driveGeometry/distancePerCount", "0")
             if not old_distance_per_count == self.distance_per_count:
                 self.robotParamChanged = True
+
             old_ignore_proximity = self.ignore_proximity
             self.ignore_proximity = rospy.get_param("~ignoreProximity", False);
             if not old_ignore_proximity == self.ignore_proximity:
                 self.robotParamChanged = True
+
             old_ignore_cliff_sensors = self.ignore_cliff_sensors
             self.ignore_cliff_sensors = rospy.get_param("~ignoreCliffSensors", False);
             if not old_ignore_cliff_sensors == self.ignore_cliff_sensors:
                 self.robotParamChanged = True
+
             old_ignore_ir_sensors = self.ignore_ir_sensors
             self.ignore_ir_sensors = rospy.get_param("~ignoreIRSensors", False);
             if not old_ignore_ir_sensors == self.ignore_ir_sensors:
                 self.robotParamChanged = True
+
+            old_ignore_floor_sensors = self.ignore_floor_sensors
+            self.ignore_floor_sensors = rospy.get_param("~ignoreFloorSensors", False);
+            if not old_ignore_floor_sensors == self.ignore_floor_sensors:
+                self.robotParamChanged = True
+
+            if self.robotParamChanged:
+                if (self.ignore_proximity):
+                    ignore_proximity = 1
+                else:
+                    ignore_proximity = 0
+                if (self.ignore_cliff_sensors):
+                    ignore_cliff_sensors = 1
+                else:
+                    ignore_cliff_sensors = 0
+                if (self.ignore_ir_sensors):
+                    ignore_ir_sensors = 1
+                else:
+                    ignore_ir_sensors = 0
+                if (self.ignore_floor_sensors):
+                    ignore_floor_sensors = 1
+                else:
+                    ignore_floor_sensors = 0
+                if (self._acPower):
+                    ac_power = 1
+                else:
+                    ac_power = 0
+                # WARNING! If you change this check the buffer length in the Propeller C code!
+                message = 'd,%f,%f,%d,%d,%d,%d,%d\r' % (self.track_width, self.distance_per_count, ignore_proximity, ignore_cliff_sensors, ignore_ir_sensors, ignore_floor_sensors, ac_power)
+                self._write_serial(message)
+                self.robotParamChanged = False
+
             self.r.sleep()
 
     def UnplugRobot(self):

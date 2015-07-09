@@ -192,9 +192,25 @@ If you don't want to do this, just comment this setting out:
 /* END OF QUESTION SECTION!
 That is all, you are ready to attempt to build this code and load it
 onto your Propeller Activity board!
-You should not have to edit any of the code below here to make your robot work.
-
-Of course, you are encouraged to tweak and improve and send me pull requests!
 */
 
+/* Timeout setting. After this period (loops) the robot will stop if it
+has not received anything from ROS */
+#define ROStimeout 1000 // 1000 = about 10 seconds.
+
+/* Enable this to turn on extra debugging information,
+for use with the
+/home/chrisl8/catkin_ws/src/Metatron/scripts/direct2PropSerialTest.sh
+script.
+Do not try to use it with ROS, as the extra output will confuse it. */
+
 //#define debugModeOn
+
+/* You can disable this for use with the
+/home/chrisl8/catkin_ws/src/Metatron/scripts/direct2PropSerialTest.sh
+script in order to disable the normal sensor data lines.
+Sometimes this is helpful to clean up the output for debiggin.
+This MUST be enabled for ROS to work though!
+*/
+
+#define enableOutput // Do NOT comment this out when running ROS!
