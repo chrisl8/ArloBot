@@ -1,5 +1,52 @@
 ##TODO List:##
 
+0. Set up some way to emulate robot for testing?
+http://cs.smith.edu/dftwiki/index.php/PySerial_Simulator
+
+Doorways make it slow down too much,
+this is very obvious during autonomous navigation,
+but it is easily tested with keyboard teleop.
+So fix the speed regulation through doors,
+probably by adjusting how/when/if the angled sensors affect speed limits.
+
+Keyboard teleop is very smooth now!
+Can the joystick and web op be run through a smoother too?
+
+Also, is there a way to have the global "expansion variable" be wide enough for it to
+give wide berths to corners,
+but not cause it to get stuck trying to get through a door?
+0.5 is great for corners, but doors are often blocked,
+0.25 is great for doors, but it cuts off the corners do close it runs over things
+Maybe ask on ROS answers?
+
+Need to be able to turn floor sensors on/off from web page.
+
+Web page ignore AC needs to affect ROS parameter, not just webModel variable,
+in fact the webModel variable should just mirror the ROS param.
+
+0. Is explore pause working?
+
+0a. check other todo list!
+
+0b. Update new behavior!
+
+0c. speech behavior tree.
+
+0d. Upper PING sensors need to be integrated into fake laser data.
+    Not sure if this is going to be the SAME, or if we filter the data?
+        i.e. Do we need to only pass in signals below a certain distance?
+        or above a certain distance?
+    or overlay it, or what?
+        shortest wins?
+        or smarter?
+    This will be a pattern for future adds too.
+    Remember, the planner is 2D essentially, so no need for multiple rows.
+
+0e. Upper front sensor may need to be adjusted so it doesn't see the front of the robot?
+
+0f. Is the obstacle avoidance within the propeller code stopping the robot too fast?
+can it haver a way to slow it to a rapid stop instead of dropping it from 100 to 0 instantly, even if the obstacle wasn't seen in time to use the speed limiting?
+
 0. Play more Minecraft!
 
 1. Move roslibjs functions to their own module

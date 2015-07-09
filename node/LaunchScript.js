@@ -15,9 +15,6 @@ function LaunchScript(options) {
 }
 
 LaunchScript.prototype.start = function() {
-    var webserver = require('./webserver'); // Beware of the circular require!
-    // NOTE: IF you require this at the TOP of this module, it breaks,
-    // basically webserver gets a blank copy of this module
     this.started = true;
     this.hasExited = false;
     var self = this;

@@ -5,7 +5,7 @@
    http://wiki.ros.org/roslibjs/Tutorials/BasicRosFunctionality
 
    IMPLEMENTATION NOTES:
-   This is meant to be called by index.html from the ArloWeb web control page.
+   This is meant to be called by remote-control.html from the ArloWeb web control page.
  */
 
 var connectedToROS = false, // Track my opinion of the connection

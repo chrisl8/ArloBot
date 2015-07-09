@@ -1,5 +1,5 @@
 var webModel = require('./webModel');
-var webserver = require('./webserver');
+var webModelFunctions = require('./webModelFunctions');
 // TODO: If this bug is every fixed:
 // https://github.com/RobotWebTools/roslibjs/issues/160
 // Stop using my fork of roslib.
@@ -51,6 +51,11 @@ var rosParameters = {
             param: null,
             label: 'ignoreIRSensors',
             path: '/arlobot/ignoreIRSensors'
+        },
+        monitorACconnection: {
+            param: null,
+            label: 'monitorACconnection',
+            path: '/arlobot/monitorACconnection'
         }
     };
 
@@ -111,7 +116,7 @@ var pollROS = function() {
     });
 
     ros.on('connection', function() {
-        webserver.scrollingStatusUpdate('ROSLIB Websocket connected.');
+        webModelFunctions.scrollingStatusUpdate('ROSLIB Websocket connected.');
         //connectRequested = true;
         //updateConnectedButton();
         //checkROSServices();
@@ -129,7 +134,7 @@ var pollROS = function() {
 
     ros.on('close', function() {
         //console.log('Connection to websocket server closed.');
-        webserver.scrollingStatusUpdate('ROSLIB Websocket closed');
+        webModelFunctions.scrollingStatusUpdate('ROSLIB Websocket closed');
         connectedToROS = false;
         //updateConnectedButton();
         setTimeout(pollROS, shortDelay);

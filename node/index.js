@@ -94,8 +94,8 @@ function exitHandler(options, err) {
     }
     //if (options.exit) process.exit();
     if (options.exit) {
-        webModelFunctions.scrollingStatusUpdate('arloBehavior process exit, calling killROS');
-        console.log('arloBehavior process exit, calling killROS');
+        webModelFunctions.scrollingStatusUpdate('Main process exit, calling killROS');
+        console.log('Main process exit, calling killROS');
         killROS(true);
     }
 }
@@ -214,7 +214,6 @@ var UnPlugRobot = b3.Class(b3.Action);
 UnPlugRobot.prototype.name = 'UnPlugRobot';
 UnPlugRobot.prototype.tick = function(tick) {
     if (!webModel.pluggedIn) return b3.SUCCESS;
-    if (webModel.ignorePluggedIn) return b3.SUCCESS;
     if (webModel.laptopFullyCharged) {
         if (!arloBot.unplugMeTextSent) {
             textme('Please unplug me!');
@@ -436,13 +435,13 @@ setInterval(function() {
 
 }, 1000);
 
-console.log('Go to: http://' + os.hostname() + ':' + personalData.webServerPort + '/localmenu.html');
+console.log('Go to: http://' + os.hostname() + ':' + personalData.webServerPort + '/');
 
 if (personalData.launchBrowser) {
     var runFirefox = new LaunchScript({
         name: 'FireFox',
         scriptName: '../scripts/runFirefox.sh',
-        scriptArguments: 'http://' + os.hostname() + ':' + personalData.webServerPort + '/localmenu.html'
+        scriptArguments: 'http://' + os.hostname() + ':' + personalData.webServerPort + '/'
     });
     runFirefox.start();
 }

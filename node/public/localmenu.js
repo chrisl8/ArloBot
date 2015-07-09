@@ -150,7 +150,7 @@ window.onload = function() {
             socket.emit('exit');
         },
         remoteControlPage: function() {
-            window.open("/");
+            window.open("remote-control.html");
         },
         openLogStreamer: function() {
             var logStreamerURL = 'http://' + location.hostname + ':28778/';
@@ -191,7 +191,7 @@ window.onload = function() {
             //LCARishButton('button-id', koWatchItem, koOffAction, koOnAction)
             LCARishButton('talk-bequiet-button', webModel.beQuiet, webModel.talk, webModel.quiet);
             LCARishButton('explore-pause-button', webModel.pauseExplore, webModel.unPauseAutoExplore, webModel.pauseAutoExplore);
-            LCARishButton('ignore-pluggedIn-button', webModel.ignorePluggedIn, webModel.monitorAC, webModel.ignoreAC);
+            LCARishButton('ignore-pluggedIn-button', webModel.rosParameters.monitorACconnection, webModel.ignoreAC, webModel.monitorAC);
             LCARishButton('ignore-IR-button', webModel.rosParameters.ignoreIRSensors, webModel.monitorIR, webModel.ignoreIR);
             LCARishButton('ignore-cliff-button', webModel.rosParameters.ignoreCliffSensors, webModel.monitorCliff, webModel.ignoreCliff);
             LCARishButton('ignore-proximity-button', webModel.rosParameters.ignoreProximity, webModel.monitorProximity, webModel.ignoreProximity);

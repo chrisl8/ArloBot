@@ -26,10 +26,10 @@ do
         echo "    \"${HOME}/.ros/log/${logFolder}/${j}\"" >> ${confFile}
     done
 done
-if [ -f /tmp/arloBehavior.log ]
+if [ -f /tmp/robotNodeScript.log ]
     then
 echo "  ]," >> ${confFile}
-    echo "\"behavior-log\": [\"/tmp/arloBehavior.log\"]" >> ${confFile}
+    echo "\"behavior-log\": [\"/tmp/robotNodeScript.log\"]" >> ${confFile}
 else
 echo "  ]" >> ${confFile}
 fi

@@ -6,7 +6,6 @@ module.exports = {
     ROSstart: false,
     ROSisRunning: false,
     pluggedIn: true, // Assume the most restrictive setting.
-    ignorePluggedIn: false,
     autoExplore: false,
     pauseExplore: false,
     beQuiet: false,
@@ -25,6 +24,7 @@ module.exports = {
     rosParameters: { // These are the parameters we will send to the web
         ignoreCliffSensors: false, // Use the expected default.
         ignoreProximity: false,
-        ignoreIRSensors: false
+        ignoreIRSensors: false,
+        monitorACconnection: true
     }
 };

@@ -307,10 +307,10 @@ function start() {
         });
         // TODO: This should also affect the ROS safety setting parameter.
         socket.on('monitorAC', function() {
-            webModel.ignorePluggedIn = false;
+            rosInterface.setParam('monitorACconnection', true);
         });
         socket.on('ignoreAC', function() {
-            webModel.ignorePluggedIn = true;
+            rosInterface.setParam('monitorACconnection', false);
         });
 
         // ROS Parameters

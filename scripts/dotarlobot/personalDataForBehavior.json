@@ -45,5 +45,7 @@
     "script_location": "~/catkin_ws/src/Metatron/scripts",
     "web_folder": "~/catkin_ws/src/Metatron/node/public",
     "webServerPort": 8080,
-    "launchBrowser": true
+    "launchBrowser": true,
+    "_hasBeenEdited": "Set to true once you have put your settings in this file to let the program know that you did it.",
+    "hasBeenEdited": false
 }
