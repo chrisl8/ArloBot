@@ -1,4 +1,5 @@
 {
+    "robotName": "Arlobot",
     "_comment": "I am using a _ instance of each field for comments.",
     "_pushover": "If you use pushover include your tokens here.",
     "pushover": {
@@ -46,6 +47,8 @@
     "web_folder": "~/catkin_ws/src/Metatron/node/public",
     "webServerPort": 8080,
     "launchBrowser": true,
+    "useQRcodes": false,
+    "qrCameraName": "C615",
     "_hasBeenEdited": "Set to true once you have put your settings in this file to let the program know that you did it.",
     "hasBeenEdited": false
 }
