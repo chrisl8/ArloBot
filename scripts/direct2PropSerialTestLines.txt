@@ -1,0 +1,66 @@
+Direct Serial Testing Lines:
+
+Initialize:
+d,0.403000,0.006760,0,0,0,0,0,0.0,0.0,0.0
+
+Settings Order:
+ignoreFloor
+ignoreProximity, ignoreCliffSensors, ignoreIRSensors, ignoreFloorSensors, pluggedIn
+
+ignoreProximity:
+d,0.403000,0.006760,1,0,0,0,0
+
+ignoreCliffSensors:
+d,0.403000,0.006760,0,1,0,0,0
+
+ignoreIRSensors:
+d,0.403000,0.006760,0,0,1,0,0
+
+ignoreFloorSensors:
+d,0.403000,0.006760,0,0,0,1,0
+
+pluggedIn
+d,0.403000,0.006760,0,0,0,0,1
+
+All clear:
+d,0.403000,0.006760,0,0,0,0,0
+
+Drive:
+s,linear velocity in meters/second,angular velocity in radians/second
+s,0.0,0.0
+s,0.1,0.0
+
+Propeller Tests:
+When it is escaping from something (Cliff, Floor, IR, ALL proximity),
+does it stop escaping when told to ignore that item?
+- It is easiest to use the web remote control to test this.
+
+If you send it a "go" command, does it stop if ROS doesn't send any
+commands for a while?
+-
+Slow Forward:
+s,0.100,0.000
+Slow Reverse:
+s,-0.100,0.000
+Slow turn left or right:
+s,0.00,0.50
+s,0.00,-0.50
+
+If I make changes on the web page, do they make it to the robot?
+Watch to make sure changes get to robot:
+chrisl8@ArloBot (master *+) scripts $ rostopic echo serial|grep out
+data: 1928, out: d,0.403000,0.006760,1,0,0,0,1
+data: 2192, out: d,0.403000,0.006760,1,1,0,0,1
+data: 2214, out: d,0.403000,0.006760,1,0,0,0,1
+data: 2225, out: d,0.403000,0.006760,1,0,1,0,1
+data: 2236, out: d,0.403000,0.006760,1,0,0,0,1
+data: 2258, out: d,0.403000,0.006760,0,0,0,0,1
+data: 2346, out: d,0.403000,0.006760,0,0,0,0,0
+data: 2390, out: d,0.403000,0.006760,0,0,0,0,1
+data: 3534, out: d,0.403000,0.006760,0,0,1,0,1
+data: 3545, out: d,0.403000,0.006760,0,0,0,0,1
+data: 3556, out: d,0.403000,0.006760,0,1,0,0,1
+data: 3567, out: d,0.403000,0.006760,0,0,0,0,1
+data: 3578, out: d,0.403000,0.006760,1,0,0,0,1
+data: 3589, out: d,0.403000,0.006760,0,0,0,0,1
+

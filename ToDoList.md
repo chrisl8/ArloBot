@@ -26,8 +26,6 @@ in fact the webModel variable should just mirror the ROS param.
 
 0. Is explore pause working?
 
-0a. check other todo list!
-
 0b. Update new behavior!
 
 0c. speech behavior tree.

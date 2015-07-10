@@ -100,5 +100,6 @@ if [ $(jq '.wait_for_door_confirmation' ${HOME}/.arlobot/personalDataForBehavior
 then
     echo "Open and close the basement door to ensure lockout is working."
     echo STOP > ${HOME}/.arlobot/status/room-MainFloorHome
+    chmod ugo+rw ${HOME}/.arlobot/status/room-MainFloorHome
 fi
 exit 0
