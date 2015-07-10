@@ -90,7 +90,7 @@ o       0.000   0.000   0.000   0.000   0.068   0.000   {"p0":135,"p1":90,"p2":7
 ```
 With the occasional:
 ```
-s       1       0       1       100     10      12      0.05    0.06    0    0
+s       1       1       0       100     10      12      0.05    0.06    0    0
 ```
 You may have fewer "p#" and "i#" instances. Those are the distance readings from your PING an IR sensors. They should change as you move around your robot.
 The "s" line is handy because it tells you about some of the robot's decisions.
@@ -98,9 +98,18 @@ The "s" line is handy because it tells you about some of the robot's decisions.
 1 = True and 0 = False
 
 The meanings of each numbers are:
-```
-safeToProceed, safeToRecede, Escaping, abd_speedLimit, abdR_speedLimit, minDistanceSensor, leftMotorPower, rightMotorPower, cliff, floorO
-```
+
+- Safe to Proceed
+- Safe to Recede
+- Escaping
+- Forward speed limit
+- Reverse speed limit
+- Distance sensor with lowest number
+- Left motor voltage
+- Right motor voltage
+- Cliff detected
+- Floor obstacle detected
+
 If you want to get really fancy you can even send it twist commands from the terminal too! Just remember to turn on the motors first for that to work!
 
 Twist command format:
@@ -122,12 +131,6 @@ Slow turn left or right:
 s,0.00,0.50
 s,0.00,-0.50
 ```
-
-NOTE:
-If you want to force arlobot_bringup to initialize the board even when the laptop
-is plugged in run this after you start it to disable monitoring of AC power:
-rosparam set /arlobot/monitorACconnection False
-That can also be changed on arlobot.xml, but that command is useful for on the fly testing.
 
 ## Basic ROS based usage instructions: ##
 Depending on what you want to do there are different ways to "bring up" the robot with just ROS.<br/>These are the "recipes" that are well tested so far:
