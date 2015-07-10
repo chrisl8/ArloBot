@@ -109,6 +109,20 @@ s,0.0,0.0
 ```
 where the first number is the linear meters per second and the second number is the angular radians per second of a standard ROS "Twist" message.
 
+Slow Forward:
+```
+s,0.100,0.000
+```
+Slow Reverse:
+```
+s,-0.100,0.000
+```
+Slow turn left or right:
+```
+s,0.00,0.50
+s,0.00,-0.50
+```
+
 NOTE:
 If you want to force arlobot_bringup to initialize the board even when the laptop
 is plugged in run this after you start it to disable monitoring of AC power:
