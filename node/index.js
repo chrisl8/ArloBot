@@ -20,6 +20,7 @@ var webserver = require('./webserver');
 var os = require('os');
 var repl = require('repl');
 var handleSemaphoreFiles = require('./handleSemaphoreFiles');
+var getQRcodes = require('./getQRcodes');
 
 var arloTree = new b3.BehaviorTree();
 
@@ -135,6 +136,9 @@ Poll.prototype.tick = function(tick) {
 
     handleSemaphoreFiles.readSemaphoreFiles();
 
+    if (personalData.useQRcodes) {
+        getQRcodes();
+    }
     // TODO: Add getQRcodes here.
     // It can be set to only run if the map isn't known?
     // Or is it useful for other stuff?
@@ -458,10 +462,11 @@ var replServer = repl.start({
 });
 
 var replHelp = function() {
-    console.log('Usage:\nwebModel - List webModel variables\n.exit - Shut down robot and exit.');
+    console.log('Usage:\nwebModel - List webModel variables\npersonalData - List personalData contents\n.exit - Shut down robot and exit.');
 }
 
 replServer.context.webModel = webModel;
+replServer.context.personalData = personalData;
 replServer.context.killROS = killROS;
 replServer.context.help = replHelp;
 replServer.on('exit', function() {
