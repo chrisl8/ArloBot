@@ -318,12 +318,26 @@ LoadMap.prototype.tick = function(tick) {
                     // 4. Log the closure to the console,
                     // because this is significant.
                     webModelFunctions.scrollingStatusUpdate(this.name + "Process Closed.");
+                    // 5. Set any special status flags for this
+                    // process. i.e. ROSisRunning sets the start/stop button position
+                    // NOTHING HERE
+                    // 6. Any special "cleanup" required?
+                    // This command must be OK with being called multiple times.
+                    robotModel.initialPoseSet = false;
                     // Leave it 'RUNNING' and
                     // let the next Behavior tick respond as it would,
                     // if this function was never requested.
                     return b3.RUNNING;
                 } else {
                     // This will repeat on every tick!
+                    if (!robotModel.initialPoseSet) {
+                        // webserver.js will populate webModel.wayPoints,
+                        // when the map is set.
+                        if (webModel.wayPoints.indexOf('initial') > -1) {
+                            robotModel.initialPoseSet = true;
+                            // TODO: Set robot's initial pose based on 'initial' waypoint for map.
+                        }
+                    }
                     webModel.status = 'Map is Loaded.';
                     // Whether we return 'RUNNING' or 'SUCCESS',
                     // is dependent on how this Behavior node works.
