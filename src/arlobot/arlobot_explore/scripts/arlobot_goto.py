@@ -131,7 +131,7 @@ class ArlobotGoTo(object):
         # Sends the goal to the action server.
         result = -1
         resultText = ""
-        timeoutSeconds = 20 # TODO: Should this be sent as part of the call?
+        timeoutSeconds = 60 # TODO: Should this be sent as part of the call?
         if not rospy.is_shutdown():
             self._MoveBaseClient.cancel_goals_at_and_before_time(rospy.Time.now())
             # NOTE: Do not use cancel_all_goals here as it can cancel future goals sometimes!

@@ -1,4 +1,6 @@
 global_costmap:
+   obstacle_layer:
+      enabled:              false
    global_frame: /map
    robot_base_frame: /base_footprint
    update_frequency: 1.0
@@ -9,4 +11,3 @@ global_costmap:
      - {name: static_layer,            type: "costmap_2d::StaticLayer"}
      - {name: obstacle_layer,          type: "costmap_2d::VoxelLayer"}
      - {name: inflation_layer,         type: "costmap_2d::InflationLayer"}
-
