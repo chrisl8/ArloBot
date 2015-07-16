@@ -26,7 +26,14 @@ fi
 # Camera 0
 if [ $(jq '.camera0' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
-    ls /dev/video0 &> /dev/null
+    CAMERANAME=$(jq '.camera0name' ${HOME}/.arlobot/personalDataForBehavior.json | tr -d '"')
+    VIDEODEVICE=$(${SCRIPTDIR}/find_camera.sh ${CAMERANAME})
+    if [ $? -gt 0 ]
+        then
+        echo "Camera 0 missing!"
+        exit 1
+    fi
+    ls ${VIDEODEVICE} &> /dev/null
     if [ $? -gt 0 ]
         then
         echo "Camera 0 missing!"
@@ -37,7 +44,14 @@ fi
 # Camera 1
 if [ $(jq '.camera1' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
-    ls /dev/video1 &> /dev/null
+    CAMERANAME=$(jq '.camera1name' ${HOME}/.arlobot/personalDataForBehavior.json | tr -d '"')
+    VIDEODEVICE=$(${SCRIPTDIR}/find_camera.sh ${CAMERANAME})
+    if [ $? -gt 0 ]
+        then
+        echo "Camera 1 missing!"
+        exit 1
+    fi
+    ls ${VIDEODEVICE} &> /dev/null
     if [ $? -gt 0 ]
         then
         echo "Camera 1 missing!"
