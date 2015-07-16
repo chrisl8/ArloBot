@@ -1,6 +1,7 @@
 var webModel = require('./webModel');
 var webModelFunctions = require('./webModelFunctions');
-// TODO: If this bug is every fixed:
+var robotModel = require('./robotModel');
+// TODO: If this bug is ever fixed:
 // https://github.com/RobotWebTools/roslibjs/issues/160
 // Stop using my fork of roslib.
 var ROSLIB = require('roslib');
@@ -37,27 +38,27 @@ var connectedToROS = false, // Track my opinion of the connection
 // Define a list of ROS Parameters to monitor
 // NOTE: Add an instance to webModel if you want this sent to the web app!
 var rosParameters = {
-        ignoreCliffSensors: {
-            param: null,
-            label: 'ignoreCliffSensors',
-            path: '/arlobot/ignoreCliffSensors'
-        },
-        ignoreProximity: {
-            param: null,
-            label: 'ignoreProximity',
-            path: '/arlobot/ignoreProximity'
-        },
-        ignoreIRSensors: {
-            param: null,
-            label: 'ignoreIRSensors',
-            path: '/arlobot/ignoreIRSensors'
-        },
-        monitorACconnection: {
-            param: null,
-            label: 'monitorACconnection',
-            path: '/arlobot/monitorACconnection'
-        }
-    };
+    ignoreCliffSensors: {
+        param: null,
+        label: 'ignoreCliffSensors',
+        path: '/arlobot/ignoreCliffSensors'
+    },
+    ignoreProximity: {
+        param: null,
+        label: 'ignoreProximity',
+        path: '/arlobot/ignoreProximity'
+    },
+    ignoreIRSensors: {
+        param: null,
+        label: 'ignoreIRSensors',
+        path: '/arlobot/ignoreIRSensors'
+    },
+    monitorACconnection: {
+        param: null,
+        label: 'monitorACconnection',
+        path: '/arlobot/monitorACconnection'
+    }
+};
 
 var talkToROS = function() {
     // If you wanted to dump ALL params:
@@ -66,13 +67,18 @@ var talkToROS = function() {
     //    console.log(params);
     //});
 
+    // Start subscriptions:
+    // Each topic function will do its own checking to see if the topic is live or not.
+    setTimeout(subscribeToActiveStatus, shortDelay); // Start with a slight delay
+
+    // Enumerate parameters to watch
     for (var prop in rosParameters) {
         rosParameters[prop].param = new ROSLIB.Param({
             ros: ros,
             name: rosParameters[prop].path
         });
     }
-
+    // and poll them.
     pollParams();
 };
 
@@ -103,6 +109,54 @@ var setParam = function(paramLabel, value) {
             rosParameters[paramLabel].param.set(value);
         }
     }
+};
+
+var closeDeadROSConnection = function() {
+    'use strict';
+    console.log("Closing dead ROS connection.");
+    if (ros !== undefined) {
+        ros.close();
+    }
+    console.log("CLOSED dead ROS connection!");
+};
+
+var subscribeToActiveStatus = function() {
+    'use strict';
+    // This should serve as a template for all service subscriptions
+    // Make sure we are still connected.
+    // No need to recall myself as a new connect will do that.
+    //if (!connectedToROS) {
+    //    console.log('not connected');
+    //    return;
+    //}
+    // Make sure service exists:
+    var closeDeadConnectionTime;
+    closeDeadConnectionTime = setTimeout(closeDeadROSConnection, longDelay);
+    ros.getTopics(function(result) { // Unfortunately this can stall with no output!
+        clearTimeout(closeDeadConnectionTime);
+        //if (!checkROSService(result.indexOf('/cmd_vel_mux/active'))) {
+        //    console.log('topic dead');
+        //    setTimeout(subscribeToMetatron_idStatus, longDelay);
+        //    // Try again when all topics are up!
+        //    return;
+        //}
+
+        // THIS is where you put the subscription code:
+        var cmd_activeStatus = new ROSLIB.Topic({
+            ros: ros,
+            name: '/cmd_vel_mux/active', // Obtain name by running 'rostopic list'
+            messageType: 'std_msgs/String' // Obtain Type by running 'rostopic info <name>'
+        }); // Obtain message.??? by running 'rosmsg show <messageType>'
+
+        cmd_activeStatus.subscribe(function(message) {
+            //console.log('Command Velocity Topic says: ' + message.data);
+            if (message.data === 'idle') {
+                robotModel.cmdTopicIdle = true;
+            } else {
+                robotModel.cmdTopicIdle = false;
+            }
+        });
+    });
 };
 
 var pollROS = function() {

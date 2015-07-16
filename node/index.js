@@ -486,6 +486,7 @@ var replHelp = function() {
 }
 
 replServer.context.webModel = webModel;
+replServer.context.robotModel = robotModel;
 replServer.context.personalData = personalData;
 replServer.context.killROS = killROS;
 replServer.context.help = replHelp;
