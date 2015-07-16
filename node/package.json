@@ -12,6 +12,7 @@
     "mkdirp": "^0.5.0",
     "ngrok": "^0.1.99",
     "observed": "^1.1.1",
+    "ps-tree": "^1.0.0",
     "pushover-notifications": "^0.2.2",
     "roslib": "https://github.com/chrisl8/roslibjs/tarball/hacked",
     "say": "^0.6.0",

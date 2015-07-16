@@ -136,7 +136,8 @@ Poll.prototype.tick = function(tick) {
 
     handleSemaphoreFiles.readSemaphoreFiles();
 
-    if (personalData.useQRcodes && !robotModel.gettingQRcode && robotModel.cmdTopicIdle) {
+    // TODO: robotModel.cmdTopicIdle is not true until ROS starts, is that what we want?
+    if (personalData.useQRcodes && !robotModel.gettingQRcode && !kill_rosHasRun && robotModel.cmdTopicIdle) {
         // Old school thread control
         // It reduces how often zbarcam is run,
         // and prevents it from getting stuck

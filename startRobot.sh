@@ -12,7 +12,10 @@ done
 SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 # echo ${SCRIPTDIR} # For debugging
 
-source ~/.nvm/nvm.sh
-nvm use stable
-cd ${SCRIPTDIR}/node
-node index.js
+if (${SCRIPTDIR}/scripts/check_hardware.sh)
+    then
+    source ~/.nvm/nvm.sh
+    nvm use stable
+    cd ${SCRIPTDIR}/node
+    node index.js
+fi

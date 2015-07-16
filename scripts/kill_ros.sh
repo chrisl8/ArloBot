@@ -47,7 +47,7 @@ then
 fi
 if (pkill zbarcam)
 then
-    while (pgrep zbarcam)
+    while (pkill zbarcam)
     do
         echo "Waiting for zbarcam to close . . ."
         sleep 1

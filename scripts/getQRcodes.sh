@@ -23,6 +23,15 @@ if [ $(jq '.useQRcodes' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
         done
     fi
     CAMERANAME=$(jq '.qrCameraName' ${HOME}/.arlobot/personalDataForBehavior.json | tr -d '"')
+    if [ -z ${CAMERANAME} ]
+        then
+        exit 1
+    fi
     VIDEODEVICE=$(${SCRIPTDIR}/find_camera.sh ${CAMERANAME})
+    if [ -z ${VIDEODEVICE} ]
+        then
+        exit 1
+
+    fi
     zbarcam -q --raw --nodisplay ${VIDEODEVICE}
 fi

@@ -10,5 +10,5 @@ module.exports = {
     webCamInUse: false,
     gettingQRcode: false,
     initialPoseSet: false,
-    cmdTopicIdle: false
+    cmdTopicIdle: false // TODO: Default false means it will not be "idle" until ROS starts!
 };
