@@ -14,9 +14,13 @@ SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 if [ $(jq '.useQRcodes' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
-    if (pgrep -f zbarcam > /dev/null)
-        then
-        exit 1
+    if (pkill zbarcam)
+    then
+        while (pkill zbarcam)
+        do
+            echo "Waiting for zbarcam to close . . ."
+            sleep 1
+        done
     fi
     CAMERANAME=$(jq '.qrCameraName' ${HOME}/.arlobot/personalDataForBehavior.json | tr -d '"')
     VIDEODEVICE=$(${SCRIPTDIR}/find_camera.sh ${CAMERANAME})

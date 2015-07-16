@@ -2,13 +2,15 @@
 // because I'm not gonna check!
 var spawn = require('child_process').spawn;
 var webModel = require('./webModel');
+var robotModel = require('./robotModel');
 
 module.exports = function() {
     var killProcess;
     var process = spawn('../scripts/getQRcodes.sh');
     var killOnTimeout = setTimeout(function() {
         //console.log('timeout');
-        killProcess = spawn('pkill', ['-f', 'zbarcam']);
+        killProcess = spawn('pkill', ['zbarcam']);
+        robotModel.gettingQRcode = false;
     }, 5000);
     process.stdout.setEncoding('utf8');
     process.stdout.on('data', function(data) {
@@ -25,5 +27,6 @@ module.exports = function() {
     //});
     process.on('exit', function() {
         clearTimeout(killOnTimeout);
+        robotModel.gettingQRcode = false;
     });
 };

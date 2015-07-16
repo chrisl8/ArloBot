@@ -45,6 +45,14 @@ then
         sleep 1
     done
 fi
+if (pkill zbarcam)
+then
+    while (pgrep zbarcam)
+    do
+        echo "Waiting for zbarcam to close . . ."
+        sleep 1
+    done
+fi
 if (pkill roslaunch)
 then
     while (pgrep roslaunch)

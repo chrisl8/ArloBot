@@ -6,5 +6,9 @@ module.exports = {
     whereamiTextSent: false,
     unplugMeTextSent: false,
     fullyCharged: false,
-    pauseExplore: false
+    pauseExplore: false,
+    webCamInUse: false,
+    gettingQRcode: false,
+    initialPoseSet: false,
+    cmdTopicIdle: false
 };

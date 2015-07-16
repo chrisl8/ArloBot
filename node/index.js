@@ -136,13 +136,19 @@ Poll.prototype.tick = function(tick) {
 
     handleSemaphoreFiles.readSemaphoreFiles();
 
-    if (personalData.useQRcodes) {
+    if (personalData.useQRcodes && !robotModel.gettingQRcode && robotModel.cmdTopicIdle) {
+        // Old school thread control
+        // It reduces how often zbarcam is run,
+        // and prevents it from getting stuck
+        robotModel.gettingQRcode = true;
         getQRcodes();
+        // This works because this is a polling loop,
+        // Otherwise it would need to be in a callback,
+        // or Promise
+        if (webModel.mapName === '' && webModel.mapList.indexOf(webModel.QRcode) > -1) {
+            webModel.mapName = webModel.QRcode;
+        }
     }
-    // TODO: Add getQRcodes here.
-    // It can be set to only run if the map isn't known?
-    // Or is it useful for other stuff?
-    // Put non-map name output into the webModel scrollingStatus.
 
     // This node will always return success,
     // although if you want to let some polling requirement
