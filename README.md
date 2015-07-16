@@ -1,5 +1,6 @@
-ArloBot Package for ROS and SO MUCH MORE!
-=========================================
+ArloBot Package for ROS
+=======================
+# and SO MUCH MORE! #
 
 1. This package provides a set of ROS packages for using a [Parallax Arlo Platform](http://www.parallax.com/product/arlo-robotic-platform-system "Parallax") robot to run all of the demonstration projects for the [Robot Operating System (ROS)](http://www.ros.org/ "ROS") based [TurtleBot](http://wiki.ros.org/Robots/TurtleBot "TurtleBot")
 
@@ -14,9 +15,13 @@ ArloBot Package for ROS and SO MUCH MORE!
 Here is a demonstration video of this code on my ArloBot:
 http://youtu.be/7qJaA6K_WPE
 
-## Build a Robot! ##
+# Build a Robot! #
 First you need to build a robot!
 
+## Parts List ##
+The [Parts List](https://github.com/chrisl8/ArloBot/wiki/Parts-List) is now a GitHub Wiki page.
+
+## Building ##
 Check out my blog: [ArloBot Build Index](http://ekpyroticfrood.net/?p=162 "Ekpyrotic Frood Blog")
 
 And also jump on the [Parallax Forums](http://forums.parallax.com/ "Parallax Forums") and start searching and asking questions!
