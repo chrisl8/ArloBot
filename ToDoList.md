@@ -1,32 +1,55 @@
 ##TODO List:##
 
-0. Set up some way to emulate robot for testing?
-http://cs.smith.edu/dftwiki/index.php/PySerial_Simulator
+0. zbarcam is pretty CPU intensive, so it shouldn't run if the robot isn't idle.
 
-Doorways make it slow down too much,
+0. Tweak cost_scaling_factor and inflation_radius of global and local planner
+in order to produce smooth path planning into all expected areas without running
+into corners or doorframes.
+     * Doorways make it slow down too much,
 this is very obvious during autonomous navigation,
 but it is easily tested with keyboard teleop.
 So fix the speed regulation through doors,
 probably by adjusting how/when/if the angled sensors affect speed limits.
-
-Keyboard teleop is very smooth now!
-Can the joystick and web op be run through a smoother too?
-
-Also, is there a way to have the global "expansion variable" be wide enough for it to
+     * Also, is there a way to have the global "expansion variable" be wide enough for it to
 give wide berths to corners,
 but not cause it to get stuck trying to get through a door?
 0.5 is great for corners, but doors are often blocked,
 0.25 is great for doors, but it cuts off the corners do close it runs over things
 Maybe ask on ROS answers?
 
-Need to be able to turn floor sensors on/off from web page.
+0. Add function for robot to spin in a slow circle if it is stuck, based on
+failing navigation attempts from both WayPoints and Auto Explore (harder).
 
-Web page ignore AC needs to affect ROS parameter, not just webModel variable,
-in fact the webModel variable should just mirror the ROS param.
+0. Question: Why doesn't it do a rotate in place when it gets stuck and cannot
+create a plan? I thought that was built in.
 
-0. Is explore pause working?
+0. Consider how to handle timeout on waypoint requests.
 
-0b. Update new behavior!
+0. How to tell when it is "idle" for idle behaviors?
+     * /cmd_vel_mux/active - GOOD
+        * This will say "data: idle" if nothing is driving the robot.
+     * /mobile_base/commands/velocity - GOOD
+        * Should be BLANK/EMPTY unless the robot is moving.
+     * /move_base/status - Good
+        * This is continuous, so look for what you want and see if it repeats X times.
+        * Examples of what is good:
+            * text: Goal reached
+            * Not sure what this does before first goal?
+     * /odom - GOOD
+        * Everything except for seq, secs and nsecs should repeat, so grab X instances and compare for idleness
+     * /serial - GOOD
+        * Continuous, and it should tell you if the motors are still.
+     * Set "switch" to idle on web panel, so it can be turned off or on manually for testing?
+
+0. Keyboard teleop is very smooth now!
+Can the joystick and web op be run through a smoother too?
+
+0. Need to be able to turn floor sensors on/off from web page.
+
+0. Set up some way to emulate robot for testing?
+http://cs.smith.edu/dftwiki/index.php/PySerial_Simulator
+
+0. Is explore pause working, seems inconsistent.
 
 0c. speech behavior tree.
 
@@ -45,37 +68,13 @@ in fact the webModel variable should just mirror the ROS param.
 0f. Is the obstacle avoidance within the propeller code stopping the robot too fast?
 can it haver a way to slow it to a rapid stop instead of dropping it from 100 to 0 instantly, even if the obstacle wasn't seen in time to use the speed limiting?
 
-0. Play more Minecraft!
-
-1. Move roslibjs functions to their own module
-
-2. Create a way for any module to request things from the roslibjs module,
-i.e. webserver needs to be able to change parameters
-
-    a. Implement and test cliff, IR and Proximity ignore switches.
-    b. Test Explore Pause function (seems flaky)
-
-3. Rearrange web pages so that index.html is the localmenu.html and the "ArloWeb" page is a separate html page (possibly called "remote control"?)
-    Be sure to update any scripts or links that point to this stuff, such as in the XWindows startup icon script
-
-    a. Make sure "kiosk" page still works now!
-
-4. Create a script in MetaTron git repo root to start "behavior.sh" in place of the one in the scripts folder, and delete that one,
-again, update scripts.
-
 5. Create a procedure to get and keep a good map of each floor of my house.
     * It will have to be updated periodically
-    * But I need to be able to just pull it up instead of doing an "Explore" ever time and then fussing with it for an hour.
-
-5. Move propeller C code customizations into ~/.arlobot somehow so that updates to the git repo do not have to affect changes to personal settings.
+    * But I need to be able to just pull it up instead of doing an "Explore" every time and then fussing with it for an hour.
 
 6. Move speech from babel-fish python ROS node to a behavior3JS based node module controlled by the node program.
 
-7. Create a system to set "waypoints" in the map from the web interface,
-and to list them in the web interface,
-and to send the robot to them.
-
-8. Interface these things with SMS text messages so that text messages an tell the robot
+8. Interface with SMS text messages so that text messages an tell the robot
 to:
 load a map,
 go to a way-point.
@@ -89,7 +88,9 @@ go to a way-point.
 
 12. Set up robot to unplug itself in the basement (like upstairs).
 
-13. Set up "QR Code" to put on wall in place so robot knows at power on where it is (basement or upstairs) and other locatability (maybe it can go to a spot and verify it finds the right QR code?)
+12. Send "initial" waypoint robot's "initial position" once map is loaded, if such a waypoint exists, so that the robot can automatically be started at the right place on the map.
+
+13. Can a QR code be used to reset the robot's position to a known one?
 
 14. Follow me. Does this have to be an object?
 
