@@ -478,23 +478,59 @@ if (personalData.launchBrowser) {
 }
 
 // REPL server at the console for command line interaction and debugging:
-var replServer = repl.start({
-    prompt: webModel.robotName + " > "
-});
+var net = require("net");
+var REPLconnections = 0;
 
+// TODO: This outputs to the console, even if the REPL is via a socket. :)
 var replHelp = function() {
     console.log('Usage:\nwebModel - List webModel variables\npersonalData - List personalData contents\n.exit - Shut down robot and exit.');
 }
+// TODO: There is no reason we cannot have a local AND remote REPL,
+// but the remote makes using PM2 a possibility.
 
-replServer.context.webModel = webModel;
-replServer.context.robotModel = robotModel;
-replServer.context.personalData = personalData;
-replServer.context.killROS = killROS;
-replServer.context.help = replHelp;
-replServer.on('exit', function() {
+// https://nodejs.org/api/repl.html
+// telnet localhost 5001
+net.createServer(function(socket) {
+    REPLconnections += 1;
+    var replNetwork = repl.start({
+        prompt: webModel.robotName + " > ",
+        input: socket,
+        output: socket
+    }).on('exit', function() {
+        socket.end();
+    }).on('error', function(err) {
+        console.log(err);
+        socket.end();
+    });
+    // TODO: Do we have to have these in here?
+    // can we declare a REPL external to the net.createServer,
+    // and use it in the local and remote REPL?
+    // Or is this how it must be?
+    replNetwork.context.webModel = webModel;
+    replNetwork.context.robotModel = robotModel;
+    replNetwork.context.personalData = personalData;
+    replNetwork.context.killROS = killROS;
+    replNetwork.context.help = replHelp;
+}).listen(5001);
+
+var replConsole = repl.start({
+    prompt: webModel.robotName + " > "
+}).on('exit', function() {
     console.log('Got "exit" event from repl!');
     killROS(true);
+}).on('error', function(err) {
+    console.log(err);
+    socket.end();
 });
+// TODO: Do we have to have these in here?
+// can we declare a REPL external to the net.createServer,
+// and use it in the local and remote REPL?
+// Or is this how it must be?
+replConsole.context.webModel = webModel;
+replConsole.context.robotModel = robotModel;
+replConsole.context.personalData = personalData;
+replConsole.context.killROS = killROS;
+replConsole.context.help = replHelp;
 console.log('Press Enter to get a prompt.');
 console.log('Run \'help()\' for a list of options.');
 console.log('Use Ctrl+d to shut down robot.');
