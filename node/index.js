@@ -1,3 +1,4 @@
+var personalData = require('./personalData');
 var webModel = require('./webModel');
 var webModelFunctions = require('./webModelFunctions');
 var robotModel = require('./robotModel');
@@ -23,10 +24,6 @@ var handleSemaphoreFiles = require('./handleSemaphoreFiles');
 var getQRcodes = require('./getQRcodes');
 
 var arloTree = new b3.BehaviorTree();
-
-// Load personal settings not included in git repo
-var personalDataFile = process.env.HOME + '/.arlobot/personalDataForBehavior.json';
-var personalData = JSON.parse(fs.readFileSync(personalDataFile, 'utf8'));
 
 rosInterface.start();
 

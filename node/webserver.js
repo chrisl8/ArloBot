@@ -1,3 +1,4 @@
+var personalData = require('./personalData');
 var webModel = require('./webModel');
 var webModelFunctions = require('./webModelFunctions');
 var O = require('observed');
@@ -33,9 +34,6 @@ var updateMapList = function() {
 
 updateMapList();
 
-// Load personal settings not included in git repo
-var personalDataFile = process.env.HOME + '/.arlobot/personalDataForBehavior.json';
-var personalData = JSON.parse(fs.readFileSync(personalDataFile, 'utf8'));
 webModel.robotName = personalData.robotName;
 
 var app = express();

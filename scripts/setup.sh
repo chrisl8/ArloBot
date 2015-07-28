@@ -120,26 +120,34 @@ fi
 
 ARLOHOME=${HOME}/.arlobot
 
-for i in `ls ${SCRIPTDIR}/dotarlobot/`
-do
-    if [ -e  ${ARLOHOME}/${i} ]
+if [ -e ${ARLOHOME}/personalDataForBehavior.json ]
+    then
+    ${SCRIPTDIR}/../node/personalData.js
+else
+    printf "\n"
+    cp ${SCRIPTDIR}/dotarlobot/personalDataForBehavior.json ${ARLOHOME}/
+    printf "${GREEN}A brand new ${RED}~/.arlobot/personalDataForBehavior.json${GREEN} file has been created,${NC}\n"
+    printf "${LIGHTPURPLE}Please edit this file to customize according to your robot!${NC}\n"
+fi
+
+if [ -e ${ARLOHOME}/metatron_private_settings.yaml ]
+    then
+    if ! (diff ${SCRIPTDIR}/dotarlobot/metatron_private_settings.yaml ${ARLOHOME}/metatron_private_settings.yaml)
         then
-        if ! (diff ${SCRIPTDIR}/dotarlobot/${i} ${ARLOHOME}/${i} > /dev/null)
-            then
-            printf "\n${GREEN}The ${RED}${i}${GREEN} file in the repository is different from the one${NC}\n"
-            printf "${GREEN}in your local settings.${NC}\n"
-            printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
-            printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
-            diff ${SCRIPTDIR}/dotarlobot/${i} ${ARLOHOME}/${i}
-            cp -i ${SCRIPTDIR}/dotarlobot/${i} ${ARLOHOME}/
-        fi
-    else
+        printf "\n${GREEN}The metatron_private_settings.yaml file in the repository is different from the one${NC}\n"
+        printf "${GREEN}in your local settings.${NC}\n"
+        printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
+        printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
+        diff ${SCRIPTDIR}/dotarlobot/metatron_private_settings.yaml ${ARLOHOME}/metatron_private_settings.yaml
+        cp -i ${SCRIPTDIR}/dotarlobot/metatron_private_settings.yaml ${ARLOHOME}/
         printf "\n"
-        cp ${SCRIPTDIR}/dotarlobot/${i} ${ARLOHOME}/
-        printf "${GREEN}A brand new ${RED}${ARLOHOME}/${i}${GREEN} file has been created,${NC}\n"
-        printf "${LIGHTPURPLE}Please edit this file to customize according to your robot!${NC}\n"
     fi
-done
+else
+    printf "\n"
+    cp ${SCRIPTDIR}/dotarlobot/metatron_private_settings.yaml ${ARLOHOME}/
+    printf "${GREEN}A brand new ${RED}~/.arlobot/metatron_private_settings.yaml${GREEN} file has been created,${NC}\n"
+    printf "${LIGHTPURPLE}Please edit this file to customize according to your robot!${NC}\n"
+fi
 
 if [ ! -d ${ARLOHOME}/rosmaps ]
     then
