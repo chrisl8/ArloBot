@@ -394,7 +394,7 @@ var arloNodeData = JSON.parse(fs.readFileSync('arloTreeData.json', 'utf8'));
 //'LaptopBatteryCharged': LaptopBatteryCharged,
 //'RobotIsUnplugged': RobotIsUnplugged
 //};
-// but I'm uisng eval to automate the build here:
+// but I'm using eval to automate the build here:
 var customNodeNames = {};
 
 function parseCustomNodes(element, index, array) {
