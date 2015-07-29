@@ -36,31 +36,31 @@ describe('Suite of unit tests for webserver', function() {
             'force new connection': true
         });
         socket.on('connect', function() {
-            console.log('worked...');
+            //console.log('worked...');
             done();
         });
         socket.on('event', function(data) {
-            console.log(data);
+            //console.log(data);
         });
         socket.on('startup', function(data) {
-            console.log('"startup" received over socket.');
+            //console.log('"startup" received over socket.');
         });
         socket.on('webModel', function(data) {
-            console.log('"webModel" received over socket.');
+            //console.log('"webModel" received over socket.');
         });
         socket.on('disconnect', function() {
-            console.log('disconnected...');
+            //console.log('disconnected...');
         });
     });
 
     afterEach(function(done) {
         // Cleanup
         if (socket.connected) {
-            console.log('disconnecting...');
+            //console.log('disconnecting...');
             socket.disconnect();
         } else {
             // There will not be a connection unless you have done() in beforeEach, socket.on('connect'...)
-            console.log('no connection to break...');
+            //console.log('no connection to break...');
         }
         done();
     });
