@@ -189,11 +189,33 @@ if ! [ -f ${HOME}/Desktop/listen2robot.desktop ]
         then
         echo "Exec=gnome-terminal --command \"${HOME}/catkin_ws/src/Metatron/scripts/listenToArlobot.sh\"" >> ${HOME}/Desktop/listen2robot.desktop
     fi
-    echo "Icon=${HOME}/catkin_ws/src/Metatron/node/public/icons/mstile-70x70.png" >> ${HOME}/Desktop/arlobot.desktop
+    echo "Icon=${HOME}/catkin_ws/src/Metatron/node/public/icons/mstile-70x70.png" >> ${HOME}/Desktop/listen2robot.desktop
     echo "Type=Application" >> ${HOME}/Desktop/listen2robot.desktop
     echo "Path=${HOME}/catkin_ws/src/Metatron/scripts/" >> ${HOME}/Desktop/listen2robot.desktop
     echo "Terminal=false" >> ${HOME}/Desktop/listen2robot.desktop
     chmod +x ${HOME}/Desktop/listen2robot.desktop
+fi
+
+if ! [ -f ${HOME}/Desktop/RVIZ.desktop ]
+    then
+    printf "\n${YELLOW}[Creating Desktop Icon to run RVIZ]${NC}\n"
+    echo "[Desktop Entry]" > ${HOME}/Desktop/RVIZ.desktop
+    echo "Encoding=UTF-8" >> ${HOME}/Desktop/RVIZ.desktop
+    echo "Name=RVIZ" >> ${HOME}/Desktop/RVIZ.desktop
+    echo "GenericName=RVIZ" >> ${HOME}/Desktop/RVIZ.desktop
+    echo "Comment=RVIZ" >> ${HOME}/Desktop/RVIZ.desktop
+    if (which lxterminal)
+        then
+        echo "Exec=lxterminal --command \"bash -ci ${HOME}/catkin_ws/src/Metatron/scripts/view-navigation.sh\"" >> ${HOME}/Desktop/RVIZ.desktop
+    elif (which gnome-terminal)
+        then
+        echo "Exec=gnome-terminal --command \"bash -ci ${HOME}/catkin_ws/src/Metatron/scripts/view-navigation.sh\"" >> ${HOME}/Desktop/RVIZ.desktop
+    fi
+    echo "Icon=${HOME}/catkin_ws/src/Metatron/node/public/icons/mstile-70x70.png" >> ${HOME}/Desktop/RVIZ.desktop
+    echo "Type=Application" >> ${HOME}/Desktop/RVIZ.desktop
+    echo "Path=${HOME}/catkin_ws/src/Metatron/scripts/" >> ${HOME}/Desktop/RVIZ.desktop
+    echo "Terminal=false" >> ${HOME}/Desktop/RVIZ.desktop
+    chmod +x ${HOME}/Desktop/RVIZ.desktop
 fi
 
 printf "\n${YELLOW}[NOT Building ROS Source files.]${NC}\n"
