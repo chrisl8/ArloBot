@@ -110,7 +110,7 @@ class ArlobotSafety(object):
                 safety_status.safeToGo = True
 
             # This is a new status meant to separate being safe to MOVE,
-            # from being safe to OPERATE, so that the motors and Propeller
+            # from being safe to OPERATE, so that the motors and Activity Board
             # do not shut down every time we need to be still,
             # and instead we can just be still
             safety_status.safeToOperate = True
@@ -120,7 +120,7 @@ class ArlobotSafety(object):
             # Check for external "STOP" calls:
             # Any external calls will override everything else!
             # This allows any program anywhere to put the word "STOP"
-            # Into a file in /var/arloStatus/ and stop the robot.
+            # into a file in ~/.arlobot/status and stop the robot.
             # IF the folder exists of course.
             status_dir = os.path.expanduser("~/.arlobot/status")
             if os.path.isdir(status_dir):
