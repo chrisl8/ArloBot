@@ -1,11 +1,16 @@
 ##TODO List:##
 
-0. Why doesn't RVIZ shortcut work?
+0. Test RVIZ shortcut.
+
+0. Unplug itself if it knows it is on an "unplugable" map,
+based on setting and QR code.
+
+0. Test and move PING, RESET and STAYCLOSE from node to public.
 
 0. Robot should localize itself (2D pose estimate) based on a certain "waypoint" in the list,
 if it exists. (i.e. It should locate itself in the basement as soon as it is loaded.)
 
-0. IS IT DONE? zbarcam is pretty CPU intensive, so it shouldn't run if the robot isn't idle.
+0. Test: zbarcam is pretty CPU intensive, so it shouldn't run if the robot isn't idle.
 
 0. Tweak cost_scaling_factor and inflation_radius of global and local planner
 in order to produce smooth path planning into all expected areas without running
