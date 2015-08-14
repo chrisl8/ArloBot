@@ -121,7 +121,7 @@ else
     cd ~/catkin_ws/src/hector_slam
     git pull
 fi
-
+cd ~/catkin_ws/src
 if ! [ -d ~/catkin_ws/src/hector_navigation ]
     then
     git clone https://github.com/chrisl8/hector_navigation.git
@@ -129,7 +129,7 @@ else
     cd ~/catkin_ws/src/hector_navigation
     git pull
 fi
-
+cd ~/catkin_ws/src
 if ! [ -d ~/catkin_ws/src/ArloBot ]
     then
     git clone https://github.com/chrisl8/ArloBot.git
@@ -137,7 +137,7 @@ else
     cd ~/catkin_ws/src/ArloBot
     git pull
 fi
-
+cd ~/catkin_ws/src
 # Optionally:
 if ! [ -d ~/catkin_ws/src/Metatron ]
     then
@@ -146,7 +146,7 @@ else
     cd ~/catkin_ws/src/Metatron
     git pull
 fi
-
+cd ~/catkin_ws/src
 # If you have an XV-11 "Neato" Scanner
 if ! [ -d ~/catkin_ws/src/xv_11_laser_driver ]
     then
@@ -155,7 +155,7 @@ else
     cd ~/catkin_ws/src/xv_11_laser_driver
     git pull
 fi
-
+cd ~/catkin_ws/src
 # If you have the excellent ROS by Example book now is a good time to clone the code for following along in the book:
 if ! [ -d ~/catkin_ws/src/rbx1 ]
     then
@@ -164,7 +164,7 @@ else
     cd ~/catkin_ws/src/rbx1
     git pull
 fi
-
+cd ~/catkin_ws/src
 # If you want to use the USB Camera code from the ROS by Example book:
 if ! [ -d ~/catkin_ws/src/usb_cam ]
     then
@@ -173,7 +173,7 @@ else
     cd ~/catkin_ws/src/usb_cam
     git pull
 fi
-
+cd ~/catkin_ws/src
 if ! [ -f ${HOME}/Desktop/listen2robot.desktop ]
     then
     printf "\n${YELLOW}[Creating Desktop Icon to Listen to Robot's Microphone]${NC}\n"

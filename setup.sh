@@ -206,7 +206,7 @@ else
     cd ~/catkin_ws/src/usb_cam
     git pull
 fi
-
+cd ~/catkin_ws/src
 printf "\n${YELLOW}[(Re)Building ROS Source files.]${NC}\n"
 cd ~/catkin_ws
 catkin_make
