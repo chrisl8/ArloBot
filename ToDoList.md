@@ -12,6 +12,14 @@ if it exists. (i.e. It should locate itself in the basement as soon as it is loa
 
 0. Test: zbarcam is pretty CPU intensive, so it shouldn't run if the robot isn't idle.
 
+0. Next, unplug yourself!
+
+0. When idle proceed to random locations from waypoint list.
+
+0. Create speech tree and give text for locations.
+
+0. Go to certain waypoints based on input such as motion cameras and door alarms.
+
 0. Tweak cost_scaling_factor and inflation_radius of global and local planner
 in order to produce smooth path planning into all expected areas without running
 into corners or doorframes.
