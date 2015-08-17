@@ -34,8 +34,6 @@ var updateMapList = function() {
 
 updateMapList();
 
-webModel.robotName = personalData.robotName;
-
 var app = express();
 // For json encoded post requests, which I use:
 app.use(bodyParser.json());
@@ -138,8 +136,15 @@ app.post('/receivemessage', function(req, res) {
     webModelFunctions.scrollingStatusUpdate('Twilio:');
     webModelFunctions.scrollingStatusUpdate(req.body.Body);
     webModelFunctions.scrollingStatusUpdate('from: ' + req.body.From);
+    // Make sure it is from ME! ;)
+    if (req.body.From === '+13162087309') {
+        if (req.body.Body.toLowerCase().indexOf('unplug') > -1) {
+            webModel.unplugYourself = true;
+        }
+    }
     // TODO: Take action based in incoming messages!
     // Probably in the behavior tree somewhere.
+    // And/or pass some to speech/response system.
 });
 
 function start() {
@@ -219,8 +224,8 @@ function start() {
         socket.on('talk', function() {
             handleSemaphoreFiles.setSemaphoreFiles('talk');
         });
-        socket.on('markBasementClosed', function() {
-            handleSemaphoreFiles.setSemaphoreFiles('markBasementClosed');
+        socket.on('markDoorsClosed', function() {
+            handleSemaphoreFiles.setSemaphoreFiles('markDoorsClosed');
         });
 
         socket.on('pauseAutoExplore', function() {

@@ -67,6 +67,15 @@ fi
 
 chmod 777 ${HOME}/.arlobot/status/ &> /dev/null
 
+if [ ! -d ${HOME}/.arlobot/status/doors/ ]
+then
+    mkdir ${HOME}/.arlobot/status/doors/
+fi
+
+chmod 777 ${HOME}/.arlobot/status/doors/ &> /dev/null
+
+rosparam set /arlobot/mapname empty
+
 if [ $(jq '.hasActivityBoard' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
     rosparam set /arlobot/port $(${SCRIPTDIR}/find_ActivityBoard.sh)
@@ -98,8 +107,11 @@ if [ $(jq '.camera1' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
 fi
 if [ $(jq '.wait_for_door_confirmation' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
 then
-    echo "Open and close the basement door to ensure lockout is working."
-    echo STOP > ${HOME}/.arlobot/status/room-MainFloorHome
-    chmod ugo+rw ${HOME}/.arlobot/status/room-MainFloorHome
+    echo "Open and close each door to ensure lockout is working."
+    for i in $(jq -r '.door_list[]' ${HOME}/.arlobot/personalDataForBehavior.json)
+    do
+        touch ${HOME}/.arlobot/status/doors/$i
+    done
+    chmod ugo+rw ${HOME}/.arlobot/status/doors/*
 fi
 exit 0

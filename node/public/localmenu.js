@@ -122,8 +122,8 @@ window.onload = function() {
             socket.emit('saveMap', webModel.newMapName());
         },
         //TODO: This doesn't update live. webserver.sh needs to update this live somehow.
-        markBasementClosed: function() {
-            socket.emit('markBasementClosed');
+        markDoorsClosed: function() {
+            socket.emit('markDoorsClosed');
         },
         startLogStreamer: function() {
             socket.emit('startLogStreamer');

@@ -8,8 +8,11 @@ var mkdirp = require('mkdirp');
 var personalDataFolder = process.env.HOME + '/.arlobot/';
 var statusFolder = personalDataFolder + 'status/';
 var quietFile = statusFolder + 'bequiet';
-var stopFile = statusFolder + 'webStopRequested';
-var basementDoorFile = statusFolder + 'room-MainFloorHome';
+var stopFile = statusFolder + 'STOP';
+var doorFileFolder = statusFolder + '/doors';
+// Note this will only work if we do not KNOW what map we are on.
+var doorFile = statusFolder + '/doors/unknown-door';
+
 var setSemaphoreFiles = function(text) {
     //NOTE: This does NOT create world writable folders. :(
     // But the setup program should have already created it for us anyway.
@@ -30,8 +33,19 @@ var setSemaphoreFiles = function(text) {
             } else if (text === 'stop') {
                 webModel.haltRobot = true;
                 fs.writeFile(stopFile, 'STOP\n');
-            } else if (text === 'markBasementClosed') {
-                fs.unlink(basementDoorFile, readSemaphoreFiles);
+            } else if (text === 'markDoorsClosed') {
+                // Wipe out ALL door files if asked!
+                // The "right" way is to test the doors,
+                // but that will leave files that will prevent
+                // exploring, and will keep the PINK warning
+                // button on even if robot will go.
+                fs.readdir(doorFileFolder, function(err, files) {
+                    files.forEach(function(file) {
+                        fs.unlink(doorFileFolder + '/' + file, readSemaphoreFiles);
+                    });
+                });
+            } else if (text === 'markDoorsOpen') {
+                fs.writeFile(doorFile, 'STOP\n');
             }
         }
     });
@@ -41,24 +55,31 @@ var readSemaphoreFiles = function() {
 
     var checkFileAndSetValue = function(file, value) {
         fs.readFile(file, 'utf8', function(err, data) {
-            var oldValue = webModel[value];
             if (err) webModel[value] = false;
-            else {
-                /* For basement door open,
-                alarm system puts the word 'GO'
-                into the file instead of deleting it.
-                */
-                if (data.indexOf('GO') > -1) webModel[value] = false;
-                // We will consider anything else a 'STOP'
-                else webModel[value] = true;
-            }
+            else webModel[value] = true;
         });
     };
 
     checkFileAndSetValue(stopFile, 'haltRobot');
     checkFileAndSetValue(quietFile, 'beQuiet');
-    checkFileAndSetValue(basementDoorFile, 'basementDoorOpen');
 
+    // Check door files
+    // TODO: How can we tell if the folder only has files
+    // in it for the wrong map?
+    fs.readdir(doorFileFolder, function(err, files) {
+        var newValue;
+        if (err) {
+            console.log('Door folder problem: ' + err);
+            // True on error for safety.
+            webModel.doorsOpen = true;
+        } else {
+            if (files.length > 0) {
+                webModel.doorsOpen = true;
+            } else {
+                webModel.doorsOpen = false;
+            }
+        }
+    });
 };
 
 exports.setSemaphoreFiles = setSemaphoreFiles;

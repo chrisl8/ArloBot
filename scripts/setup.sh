@@ -165,6 +165,12 @@ if [ ! -d ${ARLOHOME}/status ]
 fi
 chmod -R 777 ${ARLOHOME}/status
 
+if [ ! -d ${ARLOHOME}/status/doors ]
+    then
+    mkdir ${ARLOHOME}/status/doors
+fi
+chmod -R 777 ${ARLOHOME}/status/doors
+
 if ! [ -f /etc/udev/rules.d/99-libftdi.rules ]
     then
     printf "\n${YELLOW}[Adding required sudo rule to reset USB ports.]${NC}\n"

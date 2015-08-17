@@ -1,13 +1,11 @@
 ##TODO List:##
 
-0. Why doesn't RVIZ shortcut work?
+0. Still doesn't move if there are files in doors even if they do not correlate to a map.
 
-0. Robot should localize itself (2D pose estimate) based on a certain "waypoint" in the list,
-if it exists. (i.e. It should locate itself in the basement as soon as it is loaded.)
+0. It should back out a little more after it is finished unplugging maybe?
+    Or will the proximity sensors kind of push it back for us?
 
-0. zbarcam is pretty CPU intensive, so it shouldn't run if the robot isn't idle.
-
-0. Next, unplug yourself!
+0. Need to add "ignore floor sensors" to web intarface.
 
 0. When idle proceed to random locations from waypoint list.
 

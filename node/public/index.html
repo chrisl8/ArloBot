@@ -61,10 +61,10 @@
       =========================================================== -->
       <div class="lcars-column u-1-8">
         <ul class="lcars-menu">
-          <li class="lcars-blue-bg">Battery: <span data-bind="text: laptopBatteryPercentage"></span></li>
+          <li class="lcars-blue-bg">Battery: <span data-bind="text: laptopBatteryPercentage"></span>%</li>
           <li class="lcars-tan-bg tall large-gap">AC Plugged in?<br/><span data-bind="text: pluggedIn" style="font-weight: normal;"></span><br/>
           Laptop Battery charged?<br/><span data-bind="text: laptopFullyCharged" style="font-weight: normal;"></span></li>
-          <li class="lcars-tan-bg tall">Basement door open: <span data-bind="text: basementDoorOpen" style="font-weight: normal;"></span>  <button data-bind="visible: basementDoorOpen, click: markBasementClosed" style="background: magenta; font-weight: bold; cursor: pointer;">Set Basement Door Closed</button>
+          <li class="lcars-tan-bg tall">Dangerous doors open: <span data-bind="text: doorsOpen" style="font-weight: normal;"></span>  <button data-bind="visible: doorsOpen, click: markDoorsClosed" style="background: magenta; font-weight: bold; cursor: pointer;">Set All Door Closed</button>
           </li>
           <li class="lcars-tan-bg"></li>
           <li class="lcars-tan-bg"></li>

@@ -3,7 +3,7 @@
 // Just text based or boolean items to digest in the web.
 
 module.exports = {
-    robotName: 'ArloBot',
+    robotName: 'ArloBot', // This will be overridden by personalData in index.js
     debugging: false,
     ROSstart: false,
     ROSisRunning: false,
@@ -12,7 +12,7 @@ module.exports = {
     pauseExplore: false,
     beQuiet: false,
     haltRobot: false,
-    basementDoorOpen: true,
+    doorsOpen: true, // Track if any doors are open that pose a danger to Daleks
     laptopFullyCharged: 'unknown',
     laptopBatteryPercentage: '???%',
     logStreamerRunning: false,
@@ -29,5 +29,6 @@ module.exports = {
         ignoreProximity: false,
         ignoreIRSensors: false,
         monitorACconnection: true
-    }
+    },
+    unplugYourself: false // Indicates that robot should unplug itself.
 };

@@ -7,6 +7,7 @@ var robotModel = require('./robotModel');
 var ROSLIB = require('roslib');
 
 // Copied from arloweb.js
+// TODO: Most of these can be erased.
 var connectedToROS = false, // Track my opinion of the connection
     connectRequested = false, // For when we asked and are waiting patiently.
     pleaseWait = false, // Display Please Wait on the Connect button

@@ -33,9 +33,11 @@
     "_camera1name": "Run 'fswebcam --verbose --device=/dev/video1 2>&1|grep cap.card' and set this to a unique part of the resulting string.",
     "camera1name": "HP",
     "_wait_for_door_confirmation": "Set to true if you want the robot to always start disabled, waiting for you to confirm a door is shut",
+    "wait_for_door_confirmation": false,
+    "_door_list" : "List of doors to pre-populate for confirmation",
+    "door_list" : [],
     "_hasXboxController": "Set to true if you have a USB wireless xBox joystick receiver.",
     "hasXboxController": false,
-    "wait_for_door_confirmation": false,
     "_hasActivityBoard": "This can only be false for a 'dummy' test system that has no actual hardware.",
     "hasActivityBoard": true,
     "_speechVolumeLevelDefault": "Default volume level for speech. 0 to 100",
@@ -50,5 +52,7 @@
     "useQRcodes": false,
     "qrCameraName": "C615",
     "_hasBeenEdited": "Set to true once you have put your settings in this file to let the program know that you did it.",
+    "_batteryConsideredFullAt" : "Percentage at which laptop battery is considered full. Some never get to 100%",
+    "batteryConsideredFullAt" : 100,
     "hasBeenEdited": false
 }

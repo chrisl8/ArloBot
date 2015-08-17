@@ -1,5 +1,7 @@
+// TODO: 'use strict';
 var personalData = require('./personalData');
 var webModel = require('./webModel');
+webModel.robotName = personalData.robotName;
 var webModelFunctions = require('./webModelFunctions');
 var robotModel = require('./robotModel');
 var fs = require('fs');
@@ -22,6 +24,9 @@ var os = require('os');
 var repl = require('repl');
 var handleSemaphoreFiles = require('./handleSemaphoreFiles');
 var getQRcodes = require('./getQRcodes');
+
+var WayPoints = require('./WayPoints.js');
+var wayPointEditor = new WayPoints();
 
 var arloTree = new b3.BehaviorTree();
 
@@ -114,9 +119,12 @@ Poll.prototype.tick = function(tick) {
     var batteryCheck = exec(batteryCommand);
     batteryCheck.stdout.on('data', function(data) {
         var re = /\s+/;
-        webModel.laptopBatteryPercentage = data.split(re)[2];
-        if (webModel.laptopBatteryPercentage.match('100%')) webModel.laptopFullyCharged = true;
-        else webModel.laptopFullyCharged = false;
+        webModel.laptopBatteryPercentage = data.split(re)[2].slice(0, -1);
+        if (webModel.laptopBatteryPercentage >= personalData.batteryConsideredFullAt) {
+            webModel.laptopFullyCharged = true;
+        } else {
+            webModel.laptopFullyCharged = false;
+        }
     });
 
     // Check plugged in status
@@ -145,6 +153,8 @@ Poll.prototype.tick = function(tick) {
         // or Promise
         if (webModel.mapName === '' && webModel.mapList.indexOf(webModel.QRcode) > -1) {
             webModel.mapName = webModel.QRcode;
+            // TODO: Set unplugYourself to true, so if it got a map name via QR
+            // code, it will also unplug itself!
         }
     }
 
@@ -331,15 +341,35 @@ LoadMap.prototype.tick = function(tick) {
                     if (!robotModel.initialPoseSet) {
                         // webserver.js will populate webModel.wayPoints,
                         // when the map is set.
+                        // If there is a waypoint called 'initial'
+                        // use it to set the initial 2D pose estimate.
+                        // http://answers.ros.org/question/9686/how-to-programatically-set-the-2d-pose-on-a-map/?answer=14155#post-id-14155
+                        // http://wiki.ros.org/amcl#Subscribed_Topics
+                        // Run RVIZ,
+                        // rostopic echo initialpose
+                        // Set inital pose and look at the output.
+                        // You might need to use an online YAML to JSON converter
+                        /// to get the right format for the command line.
                         if (webModel.wayPoints.indexOf('initial') > -1) {
-                            robotModel.initialPoseSet = true;
-                            // TODO: Set robot's initial pose based on 'initial' waypoint for map.
+                            wayPointEditor.getWayPoint('initial', function(response) {
+                                var set2dPoseEstimate = new LaunchScript({
+                                    debugging: true,
+                                    name: 'GoToWaypoint',
+                                    ROScommand: 'unbuffer rostopic pub -1 initialpose geometry_msgs/PoseWithCovarianceStamped "{ header: { seq: 0, stamp: { secs: 0, nsecs: 0 }, frame_id: map }, pose: { ' + response + ', covariance: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] } }"'
+                                });
+                                set2dPoseEstimate.start();
+                            });
                         }
+                        // Either the 2D pose estimate is set now,
+                        // or if we do not have an "initial" pose, assume we started at map point 0
+                        robotModel.initialPoseSet = true;
+                        // Give it one "loop" to get this done
+                        return b3.RUNNING;
                     }
                     webModel.status = 'Map is Loaded.';
                     // Whether we return 'RUNNING' or 'SUCCESS',
                     // is dependent on how this Behavior node works.
-                    return b3.RUNNING;
+                    return b3.SUCCESS;
                 }
             } else {
                 webModelFunctions.behaviorStatusUpdate(this.name + " Starting up . . .");
@@ -363,19 +393,31 @@ UnPlugRobot.prototype.name = 'UnPlugRobot';
 UnPlugRobot.prototype.tick = function(tick) {
     if (!webModel.pluggedIn) return b3.SUCCESS;
     if (webModel.laptopFullyCharged) {
-        if (!robotModel.unplugMeTextSent) {
-            textme('Please unplug me!');
-            robotModel.unplugMeTextSent = true;
+        if (webModel.unplugYourself) {
+            if (!robotModel.unplugProcess.started) {
+                webModel.status = 'Unplugging myself!';
+                robotModel.unplugProcess.start();
+                webModelFunctions.scrollingStatusUpdate(this.name + " process starting!");
+                return b3.RUNNING;
+            } else {
+                // This should loop until the robot finishes unplugging itself.
+                webModelFunctions.behaviorStatusUpdate(this.name + " unplugging . . .");
+                return b3.RUNNING;
+            }
         } else {
-            return b3.SUCCESS;
+            if (!robotModel.unplugMeTextSent) {
+                textme('Please unplug me!');
+                robotModel.unplugMeTextSent = true;
+                webModelFunctions.scrollingStatusUpdate(this.name + " requesting assistance.");
+            }
+            return b3.FAILURE;
         }
+    } else {
+        webModel.status = 'Charging . . .';
+        webModelFunctions.behaviorStatusUpdate(this.name + " waiting for full charge.");
+        // We cannot do much else until we are unplugged.
+        return b3.FAILURE;
     }
-
-    // TODO: Implement self-unplugging permission and function here.
-
-    webModelFunctions.behaviorStatusUpdate(this.name + ': FAILURE');
-    // We cannot do much else until we are unplugged.
-    return b3.FAILURE;
 };
 
 // Build this file with http://behavior3js.guineashots.com/editor/#
@@ -438,6 +480,12 @@ robotModel.loadMapProcess = new LaunchScript({
     successString: 'odom received'
 });
 
+robotModel.unplugProcess = new LaunchScript({
+    debugging: true,
+    name: 'unPlug',
+    ROScommand: 'unbuffer rosservice call /arlobot_unplug True'
+});
+
 var blackboard = new b3.Blackboard();
 
 webModel.status = 'Behavior Tree is running.';
@@ -481,7 +529,7 @@ var REPLconnections = 0;
 // TODO: This outputs to the console, even if the REPL is via a socket. :)
 var replHelp = function() {
     console.log('Usage:\nwebModel - List webModel variables\npersonalData - List personalData contents\n.exit - Shut down robot and exit.');
-}
+};
 // TODO: There is no reason we cannot have a local AND remote REPL,
 // but the remote makes using PM2 a possibility.
 
