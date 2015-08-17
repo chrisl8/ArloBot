@@ -2,6 +2,7 @@
 import rospy
 import subprocess
 import os
+import fnmatch
 from std_msgs.msg import Bool
 from arlobot_msgs.msg import arloSafety
 from arlobot_msgs.srv import UnPlug
@@ -119,14 +120,41 @@ class ArlobotSafety(object):
 
             # Check for external "STOP" calls:
             # Any external calls will override everything else!
-            # This allows any program anywhere to put the word "STOP"
-            # into a file in ~/.arlobot/status and stop the robot.
-            # IF the folder exists of course.
+            # This allows any program anywhere to put a file named
+            # STOP into ~/.arlobot/status and stop the robot.
+            # This folder should exist, otherwise we are going to stop!
             status_dir = os.path.expanduser("~/.arlobot/status")
             if os.path.isdir(status_dir):
-                devnull = open(os.devnull, 'w')
-                if not subprocess.call(["grep", "-R", "STOP", status_dir], stdout=devnull, stderr=devnull):
-                    safety_status.safeToGo = False
+                for file in os.listdir(status_dir):
+                    if fnmatch.fnmatch(file, 'STOP'):
+                        safety_status.safeToGo = False
+            else:
+                safety_status.safeToGo = False
+
+            # This checks for files left by the door checking system.
+            # Not that if we are exploring you will have to just
+            # override this in some way.
+            # The web server has a button to delete all files in the
+            # ~/.arlobot/status/doors folder.
+            door_dir = os.path.expanduser("~/.arlobot/status/doors")
+            # This folder should exist, otherwise we are going to stop!
+            if os.path.isdir(door_dir):
+                map_name = rospy.get_param("/arlobot/mapname", "empty")
+                # If we do not know the name of a map
+                if map_name == 'empty':
+                    for file in os.listdir(door_dir):
+                        # Then ANY file in this folder will stop the robot
+                        if fnmatch.fnmatch(file, '*'):
+                            safety_status.safeToGo = False
+                else:
+                    for file in os.listdir(door_dir):
+                        # If we know the map name, only look for files with
+                        # the map_name as a prefix so that other doors
+                        # do not stop us.
+                        if fnmatch.fnmatch(file, map_name+'-*'):
+                            safety_status.safeToGo = False
+            else:
+                safety_status.safeToGo = False
 
             self._safetyStatusPublisher.publish(safety_status) # Publish safety status
 
