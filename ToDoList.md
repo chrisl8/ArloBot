@@ -2,10 +2,14 @@
 
 0. Still doesn't move if there are files in doors even if they do not correlate to a map.
 
+0. Test and move PING, RESET and STAYCLOSE from node to public.
+
 0. It should back out a little more after it is finished unplugging maybe?
     Or will the proximity sensors kind of push it back for us?
 
 0. Need to add "ignore floor sensors" to web intarface.
+
+0. Test: zbarcam is pretty CPU intensive, so it shouldn't run if the robot isn't idle.
 
 0. When idle proceed to random locations from waypoint list.
 
