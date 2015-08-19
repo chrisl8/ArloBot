@@ -1,4 +1,3 @@
-// TODO: 'use strict';
 var personalData = require('./personalData');
 var webModel = require('./webModel');
 webModel.robotName = personalData.robotName;
@@ -35,7 +34,8 @@ rosInterface.start();
 // Cleanup on shutdown
 // http://stackoverflow.com/questions/14031763/doing-a-cleanup-action-just-before-node-js-exits
 var kill_rosHasRun = false;
-var killROS = function(exitWhenDone) {
+function killROS(exitWhenDone) {
+    'use strict';
     var command = __dirname + '/../scripts/kill_ros.sh';
     // It is rather catastrophic if this repeats!
     if (!kill_rosHasRun) {
@@ -69,9 +69,10 @@ var killROS = function(exitWhenDone) {
             webModelFunctions.scrollingStatusUpdate('Shutdown process error' + err);
         });
     }
-};
+}
 
 function exitHandler(options, err) {
+    'use strict';
     if (options.cleanup) {
         console.log('Shutdown complete.');
         webModelFunctions.scrollingStatusUpdate('Shutdown complete.');
@@ -437,6 +438,7 @@ var arloNodeData = JSON.parse(fs.readFileSync('arloTreeData.json', 'utf8'));
 var customNodeNames = {};
 
 function parseCustomNodes(element, index, array) {
+    'use strict';
     customNodeNames[element.name] = eval(element.name); // jshint ignore:line
 }
 arloNodeData.custom_nodes.forEach(parseCustomNodes);
@@ -527,9 +529,11 @@ var net = require("net");
 var REPLconnections = 0;
 
 // TODO: This outputs to the console, even if the REPL is via a socket. :)
-var replHelp = function() {
+function replHelp() {
+    'use strict';
     console.log('Usage:\nwebModel - List webModel variables\npersonalData - List personalData contents\n.exit - Shut down robot and exit.');
-};
+    return '';
+}
 // TODO: There is no reason we cannot have a local AND remote REPL,
 // but the remote makes using PM2 a possibility.
 
