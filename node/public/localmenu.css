@@ -91,6 +91,29 @@ body {
     transition-delay: 0s, .08s;
     box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
 }
+
+.check:checked ~ .reverseSwitch {
+    left: 2px;
+    right: 37.5%;
+    transition: .25s cubic-bezier(0.785, 0.135, 0.150, 0.860);
+    transition-property: left, right;
+    transition-delay: .08s, 0s;
+}
+.reverseSwitch {
+    position: absolute;
+    right: 2px;
+    top: 2px;
+    bottom: 2px;
+    left: 37.5%;
+    background-color: #fff;
+    border-radius: 36px;
+    z-index: 1;
+    transition: .25s cubic-bezier(0.785, 0.135, 0.150, 0.860);
+    transition-property: left, right;
+    transition-delay: 0s, .08s;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+}
+
 #statusScrollBox {
   height: 124px;
   overflow-y: auto;

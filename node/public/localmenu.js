@@ -49,6 +49,58 @@ window.onload = function() {
         });
     };
 
+    var reverseLCARishButton = function(buttonID, knockoutItem, offAction, onAction) {
+        // For switches whose primary/normal position corresponds to a
+        // 'true' value in the webModel.
+        // NOTE: Remember to use the 'reverseSwitch' class instead of
+        // the 'switch' class for the button text in the html document.
+        var buttonElement = document.getElementById(buttonID),
+            onSide = buttonElement.getElementsByClassName("switch-off")[0],
+            offSide = buttonElement.getElementsByClassName("switch-on")[0],
+            switchItself = buttonElement.getElementsByClassName("toggle")[0],
+            oldValue = knockoutItem();
+        if (knockoutItem()) {
+            onSide.classList.add("toggler--is-inactive");
+            offSide.classList.remove("toggler--is-active");
+            switchItself.classList.add("toggle-off");
+            switchItself.classList.remove("toggle-on");
+        } else {
+            offSide.classList.add("toggler--is-active");
+            onSide.classList.remove("toggler--is-inactive");
+            switchItself.classList.remove("toggle-off");
+            switchItself.classList.add("toggle-on");
+        }
+        knockoutItem.subscribe(function(newValue) {
+            if (newValue !== oldValue) {
+                oldValue = newValue;
+                if (newValue) {
+                    onAction();
+                } else {
+                    offAction();
+                }
+            }
+            if (newValue) {
+                onSide.classList.add("toggler--is-inactive");
+                offSide.classList.remove("toggler--is-active");
+                switchItself.classList.add("toggle-off");
+                switchItself.classList.remove("toggle-on");
+            } else {
+                offSide.classList.add("toggler--is-active");
+                onSide.classList.remove("toggler--is-inactive");
+                switchItself.classList.remove("toggle-off");
+                switchItself.classList.add("toggle-on");
+            }
+        });
+        onSide.addEventListener("click", function() {
+            oldValue = true;
+            onAction();
+        });
+        offSide.addEventListener("click", function() {
+            oldValue = false;
+            offAction();
+        });
+    };
+
     var robotModel = {
         /*
         robotStatus: ko.observable('Robot web server is not running.'),
@@ -121,7 +173,6 @@ window.onload = function() {
         saveMap: function() {
             socket.emit('saveMap', webModel.newMapName());
         },
-        //TODO: This doesn't update live. webserver.sh needs to update this live somehow.
         markDoorsClosed: function() {
             socket.emit('markDoorsClosed');
         },
@@ -191,7 +242,7 @@ window.onload = function() {
             //LCARishButton('button-id', koWatchItem, koOffAction, koOnAction)
             LCARishButton('talk-bequiet-button', webModel.beQuiet, webModel.talk, webModel.quiet);
             LCARishButton('explore-pause-button', webModel.pauseExplore, webModel.unPauseAutoExplore, webModel.pauseAutoExplore);
-            LCARishButton('ignore-pluggedIn-button', webModel.rosParameters.monitorACconnection, webModel.ignoreAC, webModel.monitorAC);
+            reverseLCARishButton('ignore-pluggedIn-button', webModel.rosParameters.monitorACconnection, webModel.ignoreAC, webModel.monitorAC);
             LCARishButton('ignore-IR-button', webModel.rosParameters.ignoreIRSensors, webModel.monitorIR, webModel.ignoreIR);
             LCARishButton('ignore-cliff-button', webModel.rosParameters.ignoreCliffSensors, webModel.monitorCliff, webModel.ignoreCliff);
             LCARishButton('ignore-proximity-button', webModel.rosParameters.ignoreProximity, webModel.monitorProximity, webModel.ignoreProximity);
