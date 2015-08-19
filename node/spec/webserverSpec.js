@@ -7,7 +7,7 @@ var io = require('socket.io/node_modules/socket.io-client'),
 var personalDataFolder = process.env.HOME + '/.arlobot/';
 var statusFolder = personalDataFolder + 'status/';
 var quietFile = statusFolder + 'bequiet';
-var stopFile = statusFolder + 'webStopRequested';
+var stopFile = statusFolder + 'STOP';
 var webserver = require('../webserver');
 var quietFileStatus,
     stopFileStatus;
