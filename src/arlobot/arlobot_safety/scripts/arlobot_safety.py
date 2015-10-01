@@ -132,8 +132,8 @@ class ArlobotSafety(object):
                 safety_status.safeToGo = False
 
             # This checks for files left by the door checking system.
-            # Not that if we are exploring you will have to just
-            # override this in some way.
+            # Note that if we are exploring you will have to just
+            # ANY file will stop the robot.
             # The web server has a button to delete all files in the
             # ~/.arlobot/status/doors folder.
             door_dir = os.path.expanduser("~/.arlobot/status/doors")
