@@ -15,7 +15,8 @@ SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 if (${SCRIPTDIR}/scripts/check_hardware.sh)
     then
     source ~/.nvm/nvm.sh
-    nvm use stable
+    source ${SCRIPTDIR}/scripts/setNodeVersion.sh
+    nvm use ${node_version}
     cd ${SCRIPTDIR}/node
     node index.js
 fi

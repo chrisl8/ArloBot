@@ -93,10 +93,14 @@ Throw in two tests first so we can test this tree.
 ##### Idle MemPriority
 Idle behaviors for when there is nothing for the robot to do. These are things the robot will "decide" to do on it's own. Possibly this needs a randomizer, or maybe the "randomizer" will be built into the nodes themselves? (Randomly start vs. fail)
 Idle Behavior Nodes that will be cycled through until one starts and then it will be ticked to completion.
-###### TestIdle1 Node
-Throw in two tests first so we can test this tree.
-###### TestIdle2 Node
-Throw in two tests first so we can test this tree.
+###### GoToRandomLocation Node
+Pick a random location from the waypoint list and go to it.
+###### Wiggle Node
+Make some random movements:
+    * Rotate right then left,
+    * Back up slightly
+    * Spin in some circles.
+Add some speech to this too.
 
 Everything has a priority (top to bottom), so even some jobs preempt others.
 

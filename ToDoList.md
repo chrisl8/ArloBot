@@ -1,13 +1,9 @@
 ##TODO List:##
 
-0. Still doesn't move if there are files in doors even if they do not correlate to a map.
-
 0. Test and move PING, RESET and STAYCLOSE from node to public.
 
 0. It should back out a little more after it is finished unplugging maybe?
     Or will the proximity sensors kind of push it back for us?
-
-0. Need to add "ignore floor sensors" to web intarface.
 
 0. Test: zbarcam is pretty CPU intensive, so it shouldn't run if the robot isn't idle.
 
@@ -59,7 +55,7 @@ create a plan? I thought that was built in.
 0. Keyboard teleop is very smooth now!
 Can the joystick and web op be run through a smoother too?
 
-0. Need to be able to turn floor sensors on/off from web page.
+0. Touch screen teleop?
 
 0. Set up some way to emulate robot for testing?
 http://cs.smith.edu/dftwiki/index.php/PySerial_Simulator
@@ -101,10 +97,6 @@ go to a way-point.
 11. Add "idle" behavior and speech to the robot.
     * Include wandering and looking for people (see 16.)
 
-12. Set up robot to unplug itself in the basement (like upstairs).
-
-12. Send "initial" waypoint robot's "initial position" once map is loaded, if such a waypoint exists, so that the robot can automatically be started at the right place on the map.
-
 13. Can a QR code be used to reset the robot's position to a known one?
 
 14. Follow me. Does this have to be an object?
@@ -122,3 +114,17 @@ go to a way-point.
 19. AN ARM?!
 
 20. Make it taller?!
+
+21. Jasper? https://jasperproject.github.io/
+
+22. Check for Turtlebot improvements that might affect me.
+    * Might this be an issue? http://blog.yujinrobot.com/2015/03/the-quest-for-accurate-navigation-i-my.html
+
+## Done! ##
+
+0. Can it not ask "where am I" if the QR code is there?
+    Seems maybe it is just asking too soon or something?
+
+0. Need to add "ignore floor sensors" to web intarface.
+
+0. Still doesn't move if there are files in doors even if they do not correlate to a map.

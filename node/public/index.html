@@ -126,6 +126,14 @@
               <label class="toggler switch-on">Ignore</label>
             </div>
 
+            <div class="lcarish-toggle-button" id="ignore-floor-button">
+              <label class="toggler toggler--is-inactive switch-off">Watch</label>
+              <div class="toggle toggle-off">
+                <p><input type="checkbox" class="check" data-bind="checked: rosParameters.ignoreFloorSensors"><b class="b switch">Floor</b></p>
+              </div>
+              <label class="toggler switch-on">Ignore</label>
+            </div>
+
             <div class="lcarish-toggle-button" id="ignore-proximity-button">
               <label class="toggler toggler--is-inactive switch-off">Watch</label>
               <div class="toggle toggle-off">
@@ -159,7 +167,8 @@
           <li class="lcars-blue-bg tall large-gap" data-bind="click: startLogStreamer, visible: !logStreamerRunning()" style="cursor: pointer;">Start Log Streamer</li>
           <li class="lcars-blue-bg tall large-gap" data-bind="click: stopLogStreamer, visible: logStreamerRunning" style="cursor: pointer;">Kill Log Streamer</li>
           <li class="lcars-blue-bg"></li>
-          <li class="lcars-blue-bg tall"></li>
+          <li class="lcars-blue-bg tall large-gap" data-bind="click: startColorFollower, visible: !colorFollowerRunning()" style="cursor: pointer;">Start Color Follower</li>
+          <li class="lcars-blue-bg tall large-gap" data-bind="click: stopColorFollower, visible: colorFollowerRunning" style="cursor: pointer;">Stop Color Follower</li>
           <li class="lcars-blue-bg"><a data-bind="click: exitWebServer" style="cursor: pointer;">Shutdown</a></li>
         </ul>
       </div>

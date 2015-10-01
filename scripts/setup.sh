@@ -37,10 +37,11 @@ if [ ! -e  ${HOME}/.nvm/nvm.sh ]
     wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | bash
 fi
 
-printf "\n${YELLOW}[Initializing Latest Stable Node version]${NC}\n"
+printf "\n${YELLOW}[Initializing the required Node version]${NC}\n"
+source ${SCRIPTDIR}/setNodeVersion.sh
 export NVM_DIR="${HOME}/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
-nvm install stable
+nvm install ${node_version}
 
 printf "\n${YELLOW}[Grabbing dependencies for node packages]${NC}\n"
 cd

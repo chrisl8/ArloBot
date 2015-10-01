@@ -54,10 +54,20 @@ var rosParameters = {
         label: 'ignoreIRSensors',
         path: '/arlobot/ignoreIRSensors'
     },
+    ignoreFloorSensors: {
+        param: null,
+        label: 'ignoreFloorSensors',
+        path: '/arlobot/ignoreFloorSensors'
+    },
     monitorACconnection: {
         param: null,
         label: 'monitorACconnection',
         path: '/arlobot/monitorACconnection'
+    },
+    mapName: {
+        param: null,
+        label: 'mapName',
+        path: '/arlobot/mapname'
     }
 };
 
@@ -125,6 +135,7 @@ var subscribeToActiveStatus = function() {
     'use strict';
     // This should serve as a template for all service subscriptions
     // Make sure we are still connected.
+    // NOT NEEDED IN NODE? THIS WAS FOR WEB SOCKET CONNECTIONS.
     // No need to recall myself as a new connect will do that.
     //if (!connectedToROS) {
     //    console.log('not connected');
@@ -135,6 +146,7 @@ var subscribeToActiveStatus = function() {
     closeDeadConnectionTime = setTimeout(closeDeadROSConnection, longDelay);
     ros.getTopics(function(result) { // Unfortunately this can stall with no output!
         clearTimeout(closeDeadConnectionTime);
+        // ONLY REQUIRED FOR WEB SOCKET CONNECTION?
         //if (!checkROSService(result.indexOf('/cmd_vel_mux/active'))) {
         //    console.log('topic dead');
         //    setTimeout(subscribeToMetatron_idStatus, longDelay);
@@ -150,6 +162,7 @@ var subscribeToActiveStatus = function() {
         }); // Obtain message.??? by running 'rosmsg show <messageType>'
 
         cmd_activeStatus.subscribe(function(message) {
+            robotModel.active_cmd = message.data;
             //console.log('Command Velocity Topic says: ' + message.data);
             if (message.data === 'idle') {
                 robotModel.cmdTopicIdle = true;

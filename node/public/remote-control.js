@@ -16,7 +16,6 @@ var connectedToROS = false, // Track my opinion of the connection
     wakeScreen, // Empty global for actual topic
     toggleCamera, // Empty global for actual topic
     toggleRelay, // Empty global for actual topic
-    sendTextToSpeak, // Empty global for actual topic
     shortDelay = 1000,
     longDelay = 3000,
     camera1On = false, // For tracking Camera status
@@ -154,6 +153,7 @@ var updateConnectedButton = function() {
 // http://learn.jquery.com/using-jquery-core/document-ready/
 $(document).ready(function() {
     'use strict';
+    var socket = io();
 
     // CONNECTION BUTTON
     $('#connectButton-li').on("mousedown touchstart", function() {
@@ -731,21 +731,7 @@ $(document).ready(function() {
             $(this).addClass("pressOnButton");
             textToSpeak = document.getElementsByName('speak')[0].value;
             console.log(textToSpeak);
-            if (connectedToROS && sendTextToSpeak !== undefined) {
-                var speakRequest = new ROSLIB.ServiceRequest({
-                    text_to_speak: textToSpeak // args from rosservice info <service>
-                });
-                // sendTextToSpeak is defined in startROSfunctions()
-                sendTextToSpeak.callService(speakRequest, function(result) {
-                    if (result.speach_result) {
-                        setActionField("Text Spoken");
-                    } else {
-                        setActionField("Speech failure");
-                    }
-                });
-            } else {
-                setActionField("NOT Connected");
-            }
+            socket.emit('tts', textToSpeak);
             document.getElementsByName('speak')[0].value = '';
         })
         .on("mouseup mouseout touchend", function() {
@@ -1165,12 +1151,6 @@ var startROSfunctions = function() {
         serviceType: 'arlobot_msgs/ToggleRelay' // rosservice info <service>
     });
 
-    sendTextToSpeak = new ROSLIB.Service({
-        ros: ros,
-        name: '/metatron_speaker', // rosservice list
-        serviceType: 'metatron_services/SpeakText' // rosservice info <service>
-    });
-
     // Each topic function will do its own checking to see if the topic is live or not.
     setTimeout(subscribeToMetatron_idStatus, shortDelay); // Start with a slight delay
     setTimeout(subscribeToUsbRelayStatus, shortDelay * 2); // Increase delay with each to spread them out.
@@ -1204,11 +1184,6 @@ var checkROSServices = function() { // Check for all of the VITAL startups
         }
         setActionField("Checking toggle_relay");
         if (!checkROSService(result.indexOf('/arlobot_usbrelay/toggle_relay'))) {
-            setTimeout(checkROSServices, longDelay);
-            return;
-        }
-        setActionField("Checking metatron_speaker");
-        if (!checkROSService(result.indexOf('/metatron_speaker'))) {
             setTimeout(checkROSServices, longDelay);
             return;
         }

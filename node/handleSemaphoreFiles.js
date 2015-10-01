@@ -1,6 +1,11 @@
 // This code places 'semaphore' files into the file system
 // that the ROS Python code and other node apps
 // watch and respond to.
+// This is called by the Poll tree function,
+// so if index.js or the Behavior Tree hang up, this won't happen,
+// but then the robot won't be good for much at that point anyway.
+// I'm just pointing out that this doesn't actively monitor anything,
+// it is called in a polling loop by index.js
 var webModel = require('./webModel');
 var fs = require('fs');
 var mkdirp = require('mkdirp');

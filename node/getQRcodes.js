@@ -1,40 +1,23 @@
-// Check if "useQRcodes" is true in  personaldata before calling this!
+// Check if "useQRcodes" is true in personalData before calling this!
 // because I'm not gonna check!
 var spawn = require('child_process').spawn;
 var webModel = require('./webModel');
 var robotModel = require('./robotModel');
+var kill = require('./reallyKillProcess.js');
 
-// http://krasimirtsonev.com/blog/article/Nodejs-managing-child-processes-starting-stopping-exec-spawn
-var psTree = require('ps-tree');
-var kill = function(pid, signal, callback) {
-    signal = signal || 'SIGKILL';
-    callback = callback || function() {};
-    var killTree = true;
-    if (killTree) {
-        psTree(pid, function(err, children) {
-            [pid].concat(
-                children.map(function(p) {
-                    return p.PID;
-                })
-            ).forEach(function(tpid) {
-                try {
-                    process.kill(tpid, signal);
-                } catch (ex) {}
-            });
-            callback();
-        });
-    } else {
-        try {
-            process.kill(pid, signal);
-        } catch (ex) {}
-        callback();
-    }
-};
-
-
+/*
+  getQRcodes will run the zbarcam application to look for QR codes,
+  if a QR code is found it will behave in one of two ways:
+  1. If the first line is '{' then it will keep accepting lines until
+     it receives a '}' and use it as a JSON string.
+  2. Otherwise, if it does not start with a '{' it will stop and use
+     the single line as the input.
+*/
 module.exports = function() {
     var killProcess;
     var process = spawn('../scripts/getQRcodes.sh');
+    var foundJSON = false;
+    var qrJSONstring = '';
     var killOnTimeout = setTimeout(function() {
         //console.log('timeout');
         kill(process.pid);
@@ -44,8 +27,27 @@ module.exports = function() {
     process.stdout.on('data', function(data) {
         var receivedLine = data.split('\n')[0];
         if (receivedLine !== 'Waiting for zbarcam to close . . .') {
-            webModel.QRcode = receivedLine;
-            //console.log(webModel.QRcode);
+            if (receivedLine == '{') {
+                var qrJSONstring = JSON.parse(data);
+                if (qrJSONstring.mapName) {
+                    if (webModel.mapName === '' && webModel.mapList.indexOf(qrJSONstring.mapName) > -1) {
+                        webModel.mapName = qrJSONstring.mapName;
+                    }
+                }
+                // THESE items will only be triggered ONCE per run via a QR code!
+                // to avoid fighting the robot when he is at the "initial" station.
+                if (!webModel.hasSetupViaQRcode) {
+                    if (qrJSONstring.unplugYourself) {
+                        webModel.hasSetupViaQRcode = true;
+                        webModel.unplugYourself = qrJSONstring.unplugYourself;
+                    }
+                    if (qrJSONstring.ROSstart) {
+                        webModel.hasSetupViaQRcode = true;
+                        webModel.ROSstart = qrJSONstring.ROSstart;
+                    }
+                }
+            } else
+                webModel.QRcode = receivedLine;
             kill(process.pid);
         }
     });

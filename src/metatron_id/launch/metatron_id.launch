@@ -3,7 +3,6 @@
   <node pkg="metatron_id" type="metatron_id.py" name="metatron_id" respawn="true" >
     <rosparam command="load" file="$(env HOME)/.arlobot/metatron_private_settings.yaml" />
   </node>
-  <include file="$(find metatron_babelfish)/launch/metatron_babelfish.launch" />
   <include file="$(find arlobot_bringup)/launch/minimal.launch" />
   <include file="$(find arlobot_explore)/launch/arlobot_goto.launch" />
   <arg name="loadJoystick" value="$(optenv HAS_XBOX_JOYSTICK false)" />

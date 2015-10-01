@@ -1,37 +1,28 @@
 var personalData = require('./personalData');
 var webModel = require('./webModel');
 var webModelFunctions = require('./webModelFunctions');
+var robotModel = require('./robotModel');
 var O = require('observed');
 var webModelWatcher = O(webModel);
 var LaunchScript = require('./LaunchScript');
+var tts = require('./tts');
 
 var WayPoints = require('./WayPoints.js');
 var wayPointEditor = new WayPoints();
 
 var rosInterface = require('./rosInterface');
-var getMapList = require('./getMapList');
 var fs = require('fs');
 var express = require('express');
 var spawn = require('child_process').spawn;
 var bodyParser = require('body-parser');
 var exec = require('child_process').exec;
-var ngrok = require('ngrok');
+//var ngrok = require('ngrok');
 
 var processTracker = {
     logStreamerProcess: ''
 };
 
-// Set map list based on file names in the map folder
-var mapDir = process.env.HOME + '/.arlobot/rosmaps/';
-var updateMapList = function() {
-    webModel.mapList = ['Explore!'];
-    getMapList(mapDir, function(err, data) {
-        data.forEach(function(value) {
-            webModel.mapList.push(value.replace('.yaml', ''));
-        });
-    });
-};
-
+var updateMapList = require('./updateMapList');
 updateMapList();
 
 var app = express();
@@ -108,6 +99,59 @@ var stopLogStreamer = function() {
     return process;
 };
 
+var startColorFollower = function() {
+    webModelFunctions.scrollingStatusUpdate('Starting Color Follower.');
+    var command = __dirname + '/../scripts/object_follower.sh';
+    var colorFollowerProcess = spawn(command);
+    colorFollowerProcess.stdout.setEncoding('utf8');
+    colorFollowerProcess.stdout.on('data', function(data) {
+        //console.log(data);
+    });
+    colorFollowerProcess.stderr.setEncoding('utf8');
+    colorFollowerProcess.stderr.on('data', function(data) {
+        if (data.indexOf('ROI messages detected. Starting follower...') > -1) {
+            webModel.colorFollowerRunning = true;
+            webModelFunctions.scrollingStatusUpdate('Color Follower has started.');
+            webModelFunctions.behaviorStatusUpdate('Color Follower started.');
+        }
+        console.log(data);
+        console.log('.');
+    });
+    colorFollowerProcess.on('error', function(err) {
+        //console.log(err);
+    });
+    colorFollowerProcess.on('exit', function(code) {
+        // Will catch multiple exit codes I think:
+        if (code === 0) {
+            webModelFunctions.scrollingStatusUpdate('Color Follower ended normally.');
+        } else {
+            console.log('Color Follower failed with code: ' + code);
+        }
+        webModel.colorFollowerRunning = false;
+    });
+    return colorFollowerProcess;
+};
+var stopColorFollower = function() {
+    //pkill -f "roslaunch metatron_launchers object_follower.launch"
+    var command = '/usr/bin/pkill';
+    var commandArgs = ['-f', 'roslaunch metatron_launchers object_follower.launch'];
+    var process = spawn(command, commandArgs);
+    process.stdout.setEncoding('utf8');
+    process.stdout.on('data', function(data) {
+        //console.log(data);
+    });
+    process.stderr.setEncoding('utf8');
+    process.stderr.on('data', function(data) {
+        //console.log(data);
+    });
+    process.on('error', function(err) {
+        //console.log(err);
+    });
+    process.on('exit', function(code) {
+        //console.log(code);
+    });
+    return process;
+};
 // Kiosk button handler:
 /* The 'kiosk' is a small web page/app, typically run on a smart phone,
 that is used for very basic robot settings,
@@ -150,6 +194,8 @@ app.post('/receivemessage', function(req, res) {
 function start() {
     var webServer = app.listen(personalData.webServerPort);
     var io = require("socket.io").listen(webServer);
+    /* Not using ngrok at the moment.
+     * TODO: Should set this up as a configurable in personalData!
     ngrok.connect({
         authtoken: personalData.ngrok.authtoken,
         subdomain: personalData.ngrok.subdomain,
@@ -161,6 +207,7 @@ function start() {
             console.log(err);
         }
     });
+    */
 
     webModelWatcher.on('change', function() {
         io.sockets.emit('webModel', webModel);
@@ -188,13 +235,10 @@ function start() {
         socket.on('gotoWayPoint', function(data) {
             if (data) {
                 if (webModel.wayPoints.indexOf(data) > -1) {
+                    webModel.wayPointNavigator.wayPointName = data;
                     wayPointEditor.getWayPoint(data, function(response) {
-                        var goToMapPositionProcess = new LaunchScript({
-                            debugging: true,
-                            name: 'GoToWaypoint',
-                            ROScommand: 'unbuffer rosservice call /arlobot_goto/go_to_goal "' + response + '"'
-                        });
-                        goToMapPositionProcess.start();
+                        robotModel.wayPointNavigator.destinaitonWaypoint = response;
+                        webModel.wayPointNavigator.goToWaypoint = true;
                     });
                 }
             }
@@ -205,6 +249,9 @@ function start() {
             wayPointEditor.createWayPoint(data);
             setTimeout(wayPointEditor.updateWayPointList, 5000);
         });
+        socket.on('tts', function(data) {
+            tts(data);
+        })
         socket.on('startROS', function() {
             webModel.ROSstart = true;
         });
@@ -257,6 +304,13 @@ function start() {
             rosInterface.setParam('ignoreCliffSensors', true);
         });
 
+        socket.on('monitorFloor', function() {
+            rosInterface.setParam('ignoreFloorSensors', false);
+        });
+        socket.on('ignoreFloor', function() {
+            rosInterface.setParam('ignoreFloorSensors', true);
+        });
+
         socket.on('monitorProximity', function() {
             rosInterface.setParam('ignoreProximity', false);
         });
@@ -273,6 +327,12 @@ function start() {
         });
         socket.on('stopLogStreamer', function() {
             stopLogStreamer();
+        });
+        socket.on('startColorFollower', function() {
+            startColorFollower();
+        });
+        socket.on('stopColorFollower', function() {
+            stopColorFollower();
         });
         socket.on('exit', function() {
             webModel.shutdownRequested = true;

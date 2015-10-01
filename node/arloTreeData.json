@@ -3,9 +3,9 @@
     "description": "",
     "root": "705ad525-ca28-4668-97a2-8568e87c6ac5",
     "display": {
-        "camera_x": 444.5,
-        "camera_y": 247.5,
-        "camera_z": 0.5,
+        "camera_x": 451.5,
+        "camera_y": 378.5,
+        "camera_z": 0.75,
         "x": 0,
         "y": 0
     },
@@ -17,8 +17,8 @@
             "title": "StartROS",
             "description": "",
             "display": {
-                "x": 512,
-                "y": -197.33333333333337
+                "x": 624,
+                "y": -120.88888888888891
             },
             "parameters": {},
             "properties": {}
@@ -29,8 +29,8 @@
             "title": "Startup",
             "description": "Everything required to startup robot.",
             "display": {
-                "x": 304,
-                "y": -101.33333333333337
+                "x": 416,
+                "y": -24.888888888888914
             },
             "parameters": {},
             "properties": {},
@@ -46,8 +46,8 @@
             "title": "UnPlugRobot",
             "description": "",
             "display": {
-                "x": 512,
-                "y": -5.333333333333371
+                "x": 624,
+                "y": 71.11111111111109
             },
             "parameters": {},
             "properties": {}
@@ -58,8 +58,8 @@
             "title": "AutoExplore",
             "description": "",
             "display": {
-                "x": 720,
-                "y": -133.33333333333337
+                "x": 832,
+                "y": -56.888888888888914
             },
             "parameters": {},
             "properties": {}
@@ -70,8 +70,8 @@
             "title": "LoadMap",
             "description": "",
             "display": {
-                "x": 720,
-                "y": -69.33333333333337
+                "x": 832,
+                "y": 7.111111111111086
             },
             "parameters": {},
             "properties": {}
@@ -82,8 +82,8 @@
             "title": "Robot",
             "description": "Root node.",
             "display": {
-                "x": 96,
-                "y": -80.00000000000003
+                "x": 208,
+                "y": 0
             },
             "parameters": {},
             "properties": {},
@@ -99,8 +99,8 @@
             "title": "Poll",
             "description": "",
             "display": {
-                "x": 304,
-                "y": -261.33333333333337
+                "x": 416,
+                "y": -184.8888888888889
             },
             "parameters": {},
             "properties": {}
@@ -111,8 +111,8 @@
             "title": "ToDo",
             "description": "",
             "display": {
-                "x": 304,
-                "y": 122.66666666666663
+                "x": 416,
+                "y": 209.77777777777777
             },
             "parameters": {},
             "properties": {},
@@ -128,8 +128,8 @@
             "title": "Preemption",
             "description": "",
             "display": {
-                "x": 512,
-                "y": 58.66666666666663
+                "x": 624,
+                "y": 135.1111111111111
             },
             "parameters": {},
             "properties": {},
@@ -141,12 +141,14 @@
             "title": "Jobs",
             "description": "",
             "display": {
-                "x": 512,
-                "y": 122.66666666666663
+                "x": 624,
+                "y": 199.1111111111111
             },
             "parameters": {},
             "properties": {},
-            "children": []
+            "children": [
+                "c93b2dfb-afa0-4219-b654-b1ce216692ad"
+            ]
         },
         "3d81cbb8-1a79-41bb-9917-e8ee509edad9": {
             "id": "3d81cbb8-1a79-41bb-9917-e8ee509edad9",
@@ -154,12 +156,15 @@
             "title": "Idle",
             "description": "",
             "display": {
-                "x": 512,
-                "y": 186.66666666666663
+                "x": 624,
+                "y": 295.1111111111111
             },
             "parameters": {},
             "properties": {},
-            "children": []
+            "children": [
+                "135d5171-21b8-4db8-8d67-f359da4178f5",
+                "5bea8caf-37e6-4b37-8957-22daa0cd9653"
+            ]
         },
         "fcbe016a-1fbe-4658-8b62-3d6caa68e217": {
             "id": "fcbe016a-1fbe-4658-8b62-3d6caa68e217",
@@ -167,8 +172,8 @@
             "title": "Priority",
             "description": "",
             "display": {
-                "x": 512,
-                "y": -101.33333333333337
+                "x": 624,
+                "y": -24.888888888888914
             },
             "parameters": {},
             "properties": {},
@@ -176,6 +181,68 @@
                 "c868ee6d-db2f-4798-b6e7-97e0d22d2623",
                 "ba78b85a-6dd3-4ca5-bcca-fcbe48c76d38"
             ]
+        },
+        "5bea8caf-37e6-4b37-8957-22daa0cd9653": {
+            "id": "5bea8caf-37e6-4b37-8957-22daa0cd9653",
+            "name": "GotoRandomLocation",
+            "title": "GotoRandomLocation",
+            "description": "",
+            "display": {
+                "x": 832,
+                "y": 327.1111111111111
+            },
+            "parameters": {},
+            "properties": {}
+        },
+        "135d5171-21b8-4db8-8d67-f359da4178f5": {
+            "id": "135d5171-21b8-4db8-8d67-f359da4178f5",
+            "name": "IsNotIdle",
+            "title": "IsNotIdle",
+            "description": "",
+            "display": {
+                "x": 832,
+                "y": 263.1111111111111
+            },
+            "parameters": {},
+            "properties": {}
+        },
+        "a2f05f5b-c78f-4149-8706-54d03203b97a": {
+            "id": "a2f05f5b-c78f-4149-8706-54d03203b97a",
+            "name": "Sequence",
+            "title": "Sequence",
+            "description": "",
+            "display": {
+                "x": -400,
+                "y": -272
+            },
+            "parameters": {},
+            "properties": {},
+            "children": []
+        },
+        "6c6a20c6-a88b-4033-8a6b-e1d5e32172d3": {
+            "id": "6c6a20c6-a88b-4033-8a6b-e1d5e32172d3",
+            "name": "Priority",
+            "title": "Priority",
+            "description": "",
+            "display": {
+                "x": -448,
+                "y": -240
+            },
+            "parameters": {},
+            "properties": {},
+            "children": []
+        },
+        "c93b2dfb-afa0-4219-b654-b1ce216692ad": {
+            "id": "c93b2dfb-afa0-4219-b654-b1ce216692ad",
+            "name": "GoToWaypoint",
+            "title": "GoToWaypoint",
+            "description": "",
+            "display": {
+                "x": 832,
+                "y": 199.1111111111111
+            },
+            "parameters": {},
+            "properties": {}
         }
     },
     "custom_nodes": [
@@ -201,6 +268,21 @@
         },
         {
             "name": "Poll",
+            "title": "",
+            "category": "action"
+        },
+        {
+            "name": "GotoRandomLocation",
+            "title": "",
+            "category": "action"
+        },
+        {
+            "name": "IsNotIdle",
+            "title": "",
+            "category": "action"
+        },
+        {
+            "name": "GoToWaypoint",
             "title": "",
             "category": "action"
         }

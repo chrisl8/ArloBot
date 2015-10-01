@@ -16,19 +16,29 @@ module.exports = {
     laptopFullyCharged: 'unknown',
     laptopBatteryPercentage: '???%',
     logStreamerRunning: false,
+    colorFollowerRunning: false,
     shutdownRequested: false,
     status: 'Arlo behavior is not running.',
     behaviorStatus: '',
     scrollingStatus: '',
     mapList: ['Explore!'],
     QRcode: '',
+    hasSetupViaQRcode: false, // So we only do this once. ;)
     mapName: '',
+    triedLightToFindQRcode: false,
+    userLightOnRequested: false,
     wayPoints: [],
     rosParameters: { // These are the parameters we will send to the web
         ignoreCliffSensors: false, // Use the expected default.
         ignoreProximity: false,
         ignoreIRSensors: false,
+        ignoreFloorSensors: false,
         monitorACconnection: true
     },
-    unplugYourself: false // Indicates that robot should unplug itself.
+    unplugYourself: false, // Indicates that robot should unplug itself.
+    wayPointNavigator: {
+        wayPointName: undefined,
+        goToWaypoint: false, // This is set true when we ask the robot to go somewhere
+        mostRecentArrival: undefined // Where we have most recently arrived at.
+    }
 };

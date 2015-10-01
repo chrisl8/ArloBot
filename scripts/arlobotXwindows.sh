@@ -13,7 +13,8 @@ SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 export NVM_DIR="${HOME}/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
-nvm use stable
+source ${SCRIPTDIR}/setNodeVersion.sh
+nvm use ${node_version}
 cd ${SCRIPTDIR}/../node
 forever start --killSignal=SIGINT --minUptime=5000 --spinSleepTime=10000 --l="/tmp/robotNodeScript.log" --o="/tmp/robotNodeScript.log" --e="/tmp/robotNodeScript.log" index.js
 forever list

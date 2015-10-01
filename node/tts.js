@@ -28,12 +28,15 @@ module.exports = function(sound) {
                 if (personalData.speechProgram === 'nodeSay') {
                     // https://github.com/marak/say.js/
                     // no callback, fire and forget
-                    say.speak(null, process.argv[2]);
+                    say.speak(null, sound);
                 } else if (personalData.speechProgram) {
-                    var speechCommand = personalData.speechProgram + ' ' + process.argv[2];
+                    var speechCommand = personalData.speechProgram + ' ' + sound;
                     exec(speechCommand);
                 }
             }
+        } else {
+            // Log to console if we are force to be quiet
+            console.log(sound);
         }
     });
     // Send 'sound' to myself via Pushover

@@ -4,7 +4,7 @@ var mkdirp = require('mkdirp');
 var personalDataFolder = process.env.HOME + '/.arlobot/';
 var webModel = require('./webModel');
 
-function WayPoints() {};
+function WayPoints() {}
 
 WayPoints.prototype.getWayPoint = function(name, callback) {
     var waypointFolder = personalDataFolder + 'waypoints/' + webModel.mapName + '/';
@@ -16,11 +16,11 @@ WayPoints.prototype.getWayPoint = function(name, callback) {
             callback(data);
         }
     });
-}
+};
 
 WayPoints.prototype.createWayPoint = function(name) {
     getCurrentPosition(this.saveWayPoint, name);
-}
+};
 
 WayPoints.prototype.saveWayPoint = function(position, name) {
     var waypointFolder = personalDataFolder + 'waypoints/' + webModel.mapName + '/';
@@ -33,7 +33,7 @@ WayPoints.prototype.saveWayPoint = function(position, name) {
             fs.writeFile(wayPointFile, position);
         }
     });
-}
+};
 
 WayPoints.prototype.updateWayPointList = function() {
     waypointFolder = personalDataFolder + 'waypoints/' + webModel.mapName + '/';

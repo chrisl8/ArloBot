@@ -162,6 +162,13 @@ window.onload = function() {
             socket.emit('ignoreCliff');
         },
 
+        monitorFloor: function() {
+            socket.emit('monitorFloor');
+        },
+        ignoreFloor: function() {
+            socket.emit('ignoreFloor');
+        },
+
         monitorProximity: function() {
             socket.emit('monitorProximity');
         },
@@ -181,6 +188,12 @@ window.onload = function() {
         },
         stopLogStreamer: function() {
             socket.emit('stopLogStreamer');
+        },
+        startColorFollower: function() {
+            socket.emit('startColorFollower');
+        },
+        stopColorFollower: function() {
+            socket.emit('stopColorFollower');
         },
         buttonOneText: ko.observable('Curiosity'),
         buttonOne: function() {
@@ -245,6 +258,7 @@ window.onload = function() {
             reverseLCARishButton('ignore-pluggedIn-button', webModel.rosParameters.monitorACconnection, webModel.ignoreAC, webModel.monitorAC);
             LCARishButton('ignore-IR-button', webModel.rosParameters.ignoreIRSensors, webModel.monitorIR, webModel.ignoreIR);
             LCARishButton('ignore-cliff-button', webModel.rosParameters.ignoreCliffSensors, webModel.monitorCliff, webModel.ignoreCliff);
+            LCARishButton('ignore-floor-button', webModel.rosParameters.ignoreFloorSensors, webModel.monitorFloor, webModel.ignoreFloor);
             LCARishButton('ignore-proximity-button', webModel.rosParameters.ignoreProximity, webModel.monitorProximity, webModel.ignoreProximity);
 
             ko.applyBindings(webModel);
