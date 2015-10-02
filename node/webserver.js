@@ -16,7 +16,6 @@ var express = require('express');
 var spawn = require('child_process').spawn;
 var bodyParser = require('body-parser');
 var exec = require('child_process').exec;
-//var ngrok = require('ngrok');
 
 var processTracker = {
     logStreamerProcess: ''
@@ -194,20 +193,6 @@ app.post('/receivemessage', function(req, res) {
 function start() {
     var webServer = app.listen(personalData.webServerPort);
     var io = require("socket.io").listen(webServer);
-    /* Not using ngrok at the moment.
-     * TODO: Should set this up as a configurable in personalData!
-    ngrok.connect({
-        authtoken: personalData.ngrok.authtoken,
-        subdomain: personalData.ngrok.subdomain,
-        port: personalData.ngrok.port
-    }, function(err, url) {
-        // NOTE: If you need this for Twilio:
-        //console.log('ngrok URL: ' + url);
-        if (err) {
-            console.log(err);
-        }
-    });
-    */
 
     webModelWatcher.on('change', function() {
         io.sockets.emit('webModel', webModel);
