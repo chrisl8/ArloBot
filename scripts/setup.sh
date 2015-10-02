@@ -31,16 +31,27 @@ YELLOW='\033[1;33m'
 WHITE='\033[1;37m'
 NC='\033[0m' # NoColor
 
-if [ ! -e  ${HOME}/.nvm/nvm.sh ]
+printf "\n${YELLOW}[Installing/Updating Node Version Manager]${NC}\n"
+if [ -e  ${HOME}/.nvm/nvm.sh ]
     then
-    printf "\n${YELLOW}[Installing Node Version Manager${NC}\n"
-    wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | bash
+    printf "${YELLOW}Deactivating existing Node Version Manager:${NC}\n"
+    export NVM_DIR="${HOME}/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+    # TODO: Have it check with 'nvm current' before doing this to avoid errors.
+    # on the console.
+    nvm deactivate
 fi
 
-printf "\n${YELLOW}[Initializing the required Node version]${NC}\n"
-source ${SCRIPTDIR}/setNodeVersion.sh
+# TODO: How do I automagically check that this is the LATEST?
+wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.28.0/install.sh | bash
 export NVM_DIR="${HOME}/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+printf "${RED}Check https://github.com/creationix/nvm to see if this is the latest version of nvm:${NC}\n"
+nvm --version
+
+printf "\n${YELLOW}[Initializing the required Node version]${NC}\n"
+printf "This is the version I'm developing with now, so stick with it.\n"
+source ${SCRIPTDIR}/setNodeVersion.sh
 nvm install ${node_version}
 
 printf "\n${YELLOW}[Grabbing dependencies for node packages]${NC}\n"
@@ -53,8 +64,17 @@ if ! (which log.io-harvester > /dev/null)
     then
     npm install -g log.io
 fi
+if ! (which ncu > /dev/null)
+    then
+    npm install -g npm-check-updates
+fi
 cd ${SCRIPTDIR}/../node
 npm install
+npm update
+printf "\n${YELLOW}[Checking for out of date global node modules, informational:]${NC}\n"
+npm outdated -g --depth=0
+ncu
+printf "${YELLOW}WARNING: Above ncu output is informational, don't upgrade your dependency versions yet!${NC}\n"
 cd ${SCRIPTDIR}
 
 # Install required Ubuntu packages
@@ -123,7 +143,7 @@ ARLOHOME=${HOME}/.arlobot
 
 if [ -e ${ARLOHOME}/personalDataForBehavior.json ]
     then
-    ${SCRIPTDIR}/../node/personalData.js
+    node ${SCRIPTDIR}/../node/personalData.js
 else
     printf "\n"
     cp ${SCRIPTDIR}/dotarlobot/personalDataForBehavior.json ${ARLOHOME}/
@@ -164,13 +184,13 @@ if [ ! -d ${ARLOHOME}/status ]
     then
     mkdir ${ARLOHOME}/status
 fi
-chmod -R 777 ${ARLOHOME}/status
+sudo chmod -R 777 ${ARLOHOME}/status
 
 if [ ! -d ${ARLOHOME}/status/doors ]
     then
     mkdir ${ARLOHOME}/status/doors
 fi
-chmod -R 777 ${ARLOHOME}/status/doors
+sudo chmod -R 777 ${ARLOHOME}/status/doors
 
 if ! [ -f /etc/udev/rules.d/99-libftdi.rules ]
     then
