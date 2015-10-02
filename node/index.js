@@ -372,6 +372,9 @@ LoadMap.prototype.tick = function(tick) {
                     return b3.RUNNING;
                 } else {
                     // This will repeat on every tick!
+                    if (webModel.rosParameters.mapName !== webModel.mapName) {
+                        rosInterface.setParam('mapName', webModel.mapName);
+                    }
                     if (!robotModel.initialPoseSet) {
                         // webserver.js will populate webModel.wayPoints,
                         // when the map is set.
@@ -430,8 +433,6 @@ LoadMap.prototype.tick = function(tick) {
             robotModel.loadMapProcess.ROScommand = robotModel.loadMapProcess.ROScommand + process.env.HOME + '/.arlobot/rosmaps/' + webModel.mapName + '.yaml';
             webModelFunctions.scrollingStatusUpdate(robotModel.loadMapProcess.ROScommand);
             robotModel.loadMapProcess.start();
-            // Set the map name in a ROS Parameter so that ROS Nodes know what it is.
-            rosInterface.setParam('mapName', webModel.mapName);
             return b3.RUNNING;
         }
     }

@@ -33,7 +33,8 @@ module.exports = {
         ignoreProximity: false,
         ignoreIRSensors: false,
         ignoreFloorSensors: false,
-        monitorACconnection: true
+        monitorACconnection: true,
+        mapName: null
     },
     unplugYourself: false, // Indicates that robot should unplug itself.
     wayPointNavigator: {
