@@ -49,6 +49,17 @@ To update your code just run the same script again and it will pull down and com
 
 Please note that you will need the code to run on your Propeller board. This is stored in the "Propeller C Code for ArloBot" folder. Details on the Propeller code are here: http://ekpyroticfrood.net/?p=165
 
+### DO NOT USE THE LATEST VERSION OF SimpleIDE! ###
+I think Parallax should fix this, but for now, the current version of SimpleIDE does NOT work with Parallax’s own Arlodrive library.
+Instead use version 0.9.66, which you can find here:
+[https://d9d46cb6fc558ba1db5c3aa51f1eb3a56e713404.googledrive.com/host/0B8ruEl5BL0dfZzZfdHRiX2pYNm8/](https://d9d46cb6fc558ba1db5c3aa51f1eb3a56e713404.googledrive.com/host/0B8ruEl5BL0dfZzZfdHRiX2pYNm8/)
+
+Or just run this to grab and install the working version:
+```
+wget https://googledrive.com/host/0B8ruEl5BL0dfZzZfdHRiX2pYNm8/simpleide-0.9.66-amd64-debian-linux.deb
+sudo dpkg -i simpleide-0.9.66-amd64-debian-linux.deb
+```
+
 ## Quick Start: ##
 Run:
 ```
