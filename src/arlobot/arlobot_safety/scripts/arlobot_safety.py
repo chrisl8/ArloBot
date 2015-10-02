@@ -161,7 +161,10 @@ class ArlobotSafety(object):
             self.r.sleep() # Sleep long enough to maintain the rate set in __init__
 
     def _handle_unplug_request(self, request):
-        rospy.loginfo("Unplug requested.")
+        if request:
+            rospy.loginfo("Unplug requested.")
+        else:
+            rospy.loginfo("Unplug cancel requested.")
         self._unPlug = request.unPlug
         return True
 
