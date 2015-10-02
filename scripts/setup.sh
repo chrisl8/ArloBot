@@ -42,15 +42,12 @@ if [ -e  ${HOME}/.nvm/nvm.sh ]
     nvm deactivate
 fi
 
-# TODO: How do I automagically check that this is the LATEST?
 wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.28.0/install.sh | bash
 export NVM_DIR="${HOME}/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
-printf "${RED}Check https://github.com/creationix/nvm to see if this is the latest version of nvm:${NC}\n"
-nvm --version
 
 printf "\n${YELLOW}[Initializing the required Node version]${NC}\n"
-printf "This is the version I'm developing with now, so stick with it.\n"
+printf "${RED}This is the version I'm developing with now, so stick with it.${NC}\n"
 source ${SCRIPTDIR}/setNodeVersion.sh
 nvm install ${node_version}
 
@@ -71,10 +68,7 @@ fi
 cd ${SCRIPTDIR}/../node
 npm install
 npm update
-printf "\n${YELLOW}[Checking for out of date global node modules, informational:]${NC}\n"
-npm outdated -g --depth=0
-ncu
-printf "${YELLOW}WARNING: Above ncu output is informational, don't upgrade your dependency versions yet!${NC}\n"
+
 cd ${SCRIPTDIR}
 
 # Install required Ubuntu packages
@@ -228,4 +222,26 @@ if [ ${USER} == chrisl8 ]
         printf "${RED}vim .ssh/authorized_keys${NC}\n"
         printf "${GREEN}(This is NOT required for Arlobot, just a personal thing.)${NC}\n"
     fi
+fi
+
+# Special notices for the developer himself to keep his stuff up to date!
+if [ "${USER}" == chrisl8 ]
+    then
+    cd ${SCRIPTDIR}/../node
+    printf "\n${RED}[Hey ${USER} please make sure the below items are up to date!]${NC}\n"
+    printf "\n${GREEN}[Hey ${USER} please make sure the below items are up to date!]${NC}\n"
+    printf "\n${PURPLE}[Hey ${USER} please make sure the below items are up to date!]${NC}\n"
+    printf "${YELLOW}Does the current version of nvm we installed:${NC} "
+    nvm --version
+    printf "${YELLOW}Match the version on github:${NC}\n"
+    wget -qO- https://github.com/creationix/nvm/blob/master/README.markdown|grep install.sh|grep wget|sed -e "s/<pre><code>//"
+    printf "\n${YELLOW}You are using this version of node:${NC} "
+    node --version
+    printf "${YELLOW}and this is the current stable version of node:${NC} "
+    nvm ls-remote stable
+    printf "\n${YELLOW}Checking for out of date global node modules:${NC}\n"
+    npm outdated -g --depth=0
+    printf "${YELLOW}Checking for out of date package node modules:${NC}"
+    ncu
+    printf "${PURPLE}-------------------------------------------------------${NC}\n"
 fi
