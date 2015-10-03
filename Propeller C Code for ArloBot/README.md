@@ -2,13 +2,14 @@ Propeller C Code for ArloBot
 ============================
 
 This is the code to build in SimpleIDE and download to your ArloBot's Activity Board EEPROM in order to communicate with ROS over the USB serial interface.
+Details on the Propeller code and setup are here: [http://ekpyroticfrood.net/?p=165](http://ekpyroticfrood.net/?p=165)
 
 ## Personal Settings ##
 The files in the folder 'dotfiles' should be in
 ~/.arlobot/
 where SimpleIDE will look for them when building "ROS Interface for ArloBot.c"
 
-I suggest NOT editing that file, but always edit the copy in
+I suggest NOT editing the file in 'dotfiles', but always edit the copy in
 ~/.arlobot/ so that future git pulls will not damage your
 personal edits to this file.
 
@@ -18,15 +19,6 @@ Note, I now have a second Propeller based Quickstart board on my Arlo. All PING 
 
 * 2nd Board Code - Is the code for the Quickstart board, if you have one, if not, ignore it.
 
-### DO NOT USE THE LATEST VERSION OF SimpleIDE! ###
-I think Parallax should fix this, but for now, the current version of SimpleIDE does NOT work with Parallax’s own Arlodrive library.
-Instead use version 0.9.66, which you can find here:
-[https://d9d46cb6fc558ba1db5c3aa51f1eb3a56e713404.googledrive.com/host/0B8ruEl5BL0dfZzZfdHRiX2pYNm8/](https://d9d46cb6fc558ba1db5c3aa51f1eb3a56e713404.googledrive.com/host/0B8ruEl5BL0dfZzZfdHRiX2pYNm8/)
-
-Or just run this to grab and install the working version:
-```
-wget https://googledrive.com/host/0B8ruEl5BL0dfZzZfdHRiX2pYNm8/simpleide-0.9.66-amd64-debian-linux.deb
-sudo dpkg -i simpleide-0.9.66-amd64-debian-linux.deb
 ```
 ## Customize Code for Your Setup ##
 
