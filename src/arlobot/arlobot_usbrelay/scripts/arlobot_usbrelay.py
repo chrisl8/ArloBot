@@ -139,13 +139,14 @@ class UsbRelay(object):
             #NOTE: This will return the LAST device, so if you have multiple USB Relay boards this will have to be modified
             self.relaySerialNumber = return_device_serial_number()
 
-            # Create a service that can be called to toggle any relay by name:
-            # http://wiki.ros.org/ROS/Tutorials/CreatingMsgAndSrv
-            # http://wiki.ros.org/ROS/Tutorials/WritingServiceClient%28python%29
-            relayToggle = rospy.Service('~toggle_relay', ToggleRelay, self._ToggleRelayByName)
-            relayFind = rospy.Service('~find_relay', FindRelay, self._FindRelayByName)
         else:
             rospy.loginfo("No USB Relay board installed.")
+
+        # Create a service that can be called to toggle any relay by name:
+        # http://wiki.ros.org/ROS/Tutorials/CreatingMsgAndSrv
+        # http://wiki.ros.org/ROS/Tutorials/WritingServiceClient%28python%29
+        relayToggle = rospy.Service('~toggle_relay', ToggleRelay, self._ToggleRelayByName)
+        relayFind = rospy.Service('~find_relay', FindRelay, self._FindRelayByName)
 
         # Publishers
         self._usbRelayStatusPublisher = rospy.Publisher('~usbRelayStatus', usbRelayStatus, queue_size=1) # for publishing status of USB Relays
@@ -157,7 +158,7 @@ class UsbRelay(object):
         boardExists = False
         foundRelay = False
         relayNumber = 0
-        if not rospy.is_shutdown():
+        if self.relayExists and not rospy.is_shutdown():
             if self.relayExists: # Do not do this if no relay exists.
                 # Toggle Relay
                 boardExists = True
