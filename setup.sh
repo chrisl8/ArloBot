@@ -60,15 +60,6 @@ if ! [ -e /etc/apt/sources.list.d/ros-latest.list ]
     fi
 fi
 
-if ! [ -e /etc/apt/sources.list.d/linrunner-tlp-trusty.list ]
-    then
-    printf "\n${YELLOW}[Adding TLP repository for better battery life]${NC}\n"
-    #TLP: http://linrunner.de/en/tlp/tlp.html
-    # tlp tlp-rdw
-    # For better battery life!
-    sudo add-apt-repository ppa:linrunner/tlp -y &> /dev/null
-fi
-
 printf "\n${YELLOW}[Updating & upgrading all existing Ubuntu packages]${NC}\n"
 sudo apt update
 sudo apt upgrade -y
@@ -114,10 +105,6 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 #FTDI:FT245R USB FIFO:A9026EI5
 #If you have a USB Relay board attached via USB.
 
-#TLP: http://linrunner.de/en/tlp/tlp.html
-# tlp tlp-rdw
-# For better battery life!
-
 # These are for the Metatron package:
 
 # expect-dev required to get 'unbuffer' which is required by node to spawn ROS commands and get real time stdout data
@@ -130,7 +117,7 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 #libftdi1 is required by SimpleIDE for the Parallax Propeller board
 #libgif-dev is required for roslib in order to build canvas
 
-sudo apt install -y ros-indigo-rqt-* ros-indigo-turtlebot ros-indigo-turtlebot-apps ros-indigo-turtlebot-interactions ros-indigo-turtlebot-simulator ros-indigo-kobuki-ftdi python-ftdi python-pip python-serial ros-indigo-openni-* ros-indigo-openni2-* ros-indigo-freenect-* ros-indigo-vision-opencv libopencv-dev python-opencv tlp tlp-rdw ros-indigo-rosbridge-server imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi1 libgif-dev
+sudo apt install -y ros-indigo-rqt-* ros-indigo-turtlebot ros-indigo-turtlebot-apps ros-indigo-turtlebot-interactions ros-indigo-turtlebot-simulator ros-indigo-kobuki-ftdi python-ftdi python-pip python-serial ros-indigo-openni-* ros-indigo-openni2-* ros-indigo-freenect-* ros-indigo-vision-opencv libopencv-dev python-opencv ros-indigo-rosbridge-server imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi1 libgif-dev
 
 # For 8-CH USB Relay board:
 sudo pip install pylibftdi
