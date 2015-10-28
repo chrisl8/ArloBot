@@ -27,7 +27,6 @@ var os = require('os');
 var repl = require('repl');
 var handleSemaphoreFiles = require('./handleSemaphoreFiles');
 var getQRcodes = require('./getQRcodes');
-var speechEngine = require('./speechEngine');
 
 var WayPoints = require('./WayPoints.js');
 var wayPointEditor = new WayPoints();
@@ -158,6 +157,7 @@ Poll.prototype.tick = function(tick) {
     // But if we want to look for others later, remove "!webModel.hasSetupViaQRcode",
     // and it still will not set those two again (due to code in getQRcodes),
     // but it may fill in a map or fill in the webModel.QRcode line.
+    // This may cause it to fight with other camera operations though.
     if (!webModel.hasSetupViaQRcode && personalData.useQRcodes && !robotModel.gettingQRcode && !kill_rosHasRun && (robotModel.cmdTopicIdle || !webModel.ROSstart)) {
         // Old school thread control
         // It reduces how often zbarcam is run,
@@ -192,6 +192,8 @@ Poll.prototype.tick = function(tick) {
 };
 
 // TODO: Perfect this pattern and replicate to all script starting behaviors.
+// TODO: Do we want it to eventually start ITSELF on load?
+// maybe if it gets a certain signal, i.e. a QR code?
 // TODO: Maybe it should text me asking me to let it start ROS?
 var StartROS = b3.Class(b3.Action);
 StartROS.prototype.name = 'StartROS';
@@ -278,11 +280,12 @@ AutoExplore.prototype.tick = function(tick) {
     if (robotModel.debug) console.log(this.name);
     if (webModel.autoExplore) {
         if (robotModel.exploreProcess.started) {
+
             // Catch changes in pauseExplore and send them to the arlobot_explore pause_explorer service
-            if (robotModel.pauseExplore !== webModel.pauseExplore) {
+            if (webModel.rosParameters.explorePaused !== webModel.pauseExplore) {
                 // TODO: Should this use the LaunchScript object?
-                robotModel.pauseExplore = webModel.pauseExplore;
-                var command = '/opt/ros/indigo/bin/rosservice call /arlobot_explore/pause_explorer ' + robotModel.pauseExplore;
+                // or even the rosInterface?
+                var command = '/opt/ros/indigo/bin/rosservice call /arlobot_explore/pause_explorer ' + webModel.pauseExplore;
                 exec(command);
             }
 
@@ -723,6 +726,7 @@ function parseCustomNodes(element, index, array) {
 arloNodeData.custom_nodes.forEach(parseCustomNodes);
 if (robotModel.debug) console.log(customNodeNames);
 arloTree.load(arloNodeData, customNodeNames);
+
 
 // ## Scripts and ROS Commands that will be called by nodes ##
 // NOTE: Be sure to put 'unbuffer ' at the beginning of any ROScommand

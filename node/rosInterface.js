@@ -68,6 +68,11 @@ var rosParameters = {
         param: null,
         label: 'mapName',
         path: '/arlobot/mapname'
+    },
+    explorePaused: {
+        param: null,
+        label: 'explorePaused',
+        path: '/arlobot_explore/pause'
     }
 };
 
@@ -133,7 +138,8 @@ var closeDeadROSConnection = function() {
 
 var subscribeToActiveStatus = function() {
     'use strict';
-    // This should serve as a template for all service subscriptions
+    // Remember to add new instances to talkToROS() at the end!
+    // This should serve as a template for all topic subscriptions
     // Make sure we are still connected.
     // NOT NEEDED IN NODE? THIS WAS FOR WEB SOCKET CONNECTIONS.
     // No need to recall myself as a new connect will do that.

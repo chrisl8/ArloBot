@@ -3,7 +3,7 @@ Metatron Package for Arlobot
 
 ![Alt text](/screenshots/robotControlPanel.png?raw=true "Control Panel")
 
-This is a supplementary package for the Arlobot package.
+This is a supplementary package for the Arlobot package.  
 It provides a full front and back end structure for the Robot Operating System (ROS) based Parallax Arlo Platform robot.
 
 ##Setup##

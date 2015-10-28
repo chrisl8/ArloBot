@@ -2,8 +2,8 @@
 
 0. Test and move PING, RESET and STAYCLOSE from node to public.
 
-0. It should back out a little more after it is finished unplugging maybe?
-    Or will the proximity sensors kind of push it back for us?
+0. If they run setup, but have their OWN local changes, we need to warn them,
+that there are differences, instead of just saying, "up to date."
 
 0. Test: zbarcam is pretty CPU intensive, so it shouldn't run if the robot isn't idle.
 
