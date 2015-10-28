@@ -8,7 +8,7 @@ var howManySecondsSince = require('./howManySecondsSince');
 var kill = require('./reallyKillProcess.js');
 var Stochator = require('stochator');
 var fs = require('fs');
-b3 = {};
+b3 = {}; /*global b3*/
 var behavior3js = require('behavior3js');
 var exec = require('child_process').exec;
 var spawn = require('child_process').spawn;
@@ -176,7 +176,7 @@ Poll.prototype.tick = function(tick) {
         webModel.triedLightToFindQRcode = true;
         spawn('../scripts/turn_on_light.sh');
         setTimeout(function() {
-            if (!webModle.userLightOnRequested) {
+            if (!webModele.userLightOnRequested) {
                 spawn('../scripts/turn_off_light.sh');
             }
         }, 60);
