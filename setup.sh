@@ -181,7 +181,7 @@ cd ~/catkin_ws/src
 # If you have the excellent ROS by Example book now is a good time to clone the code for following along in the book:
 if ! [ -d ~/catkin_ws/src/rbx1 ]
     then
-    git clone -b indigo-devel https://github.com/pirobot/rbx1.git
+    git clone -b indigo-devel https://github.com/chrisl8/rbx1.git
 else
     cd ~/catkin_ws/src/rbx1
     git pull
