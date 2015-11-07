@@ -42,7 +42,7 @@ if [ -e  ${HOME}/.nvm/nvm.sh ]
     nvm deactivate
 fi
 
-wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.28.0/install.sh | bash
+wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.29.0/install.sh | bash
 export NVM_DIR="${HOME}/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 
@@ -208,7 +208,7 @@ if ! (sudo -nl|grep resetUSB > /dev/null)
     sudo chown root:root /etc/sudoers.d/arlobot_sudoers
 fi
 
-if [ ${USER} == chrisl8 ]
+if [ "${USER}" == chrisl8 ]
     then
     if ! [ -d /home/robotStatusUser ]
         then
@@ -222,11 +222,15 @@ if [ ${USER} == chrisl8 ]
         printf "${RED}vim .ssh/authorized_keys${NC}\n"
         printf "${GREEN}(This is NOT required for Arlobot, just a personal thing.)${NC}\n"
     fi
-fi
+    # For use with the paid text to speech engine I use
+    if ! (which aoss > /dev/null)
+        then
+        printf "\n${YELLOW}[Adding aoss for Text To Speech.]${NC}\n"
+        sudo apt install -y alsa-oss
+        printf "\n${GREEN}Don't for get to insatll Cepstral Voice!${NC}\n"
+    fi
 
-# Special notices for the developer himself to keep his stuff up to date!
-if [ "${USER}" == chrisl8 ]
-    then
+    # Special notices for the developer himself to keep his stuff up to date!
     cd ${SCRIPTDIR}/../node
     printf "\n${RED}[Hey ${USER} please make sure the below items are up to date!]${NC}\n"
     printf "\n${GREEN}[Hey ${USER} please make sure the below items are up to date!]${NC}\n"
