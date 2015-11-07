@@ -1,5 +1,27 @@
 ##TODO List:##
 
+Use these to put in some delay and idle checkers:
+var bootTime = new Date() // Time the node script was initialized
+var startROSTime = new Date() // Time that ROS start was completed.
+var mapLoadTime = new Date() // Time that map load was complete
+
+TEST:
+After a set time ON,  if no QRcode, turn on light for a set time.
+if (!qrCodeFound)
+    turnonLight, setTimeout(funciton() {
+    if (!lightOnUserRequest) {
+        turnofflight;
+    }
+    })
+
+Test timeout before it asks where it is or if I can unplug it.
+    Remember to include the turn on light time.
+
+If you try to plug him in when he is already charged, he unplugs himself again,
+This is actually fun, but I want:
+1. an override
+2. him to comment on it.
+
 0. Test and move PING, RESET and STAYCLOSE from node to public.
 
 0. If they run setup, but have their OWN local changes, we need to warn them,

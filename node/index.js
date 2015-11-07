@@ -17,7 +17,7 @@ var spawn = require('child_process').spawn;
 // to aplay.
 // The benefit of using it is that it will honor
 // system wide "bequiet" requests.
-// The same modele is used by ROS Python scripts.
+// The same module is used by ROS Python scripts.
 var tts = require('./tts');
 var LaunchScript = require('./LaunchScript');
 var textme = require('./textme');
@@ -176,7 +176,7 @@ Poll.prototype.tick = function(tick) {
         webModel.triedLightToFindQRcode = true;
         spawn('../scripts/turn_on_light.sh');
         setTimeout(function() {
-            if (!webModele.userLightOnRequested) {
+            if (!webModel.userLightOnRequested) {
                 spawn('../scripts/turn_off_light.sh');
             }
         }, 60);
