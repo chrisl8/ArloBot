@@ -1,12 +1,12 @@
 <launch>
-  <arg name="scan_topic" default="scan_filtered" />
+  <arg name="scan_topic" default="xv11" />
 
   <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" respawn="true" output="screen">
     <param name="base_frame" value="base_footprint"/>
     <param name="odom_frame" value="odom"/>
     <param name="map_update_interval" value="1.0"/>
-    <param name="maxUrange" value="4.9"/>
-    <param name="maxRange" value="6.0"/>
+    <param name="maxUrange" value="4.7"/>
+    <param name="maxRange" value="4.7"/>
     <param name="sigma" value="0.1"/>
     <param name="kernelSize" value="1"/>
     <param name="lstep" value="0.15"/>
