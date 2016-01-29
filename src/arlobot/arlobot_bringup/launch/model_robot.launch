@@ -8,5 +8,5 @@
     <param name="publish_frequency" type="double" value="5.0" />
   </node>
 <!-- Launch rviz with our favorite config file -->
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find arlobot_rviz_launchers)/rviz/robot.rviz" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find arlobot_rviz_launchers)/rviz/model.rviz" />
 </launch>
