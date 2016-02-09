@@ -38,6 +38,8 @@
     "door_list" : [],
     "_hasXboxController": "Set to true if you have a USB wireless xBox joystick receiver.",
     "hasXboxController": false,
+    "_arlobotModel" : "Use this to use an alternate URD file, otherwase use set to default",
+    "arlobotModel" : "default",
     "_hasActivityBoard": "This can only be false for a 'dummy' test system that has no actual hardware.",
     "hasActivityBoard": true,
     "_speechVolumeLevelDefault": "Default volume level for speech. 0 to 100",
