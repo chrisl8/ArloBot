@@ -1,0 +1,461 @@
+<?xml version="1.0"?>
+<robot name="arlobot_hardware" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Macro for ArloBot body. -->
+
+  <property name="base_x" value="0.33" />
+  <property name="base_y" value="0.33" />
+
+  <xacro:macro name="create">
+    <material name="Green">
+      <color rgba="0.0 0.8 0.0 1.0"/>
+    </material>
+    <material name ="veryDarkGrey">
+      <color rgba=".2 .2 .2 1"/>
+    </material>
+    <material name ="light_grey">
+      <color rgba="0.6 0.6 0.6 1"/>
+    </material>
+
+    <!-- base_footprint is a fictitious link(frame) that is on the ground right below base_link origin, navigation stack depends on this frame -->
+    <link name="base_footprint">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <box size="0.001 0.001 0.001" />
+        </geometry>
+        <material name="Green" />
+      </visual>
+
+      <collision>
+        <origin xyz="0 0 0.017" rpy="0 0 0" />
+        <geometry>
+          <box size="0.001 0.001 0.001" />
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="base_link">
+      <inertial>
+        <mass value="2" />
+        <origin xyz="0 0 0.0" />
+        <inertia ixx="0.01" ixy="0.0" ixz="0.0"
+          iyy="0.01" iyz="0.0" izz="0.5" />
+      </inertial>
+
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <cylinder length="0.0095" radius="0.2245"/>
+        </geometry>
+        <material name ="veryDarkGrey" />
+      </visual>
+
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <cylinder length="0.0095" radius="0.2245"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="battery_box">
+      <inertial>
+        <mass value="0.001" />
+        <origin xyz="0 0 0" />
+        <inertia ixx="0.0001" ixy="0.0" ixz="0.0"
+          iyy="0.0001" iyz="0.0"
+          izz="0.0001" />
+      </inertial>
+
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <box size="0.1778 0.3366 0.0762" />
+        </geometry>
+        <material name ="veryDarkGrey" />
+      </visual>
+
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <box size="0.1778 0.3366 0.0762" />
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="battery_box_joint" type="fixed">
+      <origin xyz="0 0 -0.04285" rpy="0 0 0" />
+      <parent link="base_link" />
+      <child link="battery_box" />
+    </joint>
+
+    <link name="front_caster">
+      <inertial>
+        <mass value="0.001" />
+        <origin xyz="0 0 0" />
+        <inertia ixx="0.0001" ixy="0.0" ixz="0.0"
+          iyy="0.0001" iyz="0.0"
+          izz="0.0001" />
+      </inertial>
+
+      <visual>
+        <origin xyz="0 0 0" rpy="-1.5707 0 1.5707" />
+        <geometry>
+          <mesh filename="package://arlobot_description/meshes/28971-Caster-Wheel-Kit-v1.0.stl"/>
+        </geometry>
+        <material name ="light_grey">
+          <color rgba="0.6 0.6 0.6 1"/>
+        </material>
+      </visual>
+
+    </link>
+
+    <joint name="front_caster_joint" type="fixed">
+      <origin xyz="0.18745 0 -0.00475" rpy="0 0 0" />
+      <parent link="base_link" />
+      <child link="front_caster" />
+    </joint>
+
+    <link name="rear_caster">
+      <inertial>
+        <mass value="0.001" />
+        <origin xyz="0 0 0" />
+        <inertia ixx="0.0001" ixy="0.0" ixz="0.0"
+          iyy="0.0001" iyz="0.0"
+          izz="0.0001" />
+      </inertial>
+
+      <visual>
+        <origin xyz="0 0 0" rpy="-1.5707 0 1.5707" />
+        <geometry>
+          <mesh filename="package://arlobot_description/meshes/28971-Caster-Wheel-Kit-v1.0.stl"/>
+        </geometry>
+        <material name ="light_grey">
+          <color rgba="0.6 0.6 0.6 1"/>
+        </material>
+      </visual>
+
+    </link>
+
+    <joint name="rear_caster_joint" type="fixed">
+      <origin xyz="-0.18745 0 -0.00475" rpy="0 0 0" />
+      <parent link="base_link" />
+      <child link="rear_caster" />
+    </joint>
+
+    <joint name="base_footprint_joint" type="fixed">
+      <origin xyz="0 0 0.10125" rpy="0 0 0" />        
+      <parent link="base_footprint"/>
+      <child link="base_link" />
+    </joint>
+
+    <link name="left_axle_link">
+      <inertial>
+        <origin xyz="0 0 0"/>
+        <mass value="0.01" />
+        <inertia ixx="0.001" ixy="0.0" ixz="0.0"
+          iyy="0.001" iyz="0.0" izz="0.001" />
+      </inertial>
+
+      <visual>
+        <origin xyz="0 0 0" rpy="0 1.5707 1.5707" />
+        <geometry>
+          <cylinder radius="0.00635" length = "0.00635"/>
+        </geometry>
+        <material name ="light_grey" />
+      </visual>
+
+      <collision>
+        <origin xyz="0 0 0" rpy="0 1.5707 1.5707" />
+        <geometry>
+          <cylinder radius="0.00635" length = "0.00635"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="left_axle_joint" type="fixed">
+      <origin xyz="0 0.171475 0.0178" rpy="0 0 0"/>
+      <parent link="battery_box"/>
+      <child link="left_axle_link"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+
+    <link name="right_axle_link">
+      <inertial>
+        <origin xyz="0 0 0"/>
+        <mass value="0.01" />
+        <inertia ixx="0.001" ixy="0.0" ixz="0.0"
+          iyy="0.001" iyz="0.0" izz="0.001" />
+      </inertial>
+
+      <visual>
+        <origin xyz="0 0 0" rpy="0 1.5707 1.5707" />
+        <geometry>
+          <cylinder radius="0.00635" length = "0.00635"/>
+        </geometry>
+        <material name ="light_grey" />
+      </visual>
+
+      <collision>
+        <origin xyz="0 0 0" rpy="0 1.5707 1.5707" />
+        <geometry>
+          <cylinder radius="0.00635" length = "0.00635"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="right_axle_joint" type="fixed">
+      <origin xyz="0 -0.171475 0.0178" rpy="0 0 0"/>
+      <parent link="battery_box"/>
+      <child link="right_axle_link"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+
+    <link name="left_wheel_link">
+      <inertial>
+        <origin xyz="0 0 0"/>
+        <mass value="0.01" />
+        <inertia ixx="0.001" ixy="0.0" ixz="0.0"
+          iyy="0.001" iyz="0.0" izz="0.001" />
+      </inertial>
+
+      <visual>
+        <origin xyz="0 0 0" rpy="0 1.5707 1.5707" />
+        <geometry>
+          <cylinder radius="0.0762" length = "0.03175"/>
+        </geometry>
+        <material name ="black" />
+      </visual>
+
+      <collision>
+        <origin xyz="0 0 0" rpy="0 1.5707 1.5707" />
+        <geometry>
+          <cylinder radius="0.0762" length = "0.03175"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- Fixed because we never rotate it anyway, it is just for show -->
+    <!-- NOTE This may prevent gazebo from working with this model -->
+    <joint name="left_wheel_joint" type="fixed">
+      <origin xyz="0 0.01905 0" rpy="0 0 0"/>
+      <parent link="left_axle_link"/>
+      <child link="left_wheel_link"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+
+    <link name="right_wheel_link">
+      <inertial>
+        <origin xyz="0 0 0"/>
+        <mass value="0.01" />
+        <inertia ixx="0.001" ixy="0.0" ixz="0.0"
+          iyy="0.001" iyz="0.0" izz="0.001" />
+      </inertial>
+
+      <visual>
+        <origin xyz="0 0 0" rpy="0 1.5707 1.5707" />
+        <geometry>
+          <cylinder radius="0.0762" length = "0.03175"/>
+        </geometry>
+        <material name ="black" />
+      </visual>
+
+      <collision>
+        <origin xyz="0 0 0" rpy="0 1.5707 1.5707" />
+        <geometry>
+          <cylinder radius="0.0762" length = "0.03175"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- Fixed because we never rotate it anyway, it is just for show -->
+    <!-- NOTE This may prevent gazebo from working with this model -->
+    <joint name="right_wheel_joint" type="fixed">
+      <origin xyz="0 -0.01905 0" rpy="0 0 0"/>
+      <parent link="right_axle_link"/>
+      <child link="right_wheel_link"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+
+    <!-- This pretends to be in the center in order to aid in calculating degrees from multiple sensors on one fake laser scan -->
+    <joint name="ping_array_joint" type="fixed">
+      <origin xyz="0 0 0.03695" rpy="0 0 0" />
+      <parent link="base_link" />
+      <child link="ping_sensor_array" />
+    </joint>
+
+    <link name="ping_sensor_array">
+      <visual>
+        <geometry>
+          <box size="0.0174 0.06 0.0644" />
+        </geometry>
+      </visual>
+      <inertial>
+        <mass value="0.001" />
+        <origin xyz="0 0 0" />
+        <inertia ixx="0.0001" ixy="0.0" ixz="0.0"
+          iyy="0.0001" iyz="0.0"
+          izz="0.0001" />
+      </inertial>
+    </link>
+
+    <joint name="ir_array_joint" type="fixed">
+      <origin xyz="0 0 0.03695" rpy="0 0 0" />
+      <parent link="base_link" />
+      <child link="ir_sensor_array" />
+    </joint>
+
+    <link name="ir_sensor_array">
+      <visual>
+        <geometry>
+          <box size="0.0174 0.06 0.0644" />
+        </geometry>
+      </visual>
+      <inertial>
+        <mass value="0.001" />
+        <origin xyz="0 0 0" />
+        <inertia ixx="0.0001" ixy="0.0" ixz="0.0"
+          iyy="0.0001" iyz="0.0"
+          izz="0.0001" />
+      </inertial>
+    </link>
+
+  <!-- XV11 Neato Laser scanner. Hopefully it is exactly in the center. :) -->
+  <joint name="neato_laser_joint" type="fixed">
+    <!-- Minor adjustments based on ligning up XV11 output with 3D Sensor output -->
+    <!-- So if the 3D sensor is misallgined the XV11 is off by the same amount -->
+    <origin xyz="0.015 -0.02 0.11875" rpy="-0.025 0 0" />
+    <parent link="base_link" />
+    <child link="neato_laser" />
+  </joint>
+
+  <link name="neato_laser">
+    <visual>
+      <geometry>
+        <box size="0.0 0.0 0.0" />
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="0.001" />
+      <origin xyz="0 0 0" />
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0"
+        iyy="0.0001" iyz="0.0"
+        izz="0.0001" />
+    </inertial>
+  </link>
+  </xacro:macro>
+
+  <xacro:macro name="turtlebot_standoff_5in" params="parent number x_loc y_loc z_loc">
+    <joint name="standoff_5in_${number}_joint" type="fixed">
+      <origin xyz="${x_loc} ${y_loc} ${z_loc}" rpy="0 0 0" />
+      <parent link="${parent}"/>
+      <child link="standoff_5in_${number}_link" />
+    </joint>
+
+    <link name="standoff_5in_${number}_link">
+      <inertial>
+        <mass value="0.001" />
+        <origin xyz="0 0 0" />
+        <inertia ixx="0.0001" ixy="0.0" ixz="0.0"
+          iyy="0.0001" iyz="0.0"
+          izz="0.0001" />
+      </inertial>
+
+      <visual>
+        <origin xyz=" 0 0 0 " rpy="0 0 0" />
+        <geometry>
+          <cylinder length="0.127" radius="0.00635"/>
+        </geometry>
+        <material name ="light_grey">
+          <color rgba="0.6 0.6 0.6 1"/>
+        </material>
+      </visual>
+
+      <collision>
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+        <geometry>
+          <cylinder length="0.127" radius="0.00635"/>
+        </geometry>
+      </collision>
+    </link>
+  </xacro:macro>
+
+  <xacro:macro name="stack_circles" params="parent">
+    <joint name="plate_0_joint" type="fixed">
+      <origin xyz="0 0 0.1365" rpy="0 0 0" />
+      <parent link="${parent}"/>
+      <child link="plate_0_link" />
+    </joint>
+
+    <link name="plate_0_link">
+      <inertial>
+        <mass value="0.01" />
+        <origin xyz="0 0 0" />
+        <inertia ixx="0.01" ixy="0.0" ixz="0.0"
+          iyy="0.01" iyz="0.0"
+          izz="0.01" />
+      </inertial>
+
+      <visual>
+        <origin xyz=" 0 0 0 " rpy="0 0 0" />
+        <geometry>
+          <cylinder length="0.0095" radius="0.2245"/>
+        </geometry>
+        <material name ="veryDarkGrey">
+          <color rgba=".2 .2 .2 1"/>
+        </material>
+      </visual>
+
+      <collision>
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+        <geometry>
+          <cylinder length="0.0095" radius="0.2245"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <turtlebot_standoff_5in parent="${parent}" number="0" x_loc="0.0676402" y_loc="0.1314196" z_loc="0.06825"/>
+    <turtlebot_standoff_5in parent="${parent}" number="1" x_loc="0.0676402" y_loc="-0.1314196" z_loc="0.06825"/>
+    <turtlebot_standoff_5in parent="${parent}" number="2" x_loc="-0.052832" y_loc="-0.1314196" z_loc="0.06825"/>
+    <turtlebot_standoff_5in parent="${parent}" number="3" x_loc="-0.052832" y_loc="0.1314196" z_loc="0.06825"/>
+
+    <joint name="plate_1_joint" type="fixed">
+      <origin xyz="0 0 0.1365" rpy="0 0 0" />
+      <parent link="plate_0_link"/>
+      <child link="plate_1_link" />
+    </joint>
+
+    <link name="plate_1_link">
+      <inertial>
+        <mass value="0.01" />
+        <origin xyz="0 0 0" />
+        <inertia ixx="0.01" ixy="0.0" ixz="0.0"
+          iyy="0.01" iyz="0.0"
+          izz="0.01" />
+      </inertial>
+
+      <visual>
+        <origin xyz=" 0 0 0 " rpy="0 0 0" />
+        <geometry>
+          <cylinder length="0.0095" radius="0.2245"/>
+        </geometry>
+        <material name ="veryDarkGrey">
+          <color rgba=".2 .2 .2 1"/>
+        </material>
+      </visual>
+
+      <collision>
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+        <geometry>
+          <cylinder length="0.0095" radius="0.2245"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <turtlebot_standoff_5in parent="plate_0_link" number="4" x_loc="0.0676402" y_loc="0.1314196" z_loc="0.06825"/>
+    <turtlebot_standoff_5in parent="plate_0_link" number="5" x_loc="0.0676402" y_loc="-0.1314196" z_loc="0.06825"/>
+    <turtlebot_standoff_5in parent="plate_0_link" number="6" x_loc="-0.052832" y_loc="-0.1314196" z_loc="0.06825"/>
+    <turtlebot_standoff_5in parent="plate_0_link" number="7" x_loc="-0.052832" y_loc="0.1314196" z_loc="0.06825"/>
+  </xacro:macro>
+</robot>

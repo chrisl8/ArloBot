@@ -1,7 +1,8 @@
 <launch>
 <!-- This allows you to see the robot model without starting it up. You can run this on a machine that is not even connected to the robot, like a VirtualBox instance -->
 <!-- URDF model -->
-  <arg name="urdf_file" default="$(find xacro)/xacro.py '$(find arlobot_description)/urdf/common.urdf.xacro'" />
+  <arg name="arlobot_model" value="$(optenv ARLOBOT_MODEL default)" />
+  <arg name="urdf_file" default="$(find xacro)/xacro.py '$(find arlobot_description)/urdf/common_$(arg arlobot_model).urdf.xacro'" />
   <param name="robot_description" command="$(arg urdf_file)" />
 <!-- The robot_state_publisher publishes the joints, otherwise your model is a pile white shapes all originating from 0, 0, 0 :) -->
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
