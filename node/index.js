@@ -45,33 +45,33 @@ function killROS(exitWhenDone) {
     // It is rather catastrophic if this repeats!
     if (!kill_rosHasRun) {
         kill_rosHasRun = true;
-        webModel.ROSstart = false;
+        webModelFunctions.update('ROSstart', false);
         webModelFunctions.scrollingStatusUpdate("Running kill_ros.sh . . .");
         // Logging to console too, because feedback on shutdown is nice.
         console.log("Running kill_ros.sh . . .");
         // and then also run the kill ROS command:
         var shutdownCommand = exec(command);
-        shutdownCommand.stdout.on('data', function(data) {
+        shutdownCommand.stdout.on('data', function (data) {
             webModelFunctions.scrollingStatusUpdate('Shutdown: ' + data);
             console.log('Shutdown:' + data.toString().replace(/[\n\r]/g, ""));
         });
 
-        shutdownCommand.stderr.on('data', function(data) {
+        shutdownCommand.stderr.on('data', function (data) {
             webModelFunctions.scrollingStatusUpdate('Shutdown: ' + data);
             console.log('Shutdown:' + data.toString().replace(/[\n\r]/g, ""));
         });
 
-        shutdownCommand.on('close', function(code) {
+        shutdownCommand.on('close', function (code) {
             webModelFunctions.scrollingStatusUpdate('kill_ros.sh closed with code ' + code);
             console.log('kill_ros.sh closed with code ' + code);
             if (exitWhenDone) {
                 process.exit();
             } else {
                 kill_rosHasRun = false;
-                webModel.ROSisRunning = false;
+                webModelFunctions.update('ROSisRunning', false);
             }
         });
-        shutdownCommand.on('error', function(err) {
+        shutdownCommand.on('error', function (err) {
             webModelFunctions.scrollingStatusUpdate('Shutdown process error' + err);
         });
     }
@@ -118,32 +118,32 @@ webserver.start();
 
 var Poll = b3.Class(b3.Action);
 Poll.prototype.name = 'Poll';
-Poll.prototype.tick = function(tick) {
+Poll.prototype.tick = function (tick) {
     if (robotModel.debug) console.log(this.name);
     // Some things just need to be polled, there is no way around it. Put those here.
 
     // Check laptop battery each tick
     var batteryCommand = '/usr/bin/upower -d|grep percentage|head -1';
     var batteryCheck = exec(batteryCommand);
-    batteryCheck.stdout.on('data', function(data) {
+    batteryCheck.stdout.on('data', function (data) {
         var re = /\s+/;
-        webModel.laptopBatteryPercentage = data.split(re)[2].slice(0, -1);
+        webModelFunctions.update('laptopBatteryPercentage', data.split(re)[2].slice(0, -1));
         if (webModel.laptopBatteryPercentage >= personalData.batteryConsideredFullAt) {
-            webModel.laptopFullyCharged = true;
+            webModelFunctions.update('laptopFullyCharged', true);
         } else {
-            webModel.laptopFullyCharged = false;
+            webModelFunctions.update('laptopFullyCharged', false);
         }
     });
 
     // Check plugged in status
     var powerCommand = '/usr/bin/upower -d|grep online';
     var powerCheck = exec(powerCommand);
-    powerCheck.stdout.on('data', function(data) {
+    powerCheck.stdout.on('data', function (data) {
         if (data.match('no')) {
-            webModel.pluggedIn = false;
+            webModelFunctions.update('pluggedIn', false);
         }
         if (data.match('yes')) {
-            webModel.pluggedIn = true;
+            webModelFunctions.update('pluggedIn', true);
         }
     });
 
@@ -172,10 +172,10 @@ Poll.prototype.tick = function(tick) {
     // assuming that if we started it manually, we don't want it to look
     // for a QR code for a map by itself
     var tryLightDelayTime = 60 * 2; // Two minutes
-    if (!webModel.ROSstart && !webModel.hasSetupViaQRcode && !webModel.triedLightToFindQRcode && webModel.mapName ==='' && howManySecondsSince(robotModel.bootTime) >= tryLightDelayTime && personalData.useQRcodes && !kill_rosHasRun) {
-        webModel.triedLightToFindQRcode = true;
+    if (!webModel.ROSstart && !webModel.hasSetupViaQRcode && !webModel.triedLightToFindQRcode && webModel.mapName === '' && howManySecondsSince(robotModel.bootTime) >= tryLightDelayTime && personalData.useQRcodes && !kill_rosHasRun) {
+        webModelFunctions.update('triedLightToFindQRcode', true);
         spawn('../scripts/turn_on_light.sh');
-        setTimeout(function() {
+        setTimeout(function () {
             if (!webModel.userLightOnRequested) {
                 spawn('../scripts/turn_off_light.sh');
             }
@@ -197,7 +197,7 @@ Poll.prototype.tick = function(tick) {
 // TODO: Maybe it should text me asking me to let it start ROS?
 var StartROS = b3.Class(b3.Action);
 StartROS.prototype.name = 'StartROS';
-StartROS.prototype.tick = function(tick) {
+StartROS.prototype.tick = function (tick) {
     if (robotModel.debug) console.log(this.name);
     // ROS Process launch behavior pattern:
     // FIRST: Is the process already started?
@@ -211,18 +211,18 @@ StartROS.prototype.tick = function(tick) {
                 // Once the process has exited:
                 // 1. DISABLE whatever user action causes it to be called,
                 // so that it won't loop.
-                webModel.ROSstart = false;
+                webModelFunctions.update('ROSstart', false);
                 // 2. Now that it won't loop, set .started to false,
                 // so that it can be run again.
                 robotModel.ROSprocess.started = false;
                 // 3. Send a status to the web site:
-                webModel.status = 'ROS process has closed.';
+                webModelFunctions.update('status', 'ROS process has closed.');
                 // 4. Log the closure to the console,
                 // because this is significant.
                 webModelFunctions.scrollingStatusUpdate(this.name + "Process Closed.");
                 // 5. Set any special status flags for this
                 // process. i.e. ROSisRunning sets the start/stop button position
-                webModel.ROSisRunning = false;
+                webModelFunctions.update('ROSisRunning', false);
                 // 6. Any special "cleanup" required?
                 // In this case we will run the kill routine.
                 // This command must be OK with being called multiple times.
@@ -247,7 +247,7 @@ StartROS.prototype.tick = function(tick) {
                 // This will repeat on every tick!
                 // 1. Set any special status flags for this
                 // process. i.e. ROSisRunning sets the start/stop button position
-                webModel.ROSisRunning = true;
+                webModelFunctions.update('ROSisRunning', true);
                 if (robotModel.startROSTime === undefined) {
                     robotModel.startROSTime = new Date(); // Time that ROS start was completed.
                 }
@@ -264,7 +264,7 @@ StartROS.prototype.tick = function(tick) {
     } else if (webModel.ROSstart) {
         // IF the process is supposed to start, but wasn't,
         // then run it:
-        webModel.status = 'ROS Start Requested.';
+        webModelFunctions.update('status', 'ROS Start Requested.');
         robotModel.ROSprocess.start();
         webModelFunctions.scrollingStatusUpdate(this.name + " Process starting!");
         return b3.RUNNING;
@@ -276,7 +276,7 @@ StartROS.prototype.tick = function(tick) {
 
 var AutoExplore = b3.Class(b3.Action);
 AutoExplore.prototype.name = 'AutoExplore';
-AutoExplore.prototype.tick = function(tick) {
+AutoExplore.prototype.tick = function (tick) {
     if (robotModel.debug) console.log(this.name);
     if (webModel.autoExplore) {
         if (robotModel.exploreProcess.started) {
@@ -291,13 +291,13 @@ AutoExplore.prototype.tick = function(tick) {
 
             if (robotModel.exploreProcess.startupComplete) {
                 if (robotModel.exploreProcess.hasExited) {
-                    webModel.status = 'Explore process is closed.';
-                    webModel.autoExplore = false;
+                    webModelFunctions.update('status', 'Explore process is closed.');
+                    webModelFunctions.update('autoExplore', false);
                     robotModel.exploreProcess.started = false;
                     webModelFunctions.behaviorStatusUpdate(this.name + "FAILURE");
                     return b3.FAILURE;
                 } else {
-                    webModel.status = 'Explore process started.';
+                    webModelFunctions.update('status', 'Explore process started.');
                     // Since this node will loop, we never reach the "unplug" node,
                     // so we need to tell the user that we are still plugged in.
                     // NOTE: This prevents self-unplugging logic,
@@ -317,7 +317,7 @@ AutoExplore.prototype.tick = function(tick) {
                     return b3.RUNNING;
                 }
             } else {
-                webModel.status = 'Explore process is starting...';
+                webModelFunctions.update('status', 'Explore process is starting...');
                 return b3.RUNNING;
             }
         } else {
@@ -334,7 +334,7 @@ AutoExplore.prototype.tick = function(tick) {
 
 var LoadMap = b3.Class(b3.Action);
 LoadMap.prototype.name = 'LoadMap';
-LoadMap.prototype.tick = function(tick) {
+LoadMap.prototype.tick = function (tick) {
     if (robotModel.debug) console.log(this.name);
     // ROS Process launch behavior pattern:
     // FIRST: This decides if we run this process or not:
@@ -354,12 +354,12 @@ LoadMap.prototype.tick = function(tick) {
                     // Once the process has exited:
                     // 1. DISABLE whatever user action causes it to be called,
                     // so that it won't loop.
-                    webModel.mapName = '';
+                    webModelFunctions.update('mapName', '');
                     // 2. Now that it won't loop, set .started to false,
                     // so that it can be run again.
                     robotModel.loadMapProcess.started = false;
                     // 3. Send a status to the web site:
-                    webModel.status = 'Map process has closed.';
+                    webModelFunctions.update('status', 'Map process has closed.');
                     // 4. Log the closure to the console,
                     // because this is significant.
                     webModelFunctions.scrollingStatusUpdate(this.name + "Process Closed.");
@@ -391,7 +391,7 @@ LoadMap.prototype.tick = function(tick) {
                         // You might need to use an online YAML to JSON converter
                         /// to get the right format for the command line.
                         if (webModel.wayPoints.indexOf('initial') > -1) {
-                            wayPointEditor.getWayPoint('initial', function(response) {
+                            wayPointEditor.getWayPoint('initial', function (response) {
                                 var set2dPoseEstimate = new LaunchScript({
                                     debugging: true,
                                     name: 'set2dPoseEstimate',
@@ -405,17 +405,17 @@ LoadMap.prototype.tick = function(tick) {
                         // TODO: This has an exit code, so can we set it to true when that happens?
                         // and keep returning "RUNNING" until it is set to true?!
                         /* This is the output:
-                        set2dPoseEstimate is starting up . . .
-                        set2dPoseEstimate stdout data:publishing and latching message for 3.0 seconds
-                        set2dPoseEstimate exited with code: 0
-                        */
+                         set2dPoseEstimate is starting up . . .
+                         set2dPoseEstimate stdout data:publishing and latching message for 3.0 seconds
+                         set2dPoseEstimate exited with code: 0
+                         */
 
                         robotModel.initialPoseSet = true;
                         // Give it one "loop" to get this done
                         return b3.RUNNING;
                     }
                     if (robotModel.mapLoadTime === undefined) {
-                        webModel.status = 'Map is Loaded.';
+                        webModelFunctions.update('status', 'Map is Loaded.');
                         robotModel.mapLoadTime = new Date(); // Time that map was loaded.
                     }
                     // Whether we return 'RUNNING' or 'SUCCESS',
@@ -443,13 +443,13 @@ LoadMap.prototype.tick = function(tick) {
 
 var UnPlugRobot = b3.Class(b3.Action);
 UnPlugRobot.prototype.name = 'UnPlugRobot';
-UnPlugRobot.prototype.tick = function(tick) {
+UnPlugRobot.prototype.tick = function (tick) {
     if (robotModel.debug) console.log(this.name);
     if (!webModel.pluggedIn) return b3.SUCCESS;
     if (webModel.laptopFullyCharged) {
         if (webModel.unplugYourself) {
             if (!robotModel.unplugProcess.started) {
-                webModel.status = 'Unplugging myself!';
+                webModelFunctions.update('status', 'Unplugging myself!');
                 robotModel.unplugProcess.start();
                 webModelFunctions.scrollingStatusUpdate(this.name + " process starting!");
                 return b3.RUNNING;
@@ -467,7 +467,7 @@ UnPlugRobot.prototype.tick = function(tick) {
             return b3.FAILURE;
         }
     } else {
-        webModel.status = 'Charging . . .';
+        webModelFunctions.update('status', 'Charging . . .');
         webModelFunctions.behaviorStatusUpdate(this.name + " waiting for full charge.");
         // We cannot do much else until we are unplugged.
         return b3.FAILURE;
@@ -475,14 +475,14 @@ UnPlugRobot.prototype.tick = function(tick) {
 };
 
 /*
-    ##### Jobs MemPriority #####
-*/
+ ##### Jobs MemPriority #####
+ */
 
 // TODO: Perfect this pattern and replicate to all script starting behaviors.
 // TODO: Maybe it should text me asking me to let it start ROS?
 var GoToWaypoint = b3.Class(b3.Action);
 GoToWaypoint.prototype.name = 'GoToWaypoint';
-GoToWaypoint.prototype.tick = function(tick) {
+GoToWaypoint.prototype.tick = function (tick) {
     if (robotModel.debug) console.log(this.name);
     // ROS Process launch behavior pattern:
     // FIRST: Is the process already started?
@@ -515,7 +515,7 @@ GoToWaypoint.prototype.tick = function(tick) {
                 // so that it can be run again.
                 robotModel.goToWaypointProcess.started = false;
                 // 3. Send a status to the web site:
-                webModel.status = 'Arrived at ' + webModel.wayPointNavigator.wayPointName;
+                webModelFunctions.update('status', 'Arrived at ' + webModel.wayPointNavigator.wayPointName);
                 // 4. Log the closure to the console,
                 // because this is significant.
                 webModelFunctions.scrollingStatusUpdate(this.name + "Process Closed.");
@@ -574,7 +574,7 @@ GoToWaypoint.prototype.tick = function(tick) {
         console.log('webModel.wayPointNavigator.goToWaypoint');
         // IF the process is supposed to start, but wasn't,
         // then run it:
-        webModel.status = 'Going to waypoint ' + webModel.wayPointNavigator.wayPointName;
+        webModelFunctions.update('status', 'Going to waypoint ' + webModel.wayPointNavigator.wayPointName);
         robotModel.goToWaypointProcess.ROScommand = 'unbuffer rosservice call /arlobot_goto/go_to_goal "' + robotModel.wayPointNavigator.destinaitonWaypoint + '"';
         robotModel.goToWaypointProcess.start();
         webModelFunctions.scrollingStatusUpdate(this.name + " Process starting!");
@@ -586,39 +586,39 @@ GoToWaypoint.prototype.tick = function(tick) {
 };
 
 /* RESULTS from GoToWaypoint logging:
-webModel.wayPointNavigator.goToWaypoint
-Running GoToWaypoint child process . . .
-GoToWaypoint is starting up . . .
-robotModel.goToWaypointProcess.started
-GoToWaypoint RUNNING
-robotModel.goToWaypointProcess.started
-GoToWaypoint RUNNING
-robotModel.goToWaypointProcess.started
-GoToWaypoint RUNNING
-robotModel.goToWaypointProcess.started
-GoToWaypoint RUNNING
-robotModel.goToWaypointProcess.started
-GoToWaypoint RUNNING
-robotModel.goToWaypointProcess.started
-GoToWaypoint RUNNING
-robotModel.goToWaypointProcess.started
-GoToWaypoint RUNNING
-robotModel.goToWaypointProcess.started
-GoToWaypoint RUNNING
-robotModel.goToWaypointProcess.started
-GoToWaypoint RUNNING
-robotModel.goToWaypointProcess.started
-GoToWaypoint RUNNING
-GoToWaypoint stdout data:result: True
-GoToWaypoint exited with code: 0
-robotModel.goToWaypointProcess.started
-robotModel.goToWaypointProcess.startupComplete
-robotModel.goToWaypointProcess.hasExited
-*/
+ webModel.wayPointNavigator.goToWaypoint
+ Running GoToWaypoint child process . . .
+ GoToWaypoint is starting up . . .
+ robotModel.goToWaypointProcess.started
+ GoToWaypoint RUNNING
+ robotModel.goToWaypointProcess.started
+ GoToWaypoint RUNNING
+ robotModel.goToWaypointProcess.started
+ GoToWaypoint RUNNING
+ robotModel.goToWaypointProcess.started
+ GoToWaypoint RUNNING
+ robotModel.goToWaypointProcess.started
+ GoToWaypoint RUNNING
+ robotModel.goToWaypointProcess.started
+ GoToWaypoint RUNNING
+ robotModel.goToWaypointProcess.started
+ GoToWaypoint RUNNING
+ robotModel.goToWaypointProcess.started
+ GoToWaypoint RUNNING
+ robotModel.goToWaypointProcess.started
+ GoToWaypoint RUNNING
+ robotModel.goToWaypointProcess.started
+ GoToWaypoint RUNNING
+ GoToWaypoint stdout data:result: True
+ GoToWaypoint exited with code: 0
+ robotModel.goToWaypointProcess.started
+ robotModel.goToWaypointProcess.startupComplete
+ robotModel.goToWaypointProcess.hasExited
+ */
 
 /*
-    ##### Idle MemPriority #####
-*/
+ ##### Idle MemPriority #####
+ */
 
 // This will only fail when we feel the robot is idle,
 // allowing the rest of the items in this tree to take a shot,
@@ -628,7 +628,7 @@ robotModel.goToWaypointProcess.hasExited
 // nodes can key off of that too for further control.
 var IsNotIdle = b3.Class(b3.Action);
 IsNotIdle.prototype.name = 'IsNotIdle';
-IsNotIdle.prototype.tick = function(tick) {
+IsNotIdle.prototype.tick = function (tick) {
     if (robotModel.debug) console.log(this.name);
     // For now I'm just going to "stall" for 3 minutes by setting a time.
     var repeatDelay = 60 * 3; // Three minutes.
@@ -650,7 +650,7 @@ IsNotIdle.prototype.tick = function(tick) {
 
 var GotoRandomLocation = b3.Class(b3.Action);
 GotoRandomLocation.prototype.name = 'GotoRandomLocation';
-GotoRandomLocation.prototype.tick = function(tick) {
+GotoRandomLocation.prototype.tick = function (tick) {
     if (robotModel.debug) console.log(this.name);
     var repeatDelay = 60 * 10; // Ten minutes.
     // We have to have more than one destination. :) and the initial pose set.
@@ -741,13 +741,13 @@ robotModel.ROSprocess = new LaunchScript({
 });
 
 /* GotoWaypoint Process output:
-Running GoToWaypoint child process . . .
-GoToWaypoint is starting up . . .
-GoToWaypoint stdout data:result: True
-GoToWaypoint exited with code: 0
+ Running GoToWaypoint child process . . .
+ GoToWaypoint is starting up . . .
+ GoToWaypoint stdout data:result: True
+ GoToWaypoint exited with code: 0
 
-So just wait for a clean exit, no need for a successString.
-*/
+ So just wait for a clean exit, no need for a successString.
+ */
 robotModel.goToWaypointProcess = new LaunchScript({
     debugging: true,
     name: 'GoToWaypoint'
@@ -786,10 +786,10 @@ robotModel.unplugProcess = new LaunchScript({
 
 var blackboard = new b3.Blackboard();
 
-webModel.status = 'Behavior Tree is running.';
+webModelFunctions.update('status', 'Behavior Tree is running.');
 
 // This is where the behavior tree actually runs ("loops")
-setInterval(function() {
+setInterval(function () {
     arloTree.tick(robotModel, blackboard);
     // Note that we can do stuff between ticks if we want to,
     // although tracking information in the arloBot object,
@@ -835,15 +835,15 @@ function replHelp() {
 
 // https://nodejs.org/api/repl.html
 // telnet localhost 5001
-net.createServer(function(socket) {
+net.createServer(function (socket) {
     REPLconnections += 1;
     var replNetwork = repl.start({
         prompt: webModel.robotName + " > ",
         input: socket,
         output: socket
-    }).on('exit', function() {
+    }).on('exit', function () {
         socket.end();
-    }).on('error', function(err) {
+    }).on('error', function (err) {
         console.log(err);
         socket.end();
     });
@@ -860,10 +860,10 @@ net.createServer(function(socket) {
 
 var replConsole = repl.start({
     prompt: webModel.robotName + " > "
-}).on('exit', function() {
+}).on('exit', function () {
     console.log('Got "exit" event from repl!');
     killROS(true);
-}).on('error', function(err) {
+}).on('error', function (err) {
     console.log(err);
     socket.end();
 });

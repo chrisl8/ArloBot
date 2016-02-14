@@ -2,8 +2,8 @@ var personalData = require('./personalData');
 var webModel = require('./webModel');
 var webModelFunctions = require('./webModelFunctions');
 var robotModel = require('./robotModel');
-var O = require('observed');
-var webModelWatcher = O(webModel);
+//var O = require('observed');
+//var webModelWatcher = O(webModel);
 var LaunchScript = require('./LaunchScript');
 var tts = require('./tts');
 
@@ -194,7 +194,7 @@ function start() {
     var webServer = app.listen(personalData.webServerPort);
     var io = require("socket.io").listen(webServer);
 
-    webModelWatcher.on('change', function() {
+    webModelFunctions.emitter.on('change', function() {
         io.sockets.emit('webModel', webModel);
     });
 

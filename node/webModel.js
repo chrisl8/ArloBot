@@ -1,6 +1,8 @@
 // This object is sent to the web app via socket.io
 // Do not put deep or complex objects here,
 // Just text based or boolean items to digest in the web.
+// Note that there are functions for working with this object,
+// in webModelFunctions.js
 
 module.exports = {
     robotName: 'ArloBot', // This will be overridden by personalData in index.js

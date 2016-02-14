@@ -1,8 +1,11 @@
 var webModel = require('./webModel');
+var webModelFunctions = require('./webModelFunctions');
 var robotModel = require('./robotModel');
-var O = require('observed');
-var webModelWatcher = O(webModel);
-var robotModelWatcher = O(robotModel);
+// TODO: Observe is DEAD, so this all has to change,
+// Until then this entire module is dead.
+//var O = require('observed');
+//var webModelWatcher = O(webModel);
+//var robotModelWatcher = O(robotModel);
 var tts = require('./tts');
 var howManySecondsSince = require('./howManySecondsSince');
 // fs.watch sees like 5 updates instead of one,
@@ -66,9 +69,9 @@ buildInMemoryEventObject(eventModel, eventInMemoryObject);
 
 // Watch the speechModel.json file for changes,
 // So that we can dynamically add speech without restarting the robot.
-chokidar.watch('./speechModel.json').on('change', function(event, path) {
-    setTimeout(function() {
-        fs.readFile('./speechModel.json', 'utf8', function(err, data) {
+chokidar.watch('./speechModel.json').on('change', function (event, path) {
+    setTimeout(function () {
+        fs.readFile('./speechModel.json', 'utf8', function (err, data) {
             if (err) {
                 console.log('speechModel.json read error');
             } else {
@@ -83,9 +86,9 @@ chokidar.watch('./speechModel.json').on('change', function(event, path) {
     }, 1000);
 });
 
-chokidar.watch('./eventResponses.json').on('change', function(event, path) {
-    setTimeout(function() {
-        fs.readFile('./eventResponses.json', 'utf8', function(err, data) {
+chokidar.watch('./eventResponses.json').on('change', function (event, path) {
+    setTimeout(function () {
+        fs.readFile('./eventResponses.json', 'utf8', function (err, data) {
             if (err) {
                 console.log('eventResponses.json read error');
             } else {
@@ -169,26 +172,35 @@ function talkToMe() {
     }
 }
 
-function talkAboutEvents(change) {
-    if (robotModel.debug) {
-        console.log('---------------')
-        console.log('talkAboutEvents change:');
-        console.log(change.name);
-        console.log(change.value);
-        console.log('---------------')
-    }
-    if (howManySecondsSince(lastSpoke) >= eventModel[change.name].delay) {
-        // and if we've already said it too recently we should say something else or skip it.
-        if (howManySecondsSince(eventInMemoryObject[change.name][change.value].lastSaid) >= eventModel[change.name].repeatInterval) {
-            tts(getSomethingToSay(eventModel[change.name], eventInMemoryObject[change.name], change.value));
-            lastSpoke = new Date();
-            eventInMemoryObject[change.name][change.value].lastSaid = new Date();
+function talkAboutEvents(key, value) {
+    if (key && value) {
+        if (robotModel.debug) {
+            console.log('---------------')
+            console.log('talkAboutEvents change:');
+            console.log(key);
+            console.log(value);
+            console.log('---------------')
+        }
+        if (eventModel[key] && howManySecondsSince(lastSpoke) >= eventModel[key].delay) {
+            // and if we've already said it too recently we should say something else or skip it.
+            if (howManySecondsSince(eventInMemoryObject[key][value].lastSaid) >= eventModel[key].repeatInterval) {
+                tts(getSomethingToSay(eventModel[key], eventInMemoryObject[key], value));
+                lastSpoke = new Date();
+                eventInMemoryObject[key][value].lastSaid = new Date();
+            }
         }
     }
 }
 
-webModelWatcher.on('change', talkAboutEvents);
-robotModelWatcher.on('change', talkAboutEvents);
+// TODO: Observe is DEAD, so this all has to change,
+// Until then this entire module is dead.
+// TODO: Implement or improve some sort of setter/getter on webModel and robotModel
+// that can be used to "ping" things like this.
+webModelFunctions.emitter.on('change', function (key, value) {
+    talkAboutEvents(key, value)
+});
+//webModelWatcher.on('change', talkAboutEvents);
+//robotModelWatcher.on('change', talkAboutEvents);
 
 // TODO: We need to track waypoint arrivals.
 
@@ -212,6 +224,6 @@ robotModelWatcher.on('change', talkAboutEvents);
 
 // TODO: Is this a good time?
 // TODO: or should it be in the index.js Behavior tree poll?
-setInterval(function() {
+setInterval(function () {
     talkToMe();
 }, 1000);
