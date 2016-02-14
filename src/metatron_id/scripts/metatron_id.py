@@ -183,11 +183,11 @@ class MetatronId(object):
 
         self.cameraChoice = req.camera
         if req.camera == "laptop":
-            video_command = ['mjpg_streamer', '-i', '/usr/local/lib/input_uvc.so -d ' + self.camera2 + ' -f 30 -r 1280x720',
+            video_command = ['mjpg_streamer', '-i', '/usr/local/lib/input_uvc.so -d ' + self.camera2 + ' -n -f 30 -r 1280x720',
                              '-o',
                              '/usr/local/lib/output_http.so -p 58180 -w ' + self.script_location + '/mjpg-streamer/mjpg-streamer/www']
         else:  # Just assume we want the primary camera if we get a bogus choice
-            video_command = ['mjpg_streamer', '-i', '/usr/local/lib/input_uvc.so -d ' + self.camera1 + ' -f 30 -r 1280x720',
+            video_command = ['mjpg_streamer', '-i', '/usr/local/lib/input_uvc.so -d ' + self.camera1 + ' -n -f 30 -r 1280x720',
                              '-o',
                              '/usr/local/lib/output_http.so -p 58180 -w ' + self.script_location + '/mjpg-streamer/mjpg-streamer/www']
 
