@@ -79,8 +79,10 @@ if ! (which mjpg_streamer > /dev/null)
     then
     printf "\n${YELLOW}[Installing mjpg_streamer for Web Page camera viewing]${NC}\n"
     cd ${SCRIPTDIR}
-    svn co https://svn.code.sf.net/p/mjpg-streamer/code/ mjpg-streamer
+    svn co https://svn.code.sf.net/p/mjpg-streamer/code mjpg-streamer
     cd mjpg-streamer/mjpg-streamer
+    # https://www.raspberrypi.org/forums/viewtopic.php?f=28&t=109352
+    patch -p0 < ../../input_uvc_patch
     # sudo apt-get install libv4l-dev # Installed earlier, left here for documentation of why
     make USE_LIBV4L2=true clean all
     sudo make install
