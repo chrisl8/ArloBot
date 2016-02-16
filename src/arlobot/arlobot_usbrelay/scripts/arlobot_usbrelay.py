@@ -236,22 +236,14 @@ class UsbRelay(object):
             self.r.sleep() # Sleep long enough to maintain the rate set in __init__
 
     def Stop(self):
-        #rospy.sleep(5) # Give other nodes a chance to clean up before shutting down our services.
-        rospy.loginfo("Shutting off all enabled relays . . .")
-        for i in range(1,9): # Walk the relays to find the one with the right name.
-            relayEnabled = rospy.get_param("~relay" + str(i) + "enabled", False)
-            if relayEnabled: # Do not touch (poll or anything) Relays that are not listed as enabled.
-                relayLabel = rospy.get_param("~relay" + str(i) + "label", "No Label")
-                self._Busy = True # We are shutting down, so make everyone else stall and plow ahead:
+        rospy.loginfo("Shutting off all relays . . .")
+        # At this point ROS is shutting down, so any attempts to check parameters or log may crash.
+        self._Busy = True # We are shutting down, so make everyone else stall and plow ahead:
+        for i in range(1,9): # Walk the relays
+            state = get_relay_state( BitBangDevice(self.relaySerialNumber).port, str(i) )
+            while not state == 0: # Loop if it doesn't shut off.
+                BitBangDevice(self.relaySerialNumber).port &= ~int(relay_data.address[str(i)], 16)
                 state = get_relay_state( BitBangDevice(self.relaySerialNumber).port, str(i) )
-                if state == 0:
-                    rospy.loginfo(str(i) + " - " + relayLabel + " already OFF")
-                else:
-                    while not state == 0: # Loop if it doesn't shut off.
-                        #print state
-                        BitBangDevice(self.relaySerialNumber).port &= ~int(relay_data.address[str(i)], 16)
-                        state = get_relay_state( BitBangDevice(self.relaySerialNumber).port, str(i) )
-                    rospy.loginfo(str(i) + " - " + relayLabel + " shut OFF by arlobot_usbrelay node.")
 
 if __name__ == '__main__':
     node = UsbRelay()
