@@ -42,7 +42,7 @@ if [ -e  ${HOME}/.nvm/nvm.sh ]
     nvm deactivate
 fi
 
-wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.30.2/install.sh | bash
+wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh | bash
 export NVM_DIR="${HOME}/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 
