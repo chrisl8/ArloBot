@@ -224,6 +224,15 @@ printf "${BLUE}The ArloBot source will not build in Jade yet.${NC}\n"
 printf "${BLUE}The unbuilt files are enough to allow RVIZ and other GUI tools to work.${NC}\n"
 source ~/catkin_ws/devel/setup.bash
 
+# We will use ~/.arlobot to store "private" data
+# That is data that doesn't need to be part of
+# the public github repo like user tokens,
+# sounds, and room maps and per robot settings
+if ! [ -d ${HOME}/.arlobot ]
+    then
+    mkdir ${HOME}/.arlobot
+fi
+
 ARLOHOME=${HOME}/.arlobot
 
 if [ -e ${ARLOHOME}/personalDataForBehavior.json ]
