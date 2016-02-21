@@ -30,7 +30,7 @@ By using the #define lines, code for items you do not have is never seen by the 
 #define THROTTLE_STOP 5
 
 // QUESTION: Does your robot have a 2nd Propeller "QuickStart" board where the PING sensors are connected?
-#define hasQuickStartBoard
+//#define hasQuickStartBoard
 // WARNING WARNING WARNING!
 // You must ALSO open up "2nd Board Code.c" and make changes there if you are using the QuickStart board!
 // Settings for QuickStart Board - IGNORE IF YOU DON'T HAVE ONE!
@@ -47,7 +47,7 @@ By using the #define lines, code for items you do not have is never seen by the 
 //#define hasMCP3208
 // Settings for MCP3208, if it has one:
 // SETTING: How many IR sensors (if any) are connected to your MCP3208?
-#define NUMBER_OF_IR_ON_MCP3208 6
+#define NUMBER_OF_IR_ON_MCP3208 0
 #define MCP3208_DINOUT_PIN 3
 #define MCP3208_CLK_PIN 4
 #define MCP3208_CS_PIN 2
@@ -57,27 +57,27 @@ By using the #define lines, code for items you do not have is never seen by the 
 // PROXIMITY SENSORS:
 // IMPORTANT! This section is very important!
 // SETTINGS: Proximity (PING & IR) Sensor count and location:
-#define NUMBER_OF_PING_SENSORS 14
-#define NUMBER_OF_IR_SENSORS 8
+#define NUMBER_OF_PING_SENSORS 1
+#define NUMBER_OF_IR_SENSORS 0
 
 // QUESTION: Do you have PING sensors on the front of your robot?
 #define hasFrontPingSensors
 #define FIRST_FRONT_PING_SENSOR_NUMBER 0 // Count from 0
 // Your sensors need to poll consecutively for each section!
-#define HOW_MANY_FRONT_PING_SENSORS 5
+#define HOW_MANY_FRONT_PING_SENSORS 1
 
 // QUESTION: Do you have PING sensors on the back of your robot?
-#define hasRearPingSensors
+//#define hasRearPingSensors
 #define FIRST_REAR_PING_SENSOR_NUMBER 5 // Count from 0
 #define HOW_MANY_REAR_PING_SENSORS 5
 
 // QUESTION: Do you have IR sensors on the front of your robot?
-#define hasFrontIRSensors
+//#define hasFrontIRSensors
 #define FIRST_FRONT_IR_SENSOR_NUMBER 0 // Count from 0
 #define HOW_MANY_FRONT_IR_SENSORS 5
 
 // QUESTION: Do you have IR sensors on the back of your robot?
-#define hasRearIRSensors
+//#define hasRearIRSensors
 #define FIRST_REAR_IR_SENSOR_NUMBER 7 // Count from 0
 #define HOW_MANY_REAR_IR_SENSORS 1
 
@@ -86,14 +86,14 @@ By using the #define lines, code for items you do not have is never seen by the 
 the deck the circle of sensors is on.
 I have one on the top deck, and then one on the stand holding the Xtion sensor.
 All of these will be assumed to face forward. */
-#define hasFrontUpperDeckSensors
+//#define hasFrontUpperDeckSensors
 #define FIRST_FRONT_UPPER_SENSOR_NUMBER 10 // Count from 0
-#define HOW_MANY_FRONT_UPPER_SENSORS 2
+#define HOW_MANY_FRONT_UPPER_SENSORS 3
 
 // QUESTION: Do you have PING sensors on the REAR "upper deck" of your robot?
-#define hasRearUpperDeckSensors
-#define FIRST_REAR_UPPER_SENSOR_NUMBER 12 // Count from 0
-#define HOW_MANY_REAR_UPPER_SENSORS 2
+//#define hasRearUpperDeckSensors
+#define FIRST_REAR_UPPER_SENSOR_NUMBER 13 // Count from 0
+#define HOW_MANY_REAR_UPPER_SENSORS 1
 
 /* Here you set up arrays showing what the halt distance,
    and distance to start slowing down is for each sensor.
@@ -103,11 +103,13 @@ All of these will be assumed to face forward. */
    Remember the order is based on the order that they are plugged
    in to your board.
    WARNING: Be sure the array has the correct number of entries! */
-const int haltDistance[NUMBER_OF_PING_SENSORS] = {5, 10, 12, 10, 5, 5, 10, 12, 10, 5, 12, 12, 12, 12};
-const int startSlowDownDistance[NUMBER_OF_PING_SENSORS] = {8, 40, MAX_DISTANCE, 40, 8, 8, 40, MAX_DISTANCE, 40, 8, MAX_DISTANCE, 20, MAX_DISTANCE, MAX_DISTANCE};
+const int haltDistance[NUMBER_OF_PING_SENSORS] = {12};
+//const int haltDistance[NUMBER_OF_PING_SENSORS] = {5, 10, 12, 10, 5, 5, 10, 12, 10, 5, 10, 12, 10, 12};
+const int startSlowDownDistance[NUMBER_OF_PING_SENSORS] = {MAX_DISTANCE};
+//const int startSlowDownDistance[NUMBER_OF_PING_SENSORS] = {8, 40, MAX_DISTANCE, 40, 8, 8, 40, MAX_DISTANCE, 40, 8, 40, MAX_DISTANCE, 40, MAX_DISTANCE};
 // Set shorter distances for IR sensors because they are less reliable.
 const int IRstartSlowDownDistance[NUMBER_OF_IR_SENSORS] = {8, 20, IR_MAX_DISTANCE, 20, 8, IR_MAX_DISTANCE, 0, 0};
-/* My last two IR sensors are cliff sensors, thus the "0, 0" because slowdow
+/* My last two IR sensors are cliff sensors, thus the "0, 0" because slowdown
 does not apply to them. */
 
 // QUESTION: Sensor Identities:
@@ -116,20 +118,22 @@ does not apply to them. */
 #define FRONT_CENTER_SENSOR 2
 // NOTE: IF you comment out the FRONT_CENTER_SENSOR, then ALL Front sensors are ignored for escaping!
 // "Left" refers to the ROBOT's left, assuming he faces the way he drives "forward"
-#define FRONT_NEAR_LEFT_SENSOR 1
-#define FRONT_FAR_LEFT_SENSOR 0
-#define FRONT_NEAR_RIGHT_SENSOR 3
-#define FRONT_FAR_RIGHT_SENSOR 4
-#define REAR_FAR_RIGHT_SENSOR 5
-#define REAR_NEAR_RIGHT_SENSOR 6
-#define REAR_CENTER_SENSOR 7
+//#define FRONT_NEAR_LEFT_SENSOR 1
+//#define FRONT_FAR_LEFT_SENSOR 0
+//#define FRONT_NEAR_RIGHT_SENSOR 3
+//#define FRONT_FAR_RIGHT_SENSOR 4
+//#define REAR_FAR_RIGHT_SENSOR 5
+//#define REAR_NEAR_RIGHT_SENSOR 6
+//#define REAR_CENTER_SENSOR 7
 // NOTE: IF you comment out the REAR_CENTER_SENSOR, then ALL Rear sensors are ignored for escaping!
-#define REAR_NEAR_LEFT_SENSOR 8
-#define REAR_FAR_LEFT_SENSOR 9
-#define FRONT_UPPER_DECK_SENSOR 10
-#define FRONT_3D_MOUNTED_SENSOR 11
-#define REAR_UPPER_DECK_SENSOR 12
-#define REAR_3D_MOUNTED_SENSOR 13
+//#define REAR_NEAR_LEFT_SENSOR 8
+//#define REAR_FAR_LEFT_SENSOR 9
+//#define FRONT_UPPER_DECK_NEAR_LEFT_SENSOR 10
+//#define FRONT_UPPER_DECK_CENTER_SENSOR 11
+//#define FRONT_UPPER_DECK_NEAR_RIGHT_SENSOR 12
+//#define FRONT_3D_MOUNTED_SENSOR 11
+//#define REAR_UPPER_DECK_SENSOR 13
+//#define REAR_3D_MOUNTED_SENSOR 13
 
 // QUESTION: Do you want to "rename" the rear IR sensor(s)?
 /* If this is set, all "rear" IR sensors will be labeled with this number
@@ -151,13 +155,13 @@ If you don't want to do this, just comment this setting out:
    start up the motors with a USB Relay Board
    and start chasing them . . . or something.
    */
-#define hasPIR
+//#define hasPIR
 // SETTING: IF you have a PIR sensor, which pin is it connected to?
 #define PIR_PIN 11
 
 // GYROSCOPE:
 // QUESTION: Does your robot have a Gyro module installed on the Activity Board?
-#define hasGyro
+//#define hasGyro
 // Settings for Gyroscope, if it has one:
 // SETTING: Activity Board pin that the SCL pin from the Gyro is connected to:
 #define GYRO_SCL_PIN 1
@@ -166,7 +170,7 @@ If you don't want to do this, just comment this setting out:
 
 // VOLTAGE MONITORING:
 // QUESTION: Do you have a voltage divider connected to the Activity Board's built in ADC to monitor voltage at the left and right motors?
-#define hasMotorPowerMonitorCircuit
+//#define hasMotorPowerMonitorCircuit
 // Settings for Motor Power Monitor Circuit, if it has one:
 // If these get flipped just flip the wires, or the numbers.
 #define LEFT_MOTOR_ADC_PIN 0
@@ -174,7 +178,7 @@ If you don't want to do this, just comment this setting out:
 
 // CLIFF SENSORS:
 // QUESTION: Do you have IR "cliff" sensors mounted to the front of the robot?
-#define hasCliffSensors
+//#define hasCliffSensors
 // SETTING: Which IR sensor number (counting from 0) is the first cliff sensor?
 #define FIRST_CLIFF_SENSOR 5
 // SETTING: How many cliff sensors are there?
@@ -185,7 +189,7 @@ If you don't want to do this, just comment this setting out:
 
 // FLOOR OBSTACLE SENSORS:
 // QUESTION: Do you have digital infrared sensors on the front of the robot?
-#define hasFloorObstacleSensors
+//#define hasFloorObstacleSensors
 #define FIRST_FLOOR_SENSOR_PIN 7
 #define NUMBER_OF_FLOOR_SENSORS 4
 
@@ -209,7 +213,7 @@ Do not try to use it with ROS, as the extra output will confuse it. */
 /* You can disable this for use with the
 /home/chrisl8/catkin_ws/src/Metatron/scripts/direct2PropSerialTest.sh
 script in order to disable the normal sensor data lines.
-Sometimes this is helpful to clean up the output for debiggin.
+Sometimes this is helpful to clean up the output for debugging.
 This MUST be enabled for ROS to work though!
 */
 

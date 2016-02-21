@@ -5,6 +5,6 @@
 >-m32bit-doubles
 >-Wall
 >-fno-exceptions
->defs::-std=c99
+>defs::-std=c99 -I../../../../.arlobot/
 >-lm
 >BOARD::QUICKSTART

@@ -1101,16 +1101,24 @@ void pollGyro(void *par) {
                         } else if (blockedSensor[FRONT_3D_MOUNTED_SENSOR] == 1) {
                             drive_speed(-MINIMUM_SPEED, -MINIMUM_SPEED);
                         #endif
-                        #ifdef FRONT_UPPER_DECK_SENSOR
-                        } else if (blockedSensor[FRONT_UPPER_DECK_SENSOR] == 1) {
+                        #ifdef FRONT_UPPER_DECK_CENTER_SENSOR
+                        } else if (blockedSensor[FRONT_UPPER_DECK_CENTER_SENSOR] == 1) {
                             drive_speed(-MINIMUM_SPEED, -MINIMUM_SPEED);
                         #endif
                         #ifdef FRONT_NEAR_LEFT_SENSOR
                         } else if (blockedSensor[FRONT_NEAR_LEFT_SENSOR] == 1) {
                             drive_speed(-MINIMUM_SPEED, -(MINIMUM_SPEED * 2)); // Curve out to the right
                         #endif
+                        #ifdef FRONT_UPPER_DECK_NEAR_LEFT_SENSOR
+                        } else if (blockedSensor[FRONT_UPPER_DECK_NEAR_LEFT_SENSOR] == 1) {
+                            drive_speed(-MINIMUM_SPEED, -(MINIMUM_SPEED * 2)); // Curve out to the right
+                        #endif
                         #ifdef FRONT_NEAR_RIGHT_SENSOR
                         } else if (blockedSensor[FRONT_NEAR_RIGHT_SENSOR] == 1) {
+                            drive_speed(-(MINIMUM_SPEED * 2), -MINIMUM_SPEED); // Curve out to the left
+                        #endif
+                        #ifdef FRONT_UPPER_DECK_NEAR_RIGHT_SENSOR
+                        } else if (blockedSensor[FRONT_UPPER_DECK_NEAR_RIGHT_SENSOR] == 1) {
                             drive_speed(-(MINIMUM_SPEED * 2), -MINIMUM_SPEED); // Curve out to the left
                         #endif
                         #ifdef FRONT_FAR_LEFT_SENSOR

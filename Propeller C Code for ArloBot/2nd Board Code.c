@@ -1,22 +1,32 @@
 /* ATTENTION! ATTENTION! ATTENTION! ATTENTION! ATTENTION! ATTENTION!
-You MUST edit the following settings based on the physical layout
-of your robot!
+You MUST edit the settings in
+~/.arlobot/per_robot_settings_for_propeller_2nd_board.h
+based on the physical layout of your robot!
 For each QUESTION:
 UNCOMMENT '#define' lines for any included items,
 COMMENT '#define' lines for anything that is not included.
 For each SETTING:
-Set the variable as required, noting that usually these are ignored if the preceding QUESTION is commented out. */
+Set the variable as required, noting that usually these are ignored if the preceding QUESTION is commented out.
 
-// How many PING Sensors do you have on the QuickStart board?
-#define NUMBER_OF_PING_SENSORS 14
-// How many IR Sensors do you have on the MCP3208?
-#define NUMBER_OF_IR_SENSORS 8
-// Which pin the first PING sensor is on?
-#define FIRST_PING_SENSOR_PIN 2
-// Which pin on the QuickStart Board is the RX pin connected out to the Activity board?
-#define QUICKSTART_RX_PIN 0
-// Which pin on the QuickStart Board is the TX pin connected in from the Activity board?
-#define QUICKSTART_TX_PIN 1
+Example, My robot has a "Thing1", but not a "Thing2"
+*/
+#define hasThingOne
+//#define hasTHingTwo
+
+/* Just like that, comment out the "has" line for things you do not have,
+and if you do have the thing, adjust the numbers on the other definition as needed.
+By using the #define lines, code for items you do not have is never seen by the compiler and is never even loaded on the Propeller bard, saving memory. */
+
+#include "per_robot_settings_for_propeller_2nd_board.h"
+/* If SimpleIDE build fails because the above file is missing,
+open up the "Project Manager", then the "Compiler" tab,
+and fix the path to your ~/.arlobot/ folder
+under Other Compiler Options
+and/or copy the above file from the dotfiles folder
+to your ~/.arlobot folder.
+You could also just move the files in the dotfiles folder into
+the folder with this file, but future "git pull" updates
+will erase your changes.*/
 
 /* 2nd Propeller Board (QuickStart Board) Code for ArloBot
 
