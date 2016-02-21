@@ -224,6 +224,18 @@ printf "${BLUE}The ArloBot source will not build in Jade yet.${NC}\n"
 printf "${BLUE}The unbuilt files are enough to allow RVIZ and other GUI tools to work.${NC}\n"
 source ~/catkin_ws/devel/setup.bash
 
+ARLOHOME=${HOME}/.arlobot
+
+if [ -e ${ARLOHOME}/personalDataForBehavior.json ]
+    then
+    node ${SCRIPTDIR}/../node/personalData.js
+else
+    printf "\n"
+    cp ${SCRIPTDIR}/dotarlobot/personalDataForBehavior.json ${ARLOHOME}/
+    printf "${GREEN}A brand new ${RED}~/.arlobot/personalDataForBehavior.json${GREEN} file has been created,${NC}\n"
+    printf "${LIGHTPURPLE}Please edit this file to customize according to your robot!${NC}\n"
+fi
+
 printf "\n${YELLOW}[Setting the ROS environment in your .bashrc file]${NC}\n"
 if ! (grep ROS_MASTER_URI ~/.bashrc>/dev/null)
     then
