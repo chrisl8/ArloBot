@@ -527,6 +527,28 @@ class PropellerComm(object):
                 ping[i] = artificial_far_distance
             ir[i] = (sensor_data.get('i' + str(i), artificial_far_distance * 100) / 100.0) + sensor_offset  # Convert cm to meters and add offset
 
+        # Overwrite main sensors with upper deck sensors if they exist and are closer,
+        # TODO: This code is very manual. It won't break if you don't have these sensors, but
+        # the positions are hard coded. :(
+
+        if sensor_data.get('p' + str(10)):
+            upperSensor = (sensor_data.get('p' + str(10), artificial_far_distance * 100) / 100.0) + sensor_offset
+            if upperSensor < ping[1]:
+                ping[1] = upperSensor
+        if sensor_data.get('p' + str(11)):
+            upperSensor = (sensor_data.get('p' + str(11), artificial_far_distance * 100) / 100.0) + sensor_offset
+            if upperSensor < ping[2]:
+                ping[2] = upperSensor
+        if sensor_data.get('p' + str(12)):
+            upperSensor = (sensor_data.get('p' + str(12), artificial_far_distance * 100) / 100.0) + sensor_offset
+            if upperSensor < ping[3]:
+                ping[3] = upperSensor
+        if sensor_data.get('p' + str(13)):
+            upperSensor = (sensor_data.get('p' + str(13), artificial_far_distance * 100) / 100.0) + sensor_offset
+            if upperSensor < ping[7]:
+                ping[7] = upperSensor
+        # TODO: Duduplicate the above code.
+
         # The sensors are 11cm from center to center at the front of the base plate.
         # The radius of the base plate is 22.545 cm
         # = 28 degree difference (http://ostermiller.org/calc/triangle.html)
@@ -717,14 +739,11 @@ class PropellerComm(object):
         """
         rospy.loginfo("Stopping")
         self._SafeToOperate = False  # Prevent threads fighting
-        if self._motorsOn:
-            # arlobot_usbrelay will also shut off all relays after a delay, but better safe than sorry!
-            self._switch_motors( False)
         # Save last position in parameter server in case we come up again without restarting roscore!
         rospy.set_param('lastX', self.lastX)
         rospy.set_param('lastY', self.lastY)
         rospy.set_param('lastHeading', self.lastHeading)
-        time.sleep(3)  # Give the motors time to shut off
+        time.sleep(5)  # Give the motors time to shut off
         self._serialAvailable = False
         rospy.loginfo("_SerialDataGateway stopping . . .")
         try:

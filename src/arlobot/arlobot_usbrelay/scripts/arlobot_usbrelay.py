@@ -213,23 +213,24 @@ class UsbRelay(object):
                 relaystatus.relayPresent = True
                 # Gather USB Relay status for each relay and publish
                 for i in range(1,9):
-                    relayEnabled = rospy.get_param("~relay" + str(i) + "enabled", False)
-                    if relayEnabled: # Do not touch (poll or anything) Relays that are not listed as enabled.
-                        relayLabel = rospy.get_param("~relay" + str(i) + "label", "No Label")
-                        while self._Busy: # Prevent simultaneous polling of serial port by multiple processes within this app due to ROS threading.
-                            rospy.loginfo("BitBangDevice Busy . . .")
-                            rospy.sleep(0.2)
-                        self._Busy = True
-                        state = get_relay_state( BitBangDevice(self.relaySerialNumber).port, str(i) )
-                        self._Busy = False
-                        if state == 0:
-                            #print "Relay " + str(i) + " state:\tOFF (" + str(state) + ")"
-                            #print str(i) + " - " + relayLabel + ": OFF"
-                            relaystatus.relayOn[i-1] = False
-                        else:
-                            #print "Relay " + str(i) + " state:\tON (" + str(state) + ")"
-                            #print str(i) + " - " + relayLabel + ": ON"
-                            relaystatus.relayOn[i-1] = True
+                    if not rospy.is_shutdown(): # ROS tends to get shut down while this is looping and throw a lot of errors
+                        relayEnabled = rospy.get_param("~relay" + str(i) + "enabled", False)
+                        if relayEnabled: # Do not touch (poll or anything) Relays that are not listed as enabled.
+                            relayLabel = rospy.get_param("~relay" + str(i) + "label", "No Label")
+                            while self._Busy: # Prevent simultaneous polling of serial port by multiple processes within this app due to ROS threading.
+                                rospy.loginfo("BitBangDevice Busy . . .")
+                                rospy.sleep(0.2)
+                            self._Busy = True
+                            state = get_relay_state( BitBangDevice(self.relaySerialNumber).port, str(i) )
+                            self._Busy = False
+                            if state == 0:
+                                #print "Relay " + str(i) + " state:\tOFF (" + str(state) + ")"
+                                #print str(i) + " - " + relayLabel + ": OFF"
+                                relaystatus.relayOn[i-1] = False
+                            else:
+                                #print "Relay " + str(i) + " state:\tON (" + str(state) + ")"
+                                #print str(i) + " - " + relayLabel + ": ON"
+                                relaystatus.relayOn[i-1] = True
             else: # If the relay does not exist just broadcast "False" to everything.
                 relaystatus.relayPresent = False
             self._usbRelayStatusPublisher.publish(relaystatus) # Publish USB Relay status
