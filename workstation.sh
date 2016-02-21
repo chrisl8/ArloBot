@@ -237,10 +237,10 @@ ARLOHOME=${HOME}/.arlobot
 
 if [ -e ${ARLOHOME}/personalDataForBehavior.json ]
     then
-    node ${SCRIPTDIR}/../node/personalData.js
+    node ~/catkin_ws/src/Metatron/node/personalData.js
 else
     printf "\n"
-    cp ${SCRIPTDIR}/dotarlobot/personalDataForBehavior.json ${ARLOHOME}/
+    cp ~/catkin_ws/src/Metatron/scripts/dotarlobot/personalDataForBehavior.json ${ARLOHOME}/
     printf "${GREEN}A brand new ${RED}~/.arlobot/personalDataForBehavior.json${GREEN} file has been created,${NC}\n"
     printf "${LIGHTPURPLE}Please edit this file to customize according to your robot!${NC}\n"
 fi
