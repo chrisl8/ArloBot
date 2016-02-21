@@ -44,7 +44,7 @@
     "hasActivityBoard": true,
     "_speechVolumeLevelDefault": "Default volume level for speech. 0 to 100",
     "speechVolumeLevelDefault": 85,
-    "-speechProgram": "Set this to a script that will convert text to speech and play it. Use 'nodeSay' if you do not have one. You can also use 'espeak' if you install it on your system.",
+    "_speechProgram": "Set this to a script that will convert text to speech and play it. Use 'nodeSay' if you do not have one. You can also use 'espeak' if you install it on your system.",
     "speechProgram": "nodeSay",
     "speech_engine": "~/catkin_ws/src/Metatron/scripts/tts.sh",
     "script_location": "~/catkin_ws/src/Metatron/scripts",
@@ -53,8 +53,8 @@
     "launchBrowser": true,
     "useQRcodes": false,
     "qrCameraName": "C615",
-    "_hasBeenEdited": "Set to true once you have put your settings in this file to let the program know that you did it.",
     "_batteryConsideredFullAt" : "Percentage at which laptop battery is considered full. Some never get to 100%",
     "batteryConsideredFullAt" : 100,
+    "_hasBeenEdited": "Set to true once you have put your settings in this file to let the program know that you did it.",
     "hasBeenEdited": false
 }
