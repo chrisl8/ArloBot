@@ -104,7 +104,7 @@ var pollParams = function() {
             //console.log(rosParameters[prop].label + ': ' + value);
             // Assign state to webModel object for view by web page.
             if (webModel.rosParameters.hasOwnProperty(prop)) {
-                webModelFunctions.update(webModel.rosParameters[prop], value);
+                webModelFunctions.updateRosParameter(prop, value);
                 //webModel.rosParameters[prop] = value;
                 //console.log('For web: ' + webModel.rosParameters[prop]);
             }

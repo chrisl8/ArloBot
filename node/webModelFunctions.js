@@ -40,3 +40,13 @@ var update = function (key, value) {
     }
 };
 exports.update = update;
+
+// Nested ojects are tricky, please suggest a better alternative to this?
+var updateRosParameter = function (key, value) {
+    if ((webModel.rosParameters[key] != value)) {
+        webModel.rosParameters[key] = value;
+        emitter.emit('change', key, value);
+    }
+};
+exports.updateRosParameter = updateRosParameter;
+
