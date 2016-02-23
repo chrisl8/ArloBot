@@ -7,6 +7,7 @@
 // I'm just pointing out that this doesn't actively monitor anything,
 // it is called in a polling loop by index.js
 var webModel = require('./webModel');
+var webModelFunctions = require('./webModelFunctions');
 var fs = require('fs');
 var mkdirp = require('mkdirp');
 
@@ -27,16 +28,16 @@ var setSemaphoreFiles = function(text) {
             console.log("Could not create " + statusFolder);
         } else {
             if (text === 'talk') {
-                webModel.beQuiet = false;
+                webModelFunctions.update('beQuiet', false);
                 fs.unlink(quietFile, readSemaphoreFiles);
             } else if (text === 'beQuiet') {
-                webModel.beQuiet = true;
+                webModelFunctions.update('beQuiet', true);
                 fs.writeFile(quietFile, 'quiet\n');
             } else if (text === 'go') {
-                webModel.haltRobot = false;
+                webModelFunctions.update('haltRobot', false);
                 fs.unlink(stopFile, readSemaphoreFiles);
             } else if (text === 'stop') {
-                webModel.haltRobot = true;
+                webModelFunctions.update('haltRobot', true);
                 fs.writeFile(stopFile, 'STOP\n');
             } else if (text === 'markDoorsClosed') {
                 // Wipe out ALL door files if asked!
@@ -60,8 +61,11 @@ var readSemaphoreFiles = function() {
 
     var checkFileAndSetValue = function(file, value) {
         fs.readFile(file, 'utf8', function(err, data) {
-            if (err) webModel[value] = false;
-            else webModel[value] = true;
+            if (err){
+                webModelFunctions.update(value, false);
+            } else {
+                webModelFunctions.update(value, true);
+            }
         });
     };
 
@@ -76,12 +80,12 @@ var readSemaphoreFiles = function() {
         if (err) {
             console.log('Door folder problem: ' + err);
             // True on error for safety.
-            webModel.doorsOpen = true;
+            webModelFunctions.update('doorsOpen', true);
         } else {
             if (files.length > 0) {
-                webModel.doorsOpen = true;
+                webModelFunctions.update('doorsOpen', true);
             } else {
-                webModel.doorsOpen = false;
+                webModelFunctions.update('doorsOpen', false);
             }
         }
     });

@@ -1,7 +1,7 @@
 var personalData = require('./personalData');
 var webModel = require('./webModel');
-webModel.robotName = personalData.robotName;
 var webModelFunctions = require('./webModelFunctions');
+webModelFunctions.update('robotName', personalData.robotName);
 var robotModel = require('./robotModel');
 var speechEngine = require('./speechEngine');
 var howManySecondsSince = require('./howManySecondsSince');
@@ -339,8 +339,8 @@ LoadMap.prototype.tick = function (tick) {
     // ROS Process launch behavior pattern:
     // FIRST: This decides if we run this process or not:
     var delayTime = 60 * 5; // Five (5) minutes to find QR code.
-    if (webModel.mapName === '' && howManySecondsSince(robotModel.bootTime) >= delayTime) {
-        if (!robotModel.whereamiTextSent) {
+    if (webModel.mapName === '') {
+        if (!robotModel.whereamiTextSent && howManySecondsSince(robotModel.bootTime) >= delayTime) {
             textme('Where am I?');
             robotModel.whereamiTextSent = true;
         }
@@ -509,8 +509,8 @@ GoToWaypoint.prototype.tick = function (tick) {
                 // Once the process has exited:
                 // 1. DISABLE whatever user action causes it to be called,
                 // so that it won't loop.
-                webModel.wayPointNavigator.mostRecentArrival = webModel.wayPointNavigator.wayPointName;
-                webModel.wayPointNavigator.goToWaypoint = false;
+                webModelFunctions.updateWayPointNavigator('mostRecentArrival', webModel.wayPointNavigator.wayPointName);
+                webModelFunctions.updateWayPointNavigator('goToWaypoint', false);
                 // 2. Now that it won't loop, set .started to false,
                 // so that it can be run again.
                 robotModel.goToWaypointProcess.started = false;

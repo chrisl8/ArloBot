@@ -67,10 +67,10 @@ var startLogStreamer = function() {
         // Will catch multiple exit codes I think:
         if (code === 0) {
             webModelFunctions.scrollingStatusUpdate('Log streamer started');
-            webModel.logStreamerRunning = true;
+            webModelFunctions.update('logStreamerRunning', true);
         } else {
             console.log('Log streamer failed with code: ' + code);
-            webModel.logStreamerRunning = false;
+            webModelFunctions.update('logStreamerRunning', false);
         }
     });
     return logStreamerProcess;
@@ -93,7 +93,7 @@ var stopLogStreamer = function() {
     process.on('exit', function(code) {
         //console.log(code);
         webModelFunctions.scrollingStatusUpdate('Log streamer killed');
-        webModel.logStreamerRunning = false;
+        webModelFunctions.update('logStreamerRunning', false);
     });
     return process;
 };
@@ -109,7 +109,7 @@ var startColorFollower = function() {
     colorFollowerProcess.stderr.setEncoding('utf8');
     colorFollowerProcess.stderr.on('data', function(data) {
         if (data.indexOf('ROI messages detected. Starting follower...') > -1) {
-            webModel.colorFollowerRunning = true;
+            webModelFunctions.update('colorFollowerRunning', true);
             webModelFunctions.scrollingStatusUpdate('Color Follower has started.');
             webModelFunctions.behaviorStatusUpdate('Color Follower started.');
         }
@@ -126,7 +126,7 @@ var startColorFollower = function() {
         } else {
             console.log('Color Follower failed with code: ' + code);
         }
-        webModel.colorFollowerRunning = false;
+        webModelFunctions.update('colorFollowerRunning', false);
     });
     return colorFollowerProcess;
 };
@@ -182,7 +182,7 @@ app.post('/receivemessage', function(req, res) {
     // Make sure it is from ME! ;)
     if (req.body.From === '+13162087309') {
         if (req.body.Body.toLowerCase().indexOf('unplug') > -1) {
-            webModel.unplugYourself = true;
+            webModelFunctions.update('unplugYourself', true);
         }
     }
     // TODO: Take action based in incoming messages!
@@ -207,11 +207,11 @@ function start() {
         socket.on('setMap', function(data) {
             if (data) {
                 if (data === 'Explore!') {
-                    webModel.mapName = '';
-                    webModel.autoExplore = true;
+                    webModelFunctions.update('mapName', '');
+                    webModelFunctions.update('autoExplore', true);
                 } else if (webModel.mapList.indexOf(data)) {
-                    webModel.autoExplore = false;
-                    webModel.mapName = data;
+                    webModelFunctions.update('autoExplore', false);
+                    webModelFunctions.update('mapName', data);
                     wayPointEditor.updateWayPointList();
                 }
             }
@@ -220,10 +220,10 @@ function start() {
         socket.on('gotoWayPoint', function(data) {
             if (data) {
                 if (webModel.wayPoints.indexOf(data) > -1) {
-                    webModel.wayPointNavigator.wayPointName = data;
+                    webModelFunctions.updateWayPointNavigator('wayPointName', data);
                     wayPointEditor.getWayPoint(data, function(response) {
                         robotModel.wayPointNavigator.destinaitonWaypoint = response;
-                        webModel.wayPointNavigator.goToWaypoint = true;
+                        webModelFunctions.updateWayPointNavigator('goToWaypoint', true);
                     });
                 }
             }
@@ -238,10 +238,10 @@ function start() {
             tts(data);
         })
         socket.on('startROS', function() {
-            webModel.ROSstart = true;
+            webModelFunctions.update('ROSstart', true);
         });
         socket.on('stopROS', function() {
-            webModel.ROSstart = false;
+            webModelFunctions.update('ROSstart', false);
         });
 
         socket.on('haltRobot', function() {
@@ -261,10 +261,10 @@ function start() {
         });
 
         socket.on('pauseAutoExplore', function() {
-            webModel.pauseExplore = true;
+            webModelFunctions.update('pauseExplore', true);
         });
         socket.on('unPauseAutoExplore', function() {
-            webModel.pauseExplore = false;
+            webModelFunctions.update('pauseExplore', false);
         });
 
         // ROS Parameters
@@ -320,7 +320,7 @@ function start() {
             stopColorFollower();
         });
         socket.on('exit', function() {
-            webModel.shutdownRequested = true;
+            webModelFunctions.update('shutdownRequested', true);
         });
     });
 }

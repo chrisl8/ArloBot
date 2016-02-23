@@ -50,3 +50,11 @@ var updateRosParameter = function (key, value) {
 };
 exports.updateRosParameter = updateRosParameter;
 
+var updateWayPointNavigator = function (key, value) {
+    if ((webModel.wayPointNavigator[key] != value)) {
+        webModel.wayPointNavigator[key] = value;
+        emitter.emit('change', key, value);
+    }
+};
+exports.updateWayPointNavigator = updateWayPointNavigator;
+
