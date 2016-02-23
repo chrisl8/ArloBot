@@ -12,6 +12,7 @@ done
 SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 # echo ${SCRIPTDIR} # For debugging
 
+${SCRIPTDIR}/scripts/callResetUSB.sh
 if (${SCRIPTDIR}/scripts/check_hardware.sh)
     then
     source ~/.nvm/nvm.sh
