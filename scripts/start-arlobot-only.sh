@@ -24,5 +24,6 @@ then
     echo "ROS Prep Failed, EXITING!"
     exit 1
 fi
+export ARLOBOT_MODEL=$(jq '.arlobotModel' ${HOME}/.arlobot/personalDataForBehavior.json | tr -d '"')
 roslaunch arlobot_bringup minimal.launch --screen
 

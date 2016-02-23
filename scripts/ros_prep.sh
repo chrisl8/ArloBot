@@ -114,5 +114,4 @@ then
     done
     chmod ugo+rw ${HOME}/.arlobot/status/doors/*
 fi
-export ARLOBOT_MODEL=$(jq '.arlobotModel' ${HOME}/.arlobot/personalDataForBehavior.json | tr -d '"')
 exit 0

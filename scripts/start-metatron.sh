@@ -39,6 +39,7 @@ if [ $(jq '.hasXboxController' ${HOME}/.arlobot/personalDataForBehavior.json) ==
     then
     export HAS_XBOX_JOYSTICK=true
 fi
+export ARLOBOT_MODEL=$(jq '.arlobotModel' ${HOME}/.arlobot/personalDataForBehavior.json | tr -d '"')
 
 # 'unbuffer' is required for running this from the node based 'behavior'
 # scripts. Otherwise stdout data is buffered until ROS exits,
