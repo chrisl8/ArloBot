@@ -50,6 +50,7 @@ printf "\n${YELLOW}[Initializing the required Node version]${NC}\n"
 printf "${RED}This is the version I'm developing with now, so stick with it.${NC}\n"
 source ${SCRIPTDIR}/setNodeVersion.sh
 nvm install ${node_version}
+nvm alias stable ${node_version}
 
 printf "\n${YELLOW}[Grabbing dependencies for node packages]${NC}\n"
 cd
