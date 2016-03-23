@@ -28,7 +28,7 @@ module.exports = function(sound) {
                 if (personalData.speechProgram === 'nodeSay') {
                     // https://github.com/marak/say.js/
                     // no callback, fire and forget
-                    say.speak(null, sound);
+                    say.speak(sound);
                 } else if (personalData.speechProgram) {
                     var speechCommand = personalData.speechProgram + ' ' + sound;
                     exec(speechCommand);
