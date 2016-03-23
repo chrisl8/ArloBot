@@ -39,6 +39,8 @@ var handleSemaphoreFiles = require('./handleSemaphoreFiles');
 handleSemaphoreFiles.readSemaphoreFiles();
 
 var saveMap = function(newMapName) {
+    //TODO: mapDir should be defined less statically, no?
+    var mapDir = process.env.HOME + '/.arlobot/rosmaps/';
     serverMapProcess = new LaunchScript({
         name: 'SaveMap',
         callback: updateMapList,
