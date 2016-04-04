@@ -1,0 +1,110 @@
+
+<launch>
+  <!-- 
+       This is a copy of
+       /opt/ros/indigo/share/rtabmap_ros/launch/demo/demo_turtlebot_mapping.launch
+       modified for my use with the ArloBot.
+       Bringup Turtlebot:
+       $ roslaunch turtlebot_bringup minimal.launch
+       
+       Mapping:
+       $ roslaunch rtabmap_ros demo_turtlebot_mapping.launch
+       
+       Visualization:
+       $ roslaunch rtabmap_ros demo_turtlebot_rviz.launch
+       
+       This launch file is a one to one replacement of the gmapping_demo.launch in the 
+       "SLAM Map Building with TurtleBot" tutorial:
+       http://wiki.ros.org/turtlebot_navigation/Tutorials/indigo/Build%20a%20map%20with%20SLAM
+       
+       For localization-only after a mapping session, add argument "localization:=true" to
+       demo_turtlebot_mapping.launch line above. Move the robot around until it can relocalize in 
+       the previous map, then the 2D map should re-appear again. You can then follow the same steps 
+       from 3.3.2 of the "Autonomous Navigation of a Known Map with TurtleBot" tutorial:
+       http://wiki.ros.org/turtlebot_navigation/Tutorials/Autonomously%20navigate%20in%20a%20known%20map
+  -->
+  
+  <arg name="database_path"     default="rtabmap.db"/>
+  <arg name="localization"      default="false"/>
+  <arg name="rgbd_odometry"     default="false"/>
+  <arg name="args"              default=""/>
+  <arg name="version083"        default="false"/>
+  <arg name="rtabmapviz"        default="false"/>
+  <arg name="wait_for_transform"  default="0.1"/>
+  
+  <!-- Navigation stuff (move_base) -->
+  <include file="$(find turtlebot_bringup)/launch/3dsensor.launch"/>
+  <include file="$(find arlobot_bringup)/launch/xv11_remap_for_dual_use.launch" />
+  <include file="$(find arlobot_navigation)/launch/includes/move_base_wXV11.launch.xml"/>
+  
+  <!-- Mapping -->
+  <group ns="rtabmap">
+
+    <node name="rtabmap" pkg="rtabmap_ros" type="rtabmap" output="screen" args="$(arg args)">
+	  <param name="database_path"       type="string" value="$(arg database_path)"/>
+	  <param name="frame_id"            type="string" value="base_footprint"/>
+	  <param name="odom_frame_id"       type="string" value="odom"/>
+	  <param name="wait_for_transform_duration"  type="double"   value="$(arg wait_for_transform)"/>
+	  <param name="subscribe_depth"     type="bool"   value="true"/>
+	  <param name="subscribe_laserScan" type="bool"   value="true"/>
+	
+	  <!-- inputs -->
+	  <remap from="scan"            to="/scan"/>
+	  <remap from="rgb/image"       to="/camera/rgb/image_rect_color"/>
+  	  <remap from="depth/image"     to="/camera/depth_registered/image_raw"/>
+  	  <remap from="rgb/camera_info" to="/camera/rgb/camera_info"/>
+  	  
+  	  <!-- output -->
+  	  <remap unless="$(arg version083)" from="grid_map" to="/map"/>
+  	  <!-- <remap unless="$(arg version083)" from="proj_map" to="/map"/> -->
+	
+	  <!-- RTAB-Map's parameters: do "rosrun rtabmap_ros rtabmap (double-dash)params" to see the list of available parameters. -->
+	  <param name="RGBD/LocalLoopDetectionSpace" type="string" value="true"/>   <!-- Local loop closure detection (using estimated position) with locations in WM -->
+	  <param name="RGBD/OptimizeFromGraphEnd"    type="string" value="false"/>  <!-- Set to false to generate map correction between /map and /odom -->
+	  <param name="Kp/MaxDepth"                  type="string" value="4.0"/>
+	  <param name="LccIcp/Type"                  type="string" value="2"/>      <!-- Loop closure transformation refining with ICP: 0=No ICP, 1=ICP 3D, 2=ICP 2D -->
+	  <param name="LccIcp2/CorrespondenceRatio"  type="string" value="0.3"/>
+	  <param name="LccBow/MinInliers"            type="string" value="5"/>      <!-- 3D visual words minimum inliers to accept loop closure -->
+	  <param name="LccBow/InlierDistance"        type="string" value="0.1"/>    <!-- 3D visual words correspondence distance -->
+	  <param name="RGBD/AngularUpdate"           type="string" value="0"/>    <!-- Update map only if the robot is moving -->
+	  <param name="RGBD/LinearUpdate"            type="string" value="0"/>    <!-- Update map only if the robot is moving -->
+	  <param name="Rtabmap/TimeThr"              type="string" value="700"/>
+	  <param name="Mem/RehearsalSimilarity"      type="string" value="0.30"/>   
+	  
+	  <!-- localization mode -->
+	  <param     if="$(arg localization)" name="Mem/IncrementalMemory" type="string" value="false"/>
+	  <param unless="$(arg localization)" name="Mem/IncrementalMemory" type="string" value="true"/>
+	  <param name="Mem/InitWMWithAllNodes" type="string" value="$(arg localization)"/> 
+    </node>
+   
+    <!-- Odometry : ONLY for testing without the actual robot! /odom TF should not be already published. -->
+    <node if="$(arg rgbd_odometry)" pkg="rtabmap_ros" type="rgbd_odometry" name="rgbd_odometry" output="screen">
+      <param name="frame_id"           type="string" value="base_footprint"/>
+      <param name="wait_for_transform_duration" type="double"   value="$(arg wait_for_transform)"/>
+      <param name="Odom/Force2D"       type="string"   value="true"/>
+      <param name="Odom/InlierDistance" type="string"   value="0.05"/>
+      <remap from="rgb/image"       to="/camera/rgb/image_rect_color"/>
+      <remap from="depth/image"     to="/camera/depth_registered/image_raw"/>
+      <remap from="rgb/camera_info" to="/camera/rgb/camera_info"/>
+    </node>
+
+    <!-- backward compatibility with hydro 0.8.3 only -->
+    <node if="$(arg version083)" pkg="rtabmap_ros" type="grid_map_assembler" name="grid_map_assembler">
+      <remap from="grid_map" to="/map"/>
+    </node>
+    
+    <!-- visualization with rtabmapviz -->
+    <node if="$(arg rtabmapviz)" pkg="rtabmap_ros" type="rtabmapviz" name="rtabmapviz" args="-d $(find rtabmap_ros)/launch/config/rgbd_gui.ini" output="screen">
+  	  <param name="subscribe_depth" type="bool" value="true"/>
+      <param name="subscribe_laserScan" type="bool" value="true"/>
+      <param name="frame_id" type="string" value="base_footprint"/>
+      <param name="wait_for_transform_duration" type="double" value="$(arg wait_for_transform)"/>
+    
+      <remap from="rgb/image"       to="/camera/rgb/image_rect_color"/>
+      <remap from="depth/image"     to="/camera/depth_registered/image_raw"/>
+      <remap from="rgb/camera_info" to="/camera/rgb/camera_info"/>
+      <remap from="scan"            to="/scan"/>
+    </node>
+    
+  </group>
+</launch>
