@@ -216,10 +216,6 @@ if ! (grep catkin_ws ~/.bashrc>/dev/null)
     then
     sh -c "echo \"source ~/catkin_ws/devel/setup.bash\" >> ~/.bashrc"
 fi
-if ! (grep Metatron ~/.bashrc>/dev/null)
-then
-    sh -c "echo \"PATH=$PATH:~/catkin_ws/src/Metatron:~/catkin_ws/src/Metatron/scripts/\" >> ~/.bashrc"
-fi
 
 printf "\n${YELLOW}[Setting up the Metatron Package.]${NC}\n"
 # Run Metatron Setup Script:
