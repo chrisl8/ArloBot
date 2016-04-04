@@ -8,7 +8,7 @@ echo "on the command line."
 exit
 fi
 FOUND=1
-for i in $(ls /dev/video*)
+for i in $(ls /dev/video* 2> /dev/null)
 do
 fswebcam --verbose --device=${i} 2>&1|grep cap.card|grep ${1} > /dev/null
 if [ $? -eq 0 ]

@@ -82,14 +82,18 @@ if [ -f nohup.out ]
 then
     rm nohup.out
 fi
-if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
+
+# USB Relay Controller
+if [ $(jq '.useUSBrelay' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
-    echo "Stopping XV11"
-    ${SCRIPTDIR}/XVLidar.sh stop
+    echo "Turning off all relays"
+    ${SCRIPTDIR}/switch_relay_name.sh all off
 fi
 
-echo "Turning off all relays"
-${SCRIPTDIR}/drcontrol.py -d $(${SCRIPTDIR}/drcontrol.py -s) -r all -c off
+# Master Power Relay
+if [ $(jq '.useMasterPowerRelay' ${HOME}/.arlobot/personalDataForBehavior.json) == true  ]
+then
+    echo "Turning off Arlo Power."
+    ${SCRIPTDIR}/switch_master_relay.sh off
+fi
 
-# I am reconsidering this, perhaps only do it in the ros_prep, IF check_hardware fails?
-#${SCRIPTDIR}/callResetUSB.sh

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # This one script will start up the entire robot with web interface!
 
 # Grab and save the path to this script
@@ -12,12 +12,8 @@ done
 SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 # echo ${SCRIPTDIR} # For debugging
 
-${SCRIPTDIR}/scripts/callResetUSB.sh
-if (${SCRIPTDIR}/scripts/check_hardware.sh)
-    then
-    source ~/.nvm/nvm.sh
-    source ${SCRIPTDIR}/scripts/setNodeVersion.sh
-    nvm use ${node_version}
-    cd ${SCRIPTDIR}/node
-    node index.js
-fi
+source ~/.nvm/nvm.sh
+source ${SCRIPTDIR}/scripts/setNodeVersion.sh
+nvm use ${node_version}
+cd ${SCRIPTDIR}/node
+node index.js

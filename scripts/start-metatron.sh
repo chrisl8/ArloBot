@@ -46,7 +46,4 @@ export ARLOBOT_MODEL=$(jq '.arlobotModel' ${HOME}/.arlobot/personalDataForBehavi
 # which makes monitoring status impossible.
     # http://stackoverflow.com/a/11337310
     # http://linux.die.net/man/1/unbuffer
-# NOTE: TODO: MAYBE? Seems inconsistent: Do not add "--screen" to the end of this. Doing that causes
-# the process to not respond properly to the kill signals.
-# If you need better insight into what ROS is doing, check the logs.
 unbuffer roslaunch metatron_id metatron_id.launch --screen

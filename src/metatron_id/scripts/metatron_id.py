@@ -163,8 +163,6 @@ class MetatronId(object):
         return True
 
     def _wake_screen(self, req):
-        process = subprocess.Popen("DISPLAY=:0.0 /usr/bin/xset dpms force on", shell=True)
-        process.wait()  # Wait for it to finish, this should be instantaneous.
         # Then take a fresh screen shot now rather than waiting for the next round
         process = subprocess.Popen("DISPLAY=:0.0 /usr/bin/import -window root " + self.web_folder + "/xscreen.png",
                                    shell=True)

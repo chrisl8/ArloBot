@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 # Grab and save the path to this script
 # http://stackoverflow.com/a/246128
 SOURCE="${BASH_SOURCE[0]}"
@@ -40,7 +39,15 @@ else
 fi
 if [[ $# -ne 3 ]]
 then
-    SERIAL_NUMBER=$(${SCRIPTDIR}/get_relay_serial_number.sh)
+    if [ -f ${TMPDIR}/usb_relay_serial_number ]
+    then
+        SERIAL_NUMBER=$(cat ${TMPDIR}/usb_relay_serial_number)
+    else
+       SERIAL_NUMBER=$(${SCRIPTDIR}/get_relay_serial_number.sh)
+       # Store the serial number to speed up future runs.
+       # But use $TMPDIR so it goes away on reboot.
+       echo ${SERIAL_NUMBER} > ${TMPDIR}/usb_relay_serial_number
+    fi
 else
     SERIAL_NUMBER=${3}
 fi

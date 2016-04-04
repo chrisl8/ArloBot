@@ -2,7 +2,7 @@
 # Increment FIND_NUMBER if you want to use another one
 FIND_NUMBER=1
 CONTROLLER_NUMBER=0
-for i in $(ls /dev/input/js*)
+for i in $(ls /dev/input/js* 2> /dev/null)
 do
 #udevadm info -a -n $i|grep -m 1 product|grep Propeller > /dev/null
 if [ $CONTROLLER_NUMBER -lt $FIND_NUMBER ]

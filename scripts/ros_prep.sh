@@ -24,30 +24,12 @@ if (ls ${HOME}/.ros/log/* &> /dev/null)
     echo "Clearing ROS Logs . . ."
     rm -r ${HOME}/.ros/log/*
 fi
-# Check to make sure required hardware is present:
-# This will wait 5 seconds for the USB reset to finish,
-# before exiting to state that something is missing.
-echo "Waiting for USB ports to come on line . . ."
-hardwareCheckSeconds=0
-hardwareTimeout=10
-while ! (${SCRIPTDIR}/check_hardware.sh &> /dev/null)
-do
-    hardwareCheckSeconds=$((hardwareCheckSeconds+1))
-    # Check for timeout BEFORE we sleep.
-    if [ ${hardwareCheckSeconds} -eq ${hardwareTimeout} ]
-    then
-        echo "ERROR: Hardware failed to come on line:"
-        # Run again to display the error on the screen:
-        ${SCRIPTDIR}/check_hardware.sh
-        exit 1
-    fi
-    echo "Waiting for USB ports to come on line . . ."
-    sleep 1
-done
 
-if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
-    then
-    ${SCRIPTDIR}/XVLidar.sh start
+# Check to make sure required hardware is present:
+if ! (${SCRIPTDIR}/check_hardware.sh)
+then
+    echo "ERROR: Hardware failed to come on line:"
+    exit 1
 fi
 
 # Start roscore separately so that we can set parameters
