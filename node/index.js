@@ -5,10 +5,13 @@ webModelFunctions.update('robotName', personalData.robotName);
 var robotModel = require('./robotModel');
 var speechEngine = require('./speechEngine');
 var howManySecondsSince = require('./howManySecondsSince');
-var kill = require('./reallyKillProcess.js');
 var Stochator = require('stochator');
 var fs = require('fs');
-b3 = {}; /*global b3*/
+/* Behavior3.js requires this global 'b3' variable.
+ * It is an artifact of it being a web library,
+ * not written for node.js.
+ */
+b3 = {};
 var behavior3js = require('behavior3js');
 var exec = require('child_process').exec;
 var spawn = require('child_process').spawn;

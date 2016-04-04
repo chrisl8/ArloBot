@@ -2,8 +2,6 @@ var personalData = require('./personalData');
 var webModel = require('./webModel');
 var webModelFunctions = require('./webModelFunctions');
 var robotModel = require('./robotModel');
-//var O = require('observed');
-//var webModelWatcher = O(webModel);
 var LaunchScript = require('./LaunchScript');
 var tts = require('./tts');
 
@@ -15,11 +13,6 @@ var fs = require('fs');
 var express = require('express');
 var spawn = require('child_process').spawn;
 var bodyParser = require('body-parser');
-var exec = require('child_process').exec;
-
-var processTracker = {
-    logStreamerProcess: ''
-};
 
 var updateMapList = require('./updateMapList');
 updateMapList();
@@ -238,7 +231,7 @@ function start() {
         });
         socket.on('tts', function(data) {
             tts(data);
-        })
+        });
         socket.on('startROS', function() {
             webModelFunctions.update('ROSstart', true);
         });

@@ -12,7 +12,6 @@ function LaunchScript(options) {
     this.started = false;
     this.startupComplete = false;
     this.hasExited = false;
-    this.exitCode = undefined;
 }
 
 LaunchScript.prototype.start = function() {
@@ -70,7 +69,7 @@ LaunchScript.prototype.start = function() {
     });
     this.process.on('exit', function(code) {
         webModelFunctions.scrollingStatusUpdate(self.name + ' exited with code: ' + code);
-        this.exitCode = code;
+        self.exitCode = code;
         self.hasExited = true;
         self.startupComplete = true;
         if (self.debugging) {
