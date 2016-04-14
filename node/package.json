@@ -12,12 +12,12 @@
     "mkdirp": "^0.5.1",
     "ps-tree": "^1.0.0",
     "pushover-notifications": "^0.2.2",
-    "redis": "^2.0.1",
+    "redis": "^2.6.0-1",
     "roslib": "^0.18.0",
     "say": "^0.9.0",
     "serialport": "^2.0.6",
     "socket.io": "^1.3.6",
-    "stochator": "https://github.com/chrisl8/stochator/tarball/temp-npm-target",
+    "stochator": "^0.6.2",
     "twilio": "^3.3.0-edge"
   },
   "devDependencies": {

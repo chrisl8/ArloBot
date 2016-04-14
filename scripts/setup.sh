@@ -51,6 +51,7 @@ printf "${RED}This is the version I'm developing with now, so stick with it.${NC
 source ${SCRIPTDIR}/setNodeVersion.sh
 nvm install ${node_version}
 nvm alias stable ${node_version}
+nvm alias default ${node_version}
 
 printf "\n${YELLOW}[Grabbing dependencies for node packages]${NC}\n"
 cd
@@ -62,9 +63,13 @@ if ! (which log.io-harvester > /dev/null)
     then
     npm install -g log.io
 fi
-if ! (which ncu > /dev/null)
+if ! (which npm-check > /dev/null)
     then
-    npm install -g npm-check-updates
+    npm install -g npm-check
+fi
+if ! (which pm2 > /dev/null)
+    then
+    npm install -g pm2
 fi
 cd ${SCRIPTDIR}/../node
 npm install
@@ -246,9 +251,9 @@ if [ "${USER}" == chrisl8 ]
     node --version
     printf "${YELLOW}and this is the current stable version of node:${NC} "
     nvm ls-remote stable
-    printf "\n${YELLOW}Checking for out of date global node modules:${NC}\n"
-    npm outdated -g --depth=0
+    #printf "\n${YELLOW}Checking for out of date global node modules:${NC}\n"
+    #npm outdated -g --depth=0
     printf "${YELLOW}Checking for out of date package node modules:${NC}"
-    ncu
+    npm-check
     printf "${PURPLE}-------------------------------------------------------${NC}\n"
 fi
