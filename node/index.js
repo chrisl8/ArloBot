@@ -642,10 +642,10 @@ IsNotIdle.prototype.tick = function (tick) {
     // We have to have more than one destination. :) and the initial pose set.
     if (robotModel.initialPoseSet && howManySecondsSince(blackboard.get('lastRanTime', arloTree.id, arloTree.id)) >= repeatDelay) {
         // If we are idle "FAIL" so that the rest of the items can try.
-        console.log('Idle');
+        // TODO: Uncomment this and keep working: console.log('Idle');
         return b3.FAILURE;
     } else {
-        console.log('NOT idle!');
+        // TODO: Uncomment this and keep working: console.log('NOT idle!');
         return b3.RUNNING;
     }
 

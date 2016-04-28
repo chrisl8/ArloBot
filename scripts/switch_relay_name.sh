@@ -43,10 +43,15 @@ then
     then
         SERIAL_NUMBER=$(cat ${TMPDIR}/usb_relay_serial_number)
     else
-       SERIAL_NUMBER=$(${SCRIPTDIR}/get_relay_serial_number.sh)
-       # Store the serial number to speed up future runs.
-       # But use $TMPDIR so it goes away on reboot.
-       echo ${SERIAL_NUMBER} > ${TMPDIR}/usb_relay_serial_number
+       SERIAL_NUMBER=$(${SCRIPTDIR}/find_relay_serial_number.sh)
+       if [[ $? != 0 ]]
+       then
+           exit 1
+       else
+           # Store the serial number to speed up future runs.
+           # But use $TMPDIR so it goes away on reboot.
+           echo ${SERIAL_NUMBER} > ${TMPDIR}/usb_relay_serial_number
+       fi
     fi
 else
     SERIAL_NUMBER=${3}

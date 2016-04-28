@@ -12,7 +12,7 @@ SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 # echo ${SCRIPTDIR} # For debugging
 
 # Save time by not looking up the Relay serial number twice
-SERIAL_NUMBER=$(${SCRIPTDIR}/get_relay_serial_number.sh)
+SERIAL_NUMBER=$(${SCRIPTDIR}/find_relay_serial_number.sh)
 
 ${SCRIPTDIR}/switch_relay_name.sh leftMotor off ${SERIAL_NUMBER}
 ${SCRIPTDIR}/switch_relay_name.sh rightMotor off ${SERIAL_NUMBER}

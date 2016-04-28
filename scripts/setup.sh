@@ -245,14 +245,14 @@ if [ "${USER}" == chrisl8 ]
     printf "\n${PURPLE}[Hey ${USER} please make sure the below items are up to date!]${NC}\n"
     printf "${YELLOW}Does the current version of nvm we installed:${NC} "
     nvm --version
-    printf "${YELLOW}Match the version on github:${NC}\n"
-    wget -qO- https://github.com/creationix/nvm/blob/master/README.markdown|grep install.sh|grep wget|sed -e "s/<pre><code>//"
+    printf "${YELLOW}Match the version on github:${NC} "
+    wget -qO- https://github.com/creationix/nvm/blob/master/README.markdown|grep install.sh|grep wget|sed -e "s/<pre><code>//"|sed "s/\//\\n/g"|grep ^v
     printf "\n${YELLOW}You are using this version of node:${NC} "
     node --version
     printf "${YELLOW}and this is the current stable version of node:${NC} "
     nvm ls-remote stable
-    #printf "\n${YELLOW}Checking for out of date global node modules:${NC}\n"
-    #npm outdated -g --depth=0
+    printf "\n${YELLOW}Checking for out of date global node modules:${NC}\n"
+    npm-check -g
     printf "${YELLOW}Checking for out of date package node modules:${NC}"
     npm-check
     printf "${PURPLE}-------------------------------------------------------${NC}\n"

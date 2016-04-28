@@ -11,7 +11,12 @@ done
 SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 # echo ${SCRIPTDIR} # For debugging
 
-SERIAL_NUMBER=$(${SCRIPTDIR}/drcontrol.py -l|grep FTDI|tr -d ' '|awk '{ print $3 }')
-
-echo ${SERIAL_NUMBER}
+RELAY_LIST=$(${SCRIPTDIR}/drcontrol.py -l|grep FTDI)
+if [[ $? != 0 ]]
+then
+    exit 1
+else
+    SERIAL_NUMBER=$(echo "${RELAY_LIST}"|tr -d ' '|awk '{ print $3 }')
+    echo ${SERIAL_NUMBER}
+fi
 
