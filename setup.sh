@@ -122,6 +122,8 @@ sudo apt install -y ros-indigo-rqt-* ros-indigo-turtlebot ros-indigo-turtlebot-a
 
 # For 8-CH USB Relay board:
 sudo pip install pylibftdi
+# As of 4/27/2016 Rosbridge required me to install twisted via pip otherwise it failed.
+sudo pip install twisted
 
 if ! [ -d ~/catkin_ws/src ]
     then
