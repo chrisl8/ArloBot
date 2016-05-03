@@ -1,6 +1,5 @@
 var personalData = require('../node/personalData');
 var twilio = require('twilio');
-var config = require('./twilioConfig');
 // Redis
 var redis = require('redis');
 var redisServer = 'localhost';
@@ -111,7 +110,7 @@ app.post('/updateRobotURL', function (req, res) {
 });
 
 app.post('/twilio', function(request, response) {
-    if (twilio.validateExpressRequest(request, config.twilio.key, {url: config.twilio.smsWebhook}) || config.disableTwilioSigCheck) {
+    if (twilio.validateExpressRequest(request, personalData.twilio.auth_token, {url: personalData.twilio.smsWebhook})) {
         response.header('Content-Type', 'text/xml');
         console.log(request.body);
         //var body = request.param('Body').trim();
