@@ -27,6 +27,8 @@ app.use(bodyParser.urlencoded({
 
 // All of my "static" web pages are in the public folder
 app.use(express.static(__dirname + '/public'));
+// The new experimental Angular 2 site is in the website folder ABOVE this one
+app.use(express.static(__dirname + '/../website'));
 
 var handleSemaphoreFiles = require('./handleSemaphoreFiles');
 handleSemaphoreFiles.readSemaphoreFiles();
@@ -261,6 +263,7 @@ function start() {
         socket.on('unPauseAutoExplore', function() {
             webModelFunctions.update('pauseExplore', false);
         });
+        // unplugYourself
 
         // ROS Parameters
         socket.on('monitorAC', function() {

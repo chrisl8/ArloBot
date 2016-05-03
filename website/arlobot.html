@@ -1,0 +1,40 @@
+<!--Accordian info: http://valor-software.com/ng2-bootstrap/-->
+<accordion [closeOthers]="oneAtATime">
+    <accordion-group heading="Static Header, initially expanded"
+                     [isOpen]="status.isFirstOpen"
+                     [isDisabled]="status.isFirstDisabled">
+        This content is straight in the template.
+    </accordion-group>
+    <accordion-group heading="Map List (Test)">
+        <ul>
+            <li *ngFor="let item of arlobotSvc.webModel.mapList">ITEM: {{item}}</li>
+        </ul>
+    </accordion-group>
+    <accordion-group heading="Switches">
+        <p>Pause Explore: {{arlobotSvc.webModel.pauseExplore}}</p>
+        <div class="lcarish-toggle-button" id="talk-bequiet-button" (click)="updateWebModelKey('beQuiet', 'talk', 'beQuiet')">
+            <label class="toggler" [class.brightly-positive-text]="!arlobotSvc.webModel.beQuiet">Talk</label>
+            <div class="toggle toggle-off" [class.toggle-on]="arlobotSvc.webModel.beQuiet">
+                <input type="checkbox" class="check" [ngModel]="arlobotSvc.webModel.beQuiet"/><span
+                    class="b switch">Sound</span>
+            </div>
+            <label class="toggler" [class.brightly-negative-text]="arlobotSvc.webModel.beQuiet">Quiet</label>
+        </div>
+    </accordion-group>
+    <accordion-group *ngFor="let group of groups" [heading]="group.title">
+        {{ group?.content }}
+    </accordion-group>
+    <accordion-group heading="Dynamic Body Content">
+        <p>The body of the accordion group grows to fit the contents</p>
+        <button type="button" class="btn btn-primary btn-sm" (click)="addItem()">Add Item</button>
+        <div *ngFor="let item of items">{{item}}</div>
+    </accordion-group>
+    <accordion-group let group [isOpen]="status.open">
+        <div accordion-heading>
+            I can have markup, too!
+            <i class="pull-right glyphicon"
+               [ngClass]="{'glyphicon-chevron-down': group?.isOpen, 'glyphicon-chevron-right': !group?.isOpen}"></i>
+        </div>
+        This is just some content to illustrate fancy headings.
+    </accordion-group>
+</accordion>

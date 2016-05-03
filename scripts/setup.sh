@@ -75,6 +75,10 @@ cd ${SCRIPTDIR}/../node
 npm install
 npm update
 
+cd ${SCRIPTDIR}/../website
+npm install
+npm update
+
 cd ${SCRIPTDIR}
 
 # Install required Ubuntu packages
@@ -254,6 +258,8 @@ if [ "${USER}" == chrisl8 ]
     printf "\n${YELLOW}Checking for out of date global node modules:${NC}\n"
     npm-check -g
     printf "${YELLOW}Checking for out of date package node modules:${NC}"
+    npm-check
+    cd ${SCRIPTDIR}/../website
     npm-check
     printf "${PURPLE}-------------------------------------------------------${NC}\n"
 fi

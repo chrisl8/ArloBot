@@ -30,6 +30,7 @@ var os = require('os');
 var repl = require('repl');
 var handleSemaphoreFiles = require('./handleSemaphoreFiles');
 var getQRcodes = require('./getQRcodes');
+var publishRobotURL = require('./publishRobotURL');
 
 var WayPoints = require('./WayPoints.js');
 var wayPointEditor = new WayPoints();
@@ -124,6 +125,8 @@ Poll.prototype.name = 'Poll';
 Poll.prototype.tick = function (tick) {
     if (robotModel.debug) console.log(this.name);
     // Some things just need to be polled, there is no way around it. Put those here.
+
+    publishRobotURL.updateRobotURL();
 
     // Check laptop battery each tick
     var batteryCommand = '/usr/bin/upower -d|grep percentage|head -1';

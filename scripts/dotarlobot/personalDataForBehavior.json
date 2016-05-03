@@ -20,6 +20,13 @@
         "subdomain": "",
         "port": 8080
     },
+    "_cloudServer": "For use if you have a cloud based server that the robot communicates with for various online functions.",
+    "cloudServer": {
+        "exists": false,
+        "fqdn": "server.example.com",
+        "port": 80,
+        "password": "sueprSecret1785"
+    },
     "_useUSBrelay": "Set to true if you have a USB Relay board",
     "useUSBrelay": false,
     "_use_xv11": "Set to true if you have an XV11 neato scanner connected.",

@@ -29,6 +29,8 @@ module.exports = {
     mapName: '',
     triedLightToFindQRcode: false,
     userLightOnRequested: false,
+    robotIP: undefined,
+    robotURL: undefined,
     wayPoints: [],
     rosParameters: { // These are the parameters we will send to the web
         ignoreCliffSensors: false, // Use the expected default.

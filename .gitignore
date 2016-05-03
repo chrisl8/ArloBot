@@ -12,3 +12,8 @@ node/build/
 scripts/mjpg-streamer/
 node/public/lcars/
 node/public/xscreen.png
+server/node_modules/
+website/node_modules/
+website/typings/
+website/**/*.js
+website/**/*.js.map

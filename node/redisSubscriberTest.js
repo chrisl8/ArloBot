@@ -17,8 +17,8 @@ var getRedisMessages = redis.createClient(6379, redisServer, {});
 // with each retry.
 // By default there is no upper limit to the retry delay.
 // You can change that if you like.
-// I don't know if this will explode and launch a missle when the retry
-// time reaches infinity? I assuem not. :P
+// I don't know if this will explode and launch a missile when the retry
+// time reaches infinity? I assume not. :P
 //failedRedis.on('error', function(err) {
 //    console.log('failedRedis connection failed: ' + err);
 //});
