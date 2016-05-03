@@ -1,4 +1,6 @@
 var personalData = require('../node/personalData');
+var twilio = require('twilio');
+var config = require('./twilioConfig');
 // Redis
 var redis = require('redis');
 var redisServer = 'localhost';
@@ -8,7 +10,6 @@ var arloBot = redis.createClient(6379, redisServer, {});
 // you must have two clients, because a subscribed client
 // cannot issue any commands once it is subscribed.
 var getRedisMessages = redis.createClient(6379, redisServer, {});
-
 
 // What if the redis server doesn't exist?
 //var failedRedis = redis.createClient(6379, 'pi', {});
@@ -89,7 +90,7 @@ app.post('/updateRobotURL', function (req, res) {
     if (urlOK && passwordOK) {
         getRedisMessages.set('robotURL', req.body.localURL, function (err, reply) {
             if (err) {
-                res.sendStatus(500)
+                res.sendStatus(500);
                 console.log('Error setting robotURL: ' + err);
             } else {
                 res.sendStatus(200);
@@ -108,3 +109,22 @@ app.post('/updateRobotURL', function (req, res) {
         }
     }
 });
+
+app.post('/twilio', function(request, response) {
+    if (twilio.validateExpressRequest(request, config.twilio.key, {url: config.twilio.smsWebhook}) || config.disableTwilioSigCheck) {
+        response.header('Content-Type', 'text/xml');
+        console.log(request.body);
+        //var body = request.param('Body').trim();
+        var smsText = request.body.Body;
+        var smsTo = request.body.To;
+        var smsFrom = request.body.From;
+        console.log(smsFrom, smsTo, smsText);
+        response.send('<Response><Sms>Got it!</Sms></Response>');
+
+    } else {
+        console.log('NOT twilio.validateExpress');
+        response.sendStatus(403);
+        //response.render('forbidden');
+    }
+});
+
