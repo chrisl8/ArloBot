@@ -1,4 +1,6 @@
 var personalData = require('../node/personalData');
+var redis = require('redis'),
+    client = redis.createClient();
 var twilio = require('twilio');
 // Redis
 var redis = require('redis');
@@ -46,12 +48,67 @@ app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
     extended: true
 }));
 
+var robotSubscribers = [];
+var Robot = require('./Robot');
 var port = process.env.PORT || 3003;
 var webServer = app.listen(port);
 // with Socket.io!
 var socket = require('socket.io').listen(webServer);
 
-//socket.sockets.on('connection', onSocketConnection);
+function sendOldMessages() {
+    if (robotSubscribers.length > 0) {
+        client.lpop('twilio', function(listName, item) {
+            if (item !== null) {
+            console.log(item);
+            socket.sockets.emit('oldMessage', item);
+            sendOldMessages();
+        }});
+    }
+}
+
+socket.sockets.on('connection', onSocketConnection);
+
+function onSocketConnection(client) {
+    console.log('Socket connection started:');
+    //console.log(client);
+    
+    client.on('new robot', onNewRobot);
+    client.on('disconnect', onClientDisconnect);
+}
+
+function onNewRobot(data) {
+    var newRobot = new Robot(this.id, data);
+    robotSubscribers.push(newRobot);
+    socket.sockets.emit('welcome');
+    console.log(this.id, data);
+    console.log(robotSubscribers);
+    sendOldMessages();
+}
+
+function onClientDisconnect() {
+    console.log('Robot has disconnected: ' + this.id);
+
+    var robotToRemove = robotById(this.id);
+
+    if (!robotToRemove) {
+        console.log('Robot not found.');
+        return;
+    }
+
+    robotSubscribers.splice(robotSubscribers.indexOf(robotToRemove), 1);
+
+    console.log(robotSubscribers);
+}
+
+function robotById(id) {
+    var i;
+    for (i=0; i < robotSubscribers.length; i++) {
+        if (robotSubscribers[i].id === id) {
+            return robotSubscribers[i];
+        }
+    }
+    return false;
+}
 
 app.use(express.static(__dirname + '/public'));
 
@@ -111,19 +168,26 @@ app.post('/updateRobotURL', function (req, res) {
 
 app.post('/twilio', function(request, response) {
     if (twilio.validateExpressRequest(request, personalData.twilio.auth_token, {url: personalData.twilio.smsWebhook})) {
+        var messageForRedis = {
+            smsText: request.body.Body,
+            smsTo: request.body.To,
+            smsFrom: request.body.From
+        };
+        console.log(messageForRedis.smsFrom, messageForRedis.smsText);
+        messageForRedis = JSON.stringify(messageForRedis);
+        // Tell Twilio we got the message, and reply to the sender
         response.header('Content-Type', 'text/xml');
-        console.log(request.body);
-        //var body = request.param('Body').trim();
-        var smsText = request.body.Body;
-        var smsTo = request.body.To;
-        var smsFrom = request.body.From;
-        console.log(smsFrom, smsTo, smsText);
-        response.send('<Response><Sms>Got it!</Sms></Response>');
-
+        if (robotSubscribers.length > 0) {
+            socket.sockets.emit('newMessage', messageForRedis);
+            response.send('<Response><Sms>Got it!</Sms></Response>');
+        } else {
+            // Save the message in REDIS
+            client.rpush("twilio", messageForRedis);
+            response.send('<Response><Sms>Sorry, nobody is home, try again later.</Sms></Response>');
+        }
     } else {
-        console.log('NOT twilio.validateExpress');
+        console.log('Invalid. Does not appear to be from Twilio!');
         response.sendStatus(403);
-        //response.render('forbidden');
     }
 });
 
