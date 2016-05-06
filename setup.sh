@@ -166,7 +166,7 @@ cd ~/catkin_ws/src
 # Optionally:
 if ! [ -d ~/catkin_ws/src/Metatron ]
     then
-    git clone https://github.com/chrisl8/Metatron.git
+    git clone -b stable https://github.com/chrisl8/Metatron.git
 else
     cd ~/catkin_ws/src/Metatron
     git pull
