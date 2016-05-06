@@ -1,8 +1,8 @@
-var ipAddress = function() {
+var ipAddress = function () {
     var firstInterface = undefined;
     // require('os').networkInterfaces().wlan0[0].address;
     var interfaces = require('os').networkInterfaces();
-    for(var interface in interfaces) {
+    for (var interface in interfaces) {
         if (interfaces.hasOwnProperty(interface) && interface !== 'lo' && firstInterface === undefined) {
             firstInterface = interface;
         }

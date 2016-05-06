@@ -30,7 +30,14 @@ var os = require('os');
 var repl = require('repl');
 var handleSemaphoreFiles = require('./handleSemaphoreFiles');
 var getQRcodes = require('./getQRcodes');
+
 var publishRobotURL = require('./publishRobotURL');
+
+var SocketServerSubscriber = require('./SocketServerSubscriber');
+var RemoteMessageHandler = require('./RemoteMessageHandler');
+var remoteMessageHandler = new RemoteMessageHandler();
+var socketServerSubscriber = new SocketServerSubscriber(remoteMessageHandler.handleMessage);
+socketServerSubscriber.start();
 
 var WayPoints = require('./WayPoints.js');
 var wayPointEditor = new WayPoints();
@@ -50,6 +57,10 @@ function killROS(exitWhenDone) {
     if (!kill_rosHasRun) {
         kill_rosHasRun = true;
         webModelFunctions.update('ROSstart', false);
+        // ROS drops all knowledge when restarted,
+        // So make it clear to the user that he needs to pick a map again.
+        webModelFunctions.update('mapName', '');
+        webModelFunctions.update('autoExplore', false);
         webModelFunctions.scrollingStatusUpdate("Running kill_ros.sh . . .");
         // Logging to console too, because feedback on shutdown is nice.
         console.log("Running kill_ros.sh . . .");
@@ -128,6 +139,7 @@ Poll.prototype.tick = function (tick) {
 
     publishRobotURL.updateRobotURL();
 
+    // TODO: Maybe only run upower ONCE instead of twice?
     // Check laptop battery each tick
     var batteryCommand = '/usr/bin/upower -d|grep percentage|head -1';
     var batteryCheck = exec(batteryCommand);
@@ -289,8 +301,7 @@ AutoExplore.prototype.tick = function (tick) {
 
             // Catch changes in pauseExplore and send them to the arlobot_explore pause_explorer service
             if (webModel.rosParameters.explorePaused !== webModel.pauseExplore) {
-                // TODO: Should this use the LaunchScript object?
-                // or even the rosInterface?
+                // TODO: Should this use  the rosInterface?
                 var command = '/opt/ros/indigo/bin/rosservice call /arlobot_explore/pause_explorer ' + webModel.pauseExplore;
                 exec(command);
             }
@@ -304,23 +315,14 @@ AutoExplore.prototype.tick = function (tick) {
                     return b3.FAILURE;
                 } else {
                     webModelFunctions.update('status', 'Explore process started.');
-                    // Since this node will loop, we never reach the "unplug" node,
-                    // so we need to tell the user that we are still plugged in.
-                    // NOTE: This prevents self-unplugging logic,
-                    // but I'm not sure we want/need that for the explore function.
                     if (webModel.pluggedIn) {
-                        webModelFunctions.behaviorStatusUpdate('Robot is still plugged in!');
-                        if (webModel.laptopFullyCharged) {
-                            if (!robotModel.unplugMeTextSent) {
-                                textme('Please unplug me!');
-                                robotModel.unplugMeTextSent = true;
-                            }
-                        }
+                        webModelFunctions.behaviorStatusUpdate(this.name + 'Robot is still plugged in!');
+                        // Returning success will allow the UnPlug Behavior to run
+                        return b3.SUCCESS;
                     } else {
-                        webModelFunctions.behaviorStatusUpdate('Robot is Exploring!');
-
+                        webModelFunctions.behaviorStatusUpdate(this.name + 'Robot is Exploring!');
+                        return b3.RUNNING;
                     }
-                    return b3.RUNNING;
                 }
             } else {
                 webModelFunctions.update('status', 'Explore process is starting...');
@@ -332,7 +334,7 @@ AutoExplore.prototype.tick = function (tick) {
             return b3.RUNNING;
         }
     } else {
-        // Return FAIURE if we were NOT asked to explore,
+        // Return FAILURE if we were NOT asked to explore,
         // thus passing priority on to LoadMap
         return b3.FAILURE;
     }

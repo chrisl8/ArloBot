@@ -113,6 +113,10 @@ function robotById(id) {
 app.use(express.static(__dirname + '/public'));
 
 app.get('/', function (req, res) {
+    // TODO: Use the websocket based status ("is robot online?")
+    // to determine if the robot IS online and provide a "landing page"
+    // if it isn't, instead of dumping the user to a broken link.
+    // ALSO, maybe clear this link when robot is offline.
     var clientResponse = res;
     // Default, hoping you named your computer 'arlobot',
     // and that the name can be resolved on your network.

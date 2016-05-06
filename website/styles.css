@@ -10,7 +10,8 @@ h2, h3 {
     font-weight: lighter;
 }
 body {
-    margin: 2em;
+    background: black;
+    margin: 10px;
 }
 body, input[text], button {
     color: #888;
@@ -172,7 +173,7 @@ nav a.router-link-active {
 .b {
     display: block;
     text-align: center;
-    padding: 8px;
+    padding: 6px;
 }
 .toggle {
     margin: 1px;
@@ -211,10 +212,11 @@ nav a.router-link-active {
     transition-delay: .08s, 0s;
 }
 .switch {
+    font-weight: bold;
     color: #3D464D;
     position: absolute;
     left: 2px;
-    top: 1px;
+    top: 2px;
     bottom: 2px;
     right: 37.5%;
     background-color: #fff;
@@ -246,4 +248,31 @@ nav a.router-link-active {
     transition-property: left, right;
     transition-delay: 0s, .08s;
     box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+}
+#statusScrollBox {
+    height: 124px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-right: 10px;
+    background: black;
+    padding: 0;
+    padding-left: 5px;
+    color:white;
+}
+#decorative-border {
+    background: #99f;
+    padding: 10px;
+    border-radius: 32px;
+    color: black;
+}
+#status-line {
+    margin-left: 10px;
+}
+#footer-line {
+    text-align: center;
+    margin-bottom: 0px;
+    margin-top: 8px;
+}
+.btn {
+    margin-bottom: 1px;
 }

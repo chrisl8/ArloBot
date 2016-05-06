@@ -18,4 +18,3 @@ if (require.main === module) {
     var socketServerSubscriber = new SocketServerSubscriber(remoteMessageHandler.handleMessage);
     socketServerSubscriber.start();
 }
-

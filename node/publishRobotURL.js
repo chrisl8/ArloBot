@@ -3,7 +3,7 @@ var webModel = require('./webModel');
 var webModelFunctions = require('./webModelFunctions');
 var request = require('request');
 var ipAddress = require('./ipAddress');
-var updateRobotURL = function() {
+var updateRobotURL = function () {
     var robotIP = ipAddress.ipAddress();
     var robotURL = 'http://' + robotIP + ':' + personalData.webServerPort + '/index2.html';
     if (personalData.cloudServer.exists && webModel.robotURL !== robotURL) {
@@ -16,10 +16,12 @@ var updateRobotURL = function() {
 
         request.post(
             serverURL,
-            { json: {
-                password: personalData.cloudServer.password,
-                localURL: robotURL
-            } },
+            {
+                json: {
+                    password: personalData.cloudServer.password,
+                    localURL: robotURL
+                }
+            },
             function (error, response, body) {
                 if (!error && response.statusCode == 200) {
                     console.log(body)

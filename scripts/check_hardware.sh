@@ -54,7 +54,7 @@ if [ $(jq '.relays.has_fiveVolt' ${HOME}/.arlobot/personalDataForBehavior.json) 
     echo "Turning on Five Volt power converter . . ."
     ${SCRIPTDIR}/switch_relay_name.sh fiveVolt on
     # Give Linux time to find the devices.
-    sleep 3
+    sleep 5 # Experience shows any less than 5 seconds causes some devices to fail.
 fi
 
 # Camera 0

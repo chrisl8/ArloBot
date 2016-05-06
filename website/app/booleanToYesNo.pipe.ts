@@ -1,0 +1,17 @@
+import { Pipe, PipeTransform } from 'angular2/core';
+
+/*
+ * Turn True/False into Yes/No for display of booleans from JSON object.
+ */
+@Pipe({name: 'boolToYesNo'})
+export class BoolToYesNo implements PipeTransform {
+    transform(value: boolean): string {
+        var returnValue = String(value);
+        if (value === true) {
+            returnValue = 'Yes';
+        } else if (value === false) {
+            returnValue = 'No';
+        }
+        return returnValue;
+    }
+}

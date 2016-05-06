@@ -17,7 +17,7 @@
  * let socket = io('http://arlobot:8080/');
  * or just:
  * let socket = io('arlobot:8080');
-*/
+ */
 let socket = io('/');
 
 export class SocketService {
@@ -29,5 +29,9 @@ export class SocketService {
 
     emit(type:string) {
         this.socket.emit(type);
+    }
+
+    emitData(type:string, data:string) {
+        this.socket.emit(type, data);
     }
 }

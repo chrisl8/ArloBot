@@ -3,7 +3,7 @@ import {SocketService} from './SocketService.service';
 
 export class WebSocket {
     zone:NgZone;
-    webModel:Array<string> = [];
+    webModel = {};
     socketSvc:SocketService;
 
     constructor() {
@@ -16,9 +16,15 @@ export class WebSocket {
         console.log('getData');
         this.socketSvc.emit('event');
     }
+
     emitValue(value) {
         console.log(value);
         this.socketSvc.emit(value);
+    }
+    
+    sendData(value, data) {
+        console.log(value, data);
+        this.socketSvc.emitData(value, data);
     }
 
     initListeners() {
@@ -44,6 +50,14 @@ export class WebSocket {
             this.zone.run(() => {
                 this.webModel = data;
                 console.log(this.webModel);
+            });
+        });
+        this.socketSvc.socket.on('disconnect', (data) => {
+            this.zone.run(() => {
+                this.webModel = {
+                    status: 'Robot offline.'
+                };
+                console.log('Disconnected.');
             });
         });
     }
