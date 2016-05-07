@@ -1,4 +1,4 @@
-import { Pipe, PipeTransform } from 'angular2/core';
+import { Pipe, PipeTransform } from '@angular/core';
 
 /*
  * Turn True/False into Yes/No for display of booleans from JSON object.

@@ -1,5 +1,5 @@
 // Adapted from websocket.service.ts
-import {NgZone} from 'angular2/core';
+import {NgZone} from '@angular/core';
 import {RosService} from './RosService.service';
 
 export class RosLibJS {

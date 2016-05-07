@@ -1,6 +1,6 @@
-import {Component} from 'angular2/core';
+import {Component} from '@angular/core';
 import {BoolToYesNo} from './booleanToYesNo.pipe';
-import {CORE_DIRECTIVES, FORM_DIRECTIVES} from 'angular2/common';
+import {CORE_DIRECTIVES, FORM_DIRECTIVES} from '@angular/common';
 // http://stackoverflow.com/a/34546950/4982408
 import {ACCORDION_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
 

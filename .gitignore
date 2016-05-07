@@ -15,5 +15,5 @@ node/public/xscreen.png
 server/node_modules/
 website/node_modules/
 website/typings/
-website/**/*.js
-website/**/*.js.map
+website/app/*.js
+website/app/*.js.map

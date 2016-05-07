@@ -1,4 +1,4 @@
-import {NgZone} from 'angular2/core';
+import {NgZone} from '@angular/core';
 import {SocketService} from './SocketService.service';
 
 export class WebSocket {
