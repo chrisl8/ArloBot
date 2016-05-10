@@ -1,40 +1,13 @@
 var webModel = require('./webModel');
 var webModelFunctions = require('./webModelFunctions');
 var robotModel = require('./robotModel');
-// TODO: If this bug is ever fixed:
-// https://github.com/RobotWebTools/roslibjs/issues/160
-// Stop using my fork of roslib.
 var ROSLIB = require('roslib');
 
 // Copied from arloweb.js
-// TODO: Most of these can be erased.
 var connectedToROS = false, // Track my opinion of the connection
-    connectRequested = false, // For when we asked and are waiting patiently.
-    pleaseWait = false, // Display Please Wait on the Connect button
     ros, // Empty global for actual connection.
-    cmdVel, // Empty global for actual topic
-    wakeScreen, // Empty global for actual topic
-    toggleCamera, // Empty global for actual topic
-    toggleRelay, // Empty global for actual topic
-    sendTextToSpeak, // Empty global for actual topic
     shortDelay = 1000,
-    longDelay = 3000,
-    camera1On = false, // For tracking Camera status
-    camera2On = false, // For tracking Camera status
-    upperLightOn = false, // For tracking LED light bars
-    lowerLightOn = false, // For tracking LED light bars
-    UpperLightRowRelay = -1,
-    UpperLightRowName = "TopLightRow", // Found in arlobot_usbrelay/param/usbrelay.yaml
-    LowerLightRowRelay = -1,
-    LowerLightRowName = "BottomLightRow", // Found in arlobot_usbrelay/param/usbrelay.yaml
-    RightMotorRelay = -1,
-    RightMotorName = "RightMotor", // Found in arlobot_usbrelay/param/usbrelay.yaml
-    LeftMotorRelay = -1,
-    LeftMotorName = "LeftMotor"; // Found in arlobot_usbrelay/param/usbrelay.yaml
-
-// Copied from arloweb.js
-// Be sure to set url to point to localhost,
-// and change any references to web objects with console.log (i.e. setActionField)
+    longDelay = 3000
 
 // Define a list of ROS Parameters to monitor
 // NOTE: Add an instance to webModel if you want this sent to the web app!
@@ -129,6 +102,7 @@ var setParam = function(paramLabel, value) {
 };
 
 var closeDeadROSConnection = function() {
+    // TODO: Does this ever happen?
     'use strict';
     console.log("Closing dead ROS connection.");
     if (ros !== undefined) {
@@ -180,6 +154,9 @@ var subscribeToActiveStatus = function() {
     });
 };
 
+// Copied from arloweb.js
+// Be sure to set url to point to localhost,
+// and change any references to web objects with console.log (i.e. setActionField)
 var pollROS = function() {
     // console.log('ROSLIB pollROS run');
     connectedToROS = false;
