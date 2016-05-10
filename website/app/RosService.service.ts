@@ -26,12 +26,15 @@
 declare var ROSLIB:any;
 
 let socket = new ROSLIB.Ros();
+let Message = ROSLIB.Message;
 
 export class RosService {
     socket;
+    Message;
 
     constructor() {
         this.socket = socket;
+        this.Message = Message;
     }
 
     emit(type:string) {
@@ -41,4 +44,29 @@ export class RosService {
     emitData(type:string, data:string) {
         this.socket.emit(type, data);
     }
+
+    twist(linear_speed:number, angular_speed:number) {
+        return new this.Message({
+            linear: {
+                x: linear_speed,
+                y: 0.0,
+                z: 0.0
+            },
+            angular: {
+                x: 0.0,
+                y: 0.0,
+                z: angular_speed
+            }
+        });
+    }
+
+    // Setup ROS cmdVel Publishing a Topic for the TeleOp function
+    cmdVel() {
+        return new ROSLIB.Topic({ // "defined" in the declare statement above the class.
+            ros: socket, // Uses the same socket we already declared.
+            name: '/cmd_vel_mux/input/web',
+            messageType: 'geometry_msgs/Twist'
+        });
+    }
+
 }
