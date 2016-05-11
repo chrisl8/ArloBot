@@ -78,6 +78,19 @@ npm update
 cd ${SCRIPTDIR}/../website
 npm install
 npm update
+cd ${SCRIPTDIR}/../website/lib
+wget http://cdn.robotwebtools.org/roslibjs/current/roslib.js
+
+if [ ! -d  ${SCRIPTDIR}/../website/lib/virtualjoystick/ ]
+    then
+    printf "\n${YELLOW}[Cloning virtualjoystick.js]${NC}\n"
+    cd ${SCRIPTDIR}/../website/lib/
+    git clone https://github.com/jeromeetienne/virtualjoystick.js.git virtualjoystick
+else
+    printf "\n${YELLOW}[Updating virtualjoystick.js]${NC}\n"
+    cd ${SCRIPTDIR}/../website/lib/virtualjoystick/
+    git pull
+fi
 
 cd ${SCRIPTDIR}/../server
 npm install
