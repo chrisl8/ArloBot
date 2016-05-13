@@ -217,6 +217,15 @@
                 has no ability to switch from SLAM to AMCL nor to swap maps in AMCL.</p>
             <p *ngIf="arlobotSvc.webModel.mapName !== '' && !arlobotSvc.webModel.autoExplore">If you create a destination waypoint called "initial" that location will be set as the current robot location whenever the map is loaded.</p>
         </accordion-group>
+        <accordion-group heading="Remote Control">
+            <!--https://github.com/JorgeArino/virtualjoystick.js-->
+            <button type="button" class="btn btn-primary" (click)="virtualJoystickFunction()">
+                Start virtualJoystick
+            </button>
+            <div id="virtual-joystick-container"></div>
+            <span id="virtual-joystick-result"></span>
+
+        </accordion-group>
         <accordion-group *ngFor="let group of groups" [heading]="group.title">
             {{ group?.content }}
         </accordion-group>

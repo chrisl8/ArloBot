@@ -276,3 +276,12 @@ nav a.router-link-active {
 .btn {
     margin-bottom: 1px;
 }
+#virtual-joystick-container {
+    width		: 100%;
+    height		: 480px;
+    overflow	: hidden;
+    padding		: 0;
+    margin		: 0;
+    -webkit-user-select	: none;
+    -moz-user-select	: none;
+}

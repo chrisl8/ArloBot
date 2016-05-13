@@ -7,8 +7,9 @@ import {ACCORDION_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
 import {WebSocket} from './websocket.service';
 import {RosLibJS} from './roslib.service';
 
-// Fake out TypeScript regarding a generic JS library
+// Fake out TypeScript regarding a generic JS librarys
 declare var ROSLIB:any;
+declare var VirtualJoystick:any;
 
 @Component({
     selector: 'my-app',
@@ -103,6 +104,32 @@ export class AppComponent {
 
     public sendDataToArlobot(signal, map):void {
         this.arlobotSvc.sendData(signal, map);
+    }
+
+    public virtualJoystickFunction():void {
+        console.log('.');
+        console.log("touchscreen is", VirtualJoystick.touchScreenAvailable() ? "available" : "not available");
+
+        var joystick = new VirtualJoystick({
+            container: document.getElementById('virtual-joystick-container'),
+            mouseSupport: true
+        });
+        joystick.addEventListener('touchStart', function () {
+            console.log('down')
+        })
+        joystick.addEventListener('touchEnd', function () {
+            console.log('up')
+        })
+        setInterval(function () {
+            var outputEl = document.getElementById('virtual-joystick-result');
+            outputEl.innerHTML = '<b>Result:</b> '
+                + ' dx:' + joystick.deltaX()
+                + ' dy:' + joystick.deltaY()
+                + (joystick.right() ? ' right' : '')
+                + (joystick.up() ? ' up' : '')
+                + (joystick.left() ? ' left' : '')
+                + (joystick.down() ? ' down' : '')
+        }, 1 / 30 * 1000);
     }
 
     onInit() {
