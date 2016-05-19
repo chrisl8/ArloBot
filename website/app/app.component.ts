@@ -107,20 +107,9 @@ export class AppComponent {
     }
 
     public virtualJoystickFunction():void {
-        console.log('.');
-        console.log("touchscreen is", VirtualJoystick.touchScreenAvailable() ? "available" : "not available");
-
-        var joystick = new VirtualJoystick({
-            container: document.getElementById('virtual-joystick-container'),
-            mouseSupport: true
-        });
-        joystick.addEventListener('touchStart', function () {
-            console.log('down')
-        })
-        joystick.addEventListener('touchEnd', function () {
-            console.log('up')
-        })
-        setInterval(function () {
+        var that = this;
+        var refreshInterval = 1 / 30 * 1000;
+        var writeInputToScreen = function () {
             var outputEl = document.getElementById('virtual-joystick-result');
             outputEl.innerHTML = '<b>Result:</b> '
                 + ' dx:' + joystick.deltaX()
@@ -128,8 +117,54 @@ export class AppComponent {
                 + (joystick.right() ? ' right' : '')
                 + (joystick.up() ? ' up' : '')
                 + (joystick.left() ? ' left' : '')
-                + (joystick.down() ? ' down' : '')
-        }, 1 / 30 * 1000);
+                + (joystick.down() ? ' down' : '');
+        };
+        var movementWatcher = function () {
+            console.log('.');
+            writeInputToScreen();
+            movementTimeout = setTimeout(movementWatcher, refreshInterval);
+        };
+        var movementTimeout;
+        console.log("touchscreen is", VirtualJoystick.touchScreenAvailable() ? "available" : "not available");
+
+        var joystick = new VirtualJoystick({
+            container: document.getElementById('virtual-joystick-container'),
+            mouseSupport: true
+        });
+        joystick.addEventListener('touchStart', function () {
+            // TODO: This doesn't work for mouse down, only touch.
+            console.log('down')
+            if (movementTimeout !== undefined) {
+                clearTimeout(movementTimeout);
+            }
+            movementTimeout = setTimeout(movementWatcher, refreshInterval);
+        });
+        joystick.addEventListener('touchEnd', function () {
+            console.log('up')
+            if (movementTimeout !== undefined) {
+                clearTimeout(movementTimeout);
+            }
+            // TODO: This doesn't reset to ZERO for some reason,
+            // But it doesn't stop us from sending ZERO to the robot.
+            writeInputToScreen();
+            console.log(that.rosSvc);
+            console.log(that.arlobotSvc);
+            if (that.rosSvc.connected) {
+                that.rosSvc.sendTwistCommandToROS(0.0, 0.0);
+            } else {
+                console.log('Ros not running.');
+            }
+        });
+        // setInterval(function () {
+        //     var outputEl = document.getElementById('virtual-joystick-result');
+        //     outputEl.innerHTML = '<b>Result:</b> '
+        //         + ' dx:' + joystick.deltaX()
+        //         + ' dy:' + joystick.deltaY()
+        //         + (joystick.right() ? ' right' : '')
+        //         + (joystick.up() ? ' up' : '')
+        //         + (joystick.left() ? ' left' : '')
+        //         + (joystick.down() ? ' down' : '')
+        // }, 1 / 30 * 1000);
     }
 
     onInit() {
