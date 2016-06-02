@@ -186,7 +186,7 @@ class UsbRelay(object):
                         foundRelay = True
                         while self._Busy: # Prevent simultaneous polling of serial port by multiple processes within this app due to ROS threading.
                             rospy.loginfo("BitBangDevice Busy . . .")
-                            rospy.sleep(0.4)
+                            rospy.sleep(0.5)
                         self._Busy = True
                         rospy.loginfo("Changing relay " + str(self.relaySerialNumber) + " to " + str(req.state))
                         if req.state:
@@ -219,7 +219,7 @@ class UsbRelay(object):
                             relayLabel = rospy.get_param("~relay" + str(i) + "label", "No Label")
                             while self._Busy: # Prevent simultaneous polling of serial port by multiple processes within this app due to ROS threading.
                                 rospy.loginfo("BitBangDevice Busy . . .")
-                                rospy.sleep(0.2)
+                                rospy.sleep(1)
                             self._Busy = True
                             state = get_relay_state( BitBangDevice(self.relaySerialNumber).port, str(i) )
                             self._Busy = False
