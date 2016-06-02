@@ -1,18 +1,15 @@
 var personalData = require('./personalData');
 var webModel = require('./webModel');
-var webModelFunctions = require('./webModelFunctions');
+const webModelFunctions = require('./webModelFunctions');
 var request = require('request');
 var ipAddress = require('./ipAddress');
 var updateRobotURL = function () {
-    var robotIP = ipAddress.ipAddress();
-    var robotURL = 'http://' + robotIP + ':' + personalData.webServerPort + '/index2.html';
+    const robotIP = ipAddress.ipAddress();
+    const robotURL = 'http://' + robotIP + ':' + personalData.webServerPort + '/index2.html';
     if (personalData.cloudServer.exists && webModel.robotURL !== robotURL) {
         webModelFunctions.update('robotIP', robotIP);
-        webModelFunctions.update('robotURL', robotURL);
-        console.log('webModel.robotIP:', webModel.robotIP);
-        console.log('webModel.robotURL:', webModel.robotURL);
 
-        var serverURL = 'http://' + personalData.cloudServer.fqdn + ':' + personalData.cloudServer.port + '/updateRobotURL';
+        const serverURL = 'http://' + personalData.cloudServer.fqdn + ':' + personalData.cloudServer.port + '/updateRobotURL';
 
         request.post(
             serverURL,
@@ -24,7 +21,10 @@ var updateRobotURL = function () {
             },
             function (error, response, body) {
                 if (!error && response.statusCode == 200) {
+                    webModelFunctions.update('robotURL', robotURL);
                     console.log(body)
+                    console.log('webModel.robotIP:', webModel.robotIP);
+                    console.log('webModel.robotURL:', webModel.robotURL);
                 } else {
                     console.log(error, response, body);
                 }

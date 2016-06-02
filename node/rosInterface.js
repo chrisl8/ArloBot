@@ -1,7 +1,10 @@
 var webModel = require('./webModel');
-var webModelFunctions = require('./webModelFunctions');
+const webModelFunctions = require('./webModelFunctions');
 var robotModel = require('./robotModel');
+// Set last movement to now to initiate the idle timer
+robotModel.lastMovementTime = Date.now();
 var ROSLIB = require('roslib');
+var unplug; // Empty global for actual topic
 
 // Copied from arloweb.js
 var connectedToROS = false, // Track my opinion of the connection
@@ -49,6 +52,18 @@ var rosParameters = {
     }
 };
 
+var unplugRobot = function(value)
+{
+    var unplugRequest = new ROSLIB.ServiceRequest({
+        // args from rosservice info <service>
+        unPlug: value // Note javaScript uses true not True for bool
+    });
+    unplug.callService(unplugRequest, function(result) {
+        console.log(result);
+        webModelFunctions.scrollingStatusUpdate(result);
+    })
+};
+
 var talkToROS = function() {
     // If you wanted to dump ALL params:
     //ros.getParams(function(params) {
@@ -59,6 +74,13 @@ var talkToROS = function() {
     // Start subscriptions:
     // Each topic function will do its own checking to see if the topic is live or not.
     setTimeout(subscribeToActiveStatus, shortDelay); // Start with a slight delay
+
+    // Set up services to use
+    unplug = new ROSLIB.Service({
+        ros: ros,
+        name: '/arlobot_unplug', // rosservice list
+        serviceType: 'arlobot_msgs/UnPlug' // rosservice info <service>
+    });
 
     // Enumerate parameters to watch
     for (var prop in rosParameters) {
@@ -144,11 +166,12 @@ var subscribeToActiveStatus = function() {
 
         cmd_activeStatus.subscribe(function(message) {
             robotModel.active_cmd = message.data;
-            //console.log('Command Velocity Topic says: ' + message.data);
+            console.log('Command Velocity Topic says: ' + message.data);
             if (message.data === 'idle') {
                 robotModel.cmdTopicIdle = true;
             } else {
                 robotModel.cmdTopicIdle = false;
+                robotModel.lastMovementTime = Date.now();
             }
         });
     });
@@ -169,6 +192,8 @@ var pollROS = function() {
 
     ros.on('connection', function() {
         webModelFunctions.scrollingStatusUpdate('ROSLIB Websocket connected.');
+        // Set last movement to now to initiate the idle timer
+        robotModel.lastMovementTime = Date.now();
         //connectRequested = true;
         //updateConnectedButton();
         //checkROSServices();
@@ -199,3 +224,4 @@ function start() {
 
 exports.start = start;
 exports.setParam = setParam;
+exports.unplugRobot = unplugRobot;

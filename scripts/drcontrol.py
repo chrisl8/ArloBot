@@ -242,7 +242,7 @@ def set_relay():
 
                 elif cmdarg.command == "state":
                     #for i in range(1,8):
-                    print bb.port
+                    #print bb.port
                     for i in range(1,9):
                         state = get_relay_state( bb.port, str(i) )
                         if state == 0:

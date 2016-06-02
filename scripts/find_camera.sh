@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # Find the camera listed on the command line,
 # based on output of 'fswebam'
 if [ $# -eq 0 ]

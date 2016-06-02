@@ -1,20 +1,25 @@
 var personalData = require('./personalData');
 var webModel = require('./webModel');
-var webModelFunctions = require('./webModelFunctions');
+const webModelFunctions = require('./webModelFunctions');
+const Camera = require('./Camera');
+var camera = new Camera('Camera', personalData.camera0name);
 var robotModel = require('./robotModel');
-var LaunchScript = require('./LaunchScript');
-var tts = require('./tts');
+const LaunchScript = require('./LaunchScript');
+const tts = require('./tts');
 
-var WayPoints = require('./WayPoints.js');
+const WayPoints = require('./WayPoints.js');
 var wayPointEditor = new WayPoints();
 
-var rosInterface = require('./rosInterface');
-var fs = require('fs');
-var express = require('express');
-var spawn = require('child_process').spawn;
-var bodyParser = require('body-parser');
+const rosInterface = require('./rosInterface');
+const fs = require('fs');
+const express = require('express');
+const spawn = require('child_process').spawn;
+const bodyParser = require('body-parser');
+const masterRelay = require('./MasterRelay');
+const UsbRelay = require('./UsbRelayControl');
+var usbRelay = new UsbRelay();
 
-var updateMapList = require('./updateMapList');
+const updateMapList = require('./updateMapList');
 updateMapList();
 
 var app = express();
@@ -188,6 +193,7 @@ app.post('/receivemessage', function (req, res) {
     if (req.body.From === '+13162087309') {
         if (req.body.Body.toLowerCase().indexOf('unplug') > -1) {
             webModelFunctions.update('unplugYourself', true);
+            rosInterface.unplugRobot(true);
         }
     }
     // TODO: Take action based in incoming messages!
@@ -281,9 +287,11 @@ function start() {
         // unplugYourself
         socket.on('unplugYourself', function () {
             webModelFunctions.update('unplugYourself', true);
+            rosInterface.unplugRobot(true);
         });
         socket.on('doNotUnplugYourself', function () {
             webModelFunctions.update('unplugYourself', false);
+            rosInterface.unplugRobot(false);
         });
 
         // ROS Parameters
@@ -337,6 +345,18 @@ function start() {
         });
         socket.on('stopColorFollower', function () {
             stopColorFollower();
+        });
+        socket.on('toggleDebug', function () {
+            webModelFunctions.toggle('debugging');
+        });
+        socket.on('toggleCamera', function () {
+            camera.toggle();
+        });
+        socket.on('toggleMasterRelay', function () {
+            masterRelay('toggle');
+        });
+        socket.on('toggleRelay', function (data) {
+            usbRelay.toggle(data);
         });
         socket.on('exit', function () {
             webModelFunctions.update('shutdownRequested', true);

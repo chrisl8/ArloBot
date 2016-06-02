@@ -10,6 +10,7 @@ const EventEmitter = require('events');
 const util = require('util');
 
 function WebModelEmitter() {
+    webModel.lastUpdateTime = Date.now();
     EventEmitter.call(this);
 }
 // Here is the inheritance of the EventEmitter "stuff":
@@ -41,6 +42,17 @@ var update = function (key, value) {
 };
 exports.update = update;
 
+var toggle = function (key) {
+    if ((webModel[key] === true)) {
+        webModel[key] = false;
+        emitter.emit('change', key, false);
+    } else if ((webModel[key] === false)) {
+        webModel[key] = true;
+        emitter.emit('change', key, true);
+    }
+};
+exports.toggle = toggle;
+
 // Nested ojects are tricky, please suggest a better alternative to this?
 var updateRosParameter = function (key, value) {
     if ((webModel.rosParameters[key] != value)) {
@@ -58,3 +70,32 @@ var updateWayPointNavigator = function (key, value) {
 };
 exports.updateWayPointNavigator = updateWayPointNavigator;
 
+var publishRelayState = function (relayNumber, relayState, relayName) {
+    if (relayName === undefined) {
+        relayName = 'empty';
+    }
+    var relayOn = (relayState === 'ON');
+    const result = relayName.replace(/([A-Z]+)/g, " $1").replace(/([A-Z][a-z])/g, " $1");
+    const fancyName = result.charAt(0).toUpperCase() + result.slice(1);
+    const relayIndex = webModel.relays.findIndex(x=> x.number === relayNumber);
+    if (relayIndex === -1) {
+        webModel.relays.push({
+            number: relayNumber,
+            name: relayName,
+            fancyName: fancyName,
+            relayOn: relayOn
+        });
+        emitter.emit('change', relayName, relayState);
+    } else {
+        if (relayName !== 'Empty' && webModel.relays[relayIndex].name !== relayName) {
+            // Update relay name
+            webModel.relays[relayIndex].name = relayName;
+            webModel.relays[relayIndex].fancyName = fancyName;
+        }
+        if (webModel.relays[relayIndex].relayOn !== relayOn) {
+            webModel.relays[relayIndex].relayOn = relayOn;
+            emitter.emit('change', relayName, relayState);
+        }
+    }
+};
+exports.publishRelayState = publishRelayState;

@@ -5,8 +5,12 @@
 // in webModelFunctions.js
 
 module.exports = {
-    robotName: 'ArloBot', // This will be overridden by personalData in index.js
+    robotName: 'ArloBot', // This will be overridden by personalData in index.js,
+    lastUpdateTime: 0,
+    videoSource: 'xscreen.png',
+    masterRelayOn: false,
     debugging: false,
+    cameraOn: false,
     ROSstart: false,
     ROSisRunning: false,
     pluggedIn: true, // Assume the most restrictive setting.
@@ -31,6 +35,7 @@ module.exports = {
     userLightOnRequested: false,
     robotIP: undefined,
     robotURL: undefined,
+    relays: [],
     wayPoints: [],
     rosParameters: { // These are the parameters we will send to the web
         ignoreCliffSensors: false, // Use the expected default.

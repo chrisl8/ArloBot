@@ -174,7 +174,7 @@ function talkToMe() {
 
 function talkAboutEvents(key, value) {
     if (key && value) {
-        if (robotModel.debug) {
+        if (webModel.debugging) {
             console.log('---------------')
             console.log('talkAboutEvents change:');
             console.log(key);

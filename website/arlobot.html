@@ -34,6 +34,25 @@
             <button type="button" class="btn" [ngClass]="{'btn-warning': arlobotSvc.webModel.autoExplore}"
                     (click)="status.openNavTab = !status.openNavTab">Auto Exploring <span class="badge">{{arlobotSvc.webModel.autoExplore | boolToYesNo}}</span>
             </button>
+            <button type="button" class="btn" [ngClass]="{'btn-warning': arlobotSvc.webModel.debugging}"
+                    (click)="sendSpecificSignalToArlobot('toggleDebug')">Debugging <span class="badge">{{arlobotSvc.webModel.debugging | boolToYesNo}}</span>
+            </button>
+            <button type="button" class="btn" [ngClass]="{'btn-success': arlobotSvc.webModel.cameraOn}"
+                    (click)="sendSpecificSignalToArlobot('toggleCamera')">Camera <span class="badge">{{arlobotSvc.webModel.cameraOn | boolToOnOff}}</span>
+            </button>
+            <button type="button" class="btn" [ngClass]="{'btn-success': arlobotSvc.webModel.masterRelayOn}"
+                    (click)="sendSpecificSignalToArlobot('toggleMasterRelay')">Master Relay <span class="badge">{{arlobotSvc.webModel.masterRelayOn | boolToOnOff}}</span>
+            </button>
+            <h1>Things To Add</h1>
+            <ul>
+                <li>Telementry from Remote Control site. Should it be another group?</li>
+            </ul>
+        </accordion-group>
+        <accordion-group heading="Relays">
+            <span *ngFor="let relay of arlobotSvc.webModel.relays">
+            <button type="button" class="btn" [ngClass]="{'btn-success': relay.relayOn}"
+                    (click)="sendDataToArlobot('toggleRelay', relay.number)"><span *ngIf="relay.name !== 'empty'">{{relay.fancyName}}</span><span
+                    *ngIf="relay.name === 'empty'">Relay {{relay.number}}</span> <span class="badge">{{relay.relayOn | boolToOnOff}}</span></button></span>
         </accordion-group>
         <accordion-group heading="Behavior">
             <div class="lcarish-toggle-button" id="talk-bequiet-button"
@@ -45,12 +64,18 @@
                 </div>
                 <label class="toggler" [class.brightly-negative-text]="arlobotSvc.webModel.beQuiet">Quiet</label>
             </div>
-            <button type="button" class="btn btn-success" *ngIf="arlobotSvc.webModel.ROSisRunning && !arlobotSvc.webModel.colorFollowerRunning"
+            <button type="button" class="btn btn-success"
+                    *ngIf="arlobotSvc.webModel.ROSisRunning && !arlobotSvc.webModel.colorFollowerRunning"
                     (click)="sendSpecificSignalToArlobot('startColorFollower')">Start Color Follower
             </button>
             <button type="button" class="btn btn-danger" *ngIf="arlobotSvc.webModel.colorFollowerRunning"
                     (click)="sendSpecificSignalToArlobot('stopColorFollower')">Stop Color Follower
             </button>
+            <p>
+            <h1>Things To Add</h1>
+            <ul>
+                <li>Start Log Streamer</li>
+            </ul>
         </accordion-group>
         <accordion-group heading="Sensors" *ngIf="arlobotSvc.webModel.rosParameters">
             <p *ngIf="!arlobotSvc.webModel.ROSisRunning">These do not work until ROS is Running.</p>
@@ -122,7 +147,7 @@
                 </div>
             </div>
         </accordion-group>
-        <accordion-group [isOpen]="!arlobotSvc.webModel.ROSisRunning || status.openStartup">
+        <accordion-group [isOpen]="status.openStartup">
             <div accordion-heading>
                 Startup/Shutdown - <span style="font-weight: bold;" *ngIf="arlobotSvc.webModel.ROSisRunning">ROS is Running!</span>
                 <span style="font-weight: bold;" *ngIf="!arlobotSvc.webModel.ROSisRunning">ROS Stopped.</span>
@@ -140,8 +165,6 @@
             <button type="button" class="btn btn-danger" (click)="sendSpecificSignalToArlobot('exit')">
                 Reset Robot Server
             </button>
-            <h4>Robot Service Log</h4>
-            <div id="statusScrollBox" [innerHTML]="arlobotSvc.webModel.scrollingStatus"></div>
             <div class="lcarish-toggle-button" id="unplug-yourself-button"
                  (click)="updateWebModelKey('unplugYourself', 'doNotUnplugYourself', 'unplugYourself')">
                 <label class="toggler" [class.brightly-positive-text]="!arlobotSvc.webModel.unplugYourself">No</label>
@@ -153,6 +176,9 @@
                 </div>
                 <label class="toggler" [class.brightly-negative-text]="arlobotSvc.webModel.unplugYourself">Yes</label>
             </div>
+        </accordion-group>
+        <accordion-group heading="Robot Service Log">
+            <div id="statusScrollBox" [innerHTML]="arlobotSvc.webModel.scrollingStatus"></div>
         </accordion-group>
         <accordion-group heading="Navigation" [isOpen]="status.openNavTab">
             <div *ngIf="arlobotSvc.webModel.mapName === '' && !arlobotSvc.webModel.autoExplore">
@@ -183,6 +209,12 @@
                 </div>
                 <label class="toggler" [class.brightly-negative-text]="arlobotSvc.webModel.pauseExplore">Pause</label>
             </div>
+            <p>
+            <h1>Things To Add</h1>
+            <ul>
+                <li>Save Map</li>
+                <li>Add New Waypoint</li>
+            </ul>
             <!-- TODO: Add a Save Map button. -->
             <!--Should pop up a modal,-->
             <!--list existing maps under the input bux,-->
@@ -215,16 +247,32 @@
             <p>When you are satisfied with your map you will need to save it.</p>
             <p>The only way to load a map after making it, or to load a new map, is to Stop ROS and Start ROS again. ROS
                 has no ability to switch from SLAM to AMCL nor to swap maps in AMCL.</p>
-            <p *ngIf="arlobotSvc.webModel.mapName !== '' && !arlobotSvc.webModel.autoExplore">If you create a destination waypoint called "initial" that location will be set as the current robot location whenever the map is loaded.</p>
+            <p *ngIf="arlobotSvc.webModel.mapName !== '' && !arlobotSvc.webModel.autoExplore">If you create a
+                destination waypoint called "initial" that location will be set as the current robot location whenever
+                the map is loaded.</p>
         </accordion-group>
         <accordion-group heading="Remote Control">
+            <button *ngIf="!arlobotSvc.webModel.ROSisRunning" type="button" class="btn btn-danger"
+                    (click)="status.openStartup = true">ROS Stopped
+            </button>
+            <button *ngIf="arlobotSvc.webModel.doorsOpen && arlobotSvc.webModel.ROSisRunning" type="button" class="btn"
+                    [ngClass]="{'btn-danger': arlobotSvc.webModel.doorsOpen}"
+                    (click)="status.openStartup = true">Dangerous Doors Open <span class="badge">{{arlobotSvc.webModel.doorsOpen | boolToYesNo}}</span>
+            </button>
             <!--https://github.com/JorgeArino/virtualjoystick.js-->
-            <button type="button" class="btn btn-primary" (click)="virtualJoystickFunction()">
+            <p>Todo: Increase max speed or adjust rate so we can go faster if we want to without losing fine
+                control.</p>
+            <button *ngIf="!arlobotSvc.webModel.doorsOpen && arlobotSvc.webModel.ROSisRunning" type="button"
+                    class="btn btn-primary"
+                    (click)="virtualJoystickFunction()">
                 Start virtualJoystick
             </button>
-            <div id="virtual-joystick-container"></div>
+            {{ joystickOutput }}
             <span id="virtual-joystick-result"></span>
-
+            <div id="virtual-joystick-container"></div>
+        </accordion-group>
+        <accordion-group heading="Video">
+            <img id="videoFeed" alt="Video feed" [src]="arlobotSvc.webModel.videoSource" style="width: 100%;">
         </accordion-group>
         <accordion-group *ngFor="let group of groups" [heading]="group.title">
             {{ group?.content }}

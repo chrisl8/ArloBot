@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
 import {BoolToYesNo} from './booleanToYesNo.pipe';
+import {BoolToOnOff} from './boolToOnOff.pipe';
 import {CORE_DIRECTIVES, FORM_DIRECTIVES} from '@angular/common';
 // http://stackoverflow.com/a/34546950/4982408
 import {ACCORDION_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
@@ -17,7 +18,7 @@ declare var VirtualJoystick:any;
     providers: [WebSocket, RosLibJS],
     directives: [ACCORDION_DIRECTIVES, CORE_DIRECTIVES, FORM_DIRECTIVES],
     templateUrl: 'arlobot.html',
-    pipes: [BoolToYesNo]
+    pipes: [BoolToYesNo, BoolToOnOff]
     /* Good stuff here:
      *http://www.syntaxsuccess.com/viewarticle/input-controls-in-angular-2.0
      *
@@ -36,10 +37,12 @@ export class AppComponent {
 // http://valor-software.com/ng2-bootstrap/
     public oneAtATime:boolean = false;
     public items:Array<string> = ['Item 1', 'Item 2', 'Item 3'];
+    public joystickOutput:string = 'Off';
 
     public status:Object = {
         isFirstOpen: true,
-        isFirstDisabled: false
+        isFirstDisabled: false,
+        openStartup: true
     };
 
     public groups:Array<any> = [
@@ -102,22 +105,28 @@ export class AppComponent {
         this.arlobotSvc.emitValue(signal);
     }
 
-    public sendDataToArlobot(signal, map):void {
-        this.arlobotSvc.sendData(signal, map);
+    public sendDataToArlobot(signal, data):void {
+        this.arlobotSvc.sendData(signal, data);
     }
 
     public virtualJoystickFunction():void {
         var that = this;
-        var refreshInterval = 1 / 30 * 1000;
+        this.joystickOutput = 'Use finger or mouse to drive robot!';
+        // var refreshInterval = 1 / 30 * 1000;
+        const refreshInterval = 1 / 15 * 1000;
+        const DECREASER = 100;
         var writeInputToScreen = function () {
-            var outputEl = document.getElementById('virtual-joystick-result');
-            outputEl.innerHTML = '<b>Result:</b> '
-                + ' dx:' + joystick.deltaX()
-                + ' dy:' + joystick.deltaY()
-                + (joystick.right() ? ' right' : '')
-                + (joystick.up() ? ' up' : '')
-                + (joystick.left() ? ' left' : '')
-                + (joystick.down() ? ' down' : '');
+            let deltaX = (Math.round((joystick.deltaX()/DECREASER)*100)/100);
+            let deltaY = (Math.round((joystick.deltaY()/DECREASER)*100)/100);
+            that.joystickOutput = ' dx:' + deltaX
+                + ' dy:' + deltaY
+                + (joystick.right() ? ' Right' : '')
+                + (joystick.up() ? ' Forward' : '')
+                + (joystick.left() ? ' Left' : '')
+                + (joystick.down() ? ' Reverse' : '');
+            if (that.rosSvc.connected) {
+                that.rosSvc.sendTwistCommandToROS(-deltaY, -deltaX);
+            }
         };
         var movementWatcher = function () {
             console.log('.');
@@ -149,6 +158,7 @@ export class AppComponent {
             writeInputToScreen();
             console.log(that.rosSvc);
             console.log(that.arlobotSvc);
+            that.joystickOutput = 'Stopped';
             if (that.rosSvc.connected) {
                 that.rosSvc.sendTwistCommandToROS(0.0, 0.0);
             } else {

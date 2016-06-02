@@ -13,8 +13,9 @@ SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 if [[ $# -lt 2 ]]
 then
     echo "You must provide the relay name, and"
-    echo "you must add 'on' or 'off' to the end of the command, like this:"
+    echo "you must add 'on', 'off' or 'state' to the end of the command, like this:"
     echo "${0} fiveVolt on"
+    echo "'state' will read the current state of the relay"
     echo ""
     echo "You can also include the USB Relay serial number on the end to speed things up, or if you have more than one."
     echo "${0} fiveVolt on A9026EI5"
@@ -27,6 +28,9 @@ fi
 if [ ${1} == 'all' ]
 then
     RELAY_NUMBER=all
+elif [[ ${1} =~ ^[0-9]+$ ]]
+then
+    RELAY_NUMBER=${1}
 else
     HAS_RELAY_ENTRY="has_${1}"
     if [ $(jq ".relays.${HAS_RELAY_ENTRY}" ${HOME}/.arlobot/personalDataForBehavior.json) == true ]

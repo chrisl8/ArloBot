@@ -13,10 +13,10 @@ SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 if [[ $# -lt 1 ]]
 then
-    echo "You must add 'on' or 'off' to the end of the command, like this:"
+    echo "You must add 'on', 'off' or 'read' to the end of the command, like this:"
     echo "${0} on"
     exit
 fi
 
-node ${SCRIPTDIR}/../node/UsbRelay.js $(${SCRIPTDIR}/find_MasterRelayBoard.sh) ${1}
+node ${SCRIPTDIR}/../node/MasterRelay.js ${1}
 

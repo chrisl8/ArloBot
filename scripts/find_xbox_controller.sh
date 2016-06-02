@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # This will find the first controller,
 # Increment FIND_NUMBER if you want to use another one
 FIND_NUMBER=1

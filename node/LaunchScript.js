@@ -1,3 +1,4 @@
+var webModel = require('./webModel');
 var webModelFunctions = require('./webModelFunctions');
 var spawn = require('child_process').spawn;
 
@@ -8,7 +9,6 @@ function LaunchScript(options) {
     this.scriptArguments = options.scriptArguments || undefined;
     this.successString = options.successString || undefined;
     this.callback = options.callback || undefined;
-    this.debugging = options.debugging || false;
     this.started = false;
     this.startupComplete = false;
     this.hasExited = false;
@@ -18,11 +18,11 @@ LaunchScript.prototype.start = function() {
     this.started = true;
     this.hasExited = false;
     var self = this;
-    if (this.debugging) {
+    if (webModel.debugging) {
         console.log('Running ' + this.name + ' child process . . .');
     }
     this.startupComplete = false;
-    if (this.debugging) {
+    if (webModel.debugging) {
         console.log(this.name + ' is starting up . . .');
     }
     webModelFunctions.scrollingStatusUpdate(this.name + ' is starting up . . .');
@@ -31,9 +31,8 @@ LaunchScript.prototype.start = function() {
     } else if (this.scriptName) {
         this.process = spawn(this.scriptName, [this.scriptArguments]);
     }
-    this.process.stdout.setEncoding('utf8');
-    this.process.stdout.on('data', function(data) {
-        if (self.debugging) {
+    this.process.stdout.on('data', (data) => {
+        if (webModel.debugging) {
             process.stdout.write(self.name + ' stdout data:' + data);
         }
         if (self.successString && !self.startupComplete) {
@@ -55,24 +54,23 @@ LaunchScript.prototype.start = function() {
             webModelFunctions.scrollingStatusUpdate(self.name + ' successfully started.');
         }
     });
-    this.process.stderr.setEncoding('utf8');
-    this.process.stderr.on('data', function(data) {
-        if (self.debugging) {
+    this.process.stderr.on('data', (data) => {
+        if (webModel.debugging) {
             console.log(self.name + ' stderr data:' + data);
         }
     });
-    this.process.on('error', function(err) {
-        if (self.debugging) {
+    this.process.on('error', (err) => {
+        if (webModel.debugging) {
             console.log(self.name + ' error:' + err);
         }
         webModelFunctions.scrollingStatusUpdate(self.name + ' process error: ' + err);
     });
-    this.process.on('exit', function(code) {
+    this.process.on('close', (code) => {
         webModelFunctions.scrollingStatusUpdate(self.name + ' exited with code: ' + code);
         self.exitCode = code;
         self.hasExited = true;
         self.startupComplete = true;
-        if (self.debugging) {
+        if (webModel.debugging) {
             console.log(self.name + ' exited with code: ' + code);
         }
         if (self.callback) {

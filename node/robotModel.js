@@ -15,7 +15,8 @@ module.exports = {
     webCamInUse: false,
     gettingQRcode: false,
     initialPoseSet: false,
-    cmdTopicIdle: false, // TODO: Default false means it will not be "idle" until ROS starts!
+    cmdTopicIdle: false,
+    lastMovementTime: 0,
     active_cmd: 'idle', // Hold the active cmd that is currently driving the robot.
     wayPointNavigator: {
         destinaitonWaypoint: undefined // This will be the place we want the robot to go to.

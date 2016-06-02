@@ -1,0 +1,82 @@
+var personalData = require('./personalData');
+var webModel = require('./webModel');
+var webModelFunctions = require('./webModelFunctions');
+var robotModel = require('./robotModel');
+const spawn = require('child_process').spawn;
+var ipAddress = require('./ipAddress');
+
+module.exports = class Camera {
+    constructor(cameraName, model) {
+        this.cameraName = cameraName;
+        this.model = model;
+        this.video = '/dev/video0'; // Default, but findAndSwitchOn() will set this.
+        this.robotIP = ipAddress.ipAddress();
+        this.originalVideoSource = webModel.videoSource;
+    }
+
+    toggle() {
+        if (!webModel.cameraOn) {
+            this.findAndSwitchOn();
+        } else {
+            this.switchOff();
+        }
+    }
+
+    switchOn() {
+        webModelFunctions.update('cameraOn', true);
+        webModelFunctions.scrollingStatusUpdate('Starting ' + this.cameraName);
+        const process = spawn('mjpg_streamer', ['-i', '/usr/local/lib/input_uvc.so -d ' + this.video + ' -n -f 30 -r 1280x720', '-o', '/usr/local/lib/output_http.so -p 58180 -w ../scripts/mjpg-streamer/mjpg-streamer/www']);
+        process.stdout.on('data', (data) => {
+            console.log(`${this.cameraName} stdout: ${data}`);
+        });
+
+        process.stderr.on('data', (data) => {
+            console.log(`${this.cameraName} stderr: ${data}`);
+        });
+
+        process.on('close', (code) => {
+            // console.log(`child process exited with code ${code}`);
+            if (code === null) {
+                webModelFunctions.scrollingStatusUpdate(this.cameraName + ' ended normally.');
+            } else {
+                console.log(`${this.cameraName} failed with code: ${code}`);
+            }
+            webModelFunctions.update('cameraOn', false);
+            webModelFunctions.update('videoSource', this.originalVideoSource);
+        });
+        webModelFunctions.update('videoSource', 'http://' + this.robotIP + ':58180/?action=stream');
+    }
+
+    switchOff() {
+        spawn('pkill', ['-f', 'mjpg_streamer']);
+    }
+
+    findAndSwitchOn() {
+        this.dataHolder = '';
+        if (personalData.useMasterPowerRelay && !webModel.masterRelayOn) {
+            webModelFunctions.scrollingStatusUpdate('Master Relay must be on for camera to work.');
+        } else if (personalData.relays.has_fiveVolt && !webModel.relays.find(x=> x.name === 'fiveVolt')['relayOn']) {
+            webModelFunctions.scrollingStatusUpdate('Five Volt Relay must be on for camera to work.');
+        } else {
+            webModelFunctions.scrollingStatusUpdate('Finding Camera ' + this.model);
+            const process = spawn(__dirname + '/../scripts/find_camera.sh', [this.model]);
+            process.stdout.on('data', (data) => {
+                this.dataHolder = data;
+            });
+
+            // process.stderr.on('data', (data) => {
+            //     console.log(`Camera ${this.model} stderr: ${data}`);
+            // });
+
+            process.on('close', (code) => {
+                // console.log(`child process exited with code ${code}`);
+                if (code === 0) {
+                    this.video = this.dataHolder;
+                    this.switchOn();
+                } else {
+                    webModelFunctions.scrollingStatusUpdate(`${this.model} search failed with code: ${code}`);
+                }
+            });
+        }
+    }
+};
