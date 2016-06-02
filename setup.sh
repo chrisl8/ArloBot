@@ -208,7 +208,7 @@ rospack profile
 printf "\n${YELLOW}[Setting the ROS environment in your .bashrc file]${NC}\n"
 if ! (grep ROS_HOSTNAME ~/.bashrc>/dev/null)
     then
-    sh -c "echo \"export ROS_HOSTNAME=`uname -n`.local\" >> ~/.bashrc"
+    sh -c "echo \"export ROS_HOSTNAME=`uname -n`\" >> ~/.bashrc"
 fi
 if ! (grep ROSLAUNCH_SSH_UNKNOWN ~/.bashrc>/dev/null)
     then
