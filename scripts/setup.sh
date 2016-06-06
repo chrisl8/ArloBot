@@ -42,7 +42,7 @@ if [ -e  ${HOME}/.nvm/nvm.sh ]
     nvm deactivate
 fi
 
-wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh | bash
+wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.31.1/install.sh | bash
 export NVM_DIR="${HOME}/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 
@@ -79,7 +79,7 @@ cd ${SCRIPTDIR}/../website
 npm install
 npm update
 cd ${SCRIPTDIR}/../website/lib
-wget http://cdn.robotwebtools.org/roslibjs/current/roslib.js
+wget -q -N http://cdn.robotwebtools.org/roslibjs/current/roslib.js -O roslib.js
 
 cd ${SCRIPTDIR}/../server
 npm install
@@ -256,17 +256,20 @@ if [ "${USER}" == chrisl8 ]
     printf "${YELLOW}Does the current version of nvm we installed:${NC} "
     nvm --version
     printf "${YELLOW}Match the version on github:${NC} "
-    wget -qO- https://github.com/creationix/nvm/blob/master/README.markdown|grep install.sh|grep wget|sed -e "s/<pre><code>//"|sed "s/\//\\n/g"|grep ^v
+    wget -qO- https://github.com/creationix/nvm/blob/master/README.markdown|grep install.sh|grep wget|sed -e "s/<pre><code>//"|sed "s/\//\\n/g"|grep ^v|head -1
     printf "\n${YELLOW}You are using this version of node:${NC} "
     node --version
     printf "${YELLOW}and this is the current stable version of node:${NC} "
     nvm ls-remote stable
     printf "\n${YELLOW}Checking for out of date global node modules:${NC}\n"
     npm-check -g
-    printf "${YELLOW}Checking for out of date package node modules:${NC}"
+    printf "${YELLOW}Checking for out of date package node modules:${NC}\n"
+    printf "${YELLOW}in /node:${NC}\n"
     npm-check --skip-unused
+    printf "${YELLOW}in /website:${NC}\n"
     cd ${SCRIPTDIR}/../website
     npm-check --skip-unused
+    printf "${YELLOW}in /server:${NC}\n"
     cd ${SCRIPTDIR}/../server
     npm-check --skip-unused
     printf "${PURPLE}-------------------------------------------------------${NC}\n"
