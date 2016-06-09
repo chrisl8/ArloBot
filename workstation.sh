@@ -261,7 +261,7 @@ if ! (grep ROSLAUNCH_SSH_UNKNOWN ~/.bashrc>/dev/null)
 fi
 if ! (grep catkin_ws ~/.bashrc>/dev/null)
     then
-    sh -c "echo \"source ~/catkin_ws/devel/setup.bash\" >> ~/.bashrc"
+    sh -c "echo \"source /opt/ros/kinetic/setup.bash\" >> ~/.bashrc"
 fi
 
 printf "\n${PURPLE}Anytime you want to update ArloBot code from the web you can run this same script again. It will pull down and compile new code without wiping out custom configs in ~/.arlarbot. I run this script myself almost every day.\n"
