@@ -1,5 +1,5 @@
 #!/bin/bash
-# ROS Jade "Workstation" Automated Install - credit goes to everyone
+# ROS Kinetic "Workstation" Automated Install - credit goes to everyone
 # Blame goes to ChrisL8
 # This is to set up enough of ROS to use RVIZ and some other GUI tools,
 # on a secondary system. It will not run a robot.
@@ -25,7 +25,7 @@ YELLOW='\033[1;33m'
 WHITE='\033[1;37m'
 NC='\033[0m' # NoColor
 
-printf "\n${YELLOW}SETTING UP ROS JADE FOR YOUR REMOTE WORK!${NC}\n"
+printf "\n${YELLOW}SETTING UP ROS KINETIC FOR YOUR REMOTE WORK!${NC}\n"
 printf "${YELLOW}-------------------------------------------${NC}\n"
 printf "${GREEN}You will be asked for your password for running commands as root!${NC}\n"
 
@@ -34,10 +34,10 @@ version=`lsb_release -sc`
 printf "\n${YELLOW}[Checking the Ubuntu version]${NC}\n"
 printf "${BLUE}Ubuntu ${version} found${NC}\n"
 case $version in
-  "vivid" | "utopic" | "trusty")
+  "wily" | "xenial")
 ;;
 *)
-printf "${RED}[This script will only work on Ubuntu Trusty (14.04), Utopic (14.10) and Vivid (15.04)]${NC}\n"
+printf "${RED}[This script will only work on Ubuntu Wily (15.10) and Xenial (16.04)]${NC}\n"
 exit 1
 esac
 
@@ -57,7 +57,7 @@ if ! [ -e /etc/apt/sources.list.d/ros-latest.list ]
     if [ -z "$roskey" ]
         then
         printf "${BLUE}[Adding the ROS keys]${NC}\n"
-        wget --quiet https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -O - | sudo apt-key add -
+        sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 0xB01FA116
         printf "${BLUE}^^ He says it is 'OK'.${NC}\n"
     fi
 fi
@@ -68,10 +68,10 @@ sudo apt upgrade -y
 
 # This should follow the official ROS install instructions closely.
 # That is why there is a separate section for extra packages that I need for Arlo.
-if ! (dpkg -s ros-jade-desktop|grep "Status: install ok installed" &> /dev/null)
+if ! (dpkg -s ros-kinetic-desktop|grep "Status: install ok installed" &> /dev/null)
     then
     printf "\n${YELLOW}[Installing ROS]${NC}\n"
-    sudo apt install -y ros-jade-desktop
+    sudo apt install -y ros-kinetic-desktop
     printf "${YELLOW}[ROS installed!]${NC}\n"
     printf "\n${YELLOW}[rosdep init and python-rosinstall]${NC}\n"
     if ! [ -e /etc/ros/rosdep/sources.list.d/20-default.list ]
@@ -80,7 +80,7 @@ if ! (dpkg -s ros-jade-desktop|grep "Status: install ok installed" &> /dev/null)
     fi
     printf "${BLUE}Running rosdep update . . .${NC}\n"
     rosdep update
-    source /opt/ros/jade/setup.bash
+    source /opt/ros/kinetic/setup.bash
     printf "${BLUE}Installing python-rosinstall:${NC}\n"
     sudo apt install -y python-rosinstall
     # END Offical ROS Install section
@@ -89,7 +89,7 @@ fi
 # In case .bashrc wasn't set up, or you didn't reboot
 if ! (which catkin_make > /dev/null)
     then
-    source /opt/ros/jade/setup.bash
+    source /opt/ros/kinetic/setup.bash
 fi
 
 printf "\n${YELLOW}[Installing additional Ubuntu and ROS Packages for Arlo]${NC}\n"
@@ -99,7 +99,7 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 # zbar-tools python-qrtools qtqr for generating and reading QR Codes.
 # rtabmap is for 3D mapping
 
-sudo apt install -y vlc-nox zbar-tools python-qrtools qtqr ros-jade-rtabmap-ros
+sudo apt install -y vlc-nox zbar-tools python-qrtools qtqr ros-kinetic-rtabmap-ros
 
 if ! [ -d ~/catkin_ws/src ]
     then
@@ -220,7 +220,7 @@ if ! [ -f ${HOME}/Desktop/RVIZ.desktop ]
 fi
 
 printf "\n${YELLOW}[NOT Building ROS Source files.]${NC}\n"
-printf "${BLUE}The ArloBot source will not build in Jade yet.${NC}\n"
+printf "${BLUE}The ArloBot source will not build in Kinetic yet.${NC}\n"
 printf "${BLUE}The unbuilt files are enough to allow RVIZ and other GUI tools to work.${NC}\n"
 source ~/catkin_ws/devel/setup.bash
 
