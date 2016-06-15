@@ -70,8 +70,10 @@ if ! (which pm2 > /dev/null)
     npm install -g pm2
 fi
 cd ${SCRIPTDIR}/../node
-printf "\n${YELLOW}You will get some errors here. Some are important, some are not.$NC}\n"
-printf "So far I know the error about 'fatal error: libudev.h: No such file or directory' is not important.\n"
+printf "\n${YELLOW}You will get some errors here. Some are important, some are not.$NC\n"
+printf "So far I know the following errors are UNimportant:\n"
+printf "'fatal error: libudev.h: No such file or directory'\n"
+printf "'Skipping failed optional dependency /chokidar/fsevents'\n"
 npm install
 npm update
 
@@ -131,14 +133,14 @@ if ! [ -f ${HOME}/Desktop/arlobot.desktop ]
     echo "Comment=Start the robot" >> ${HOME}/Desktop/arlobot.desktop
     if (which lxterminal)
         then
-        echo "Exec=lxterminal --command \"${HOME}/catkin_ws/src/Metatron/scripts/arlobotXwindows.sh\"" >> ${HOME}/Desktop/arlobot.desktop
+        echo "Exec=lxterminal --command \"${HOME}/catkin_ws/src/ArloBot/scripts/arlobotXwindows.sh\"" >> ${HOME}/Desktop/arlobot.desktop
     elif (which gnome-terminal)
         then
-        echo "Exec=gnome-terminal --command \"${HOME}/catkin_ws/src/Metatron/scripts/arlobotXwindows.sh\"" >> ${HOME}/Desktop/arlobot.desktop
+        echo "Exec=gnome-terminal --command \"${HOME}/catkin_ws/src/ArloBot/scripts/arlobotXwindows.sh\"" >> ${HOME}/Desktop/arlobot.desktop
     fi
-    echo "Icon=${HOME}/catkin_ws/src/Metatron/node/public/icons/mstile-70x70.png" >> ${HOME}/Desktop/arlobot.desktop
+    echo "Icon=${HOME}/catkin_ws/src/ArloBot/node/public/icons/mstile-70x70.png" >> ${HOME}/Desktop/arlobot.desktop
     echo "Type=Application" >> ${HOME}/Desktop/arlobot.desktop
-    echo "Path=${HOME}/catkin_ws/src/Metatron/scripts/" >> ${HOME}/Desktop/arlobot.desktop
+    echo "Path=${HOME}/catkin_ws/src/ArloBot/scripts/" >> ${HOME}/Desktop/arlobot.desktop
     echo "Terminal=false" >> ${HOME}/Desktop/arlobot.desktop
     chmod +x ${HOME}/Desktop/arlobot.desktop
 fi
@@ -163,25 +165,6 @@ else
     printf "\n"
     cp ${SCRIPTDIR}/dotarlobot/personalDataForBehavior.json ${ARLOHOME}/
     printf "${GREEN}A brand new ${RED}~/.arlobot/personalDataForBehavior.json${GREEN} file has been created,${NC}\n"
-    printf "${LIGHTPURPLE}Please edit this file to customize according to your robot!${NC}\n"
-fi
-
-if [ -e ${ARLOHOME}/metatron_private_settings.yaml ]
-    then
-    if ! (diff ${SCRIPTDIR}/dotarlobot/metatron_private_settings.yaml ${ARLOHOME}/metatron_private_settings.yaml)
-        then
-        printf "\n${GREEN}The metatron_private_settings.yaml file in the repository is different from the one${NC}\n"
-        printf "${GREEN}in your local settings.${NC}\n"
-        printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
-        printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
-        diff ${SCRIPTDIR}/dotarlobot/metatron_private_settings.yaml ${ARLOHOME}/metatron_private_settings.yaml
-        cp -i ${SCRIPTDIR}/dotarlobot/metatron_private_settings.yaml ${ARLOHOME}/
-        printf "\n"
-    fi
-else
-    printf "\n"
-    cp ${SCRIPTDIR}/dotarlobot/metatron_private_settings.yaml ${ARLOHOME}/
-    printf "${GREEN}A brand new ${RED}~/.arlobot/metatron_private_settings.yaml${GREEN} file has been created,${NC}\n"
     printf "${LIGHTPURPLE}Please edit this file to customize according to your robot!${NC}\n"
 fi
 

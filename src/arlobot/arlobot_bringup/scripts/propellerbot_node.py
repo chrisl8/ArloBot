@@ -121,9 +121,9 @@ class PropellerComm(object):
         self._UltraSonicPublisher = rospy.Publisher("ultrasonic_scan", LaserScan, queue_size=10)
         self._InfraredPublisher = rospy.Publisher("infrared_scan", LaserScan, queue_size=10)
 
-        # You can use the ~/metatron/scripts/find_propeller.sh script to find this, and
+        # You can use the ~/catkin_ws/src/ArloBot/scripts/find_ActivityBoard.sh script to find this, and
         # You can set it by running this before starting this:
-        # rosparam set /arlobot/port $(~/metatron/scripts/find_propeller.sh)
+        # rosparam set /arlobot/port $(~/catkin_ws/src/ArloBot/scripts/find_ActivityBoard.sh)
         port = rospy.get_param("~port", "/dev/ttyUSB0")
         baud_rate = int(rospy.get_param("~baudRate", 115200))
 
@@ -715,7 +715,7 @@ class PropellerComm(object):
             self._SerialDataGateway.Start()
         except:
             rospy.loginfo("ARLO SERIAL PORT Start Error")
-            reset_usb_script = os.path.expanduser("~/metatron/scripts/callRestUSB.sh")
+            # reset_usb_script = os.path.expanduser("~/arlobot/scripts/callRestUSB.sh")
             if os.path.isfile(reset_usb_script):
                 rospy.loginfo("RESETING USB PORTS")
                 rospy.loginfo(reset_usb_script)

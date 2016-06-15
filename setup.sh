@@ -105,8 +105,6 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 #FTDI:FT245R USB FIFO:A9026EI5
 #If you have a USB Relay board attached via USB.
 
-# These are for the Metatron package:
-
 # expect-dev required to get 'unbuffer' which is required by node to spawn ROS commands and get real time stdout data
     # http://stackoverflow.com/a/11337310
     # http://linux.die.net/man/1/unbuffer
@@ -163,15 +161,6 @@ else
     git pull
 fi
 cd ~/catkin_ws/src
-# Optionally:
-if ! [ -d ~/catkin_ws/src/Metatron ]
-    then
-    git clone -b stable https://github.com/chrisl8/Metatron.git
-else
-    cd ~/catkin_ws/src/Metatron
-    git pull
-fi
-cd ~/catkin_ws/src
 # If you have an XV-11 "Neato" Scanner
 if ! [ -d ~/catkin_ws/src/xv_11_laser_driver ]
     then
@@ -219,9 +208,9 @@ if ! (grep catkin_ws ~/.bashrc>/dev/null)
     sh -c "echo \"source ~/catkin_ws/devel/setup.bash\" >> ~/.bashrc"
 fi
 
-printf "\n${YELLOW}[Setting up the Metatron Package.]${NC}\n"
-# Run Metatron Setup Script:
-~/catkin_ws/src/Metatron/scripts/setup.sh
+printf "\n${YELLOW}[Setting up the Robot Package.]${NC}\n"
+# Run Robot Setup Script:
+~/catkin_ws/src/ArloBot/scripts/setup.sh
 
 # Arlobot Specific settings:
 

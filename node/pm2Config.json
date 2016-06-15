@@ -2,7 +2,6 @@
   "apps": [
     {
       "name": "Robot",
-      "cwd": "/home/chrisl8/catkin_ws/src/Metatron/node",
       "script": "index.js",
       "max_memory_restart": "1G",
       "merge_logs": true,

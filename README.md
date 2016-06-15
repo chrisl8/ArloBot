@@ -52,7 +52,7 @@ Please note that you will need the code to run on your Propeller board. This is 
 ## Quick Start: ##
 Run:
 ```
-~/catkin_ws/src/Metatron/startRobot.sh
+~/catkin_ws/src/ArloBot/startRobot.sh
 ```
 and point your web browser at the URL it gives you.
 
@@ -82,7 +82,7 @@ http://ekpyroticfrood.net/?p=162
 ## Serial Interface and Propeller Code Testing ##
 It is a good idea to irst test your serial interface to the propeller board:
 ```
-cd ~/catkin_ws/src/Metatron/scripts/
+cd ~/catkin_ws/src/ArloBot/scripts/
 ./direct2PropSerialTest.sh
 ```
 This will make a direct serial connection to the Propeller Activity board.

@@ -1,7 +1,7 @@
 # Note, the port where your Propeller is plugged in can be found with a script now,
-# This is in the Metatron package called ~/metatron/scripts/find_propeller.sh
+# This is in the scripts folder called ~/catkin_ws/src/ArloBot/scripts/find_ActivityBoard.sh
 # So you can run this to set the port once roscore is started, but before starting Arlobot:
-# rosparam set /arlobot/port $(~/metatron/scripts/find_propeller.sh)
+# rosparam set /arlobot/port $(~/catkin_ws/src/ArloBot/scripts/find_ActivityBoard.sh)
 #port: /dev/ttyUSB1
 # I alwyas use 115200 for the ActivityBoard
 baudRate: 115200

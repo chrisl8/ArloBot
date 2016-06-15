@@ -3,7 +3,7 @@
 var fs = require('fs');
 
 var personalDataFile = process.env.HOME + '/.arlobot/personalDataForBehavior.json';
-var defaultDataFile = process.env.HOME + '/catkin_ws/src/Metatron/scripts/dotarlobot/personalDataForBehavior.json'
+var defaultDataFile = process.env.HOME + '/catkin_ws/src/ArloBot/scripts/dotarlobot/personalDataForBehavior.json'
 var personalData = JSON.parse(fs.readFileSync(personalDataFile, 'utf8'));
 var defaultData = JSON.parse(fs.readFileSync(defaultDataFile, 'utf8'));
 

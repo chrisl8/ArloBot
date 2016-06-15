@@ -204,14 +204,14 @@ has not received anything from ROS */
 
 /* Enable this to turn on extra debugging information,
 for use with the
-/home/chrisl8/catkin_ws/src/Metatron/scripts/direct2PropSerialTest.sh
+/home/chrisl8/catkin_ws/src/ArloBot/scripts/direct2PropSerialTest.sh
 script.
 Do not try to use it with ROS, as the extra output will confuse it. */
 
 //#define debugModeOn
 
 /* You can disable this for use with the
-/home/chrisl8/catkin_ws/src/Metatron/scripts/direct2PropSerialTest.sh
+/home/chrisl8/catkin_ws/src/ArloBot/scripts/direct2PropSerialTest.sh
 script in order to disable the normal sensor data lines.
 Sometimes this is helpful to clean up the output for debugging.
 This MUST be enabled for ROS to work though!

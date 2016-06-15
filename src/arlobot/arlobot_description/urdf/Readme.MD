@@ -6,7 +6,7 @@ characteristics of the Arlobot.
 To view the robot model run this from a GUI (Xwindows) session:
 roslaunch arlobot_bringup model_robot.launch
 or use the script:
-~/catkin_ws/src/Metatron/scripts/model-robot.sh
+~/catkin_ws/src/ArloBot/scripts/model-robot.sh
 
 Start with common.urdf.xacro which is what loads
 the other files. It will help you see what each
