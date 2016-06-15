@@ -1,9 +1,0 @@
-<launch>
-    <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />
-    <include file="$(find arlobot_bringup)/launch/minimal.launch" />
-    <include file="$(find arlobot_explore)/launch/arlobot_goto.launch" />
-    <arg name="loadJoystick" value="$(optenv HAS_XBOX_JOYSTICK false)" />
-    <group if="$(arg loadJoystick)">
-        <include file="$(find turtlebot_teleop)/launch/xbox360_teleop.launch" />
-    </group>
-</launch>
