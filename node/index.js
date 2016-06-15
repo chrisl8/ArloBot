@@ -35,9 +35,14 @@ const os = require('os');
 const repl = require('repl');
 const handleSemaphoreFiles = require('./handleSemaphoreFiles');
 const getQRcodes = require('./getQRcodes');
+const saveScreenShotForWeb = require('./saveScreenShotForWeb');
 
 const publishRobotURL = require('./publishRobotURL');
 
+if (personalData.useBlueToothBeacon) {
+    //noinspection JSUnusedLocalSymbols
+    const bluetoothBeaconScanner = require('./BluetoothBeaconScanner');
+}
 const SocketServerSubscriber = require('./SocketServerSubscriber');
 const RemoteMessageHandler = require('./RemoteMessageHandler');
 var remoteMessageHandler = new RemoteMessageHandler();
@@ -135,22 +140,43 @@ process.on('uncaughtException', exitHandler.bind(null, {
 webserver.start();
 
 // ## Here are the Behavior Tree Nodes ##
-
+var intervalCount = 0; // Use this to throttle or space out polling items.
+var intervalTop = 10;
 var Poll = b3.Class(b3.Action);
 Poll.prototype.name = 'Poll';
-Poll.prototype.tick = function (tick) {
+Poll.prototype.tick = function () { // Argument options: tick
+    intervalCount++;
+    if (intervalCount > intervalTop) {
+        intervalCount = 0;
+    }
     if (webModel.debugging) {
         console.log(this.name);
-        webModelFunctions.scrollingStatusUpdate(this.name);
+        webModelFunctions.scrollingStatusUpdate(this.name, intervalCount);
     }
-    // Some things just need to be polled, there is no way around it. Put those here.
-    // This only repeats about once per second, so it is a pretty good spacing, even without fancy code to slow things down
-    publishRobotURL.updateRobotURL();
-    checkBattery();
+    /* Some things just need to be polled, there is no way around it. Put those here.
+       This only repeats about once per second, so it is a pretty good spacing, even without fancy code to slow things down
+       but if you want to , set it to only happen when interval === some number
+       below intervalTop.
+       Or use some division to hit every odd/even number or multiple of 3.
+       */
     handleSemaphoreFiles.readSemaphoreFiles();
-    masterRelay('read');
-    usbRelay.updateAllRelayState();
+    if (intervalCount === 5) {
+        publishRobotURL.updateRobotURL();
+    }
+    if ((intervalCount % 2) === 0) {
+        checkBattery();
+    }
+    if ((intervalCount % 2) === 1) {
+        masterRelay('read');
+        usbRelay.updateAllRelayState();
+    }
+    if (intervalCount === intervalTop) {
+        if (!webModel.cameraOn) {
+            saveScreenShotForWeb();
+        }
+    }
 
+    // Check for QR code:
     // If ROS has started, only do this when idle, but before ROS starts we can do it also,
     // that way it can have the map BEFORE ROS starts!
     // And also it won't text me with "Where am I?" if it is sitting in front of a QR code.
@@ -160,11 +186,12 @@ Poll.prototype.tick = function (tick) {
     // and it still will not set those two again (due to code in getQRcodes),
     // but it may fill in a map or fill in the webModel.QRcode line.
     // This may cause it to fight with other camera operations though.
-    if (!webModel.hasSetupViaQRcode && personalData.useQRcodes && !robotModel.gettingQRcode && !kill_rosHasRun && (robotModel.cmdTopicIdle || !webModel.ROSstart)) {
+    if (intervalCount === 9 && !webModel.hasSetupViaQRcode && personalData.useQRcodes && !robotModel.gettingQRcode && !kill_rosHasRun && (robotModel.cmdTopicIdle || !webModel.ROSstart)) {
         // Old school thread control
         // It reduces how often zbarcam is run,
         // and prevents it from getting stuck
         robotModel.gettingQRcode = true;
+        // TODO: This doesn't work with the Master & 5volt relays off!
         getQRcodes();
     }
 
@@ -201,8 +228,16 @@ Poll.prototype.tick = function (tick) {
         let idleMinutes = (dateNow - lastActionDate) / 1000 / 60;
         // console.log(`Idle Check: ${dateNow} - ${lastActionDate} = ${idleMinutes}`);
         if (idleMinutes > personalData.idleTimeoutInMinutes) {
-            webModelFunctions.scrollingStatusUpdate("Idle shutdown.");
-            webModelFunctions.update('shutdownRequested', true);
+            if (webModel.ROSisRunning) {
+                console.log("Idle shutdown.");
+                webModelFunctions.scrollingStatusUpdate("Idle shutdown.");
+                webModelFunctions.update('shutdownRequested', true);
+            } else {
+                console.log("Idle power down.");
+                webModelFunctions.scrollingStatusUpdate("Idle power down.");
+                masterRelay('off');
+                usbRelay.switch('all', 'off');
+            }
         }
     }
     /* TODO:
@@ -225,7 +260,7 @@ Poll.prototype.tick = function (tick) {
 // TODO: Maybe it should text me asking me to let it start ROS?
 var StartROS = b3.Class(b3.Action);
 StartROS.prototype.name = 'StartROS';
-StartROS.prototype.tick = function (tick) {
+StartROS.prototype.tick = function () { // Argument options: tick
     if (webModel.debugging) {
         console.log(this.name);
         webModelFunctions.scrollingStatusUpdate(this.name);
@@ -278,6 +313,10 @@ StartROS.prototype.tick = function (tick) {
                 // This will repeat on every tick!
                 // 1. Set any special status flags for this
                 // process. i.e. ROSisRunning sets the start/stop button position
+                // Update last idle time to prevent instant idle timeout!
+                if (!webModel.ROSisRunning) {
+                    robotModel.lastMovementTime = Date.now();
+                }
                 webModelFunctions.update('ROSisRunning', true);
                 if (robotModel.startROSTime === undefined) {
                     robotModel.startROSTime = new Date(); // Time that ROS start was completed.
@@ -307,7 +346,7 @@ StartROS.prototype.tick = function (tick) {
 
 var AutoExplore = b3.Class(b3.Action);
 AutoExplore.prototype.name = 'AutoExplore';
-AutoExplore.prototype.tick = function (tick) {
+AutoExplore.prototype.tick = function () { // Argument options: tick
     if (webModel.debugging) {
         console.log(this.name);
         webModelFunctions.scrollingStatusUpdate(this.name);
@@ -358,7 +397,7 @@ AutoExplore.prototype.tick = function (tick) {
 
 var LoadMap = b3.Class(b3.Action);
 LoadMap.prototype.name = 'LoadMap';
-LoadMap.prototype.tick = function (tick) {
+LoadMap.prototype.tick = function () { // Argument options: tick
     if (webModel.debugging) {
         console.log(this.name);
         webModelFunctions.scrollingStatusUpdate(this.name);
@@ -471,7 +510,7 @@ LoadMap.prototype.tick = function (tick) {
 var UnPlugRobotStarted = false;
 var UnPlugRobot = b3.Class(b3.Action);
 UnPlugRobot.prototype.name = 'UnPlugRobot';
-UnPlugRobot.prototype.tick = function (tick) {
+UnPlugRobot.prototype.tick = function () { // Argument options: tick
     if (webModel.debugging) {
         console.log(this.name);
         webModelFunctions.scrollingStatusUpdate(this.name);
@@ -514,7 +553,7 @@ UnPlugRobot.prototype.tick = function (tick) {
 // TODO: Maybe it should text me asking me to let it start ROS?
 var GoToWaypoint = b3.Class(b3.Action);
 GoToWaypoint.prototype.name = 'GoToWaypoint';
-GoToWaypoint.prototype.tick = function (tick) {
+GoToWaypoint.prototype.tick = function () { // Argument options: tick
     if (webModel.debugging) {
         console.log(this.name);
         webModelFunctions.scrollingStatusUpdate(this.name);
@@ -669,7 +708,7 @@ GoToWaypoint.prototype.tick = function (tick) {
 // nodes can key off of that too for further control.
 var IsNotIdle = b3.Class(b3.Action);
 IsNotIdle.prototype.name = 'IsNotIdle';
-IsNotIdle.prototype.tick = function (tick) {
+IsNotIdle.prototype.tick = function () { // Argument options: tick
     if (webModel.debugging) {
         console.log(this.name);
         webModelFunctions.scrollingStatusUpdate(this.name);
@@ -694,7 +733,7 @@ IsNotIdle.prototype.tick = function (tick) {
 
 var GotoRandomLocation = b3.Class(b3.Action);
 GotoRandomLocation.prototype.name = 'GotoRandomLocation';
-GotoRandomLocation.prototype.tick = function (tick) {
+GotoRandomLocation.prototype.tick = function () { // Argument options: tick
     if (webModel.debugging) {
         console.log(this.name);
         webModelFunctions.scrollingStatusUpdate(this.name);
@@ -766,7 +805,7 @@ var arloNodeData = JSON.parse(fs.readFileSync('arloTreeData.json', 'utf8'));
 // but I'm using eval to automate the build here:
 var customNodeNames = {};
 
-function parseCustomNodes(element, index, array) {
+function parseCustomNodes(element) { // Argument options: element, index, array
     'use strict';
     customNodeNames[element.name] = eval(element.name); // jshint ignore:line
 }
@@ -787,7 +826,7 @@ arloTree.load(arloNodeData, customNodeNames);
 robotModel.ROSprocess = new LaunchScript({
     name: 'ROS',
     scriptName: '../scripts/start-metatron.sh',
-    successString: 'process[arlobot-5]: started with pid' // NOTE: The number (5) will change if the number ROS launch processes changes! i.e. when we removed metatron-babelfish, it went from 6 to 5.
+    successString: 'process[arlobot-4]: started with pid' // NOTE: The number (5) will change if the number ROS launch processes changes! i.e. when we removed metatron-babelfish, it went from 6 to 5.
 });
 
 /* GotoWaypoint Process output:
@@ -799,7 +838,6 @@ robotModel.ROSprocess = new LaunchScript({
  So just wait for a clean exit, no need for a successString.
  */
 robotModel.goToWaypointProcess = new LaunchScript({
-    debugging: true,
     name: 'GoToWaypoint'
     // Set the ROScommmand at call time!
 });

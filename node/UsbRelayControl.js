@@ -64,6 +64,7 @@ module.exports = class UsbRelay {
                     this.dataHolder = '';
                 } else {
                     console.log(`UsbRelay State collection failed with code: ${code}`);
+                    console.log(this.dataHolder);
                 }
                 this.busy = false;
             });
@@ -82,6 +83,7 @@ module.exports = class UsbRelay {
     }
 
     switch(relayNumber, onOrOff) {
+        this.busy = true;
         const state = onOrOff.toLowerCase();
         if (state !== 'on' && state !== 'off') {
             return;
@@ -98,6 +100,7 @@ module.exports = class UsbRelay {
             } else {
                 console.log(`UsbRelay State collection failed with code: ${code}`);
             }
+            this.busy = false;
         });
     }
 

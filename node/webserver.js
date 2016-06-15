@@ -256,6 +256,9 @@ function start() {
             tts(data);
         });
         socket.on('startROS', function () {
+            if (webModel.logStreamerRunning) {
+                stopLogStreamer();
+            }
             webModelFunctions.update('ROSstart', true);
         });
         socket.on('stopROS', function () {
@@ -340,6 +343,13 @@ function start() {
         socket.on('stopLogStreamer', function () {
             stopLogStreamer();
         });
+        socket.on('toggleLogStreamer', function () {
+            if (webModel.logStreamerRunning) {
+                stopLogStreamer();
+            } else {
+                startLogStreamer();
+            }
+        });
         socket.on('startColorFollower', function () {
             startColorFollower();
         });
@@ -358,7 +368,12 @@ function start() {
         socket.on('toggleRelay', function (data) {
             usbRelay.toggle(data);
         });
+        socket.on('toggleRelayByName', function (data) {
+            usbRelay.toggle(webModel.relays.find(x=> x.name === data)['number']);
+        });
         socket.on('exit', function () {
+            console.log('Shutdown requested from web interface!');
+            webModelFunctions.scrollingStatusUpdate('Shutdown requested from web interface!');
             webModelFunctions.update('shutdownRequested', true);
         });
     });

@@ -11,9 +11,11 @@
     <link rel="icon" type="image/png" href="icons/favicon-32x32.png" sizes="32x32">
     <link rel="stylesheet" type="text/css" href="lcars.css"/>
     <link href="jquery-ui-1.10.4.custom.min.css" rel="stylesheet">
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="socket.io/socket.io.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="jquery-ui-1.10.4.custom.min.js"></script>
+    <script type="text/javascript" src="knockout-3.3.0.js"></script>
+    <script type="text/javascript" src="knockout.mapping-latest.js"></script>
     <!-- http://wiki.ros.org/roslibjs/Tutorials/BasicRosFunctionality -->
     <!-- <script type="text/javascript" src="http://cdn.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
     <script type="text/javascript" src="http://cdn.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
@@ -36,7 +38,7 @@
             </li>
             <li id="connectButton-li" style="height: 47px; background-color:#FF9900; margin-bottom: 0;">
                 <span style="padding-right:2px"><a class="connectButton"><span
-                            id="connectText">NO STATUS</span></a></span>
+                        id="connectText">NO STATUS</span></a></span>
             </li>
         </ul>
     </div>
@@ -131,13 +133,12 @@
 <div id="lower-row">
     <div id="lower-button-column">
         <ul id="lower-side-panel">
-            <li id="pingButton-li" style="height: 94px; background-color: rgb(204, 221, 255);">
+            <li style="height: 94px; background-color: rgb(204, 221, 255);">
                 <div style="line-height: 166px;">
-                    <span style="padding-right:2px"><a class="pingButton">PING</a></span>
+                    <span style="padding-right:2px"></span>
                 </div>
             </li>
-            <li id="wakeScreenButton-li" style="height: 30px; background-color: rgb(51, 102, 255);">
-                <span style="padding-right:2px"><a class="wakeScreenButton"><span id="wakeScreen">WAKE SCREEN</span></a></span>
+            <li style="height: 30px; background-color: rgb(51, 102, 255);">
             </li>
             <li id="empty1Button-li" style="height: 30px; background-color: rgb(204, 221, 255);">
                 <span style="padding-right:2px"><a class="empty1Button"><span id="empty1">MICROPHONE</span></a></span>
@@ -148,10 +149,10 @@
             <li id="empty3Button-li" style="height: 30px; background-color: rgb(204, 221, 255);">
                 <span style="padding-right:2px"><a class="empty3Camera"><span id="empty3">EMPTY 3</span></a></span>
             </li>
-            <li id="staycloseButton-li" style="height: 30px; background-color: rgb(51, 102, 255);">
-                <span style="padding-right:2px"><a class="staycloseButton">STAY CLOSE</a></span>
+            <li style="height: 30px; background-color: rgb(51, 102, 255);">
+                <span style="padding-right:2px"></span>
             </li>
-            <li id="resetButton-li"
+            <li id="resetButton-li" data-bind="click: exitButton"
                 style="height: 240px; border-bottom-style: none; background-color: rgb(204, 221, 255);">
                 <span style="padding-right:2px"><a class="resetButton">RESET</a></span>
             </li>
@@ -190,7 +191,8 @@
         <div id="mainViewscreenBox">
             <div id="screenButtonRow">
                 <div class="screenButtonCols">
-                    <a class="camera1Button">CAMERA 1</a>
+                    <!--<li class="lcars-tan-bg"><a data-bind="click: openLogStreamer, visible: logStreamerRunning" style="cursor: pointer;">View Log Streamer</a></li>-->
+                    <a class="camera1Button button RR L" data-bind="click: cameraOneToggle" style="cursor: pointer; background-color: rgb(85, 153, 255); width: 120px;"><span class="B_titleR" data-bind="visible: cameraOn" style="color: #5599FF;">ON</span><span class="B_titleR" data-bind="visible: !cameraOn()" style="color: #5599FF;">OFF</span>CAMERA 1</a>
                 </div>
                 <div class="screenButtonCols">
                     <a class="camera2Button">CAMERA 2</a>
@@ -199,18 +201,16 @@
                     <span id="statusLight"></span><span id="statusLight2"></span>
                 </div>
                 <div class="screenButtonCols">
-                    <a class="upperLightButton">UPPER LIGHT</a>
+                    <a class="upperLightButton button RR L" data-bind="click: upperLightButton" style="cursor: pointer; background-color: rgb(85, 153, 255); width: 120px;"><span class="B_titleR" data-bind="visible: upperLightOn" style="color: #5599FF;">ON</span><span class="B_titleR" data-bind="visible: !upperLightOn()" style="color: #5599FF;">OFF</span>UPPER LIGHT</a>
                 </div>
                 <div class="screenButtonCols">
-                    <a class="lowerLightButton">LOWER LIGHT</a>
+                    <a class="lowerLightButton button RR L" data-bind="click: lowerLightButton" style="cursor: pointer; background-color: rgb(85, 153, 255); width: 120px;"><span class="B_titleR" data-bind="visible: lowerLightOn" style="color: #5599FF;">ON</span><span class="B_titleR" data-bind="visible: !lowerLightOn()" style="color: #5599FF;">OFF</span>LOWER LIGHT</a>
                 </div>
             </div>
-            <!-- Logitech c615 resolution is 1280 x 720 (or HD if you want but I don't want to eat the bandwidth)
-            http://www.logitech.com/en-us/product/hd-webcam-c615 -->
             <div id="joyStickBox">
-            <img id="videoFeed" alt="Video feed" src="xscreen.png"
-                 style="width: 100%;">
-                 </div>
+                <img id="videoFeed" alt="Video feed" data-bind="attr:{src: videoSource}"
+                     style="width: 100%;">
+            </div>
         </div>
     </div>
 </div>

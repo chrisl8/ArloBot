@@ -1,11 +1,11 @@
 /* https://github.com/chrisl8
 
-   ROS Info:
-   http://robotwebtools.org/jsdoc/roslibjs/current/index.html
-   http://wiki.ros.org/roslibjs/Tutorials/BasicRosFunctionality
+ ROS Info:
+ http://robotwebtools.org/jsdoc/roslibjs/current/index.html
+ http://wiki.ros.org/roslibjs/Tutorials/BasicRosFunctionality
 
-   IMPLEMENTATION NOTES:
-   This is meant to be called by remote-control.html from the ArloWeb web control page.
+ IMPLEMENTATION NOTES:
+ This is meant to be called by remote-control.html from the ArloWeb web control page.
  */
 
 var connectedToROS = false, // Track my opinion of the connection
@@ -13,26 +13,15 @@ var connectedToROS = false, // Track my opinion of the connection
     pleaseWait = false, // Display Please Wait on the Connect button
     ros, // Empty global for actual connection.
     cmdVel, // Empty global for actual topic
-    wakeScreen, // Empty global for actual topic
-    toggleCamera, // Empty global for actual topic
-    toggleRelay, // Empty global for actual topic
     shortDelay = 1000,
     longDelay = 3000,
-    camera1On = false, // For tracking Camera status
-    camera2On = false, // For tracking Camera status
-    upperLightOn = false, // For tracking LED light bars
-    lowerLightOn = false, // For tracking LED light bars
-    UpperLightRowRelay = -1,
-    UpperLightRowName = "TopLightRow", // Found in arlobot_usbrelay/param/usbrelay.yaml
-    LowerLightRowRelay = -1,
-    LowerLightRowName = "BottomLightRow", // Found in arlobot_usbrelay/param/usbrelay.yaml
     RightMotorRelay = -1,
     RightMotorName = "RightMotor", // Found in arlobot_usbrelay/param/usbrelay.yaml
     LeftMotorRelay = -1,
     LeftMotorName = "LeftMotor"; // Found in arlobot_usbrelay/param/usbrelay.yaml
 
 // Function to control "Action:" field text
-var setActionField = function(newActionFieldText) {
+var setActionField = function (newActionFieldText) {
     'use strict';
     $("#action").stop(true, true)
         .html(newActionFieldText)
@@ -53,15 +42,15 @@ var linear_speed = 0.0,
     actionFieldText = "All Stop";
 
 /* I need a function that will repeat the
-   command periodically wile the drive buttons are down,
-   Lest the robot stop, as it will NOT continue forever
-   off of one command. It expects the command to repeat periodically,
-   else it will get bored and stop. That is just how ROS works.
-   Or perhaps it is a result of some setting, but ultimately it is best
-   that it will quit if it doesn't get some updates from us periodically.
+ command periodically wile the drive buttons are down,
+ Lest the robot stop, as it will NOT continue forever
+ off of one command. It expects the command to repeat periodically,
+ else it will get bored and stop. That is just how ROS works.
+ Or perhaps it is a result of some setting, but ultimately it is best
+ that it will quit if it doesn't get some updates from us periodically.
 
-   http://stackoverflow.com/questions/15505272/javascript-while-mousedown
-*/
+ http://stackoverflow.com/questions/15505272/javascript-while-mousedown
+ */
 var drivingButtonDownID = -1; // Global ID of mouse down interval
 
 function sendTwistCommandToROS() { // We'll use the stop too!
@@ -116,12 +105,12 @@ function drivingButtonUp() {
 
 // CONNECTION BUTTON Functions
 /* This allows other events,
-   besides hovering and pressing
-   to update the connect button's appearance.
-*/
+ besides hovering and pressing
+ to update the connect button's appearance.
+ */
 var connectButtonHovered = false;
 
-var updateConnectedButton = function() {
+var updateConnectedButton = function () {
     'use strict';
     var $connectButton = $('#connectButton-li');
     if (pleaseWait) {
@@ -151,43 +140,41 @@ var updateConnectedButton = function() {
 
 // BUTTON DEFINITIONS using jQuery and the LCARS functions
 // http://learn.jquery.com/using-jquery-core/document-ready/
-$(document).ready(function() {
+$(document).ready(function () {
     'use strict';
     var socket = io();
 
     // CONNECTION BUTTON
-    $('#connectButton-li').on("mousedown touchstart", function() {
-            if (pleaseWait) {
-                $(this).addClass("pressOnButton");
-                updateConnectedButton();
-            } else if (connectedToROS) {
-                $(this).removeClass("lightUpButton");
-                $(this).addClass("pressOnButton");
-                $.get('stopROS.php', function(data) {
-                    setActionField(data);
-                });
-                pleaseWait = true;
-                setTimeout(setConnectRequestedFalse, 30000);
-                updateConnectedButton();
-            } else {
-                $(this).removeClass("lightUpButton");
-                $(this).addClass("pressOnButton");
-                $.get('startROS');
-                console.log("tail -f /opt/lampp/logs/error_log # To see what ROS is doing.");
-                setActionField("ROS Startup");
-                pleaseWait = true;
-                setTimeout(setConnectRequestedFalse, 45000);
-                updateConnectedButton();
-            }
-        })
-        .on("mouseup mouseout touchend", function() {
+    $('#connectButton-li').on("mousedown touchstart", function () {
+        if (pleaseWait) {
+            $(this).addClass("pressOnButton");
+            updateConnectedButton();
+        } else if (connectedToROS) {
+            $(this).removeClass("lightUpButton");
+            $(this).addClass("pressOnButton");
+            socket.emit('stopROS');
+            pleaseWait = true;
+            setTimeout(setConnectRequestedFalse, 30000);
+            updateConnectedButton();
+        } else {
+            $(this).removeClass("lightUpButton");
+            $(this).addClass("pressOnButton");
+            socket.emit('startROS');
+            console.log("tail -f /opt/lampp/logs/error_log # To see what ROS is doing.");
+            setActionField("ROS Startup");
+            pleaseWait = true;
+            setTimeout(setConnectRequestedFalse, 45000);
+            updateConnectedButton();
+        }
+    })
+        .on("mouseup mouseout touchend", function () {
             $(this).removeClass("pressOnButton");
             updateConnectedButton();
         })
-        .hover(function() {
+        .hover(function () {
             connectButtonHovered = true;
             updateConnectedButton();
-        }, function() {
+        }, function () {
             $(this).removeClass("lightUpButton");
             connectButtonHovered = false;
             updateConnectedButton();
@@ -206,13 +193,13 @@ $(document).ready(function() {
         },
         blank: 'none' // blank button? left / right / none
     });
-    $forwardButton.hover(function() {
-            $(this).find('span').html('<sup>&#9650;</sup>');
-        }, function() {
-            $(this).find('span').html("<sub>&#9650;</sub>");
-        })
-        // http://stackoverflow.com/questions/3303469/does-mousedown-mouseup-in-jquery-work-for-the-ipad
-        .on("mousedown touchstart", function() {
+    $forwardButton.hover(function () {
+        $(this).find('span').html('<sup>&#9650;</sup>');
+    }, function () {
+        $(this).find('span').html("<sub>&#9650;</sub>");
+    })
+    // http://stackoverflow.com/questions/3303469/does-mousedown-mouseup-in-jquery-work-for-the-ipad
+        .on("mousedown touchstart", function () {
             $(this).css('background-color', '#000088');
             linear_speed = $("#travelSpeedSlider").slider("value");
             angular_speed = 0.0;
@@ -220,7 +207,7 @@ $(document).ready(function() {
             actionFieldText = "Forward";
             drivingButtonDown(); // Has to be a loop or it will get bored and stop
         })
-        .on("mouseup mouseout touchend", function() {
+        .on("mouseup mouseout touchend", function () {
             actionFieldText = "All Stop";
             drivingButtonUp(); // Stop the loop, which will also stop the robot.
             $(this).css('background-color', '#5599FF');
@@ -236,19 +223,19 @@ $(document).ready(function() {
         },
         blank: 'none' // blank button? left / right / none
     });
-    $('a.leftButton').hover(function() {
-            $(this).find('span').html('<-');
-        }, function() {
-            $(this).find('span').html("-<");
-        })
-        .on("mousedown touchstart", function() {
+    $('a.leftButton').hover(function () {
+        $(this).find('span').html('<-');
+    }, function () {
+        $(this).find('span').html("-<");
+    })
+        .on("mousedown touchstart", function () {
             $(this).css('background-color', '#000088');
             linear_speed = 0.0; // Rotate in place, no liner movement
             angular_speed = $("#rotateSpeedSlider").slider("value");
             actionFieldText = "Left";
             drivingButtonDown(); // Has to be a loop or it will get bored and stop
         })
-        .on("mouseup mouseout touchend", function() {
+        .on("mouseup mouseout touchend", function () {
             actionFieldText = "All Stop";
             drivingButtonUp(); // Stop the loop, which will also stop the robot.
             $(this).css('background-color', '#5599FF');
@@ -264,12 +251,12 @@ $(document).ready(function() {
         },
         blank: 'none' // blank button? left / right / none
     });
-    $('a.stopButton').hover(function() {
-            $(this).find('span').text('|');
-        }, function() {
-            $(this).find('span').text("----");
-        })
-        .on("mousedown touchstart", function() {
+    $('a.stopButton').hover(function () {
+        $(this).find('span').text('|');
+    }, function () {
+        $(this).find('span').text("----");
+    })
+        .on("mousedown touchstart", function () {
             $(this).css('background-color', '#882211');
             /* There may be need to send a steady stream
              of BE STILL messages, so here it is,
@@ -280,7 +267,7 @@ $(document).ready(function() {
             actionFieldText = "All Stop";
             drivingButtonDown(); // Has to be a loop or it will get bored and stop
         })
-        .on("mouseup mouseout touchend", function() {
+        .on("mouseup mouseout touchend", function () {
             actionFieldText = "All Stop";
             drivingButtonUp(); // Stop the loop, which will also stop the robot.
             $(this).css('background-color', '#BBAA55');
@@ -296,19 +283,19 @@ $(document).ready(function() {
         },
         blank: 'none' // blank button? left / right / none
     });
-    $('a.rightButton').hover(function() {
-            $(this).find('span').html('->');
-        }, function() {
-            $(this).find('span').html(">-");
-        })
-        .on("mousedown touchstart", function() {
+    $('a.rightButton').hover(function () {
+        $(this).find('span').html('->');
+    }, function () {
+        $(this).find('span').html(">-");
+    })
+        .on("mousedown touchstart", function () {
             $(this).css('background-color', '#000088');
             linear_speed = 0.0; // Rotate in place, no liner movement
             angular_speed = -$("#rotateSpeedSlider").slider("value");
             actionFieldText = "Right";
             drivingButtonDown(); // Has to be a loop or it will get bored and stop
         })
-        .on("mouseup mouseout touchend", function() {
+        .on("mouseup mouseout touchend", function () {
             actionFieldText = "All Stop";
             drivingButtonUp(); // Stop the loop, which will also stop the robot.
             $(this).css('background-color', '#5599FF');
@@ -324,35 +311,48 @@ $(document).ready(function() {
         },
         blank: 'none' // blank button? left / right / none
     });
-    $('a.reverseButton').hover(function() {
-            $(this).find('span').html('<sub>&#9660;</sub>');
-        }, function() {
-            $(this).find('span').html("<sup>&#9660;</sup>");
-        })
-        .on("mousedown touchstart", function() {
+    $('a.reverseButton').hover(function () {
+        $(this).find('span').html('<sub>&#9660;</sub>');
+    }, function () {
+        $(this).find('span').html("<sup>&#9660;</sup>");
+    })
+        .on("mousedown touchstart", function () {
             $(this).css('background-color', '#000088');
             linear_speed = -$("#travelSpeedSlider").slider("value");
             angular_speed = 0.0; // Straight, no rotation
             actionFieldText = "Reverse";
             drivingButtonDown(); // Has to be a loop or it will get bored and stop
         })
-        .on("mouseup mouseout touchend", function() {
+        .on("mouseup mouseout touchend", function () {
             actionFieldText = "All Stop";
             drivingButtonUp(); // Stop the loop, which will also stop the robot.
             $(this).css('background-color', '#5599FF');
         });
 
     // LOWER SIDE PANEL BUTTONS
-    // PING Button:
-    $('#pingButton-li').on("mousedown touchstart", function() {
-            $(this).addClass("pressOnButton");
-            $.get('PING', function(data) {
-                setActionField(data);
-            });
-        })
-        .on("mouseup mouseout touchend", function() {
+    // Microphone Button 1:
+
+    var microphoneOn = false;
+
+    $('#empty1Button-li').on("mousedown touchstart", function () {
+        $(this).addClass("pressOnButton");
+        //console.log("EMPTY Button 1");
+        if (microphoneOn) {
+            $('#microphone').css('display', 'none');
+            microphoneOn = false;
+            //$('a.vncButton').find('span').html('off');
+            setActionField("Microphone OFF");
+        } else {
+            $('#microphone').css('display', 'block');
+            microphoneOn = true;
+            //$('a.vncButton').find('span').html('ON');
+            setActionField("Microphone ON");
+        }
+    })
+        .on("mouseup mouseout touchend", function () {
             $(this).removeClass("pressOnButton");
         })
+        // Highlight
         // This will "highlight" the buttons on the side panel upon hover,
         // Which I think is important since the cursor change is off
         // I am using addClass instead of setting the background-color directly,
@@ -360,178 +360,59 @@ $(document).ready(function() {
         // So I don't know what to set it back to.
         // Note you have to use !important for the class background-color
         // to override the element style
-        .hover(function() {
+        .hover(function () {
             $(this).addClass("lightUpButton");
-        }, function() {
-            $(this).removeClass("lightUpButton");
-        });
-
-    // wakeScreenButton:
-
-    $('#wakeScreenButton-li').on("mousedown touchstart", function() {
-            $(this).addClass("pressOnButton");
-            if (connectedToROS && wakeScreen !== undefined) {
-                // wakeScreen is defined in startROSfunctions()
-                var wakeScreenRequest = new ROSLIB.ServiceRequest({});
-                // We have to send a request, even if it is empty, or we get errors
-                //wakeScreen.callService(); // This causes errors.
-                wakeScreen.callService(wakeScreenRequest, function(result) {
-                    if (result.toggleSuccess) {
-                        setActionField("Screen Woken");
-                    } else {
-                        setActionField("Wake Screen FAILED");
-                    }
-                });
-            } else {
-                setActionField("NOT Connected");
-            }
-        })
-        .on("mouseup mouseout touchend", function() {
-            $(this).removeClass("pressOnButton");
-        })
-        // Highlight
-        .hover(function() {
-            $(this).addClass("lightUpButton");
-        }, function() {
-            $(this).removeClass("lightUpButton");
-        });
-
-    // Microphone Button 1:
-
-    var microphoneOn = false;
-
-    $('#empty1Button-li').on("mousedown touchstart", function() {
-            $(this).addClass("pressOnButton");
-            //console.log("EMPTY Button 1");
-            if (microphoneOn) {
-                $('#microphone').css('display', 'none');
-                microphoneOn = false;
-                //$('a.vncButton').find('span').html('off');
-                setActionField("Microphone OFF");
-            } else {
-                $('#microphone').css('display', 'block');
-                microphoneOn = true;
-                //$('a.vncButton').find('span').html('ON');
-                setActionField("Microphone ON");
-            }
-        })
-        .on("mouseup mouseout touchend", function() {
-            $(this).removeClass("pressOnButton");
-        })
-        // Highlight
-        .hover(function() {
-            $(this).addClass("lightUpButton");
-        }, function() {
+        }, function () {
             $(this).removeClass("lightUpButton");
         });
 
     // Empty Button 2:
 
-    $('#empty2Button-li').on("mousedown touchstart", function() {
-            $(this).addClass("pressOnButton");
-            console.log("EMPTY Button 2");
-        })
-        .on("mouseup mouseout touchend", function() {
+    $('#empty2Button-li').on("mousedown touchstart", function () {
+        $(this).addClass("pressOnButton");
+        console.log("EMPTY Button 2");
+    })
+        .on("mouseup mouseout touchend", function () {
             $(this).removeClass("pressOnButton");
         })
         // Highlight
-        .hover(function() {
+        .hover(function () {
             $(this).addClass("lightUpButton");
-        }, function() {
+        }, function () {
             $(this).removeClass("lightUpButton");
         });
 
     // Empty Butotn 3:
 
-    $('#empty3Button-li').on("mousedown touchstart", function() {
-            $(this).addClass("pressOnButton");
-            console.log("EMPTY Button 3");
-        })
-        .on("mouseup mouseout touchend", function() {
+    $('#empty3Button-li').on("mousedown touchstart", function () {
+        $(this).addClass("pressOnButton");
+        console.log("EMPTY Button 3");
+    })
+        .on("mouseup mouseout touchend", function () {
             $(this).removeClass("pressOnButton");
         })
         // Highlight
-        .hover(function() {
+        .hover(function () {
             $(this).addClass("lightUpButton");
-        }, function() {
-            $(this).removeClass("lightUpButton");
-        });
-
-    // STAYCLOSE Button:
-    $('#staycloseButton-li').on("mousedown touchstart", function() {
-            $(this).addClass("pressOnButton");
-            $.get('STAYCLOSE', function(data) {
-                setActionField(data);
-            });
-        })
-        .on("mouseup mouseout touchend", function() {
-            $(this).removeClass("pressOnButton");
-        })
-        // Highlight
-        .hover(function() {
-            $(this).addClass("lightUpButton");
-        }, function() {
+        }, function () {
             $(this).removeClass("lightUpButton");
         });
 
     // RESET Button:
-    $('#resetButton-li').on("mousedown touchstart", function() {
-            $(this).addClass("pressOnButton");
-            $.get('RESET', function(data) {
-                setActionField(data);
-            });
-        })
-        .on("mouseup mouseout touchend", function() {
+    $('#resetButton-li').on("mousedown touchstart", function () {
+        $(this).addClass("pressOnButton");
+    })
+        .on("mouseup mouseout touchend", function () {
             $(this).removeClass("pressOnButton");
         })
         // Highlight
-        .hover(function() {
+        .hover(function () {
             $(this).addClass("lightUpButton");
-        }, function() {
+        }, function () {
             $(this).removeClass("lightUpButton");
         });
 
     // MAIN VIEWSCREEN BUTTONS
-
-    // Camera 1 Button
-    $('a.camera1Button').lcarsButton({
-        rounded: 'both', // accepts both, left, right, none
-        extended: true, // this is true or false
-        color: 'lightBlue',
-        subTitle: { // The sub title for your button
-            direction: 'right', // left or right
-            text: '-' // the text for the sub title
-        },
-        blank: 'none' // blank button? left / right / none
-    });
-
-    $('a.camera1Button').on("mousedown touchstart", function() {
-            $(this).addClass("pressOnButton");
-            if (connectedToROS && toggleCamera !== undefined) {
-                var toggleCameraRequest = new ROSLIB.ServiceRequest({
-                    camera: 'c519', // args from rosservice info <service>
-                    state: true // Note javaScript uses true not True for bool
-                });
-
-                if (camera1On === true) {
-                    toggleCameraRequest.state = false;
-                    // Already set to true in declaration, so only need to test for one side
-                }
-                // toggleCamera is defined in startROSfunctions
-                toggleCamera.callService(toggleCameraRequest, function(result) {
-                    if (result.toggleSuccess) {
-                        setActionField("Camera 1 Switched");
-                    } else {
-                        setActionField("Camera 1 Failed");
-                    }
-                });
-            } else {
-                setActionField("NOT Connected");
-            }
-        })
-        .on("mouseup mouseout touchend", function() {
-            $(this).removeClass("pressOnButton");
-        });
 
     // Camera 2 button
     $('a.camera2Button').lcarsButton({
@@ -545,131 +426,11 @@ $(document).ready(function() {
         blank: 'none' // blank button? left / right / none
     });
 
-    $('a.camera2Button').on("mousedown touchstart", function() {
-            $(this).addClass("pressOnButton");
-            if (connectedToROS && toggleCamera !== undefined) {
-                var toggleCameraRequest = new ROSLIB.ServiceRequest({
-                    camera: 'laptop', // args from rosservice info <service>
-                    state: true // Note javaScript uses true not True for bool
-                });
-
-                if (camera2On === true) {
-                    toggleCameraRequest.state = false;
-                    // Already set to true in declaration, so only need to test for one side
-                }
-                // toggleCamera is defined in startROSfunctions
-                toggleCamera.callService(toggleCameraRequest, function(result) {
-                    if (result.toggleSuccess) {
-                        setActionField("Camera 2 Switched");
-                    } else {
-                        setActionField("Camera 2 Failed");
-                    }
-                });
-            } else {
-                setActionField("NOT Connected");
-            }
-        })
-        .on("mouseup mouseout touchend", function() {
-            $(this).removeClass("pressOnButton");
-        });
-
-    // Upper Light Button
-    $('a.upperLightButton').lcarsButton({
-        rounded: 'both', // accepts both, left, right, none
-        extended: true, // this is true or false
-        color: 'lightBlue',
-        subTitle: { // The sub title for your button
-            direction: 'right', // left or right
-            text: '-' // the text for the sub title
-        },
-        blank: 'none' // blank button? left / right / none
-    });
-
-    $('a.upperLightButton').on("mousedown touchstart", function() {
-            $(this).addClass("pressOnButton");
-            if (connectedToROS && toggleRelay !== undefined) {
-                var toggleLightRequest = new ROSLIB.ServiceRequest({
-                    relay: UpperLightRowName, // args from rosservice info <service>
-                    state: true // Note javaScript uses true not True for bool
-                });
-                if (upperLightOn) {
-                    toggleLightRequest.state = false;
-                    // Already set to true in declaration, so only need to test for one side
-                }
-                // toggleRelay is defined in startROSfunctions()
-                toggleRelay.callService(toggleLightRequest, function(result) {
-                    if (result.toggleSuccess) {
-                        upperLightOn = toggleLightRequest.state;
-                        if (upperLightOn) {
-                            $('a.upperLightButton').find('span').html('ON');
-                            setActionField("Upper Light ON");
-                        } else {
-                            $('a.upperLightButton').find('span').html('off');
-                            setActionField("Upper Light off");
-                        }
-                    } else {
-                        setActionField("Upper Light failed");
-                    }
-                });
-            } else {
-                setActionField("NOT Connected");
-            }
-        })
-        .on("mouseup mouseout touchend", function() {
-            $(this).removeClass("pressOnButton");
-        });
-
-    // Lower Light button
-    $('a.lowerLightButton').lcarsButton({
-        rounded: 'both', // accepts both, left, right, none
-        extended: true, // this is true or false
-        color: 'lightBlue',
-        subTitle: { // The sub title for your button
-            direction: 'right', // left or right
-            text: '-' // the text for the sub title
-        },
-        blank: 'none' // blank button? left / right / none
-    });
-
-    $('a.lowerLightButton').on("mousedown touchstart", function() {
-            $(this).addClass("pressOnButton");
-            if (connectedToROS && toggleRelay !== undefined) {
-                var toggleLightRequest = new ROSLIB.ServiceRequest({
-                    relay: LowerLightRowName, // args from rosservice info <service>
-                    state: true // Note javaScript uses true not True for bool
-                });
-                if (lowerLightOn) {
-                    toggleLightRequest.state = false;
-                    // Already set to true in declaration, so only need to test for one side
-                }
-                // toggleRelay is defined in startROSfunctions()
-                toggleRelay.callService(toggleLightRequest, function(result) {
-                    if (result.toggleSuccess) {
-                        lowerLightOn = toggleLightRequest.state;
-                        if (lowerLightOn) {
-                            $('a.lowerLightButton').find('span').html('ON');
-                            setActionField("Lower Light ON");
-                        } else {
-                            $('a.lowerLightButton').find('span').html('off');
-                            setActionField("Lower Light off");
-                        }
-                    } else {
-                        setActionField("Lower Light failed");
-                    }
-                });
-            } else {
-                setActionField("NOT Connected");
-            }
-        })
-        .on("mouseup mouseout touchend", function() {
-            $(this).removeClass("pressOnButton");
-        });
-
     var maxTravelSpeed = 1.0;
     var maxRotateSpeed = 4.0;
 
     // SPEED SLIDERS
-    $(function() {
+    $(function () {
         var initialTravelValue = 0.1,
             initialRotateValue = 1.0;
 
@@ -679,7 +440,7 @@ $(document).ready(function() {
             max: maxTravelSpeed,
             step: 0.1,
             value: initialTravelValue, // starting value
-            slide: function(event, ui) {
+            slide: function (event, ui) {
                 $('span#travelSpeed').html(ui.value);
             }
         });
@@ -689,7 +450,7 @@ $(document).ready(function() {
             max: maxRotateSpeed,
             step: 0.1,
             value: initialRotateValue, // starting value
-            slide: function(event, ui) {
+            slide: function (event, ui) {
                 $('span#rotateSpeed').html(ui.value);
             }
         });
@@ -702,7 +463,7 @@ $(document).ready(function() {
     var textToSpeak = "I have nothing to say.";
 
     // http://stackoverflow.com/questions/155188/trigger-a-button-click-with-javascript-on-the-enter-key-in-a-text-box
-    $("#speak").keyup(function(event) {
+    $("#speak").keyup(function (event) {
         //console.log(event.keyCode); // Great debugging! ;)
         if (event.keyCode === 13) {
             $("#speakButton").mousedown();
@@ -722,19 +483,19 @@ $(document).ready(function() {
         blank: 'none' // blank button? left / right / none
     });
 
-    $('#speakButton').hover(function() {
-            $(this).addClass("lightUpButton");
-        }, function() {
-            $(this).removeClass("lightUpButton");
-        })
-        .on("mousedown touchstart", function() {
+    $('#speakButton').hover(function () {
+        $(this).addClass("lightUpButton");
+    }, function () {
+        $(this).removeClass("lightUpButton");
+    })
+        .on("mousedown touchstart", function () {
             $(this).addClass("pressOnButton");
             textToSpeak = document.getElementsByName('speak')[0].value;
             console.log(textToSpeak);
             socket.emit('tts', textToSpeak);
             document.getElementsByName('speak')[0].value = '';
         })
-        .on("mouseup mouseout touchend", function() {
+        .on("mouseup mouseout touchend", function () {
             $(this).removeClass("pressOnButton");
         });
     // END Button Definitions here.
@@ -747,36 +508,36 @@ $(document).ready(function() {
         limitStickTravel: true
     });
     //var outputEl    = document.getElementById('result');
-    joystick.addEventListener('touchStart', function() {
+    joystick.addEventListener('touchStart', function () {
         console.log('Joystick Start');
         //outputEl.innerHTML  = '<b>Active:</b>';
     });
-    joystick.addEventListener('touchEnd', function() {
+    joystick.addEventListener('touchEnd', function () {
         console.log('Joystick End');
         //outputEl.innerHTML  = '<b>In</b>active.';
     });
-    joystick.addEventListener('touchMove', function() {
+    joystick.addEventListener('touchMove', function () {
         console.log('dx:' + joystick.deltaX().toFixed(0) + ' dy:' + joystick.deltaY().toFixed(0) + ' linear: ' + (-joystick.deltaY().toFixed(0) / 100) * maxTravelSpeed + ' rotate: ' + (joystick.deltaX().toFixed(0) / 100) * maxRotateSpeed
-                // + ' '
-                // + (joystick.right() ? ' right'  : '')
-                // + (joystick.up()    ? ' up'     : '')
-                // + (joystick.left()  ? ' left'   : '')
-                // + (joystick.down()  ? ' down'   : '')
-            );
-            //     outputEl.innerHTML  = '<b>Active:</b> '
-            //     + ' dx:'+joystick.deltaX().toFixed(0)
-            //     + ' - '
-            //     + ' dy:'+joystick.deltaY().toFixed(0)
-            //     + '<br/>Direction:'
-            //     + (joystick.right() ? ' right'  : '')
-            //     + (joystick.up()    ? ' up'     : '')
-            //     + (joystick.left()  ? ' left'   : '')
-            //     + (joystick.down()  ? ' down'   : '');
+            // + ' '
+            // + (joystick.right() ? ' right'  : '')
+            // + (joystick.up()    ? ' up'     : '')
+            // + (joystick.left()  ? ' left'   : '')
+            // + (joystick.down()  ? ' down'   : '')
+        );
+        //     outputEl.innerHTML  = '<b>Active:</b> '
+        //     + ' dx:'+joystick.deltaX().toFixed(0)
+        //     + ' - '
+        //     + ' dy:'+joystick.deltaY().toFixed(0)
+        //     + '<br/>Direction:'
+        //     + (joystick.right() ? ' right'  : '')
+        //     + (joystick.up()    ? ' up'     : '')
+        //     + (joystick.left()  ? ' left'   : '')
+        //     + (joystick.down()  ? ' down'   : '');
     });
 
 }); // END Document Ready Section here.
 
-var closeDeadROSConnection = function() {
+var closeDeadROSConnection = function () {
     'use strict';
     console.log("Closing dead ROS connection.");
     if (ros !== undefined) {
@@ -785,7 +546,7 @@ var closeDeadROSConnection = function() {
     console.log("CLOSED dead ROS connection!");
 };
 
-var checkROSService = function(serviceResult) {
+var checkROSService = function (serviceResult) {
     'use strict';
     //console.log(serviceResult);
     if (serviceResult === -1) {
@@ -794,87 +555,7 @@ var checkROSService = function(serviceResult) {
     return true;
 };
 
-var subscribeToMetatron_idStatus = function() {
-    'use strict';
-    // This should serve as a template for all service subscriptions
-    // Make sure we are still connected.
-    // No need to recall myself as a new connect will do that.
-    if (!connectedToROS) {
-        return;
-    }
-    // Make sure service exists:
-    var closeDeadConnectionTime;
-    closeDeadConnectionTime = setTimeout(closeDeadROSConnection, longDelay);
-    ros.getTopics(function(result) { // Unfortunately this can stall with no output!
-        clearTimeout(closeDeadConnectionTime);
-        if (!checkROSService(result.indexOf('/metatron_id/status'))) {
-            setTimeout(subscribeToMetatron_idStatus, longDelay);
-            // Try again when all topics are up!
-            return;
-        }
-
-        // THIS is where you put the subscription code:
-
-        setActionField("Metatron subscription");
-        var metatron_idStatus = new ROSLIB.Topic({
-            ros: ros,
-            name: '/metatron_id/status', // Obtain name by running 'rostopic list'
-            messageType: 'metatron_services/metatron_status' // Obtain Type by running 'rostopic info <name>'
-        }); // Obtain message.??? by running 'rosmsg show <messageType>'
-
-        metatron_idStatus.subscribe(function(message) {
-            //console.log('Received message on ' + usbStatus.name + ': ' + message.relayPresent);
-            //console.log(message.relayOn);
-            // usbStatus.unsubscribe();
-            $("#statusLight").toggle("fade");
-            var img = document.getElementById("videoFeed");
-            // Status light. :)
-            if (message.camera1) {
-                if (camera1On === false) {
-                    // This will cause the image in img id="videoFeed" to refresh,
-                    // by setting the source again.
-                    img.src = "http://" + location.hostname + ":58180/?action=stream";
-                    // see var img declaration above!
-                }
-                camera1On = true;
-                //$('span#camera1').html("Camera 1 ON");
-                $('a.camera1Button').find('span').html('ON');
-            } else if (!message.camera1) {
-                if (camera1On === true && message.camera2 === false) {
-                    img.src = "xscreen.png";
-                }
-                camera1On = false;
-                //$('span#camera1').html("Camera 1 OFF");
-                $('a.camera1Button').find('span').html('off');
-            }
-
-            if (message.camera2) {
-                if (camera2On === false) {
-                    img.src = "http://" + location.hostname + ":58180/?action=stream";
-                }
-                camera2On = true;
-                //$('span#camera2').html("Camera 2 ON");
-                $('a.camera2Button').find('span').html('ON');
-            } else if (!message.camera2) {
-                if (camera2On === true && message.camera1 === false) {
-                    img.src = "xscreen.png";
-                }
-                camera2On = false;
-                //$('span#camera2').html("Camera 2 OFF");
-                $('a.camera2Button').find('span').html('off');
-            }
-
-            if (message.newScreenShot && !message.camera1 && !message.camera2) {
-                /* Force reload:http://stackoverflow.com/questions/1077041/refresh-image-with-a-new-one-at-the-same-url
-                 Not cache friendly, but the throttling deals with that anyway.
-                 */
-                img.src = "xscreen.png?" + new Date().getTime();
-            }
-        });
-    });
-};
-
-var subscribeToUsbRelayStatus = function() {
+var subscribeToUsbRelayStatus = function () {
     'use strict';
     // Make sure we are still connected.
     // No need to recall myself as a new connect will do that.
@@ -884,7 +565,7 @@ var subscribeToUsbRelayStatus = function() {
     // Make sure service exists:
     var closeDeadConnectionTime;
     closeDeadConnectionTime = setTimeout(closeDeadROSConnection, longDelay);
-    ros.getTopics(function(result) { // Unfortunately this can stall with no output!
+    ros.getTopics(function (result) { // Unfortunately this can stall with no output!
         clearTimeout(closeDeadConnectionTime);
         if (!checkROSService(result.indexOf('/arlobot_usbrelay/usbRelayStatus'))) {
             setTimeout(subscribeToUsbRelayStatus, longDelay); // Try MYSELF again when all topics are up!
@@ -900,27 +581,10 @@ var subscribeToUsbRelayStatus = function() {
             messageType: 'arlobot_msgs/usbRelayStatus' // rostopic info <topic>
         });
 
-        arlobot_usbrelayStatus.subscribe(function(message) {
+        arlobot_usbrelayStatus.subscribe(function (message) {
             $("#statusLight2").toggle("fade");
             // Status light. :)
             //console.log(message); // for debugging
-            if (message.relayOn[UpperLightRowRelay - 1]) { // zero based array
-                upperLightOn = true;
-                // for tracking
-                $('a.upperLightButton').find('span').html('ON');
-            } else {
-                upperLightOn = false;
-                $('a.upperLightButton').find('span').html('off');
-            }
-            if (message.relayOn[LowerLightRowRelay - 1]) { // zero based array
-                lowerLightOn = true;
-                // for tracking
-                $('a.lowerLightButton').find('span').html('ON');
-            } else {
-                lowerLightOn = false;
-                // for tracking
-                $('a.lowerLightButton').find('span').html('off');
-            }
             if (message.relayOn[LeftMotorRelay - 1]) { // zero based array
                 $('span#leftMotor').html("ON");
             } else {
@@ -935,7 +599,7 @@ var subscribeToUsbRelayStatus = function() {
     });
 };
 
-var subscribeToArlo_status = function() {
+var subscribeToArlo_status = function () {
     'use strict';
     // Make sure we are still connected.
     // No need to recall myself as a new connect will do that.
@@ -945,7 +609,7 @@ var subscribeToArlo_status = function() {
     // Make sure service exists:
     var closeDeadConnectionTime;
     closeDeadConnectionTime = setTimeout(closeDeadROSConnection, longDelay);
-    ros.getTopics(function(result) { // Unfortunately this can stall with no output!
+    ros.getTopics(function (result) { // Unfortunately this can stall with no output!
         clearTimeout(closeDeadConnectionTime);
         if (!checkROSService(result.indexOf('/arlo_status'))) {
             setTimeout(subscribeToArlo_status, longDelay); // Try MYSELF again when all topics are up!
@@ -961,7 +625,7 @@ var subscribeToArlo_status = function() {
             messageType: 'arlobot_msgs/arloStatus' // rostopic info <topic>
         });
 
-        arlobot_arlo_status.subscribe(function(message) {
+        arlobot_arlo_status.subscribe(function (message) {
             //console.log(message); // for debugging
             if (message.safeToProceed === true) {
                 $('span#safeToProceed').html("True").css('color', '#5599ff');
@@ -1032,7 +696,7 @@ var subscribeToArlo_status = function() {
     });
 };
 
-var getUsbRelayNumbers = function() {
+var getUsbRelayNumbers = function () {
     'use strict';
     // Make sure we are still connected.
     // No need to recall myself as a new connect will do that.
@@ -1042,7 +706,7 @@ var getUsbRelayNumbers = function() {
     // Make sure service exists:
     var closeDeadConnectionTime;
     closeDeadConnectionTime = setTimeout(closeDeadROSConnection, longDelay);
-    ros.getServices(function(result) { // Unfortunately this can stall with no output!
+    ros.getServices(function (result) { // Unfortunately this can stall with no output!
         clearTimeout(closeDeadConnectionTime);
         if (!checkROSService(result.indexOf('/arlobot_usbrelay/find_relay'))) {
             setTimeout(getUsbRelayNumbers, longDelay); // Try MYSELF again when all topics are up!
@@ -1058,45 +722,15 @@ var getUsbRelayNumbers = function() {
             serviceType: 'arlobot_msgs/FindRelay'
         });
 
-        var request0 = new ROSLIB.ServiceRequest({
-            relay: UpperLightRowName // Found in arlobot_usbrelay/param/usbrelay.yaml
-        });
-
-        var getRelay0 = function() {
-            findRelay.callService(request0, function(result) {
-                UpperLightRowRelay = result.relayNumber;
-                //console.log("Relay request SUCCESS!");
-            }, function() {
-                //console.log("Relay request FAILED!");
-                setTimeout(getRelay0, shortDelay);
-            });
-        };
-        getRelay0();
-
-        var request1 = new ROSLIB.ServiceRequest({
-            relay: LowerLightRowName // Found in arlobot_usbrelay/param/usbrelay.yaml
-        });
-
-        var getRelay1 = function() {
-            findRelay.callService(request1, function(result) {
-                LowerLightRowRelay = result.relayNumber;
-                //console.log("Relay request SUCCESS!");
-            }, function() {
-                //console.log("Relay request FAILED!");
-                setTimeout(getRelay1, shortDelay);
-            });
-        };
-        getRelay1();
-
         var request2 = new ROSLIB.ServiceRequest({
             relay: RightMotorName // Found in arlobot_usbrelay/param/usbrelay.yaml
         });
 
-        var getRelay2 = function() {
-            findRelay.callService(request2, function(result) {
+        var getRelay2 = function () {
+            findRelay.callService(request2, function (result) {
                 RightMotorRelay = result.relayNumber;
                 //console.log("Relay request SUCCESS!");
-            }, function() {
+            }, function () {
                 //console.log("Relay request FAILED!");
                 setTimeout(getRelay2, shortDelay);
             });
@@ -1107,11 +741,11 @@ var getUsbRelayNumbers = function() {
             relay: LeftMotorName // Found in arlobot_usbrelay/param/usbrelay.yaml
         });
 
-        var getRelay3 = function() {
-            findRelay.callService(request3, function(result) {
+        var getRelay3 = function () {
+            findRelay.callService(request3, function (result) {
                 LeftMotorRelay = result.relayNumber;
                 //console.log("Relay request SUCCESS!");
-            }, function() {
+            }, function () {
                 //console.log("Relay request FAILED!");
                 setTimeout(getRelay3, shortDelay);
             });
@@ -1120,7 +754,7 @@ var getUsbRelayNumbers = function() {
     });
 };
 
-var startROSfunctions = function() {
+var startROSfunctions = function () {
     'use strict';
     setActionField("Starting functions");
 
@@ -1133,38 +767,20 @@ var startROSfunctions = function() {
     });
 
     // The existence of these services was checked in checkROSServices() already
-    wakeScreen = new ROSLIB.Service({
-        ros: ros,
-        name: '/metatron_id/wake_screen', // rosservice list
-        serviceType: 'metatron_services/WakeScreen' // rosservice info <service>
-    });
-
-    toggleCamera = new ROSLIB.Service({
-        ros: ros,
-        name: '/metatron_id/toggle_camera', // rosservice list
-        serviceType: 'metatron_services/ToggleCamera' // rosservice info <service>
-    });
-
-    toggleRelay = new ROSLIB.Service({
-        ros: ros,
-        name: '/arlobot_usbrelay/toggle_relay', // rosservice list
-        serviceType: 'arlobot_msgs/ToggleRelay' // rosservice info <service>
-    });
 
     // Each topic function will do its own checking to see if the topic is live or not.
-    setTimeout(subscribeToMetatron_idStatus, shortDelay); // Start with a slight delay
     setTimeout(subscribeToUsbRelayStatus, shortDelay * 2); // Increase delay with each to spread them out.
     setTimeout(subscribeToArlo_status, shortDelay * 3);
     setTimeout(getUsbRelayNumbers, shortDelay * 4); // Start Service request functions too
 };
 
-var checkROSServices = function() { // Check for all of the VITAL startups
+var checkROSServices = function () { // Check for all of the VITAL startups
     'use strict';
     setActionField("Checking services");
     //console.log("Getting Service List:");
     var closeDeadConnectionTime;
     closeDeadConnectionTime = setTimeout(closeDeadROSConnection, shortDelay);
-    ros.getServices(function(result) { // Unfortunately this can stall with no output!
+    ros.getServices(function (result) { // Unfortunately this can stall with no output!
         clearTimeout(closeDeadConnectionTime);
         setActionField("Checking topics");
         if (!checkROSService(result.indexOf("/rosapi/topics"))) { // This is the first service we need always!
@@ -1172,26 +788,6 @@ var checkROSServices = function() { // Check for all of the VITAL startups
             return;
         }
         // Check for all of the services we need before moving on!
-        setActionField("Checking wake_screen");
-        if (!checkROSService(result.indexOf('/metatron_id/wake_screen'))) {
-            setTimeout(checkROSServices, longDelay);
-            return;
-        }
-        setActionField("Checking toggle_camera");
-        if (!checkROSService(result.indexOf('/metatron_id/toggle_camera'))) {
-            setTimeout(checkROSServices, longDelay);
-            return;
-        }
-        setActionField("Checking toggle_relay");
-        if (!checkROSService(result.indexOf('/arlobot_usbrelay/toggle_relay'))) {
-            setTimeout(checkROSServices, longDelay);
-            return;
-        }
-        setActionField("Checking find_relay");
-        if (!checkROSService(result.indexOf('/arlobot_usbrelay/find_relay'))) {
-            setTimeout(checkROSServices, longDelay);
-            return;
-        }
         //console.log("OK to go!");
         connectedToROS = true;
         setActionField("Connected!");
@@ -1201,14 +797,14 @@ var checkROSServices = function() { // Check for all of the VITAL startups
     });
 };
 
-var setConnectRequestedFalse = function() {
+var setConnectRequestedFalse = function () {
     'use strict';
     connectRequested = false;
     pleaseWait = false;
     updateConnectedButton();
 };
 
-var pollROS = function() {
+var pollROS = function () {
     'use strict';
     connectedToROS = false;
 
@@ -1216,14 +812,14 @@ var pollROS = function() {
         url: 'ws://' + location.hostname + ':9090'
     });
 
-    ros.on('connection', function() {
+    ros.on('connection', function () {
         setActionField('Websocket connected.');
         //connectRequested = true;
         updateConnectedButton();
         checkROSServices();
     });
 
-    ros.on('error', function(error) {
+    ros.on('error', function () { // Argument options: error
         //console.log('Error connecting to websocket server: ', error);
         setActionField('Websocket eror');
         if (ros !== undefined) {
@@ -1231,7 +827,7 @@ var pollROS = function() {
         }
     });
 
-    ros.on('close', function() {
+    ros.on('close', function () {
         //console.log('Connection to websocket server closed.');
         setActionField('Websocket closed');
         connectedToROS = false;
@@ -1241,3 +837,56 @@ var pollROS = function() {
 };
 
 pollROS();
+
+var robotModel = {
+    /*
+     robotStatus: ko.observable('Robot web server is not running.'),
+     pluggedIn: ko.observable('AC Status unknown.'),
+     ROSisRunning: ko.observable(false),
+     inRoom: ko.observable(false),
+     showStartROSbutton: ko.observable(true),
+     showStopROSbutton: ko.observable(true),
+     mapList: ko.observableArray(['Explore!']),
+     */
+    lowerLightOn: ko.observable(false),
+    upperLightOn: ko.observable(false),
+    cameraOneToggle: function () {
+        socket.emit('toggleCamera');
+    },
+    exitButton: function() {
+        socket.emit('exit');
+    },
+    upperLightButton: function () {
+        socket.emit('toggleRelayByName', 'lightTwo');
+    },
+    lowerLightButton: function () {
+        socket.emit('toggleRelayByName', 'lightOne');
+    }
+};
+
+var webModel = ko.mapping.fromJS(robotModel);
+var firstStart = true;
+
+var socket = io();
+
+socket.on('startup', function (data) {
+    ko.mapping.fromJS(data, webModel);
+    if (firstStart) {
+        firstStart = false;
+        // Run the function once for each button:
+        ko.applyBindings(webModel);
+    }
+});
+
+socket.on('webModel', function (data) {
+    console.log('.');
+    //console.log(webModel); // A lot of data
+    ko.mapping.fromJS(data, webModel);
+    webModel.lowerLightOn(data.relays[7].relayOn);
+    webModel.upperLightOn(data.relays[3].relayOn);
+});
+
+
+socket.on('disconnect', function () {
+    webModel.status('Robot web server disconnected.');
+});

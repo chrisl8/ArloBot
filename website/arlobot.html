@@ -64,6 +64,17 @@
                 </div>
                 <label class="toggler" [class.brightly-negative-text]="arlobotSvc.webModel.beQuiet">Quiet</label>
             </div>
+            <div>
+                <form id='saySomethingForm' name='saySomethingForm'>
+                    <label for="saySomething"></label>
+                    <input type="text" name="saveMap" id="saySomething" style="line-height: 29px;"
+                           placeholder="What should I say?" [(ngModel)]="newThingToSay"/>
+                    <button type="button"
+                            class="btn btn-primary" style="float: left;"
+                            (click)="sendDataToArlobot('tts', newThingToSay)">Speak
+                    </button>
+                </form>
+            </div>
             <button type="button" class="btn btn-success"
                     *ngIf="arlobotSvc.webModel.ROSisRunning && !arlobotSvc.webModel.colorFollowerRunning"
                     (click)="sendSpecificSignalToArlobot('startColorFollower')">Start Color Follower
@@ -71,11 +82,6 @@
             <button type="button" class="btn btn-danger" *ngIf="arlobotSvc.webModel.colorFollowerRunning"
                     (click)="sendSpecificSignalToArlobot('stopColorFollower')">Stop Color Follower
             </button>
-            <p>
-            <h1>Things To Add</h1>
-            <ul>
-                <li>Start Log Streamer</li>
-            </ul>
         </accordion-group>
         <accordion-group heading="Sensors" *ngIf="arlobotSvc.webModel.rosParameters">
             <p *ngIf="!arlobotSvc.webModel.ROSisRunning">These do not work until ROS is Running.</p>
@@ -179,6 +185,15 @@
         </accordion-group>
         <accordion-group heading="Robot Service Log">
             <div id="statusScrollBox" [innerHTML]="arlobotSvc.webModel.scrollingStatus"></div>
+            <div style="margin-top: 10px;">
+                <button *ngIf="arlobotSvc.webModel.logStreamerRunning" type="button"
+                        class="btn btn-primary"
+                        (click)="goToLogStreamer()">View ROS Log Streamer
+                </button>
+                <button type="button" class="btn" [ngClass]="{'btn-success': arlobotSvc.webModel.logStreamerRunning}"
+                        (click)="sendSpecificSignalToArlobot('toggleLogStreamer')">ROS Log Streamer <span class="badge">{{arlobotSvc.webModel.logStreamerRunning | boolToOnOff}}</span>
+                </button>
+            </div>
         </accordion-group>
         <accordion-group heading="Navigation" [isOpen]="status.openNavTab">
             <div *ngIf="arlobotSvc.webModel.mapName === '' && !arlobotSvc.webModel.autoExplore">
@@ -209,21 +224,6 @@
                 </div>
                 <label class="toggler" [class.brightly-negative-text]="arlobotSvc.webModel.pauseExplore">Pause</label>
             </div>
-            <p>
-            <h1>Things To Add</h1>
-            <ul>
-                <li>Save Map</li>
-                <li>Add New Waypoint</li>
-            </ul>
-            <!-- TODO: Add a Save Map button. -->
-            <!--Should pop up a modal,-->
-            <!--list existing maps under the input bux,-->
-            <!--and tell the user to give the  map a name.-->
-            <!---->
-            <!--Destination picker.-->
-            <!--Waypoint adder-->
-            <!--Should also pop up a box,-->
-            <!--and list existing names.-->
             <div *ngIf="status.showMapPicker && arlobotSvc.webModel.mapName === '' && !arlobotSvc.webModel.autoExplore">
                 <h3>Pick a map to load:</h3>
                 <ul>
@@ -239,6 +239,29 @@
                                                                                          class="btn btn-primary"
                                                                                          (click)="sendDataToArlobot('gotoWayPoint', item)">{{item}}</button></li></span>
                 </ul>
+            </div>
+            <div *ngIf="arlobotSvc.webModel.mapName !== '' && !arlobotSvc.webModel.autoExplore && arlobotSvc.webModel.ROSisRunning">
+                <form id='saveNewWaypointForm' name='saveNewWaypointForm'>
+                    <label for="saveNewWaypoint"></label>
+                    <input type="text" name="saveMap" id="saveNewWaypoint" style="line-height: 29px;"
+                           placeholder="Enter name for current location . . ." [(ngModel)]="newWaypointName"/>
+                    <button type="button"
+                            class="btn btn-primary" style="float: left;"
+                            (click)="sendDataToArlobot('setWayPoint', newWaypointName)">Set Waypoint
+                    </button>
+                </form>
+            </div>
+            <div *ngIf="arlobotSvc.webModel.autoExplore && arlobotSvc.webModel.ROSisRunning">
+                <form id='saveMapForm' name='saveMapForm'>
+                    <label for="saveMap"></label>
+                    <input type="text" name="saveMap" id="saveMap" style="line-height: 29px;"
+                           placeholder="Enter new map name . . ."
+                           [(ngModel)]="newMapName"/>
+                    <button type="button"
+                            class="btn btn-primary" style="float: left;"
+                            (click)="sendDataToArlobot('saveMap', newMapName)">Save Map
+                    </button>
+                </form>
             </div>
             <p>To make a new map, click on "Auto Explore". If you want to guide the robot by hand, just set 'Explore' to
                 Pause first and the automatic exploration will not happen. Then you can guide the robot either by

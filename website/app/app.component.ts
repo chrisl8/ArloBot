@@ -24,8 +24,6 @@ declare var VirtualJoystick:any;
      *
      * Also, get on with the tutorial!
      */
-
-
 })
 
 export class AppComponent {
@@ -38,6 +36,14 @@ export class AppComponent {
     public oneAtATime:boolean = false;
     public items:Array<string> = ['Item 1', 'Item 2', 'Item 3'];
     public joystickOutput:string = 'Off';
+    public newMapName:string = '';
+    public newWaypointName:string = '';
+    public newThingToSay:string = '';
+
+    goToLogStreamer() {
+        window.open('http://' + location.hostname + ':28778/');
+        // window.location.href='http://www.cnn.com/';
+    }
 
     public status:Object = {
         isFirstOpen: true,
@@ -160,6 +166,9 @@ export class AppComponent {
             console.log(that.arlobotSvc);
             that.joystickOutput = 'Stopped';
             if (that.rosSvc.connected) {
+                that.rosSvc.sendTwistCommandToROS(0.0, 0.0);
+                // Send a few to make sure it stops ;)
+                that.rosSvc.sendTwistCommandToROS(0.0, 0.0);
                 that.rosSvc.sendTwistCommandToROS(0.0, 0.0);
             } else {
                 console.log('Ros not running.');

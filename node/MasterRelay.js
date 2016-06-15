@@ -13,7 +13,7 @@ var getPortName = function () {
 };
 
 var usbRelay = function (operation, runFromCommandLine) {
-    if (!working) {
+    if (operation !== 'read' || !working) {
         working = true;
         getPortName()
             .then((port) => {
@@ -74,6 +74,7 @@ var usbRelay = function (operation, runFromCommandLine) {
                                 }
                             });
                         } else {
+                            webModelFunctions.scrollingStatusUpdate(`Switching Master Relay ${operation}.`)
                             portObj.write("relay " + operation + " 0\r", function (err, results) {
                                 if (err) {
                                     wrapUp(runFromCommandLine, err);
@@ -87,7 +88,7 @@ var usbRelay = function (operation, runFromCommandLine) {
 };
 module.exports = usbRelay;
 if (require.main === module) {
-    // Run the function if this is called directly instead of required.
+    // Run the function if this is called directly instead of required as a module.
     if (process.argv.length < 3) {
         console.log("You must provide an operation. One of: on, off or read, for example:");
         console.log("node MasterRelay.js off");

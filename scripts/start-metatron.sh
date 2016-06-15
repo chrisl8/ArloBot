@@ -46,4 +46,4 @@ export ARLOBOT_MODEL=$(jq '.arlobotModel' ${HOME}/.arlobot/personalDataForBehavi
 # which makes monitoring status impossible.
     # http://stackoverflow.com/a/11337310
     # http://linux.die.net/man/1/unbuffer
-unbuffer roslaunch metatron_id metatron_id.launch --screen
+unbuffer roslaunch metatron_launchers full.launch --screen
