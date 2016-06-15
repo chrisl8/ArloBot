@@ -1,6 +1,6 @@
+var robotModel = require('./robotModel');
 var webModel = require('./webModel');
 var webModelFunctions = require('./webModelFunctions');
-var robotModel = require('./robotModel');
 // TODO: Observe is DEAD, so this all has to change,
 // Until then this entire module is dead.
 //var O = require('observed');
@@ -175,11 +175,11 @@ function talkToMe() {
 function talkAboutEvents(key, value) {
     if (key && value) {
         if (webModel.debugging) {
-            console.log('---------------')
+            console.log('---------------');
             console.log('talkAboutEvents change:');
             console.log(key);
             console.log(value);
-            console.log('---------------')
+            console.log('---------------');
         }
         if (eventModel[key] && howManySecondsSince(lastSpoke) >= eventModel[key].delay) {
             // and if we've already said it too recently we should say something else or skip it.
@@ -197,6 +197,9 @@ function talkAboutEvents(key, value) {
 // TODO: Implement or improve some sort of setter/getter on webModel and robotModel
 // that can be used to "ping" things like this.
 webModelFunctions.emitter.on('change', function (key, value) {
+    talkAboutEvents(key, value)
+});
+webModelFunctions.emitter.on('changeRobotModel', function (key, value) {
     talkAboutEvents(key, value)
 });
 //webModelWatcher.on('change', talkAboutEvents);

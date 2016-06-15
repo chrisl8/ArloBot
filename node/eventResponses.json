@@ -1,4 +1,52 @@
 {
+    "isInRoom": {
+      "repeatInterval": 600,
+      "delay": 0,
+      "true": {
+        "thingsToSay": {
+          "repeat": false,
+          "thankYou": {
+            "text": "Welcome master, I am so glad to see you!",
+            "weight": 0.99,
+            "instance": 1
+          }
+        }
+      },
+        "false": {
+          "thingsToSay": {
+            "repeat": false,
+            "thankYou": {
+              "text": "Good bye master, come back soon.",
+              "weight": 0.99,
+              "instance": 1
+            }
+          }
+        }
+    },
+  "isClose": {
+    "repeatInterval": 600,
+    "delay": 15,
+    "true": {
+      "thingsToSay": {
+        "repeat": false,
+        "thankYou": {
+          "text": "Master, is that your presence I feel?",
+          "weight": 0.99,
+          "instance": 1
+        }
+      }
+    },
+    "false": {
+      "thingsToSay": {
+        "repeat": false,
+        "thankYou": {
+          "text": "Must have been the wind.",
+          "weight": 0.99,
+          "instance": 1
+        }
+      }
+    }
+  },
     "pluggedIn": {
         "repeatInterval": 0,
         "delay": 0,

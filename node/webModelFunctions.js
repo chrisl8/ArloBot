@@ -4,6 +4,7 @@
 // is to keep the webModel clean for distribution to the web clients.
 
 var webModel = require('./webModel');
+const robotModel = require('./robotModel');
 // https://nodejs.org/docs/latest/api/events.html#emitter.on
 const EventEmitter = require('events');
 // util is required for the inheritance
@@ -21,6 +22,7 @@ const emitter = new WebModelEmitter();
 exports.emitter = emitter;
 
 var scrollingStatusUpdate = function (value) {
+    webModel.lastUpdateTime = Date.now();
     webModel.scrollingStatus = value + '<br/>' + webModel.scrollingStatus;
     emitter.emit('change');
 };
@@ -41,6 +43,14 @@ var update = function (key, value) {
     }
 };
 exports.update = update;
+
+var updateRobotModel = function (key, value) {
+    if ((webModel[key] != value)) {
+        webModel[key] = value;
+        emitter.emit('changeRobotModel', key, value);
+    }
+};
+exports.updateRobotModel = updateRobotModel;
 
 var toggle = function (key) {
     if ((webModel[key] === true)) {
@@ -65,10 +75,18 @@ exports.updateRosParameter = updateRosParameter;
 var updateWayPointNavigator = function (key, value) {
     if ((webModel.wayPointNavigator[key] != value)) {
         webModel.wayPointNavigator[key] = value;
-        emitter.emit('change', key, value);
+        emitter.emit('changeRobotModel', key, value);
     }
 };
 exports.updateWayPointNavigator = updateWayPointNavigator;
+
+var updateRobotMasterStatus = function (key, value) {
+    if ((robotModel.master[key] != value)) {
+        robotModel.master[key] = value;
+        emitter.emit('change', key, value);
+    }
+};
+exports.updateRobotMasterStatus = updateRobotMasterStatus;
 
 var publishRelayState = function (relayNumber, relayState, relayName) {
     if (relayName === undefined) {

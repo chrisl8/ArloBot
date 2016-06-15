@@ -37,8 +37,6 @@ if [ -e  ${HOME}/.nvm/nvm.sh ]
     printf "${YELLOW}Deactivating existing Node Version Manager:${NC}\n"
     export NVM_DIR="${HOME}/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
-    # TODO: Have it check with 'nvm current' before doing this to avoid errors.
-    # on the console.
     nvm deactivate
 fi
 
@@ -105,6 +103,9 @@ if ! (which mjpg_streamer > /dev/null)
     # mjpg_streamer usage example:
     #mjpg_streamer -i "/usr/local/lib/input_uvc.so -d /dev/video0 -f 30 -r 640x480" -o "/usr/local/lib/output_http.so -p 58180 -w ${SCRIPTDIR}/mjpg-streamer/mjpg-streamer/www"
 fi
+
+printf "\n${YELLOW}[Enamble non-root use of Bluetooth 4.0.]${NC}\n"
+sudo setcap cap_net_raw+eip $(eval readlink -f `which node`)
 
 if [ ! -d  ${SCRIPTDIR}/../node/public/lcars/ ]
     then
