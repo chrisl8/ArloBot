@@ -21,9 +21,9 @@ then
         sleep 1
     done
 fi
-if (pkill -f full.launch)
+if (pkill -f metatron.launch)
 then
-    while (pgrep -f full.launch)
+    while (pgrep -f metatron.launch)
     do
         echo "Waiting for Metatron to close . . ."
         sleep 1

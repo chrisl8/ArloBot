@@ -149,13 +149,6 @@ var subscribeToActiveStatus = function() {
     closeDeadConnectionTime = setTimeout(closeDeadROSConnection, longDelay);
     ros.getTopics(function(result) { // Unfortunately this can stall with no output!
         clearTimeout(closeDeadConnectionTime);
-        // ONLY REQUIRED FOR WEB SOCKET CONNECTION?
-        //if (!checkROSService(result.indexOf('/cmd_vel_mux/active'))) {
-        //    console.log('topic dead');
-        //    setTimeout(subscribeToMetatron_idStatus, longDelay);
-        //    // Try again when all topics are up!
-        //    return;
-        //}
 
         // THIS is where you put the subscription code:
         var cmd_activeStatus = new ROSLIB.Topic({

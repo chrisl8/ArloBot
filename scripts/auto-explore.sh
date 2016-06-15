@@ -1,4 +1,5 @@
-pgrep -f metatron_id.launch > /dev/null
+#!/usr/bin/env bash
+pgrep -f metatron.launch > /dev/null
 if [ $? -eq 0 ]
 then
     echo "When you are done, save your map!"

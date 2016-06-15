@@ -17,7 +17,7 @@ then
     exit 1
 fi
 
-pgrep -f metatron_id.launch
+pgrep -f metatron.launch
 if [ $? -eq 0 ]
 then
     if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true  ]

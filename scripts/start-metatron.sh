@@ -26,7 +26,7 @@ then
 fi
 echo "Use kill_ros.sh to close."
 
-# This allows the metatron_id.launch file to only load the joystick
+# This allows the metatron.launch file to only load the joystick
 # node if the joystick is present.
 # I found that loading the joystick node on test systems with no joystick
 # USB controller caused crashes in ROS.
@@ -46,4 +46,4 @@ export ARLOBOT_MODEL=$(jq '.arlobotModel' ${HOME}/.arlobot/personalDataForBehavi
 # which makes monitoring status impossible.
     # http://stackoverflow.com/a/11337310
     # http://linux.die.net/man/1/unbuffer
-unbuffer roslaunch metatron_launchers full.launch --screen
+unbuffer roslaunch metatron_launchers metatron.launch --screen

@@ -1,4 +1,5 @@
-pgrep -f metatron_id.launch
+#!/usr/bin/env bash
+pgrep -f metatron.launch
 if [ $? -eq 0 ]
 then
 roslaunch arlobot_bringup follower.launch --screen

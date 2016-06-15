@@ -34,7 +34,6 @@ with other launch files included at the end
 -->
 
   <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />
-  <include file="$(find metatron_id)/launch/metatron_id_ONLY.launch" />
 
   <include file="$(find arlobot_bringup)/launch/mobile_base.launch.xml" />
   <include file="$(find arlobot_safety)/launch/arlobot_safety.launch" />
