@@ -63,11 +63,15 @@ If you have a desktop or another laptop computer running Ubuntu that you just wa
 RVIZ, rqt_graph, etc. on, you can run this script to set up enough of ROS to do that, without
 attempting to compile the robot code.
 
-The "workstation" install uses the latest "Jade" version of ROS, so it will work on Ubuntu 15. Just run:
+The "workstation" install uses "Jade" version of ROS, so it will work on Ubuntu 15. Just run:
 
 ```
 bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/master/workstation.sh)
+```  
+or if you have Ubuntu 16 use the "Kinetic" workstation install:  
 ```
+bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/master/workstation-kinetic.sh)
+```  
 and your system will be set up to use as a "remote" station.
 To update your code just run the same script again and it will pull down and compile anything new without erasing custom settings.
 
