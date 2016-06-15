@@ -70,6 +70,8 @@ if ! (which pm2 > /dev/null)
     npm install -g pm2
 fi
 cd ${SCRIPTDIR}/../node
+printf "\n${YELLOW}You will get some errors here. Some are important, some are not.$NC}\n"
+printf "So far I know the error about 'fatal error: libudev.h: No such file or directory' is not important.\n"
 npm install
 npm update
 
@@ -104,7 +106,7 @@ if ! (which mjpg_streamer > /dev/null)
     #mjpg_streamer -i "/usr/local/lib/input_uvc.so -d /dev/video0 -f 30 -r 640x480" -o "/usr/local/lib/output_http.so -p 58180 -w ${SCRIPTDIR}/mjpg-streamer/mjpg-streamer/www"
 fi
 
-printf "\n${YELLOW}[Enamble non-root use of Bluetooth 4.0.]${NC}\n"
+printf "\n${YELLOW}[Enable non-root use of Bluetooth 4.0.]${NC}\n"
 sudo setcap cap_net_raw+eip $(eval readlink -f `which node`)
 
 if [ ! -d  ${SCRIPTDIR}/../node/public/lcars/ ]
