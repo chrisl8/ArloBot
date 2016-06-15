@@ -297,22 +297,9 @@
         <accordion-group heading="Video">
             <img id="videoFeed" alt="Video feed" [src]="arlobotSvc.webModel.videoSource" style="width: 100%;">
         </accordion-group>
-        <accordion-group *ngFor="let group of groups" [heading]="group.title">
-            {{ group?.content }}
-        </accordion-group>
-        <accordion-group heading="Dynamic Body Content">
-            <p>The body of the accordion group grows to fit the contents</p>
-            <button type="button" class="btn btn-primary btn-sm" (click)="addItem()">Add Item</button>
-            <div *ngFor="let item of items">{{item}}</div>
-        </accordion-group>
-        <accordion-group let group [isOpen]="status.open">
-            <div accordion-heading>
-                I can have markup, too!
-                <i class="pull-right glyphicon"
-                   [ngClass]="{'glyphicon-chevron-down': group?.isOpen, 'glyphicon-chevron-right': !group?.isOpen}"></i>
-            </div>
-            This is just some content to illustrate fancy headings.
+        <accordion-group heading="Old Web Sites">
+            <a href="old-site/">Old Home Page</a> <a href="old-site/remote-control.html">Old Remote Control Page</a>
         </accordion-group>
     </accordion>
-    <p id="footer-line">https://github.com/chrisl8/ArloBot</p>
+    <p id="footer-line"><a href="https://github.com/chrisl8/ArloBot">https://github.com/chrisl8/ArloBot</a></p>
 </div>

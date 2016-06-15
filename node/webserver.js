@@ -30,9 +30,7 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-// All of my "static" web pages are in the public folder
-app.use(express.static(__dirname + '/public'));
-// The new experimental Angular 2 site is in the website folder ABOVE this one
+// All web content is housed in the website folder
 app.use(express.static(__dirname + '/../website'));
 
 var handleSemaphoreFiles = require('./handleSemaphoreFiles');
@@ -159,47 +157,6 @@ var stopColorFollower = function () {
     });
     return process;
 };
-
-// Kiosk button handler:
-/* The 'kiosk' is a small web page/app, typically run on a smart phone,
- that is used for very basic robot settings,
- currently the primary functions are to force the robot to be
- quiet and to stop it. This is useful for allowing third parties in the
- vicinity of the robot to have some safety and convenience control
- over the robot, since it is not responsive to verbal commands. */
-// TODO: Make this socket.io based, or at least help it update its own buttons!
-app.post('/kioskBackEnd', function (req, res) {
-    if (req.body.PLEASE) handleSemaphoreFiles.setSemaphoreFiles(req.body.PLEASE);
-    var response = "{ \"QUIET\": " + webModel.beQuiet + ", \"STOP\": " + webModel.haltRobot + " }";
-    res.send(response);
-});
-
-// Twilio SMS Receiver:
-// TODO: This no longer works, we need to deal with  messages via the RobotMessageHandler! and remove the twilio code here.
-app.post('/receivemessage', function (req, res) {
-    // If you want a text response:
-    //var twiml = '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Got it!</Message></Response>';
-    // Otherwise, just tell Twilio we got it:
-    var twiml = '<?xml version="1.0" encoding="UTF-8" ?><Response></Response>';
-    res.send(twiml, {
-        'Content-Type': 'text/xml'
-    }, 200);
-    console.log("Body: " + req.body.Body);
-    console.log("From: " + req.body.From);
-    webModelFunctions.scrollingStatusUpdate('Twilio:');
-    webModelFunctions.scrollingStatusUpdate(req.body.Body);
-    webModelFunctions.scrollingStatusUpdate('from: ' + req.body.From);
-    // Make sure it is from ME! ;)
-    if (req.body.From === '+13162087309') {
-        if (req.body.Body.toLowerCase().indexOf('unplug') > -1) {
-            webModelFunctions.update('unplugYourself', true);
-            rosInterface.unplugRobot(true);
-        }
-    }
-    // TODO: Take action based in incoming messages!
-    // Probably in the behavior tree somewhere.
-    // And/or pass some to speech/response system.
-});
 
 function start() {
     var webServer = app.listen(personalData.webServerPort);

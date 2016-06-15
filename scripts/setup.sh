@@ -112,15 +112,15 @@ fi
 printf "\n${YELLOW}[Enable non-root use of Bluetooth 4.0.]${NC}\n"
 sudo setcap cap_net_raw+eip $(eval readlink -f `which node`)
 
-if [ ! -d  ${SCRIPTDIR}/../node/public/lcars/ ]
+if [ ! -d  ${SCRIPTDIR}/../website/old-site/lcars/ ]
     then
     printf "\n${YELLOW}[Cloning in lcars CSS Framework]${NC}\n"
-    cd ${SCRIPTDIR}/../node/public/
+    cd ${SCRIPTDIR}/../website/old-site/
     pwd
     git clone https://github.com/Garrett-/lcars.git
 else
     printf "\n${YELLOW}[Updating lcars CSS Framework repo]${NC}\n"
-    cd ${SCRIPTDIR}/../node/public/lcars
+    cd ${SCRIPTDIR}/../website/old-site/lcars
     git pull
 fi
 
@@ -139,7 +139,7 @@ if ! [ -f ${HOME}/Desktop/arlobot.desktop ]
         then
         echo "Exec=gnome-terminal --command \"${HOME}/catkin_ws/src/ArloBot/scripts/arlobotXwindows.sh\"" >> ${HOME}/Desktop/arlobot.desktop
     fi
-    echo "Icon=${HOME}/catkin_ws/src/ArloBot/node/public/icons/mstile-70x70.png" >> ${HOME}/Desktop/arlobot.desktop
+    echo "Icon=${HOME}/catkin_ws/src/ArloBot/website/old-site/icons/mstile-70x70.png" >> ${HOME}/Desktop/arlobot.desktop
     echo "Type=Application" >> ${HOME}/Desktop/arlobot.desktop
     echo "Path=${HOME}/catkin_ws/src/ArloBot/scripts/" >> ${HOME}/Desktop/arlobot.desktop
     echo "Terminal=false" >> ${HOME}/Desktop/arlobot.desktop

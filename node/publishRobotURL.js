@@ -5,7 +5,7 @@ var request = require('request');
 var ipAddress = require('./ipAddress');
 var updateRobotURL = function () {
     const robotIP = ipAddress.ipAddress();
-    const robotURL = 'http://' + robotIP + ':' + personalData.webServerPort + '/index2.html';
+    const robotURL = 'http://' + robotIP + ':' + personalData.webServerPort;
     if (personalData.cloudServer.exists && webModel.robotURL !== robotURL) {
         webModelFunctions.update('robotIP', robotIP);
 
