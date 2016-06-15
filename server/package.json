@@ -1,0 +1,20 @@
+{
+  "name": "arlobot-cloud-server",
+  "version": "1.0.0",
+  "description": "A cloud based web server for the ArloBot",
+  "main": "index.js",
+  "author": "Chris L8",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.15.1",
+    "express": "^4.13.4",
+    "redis": "^2.6.0-2",
+    "socket.io": "^1.4.6",
+    "twilio": "^2.9.1"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/chrisl8/Metatron.git"
+  }
+}

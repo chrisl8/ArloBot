@@ -218,3 +218,7 @@ rosrun map_server map_saver -f ~/rosmaps/my_map1
 Please report an issue for any problems or if you need me to clarify anything!  
  Ask questions in the [Parallax Forums](http://forums.parallax.com/ "Parallax Forums"), on [GitHub](https://github.com/chrisl8/ArloBot/issues "Create an Issue"), on the [ROS for Arlobot Google Group](https://groups.google.com/forum/?utm_medium=email&utm_source=footer#!forum/ros-for-arlobot "ROS for Arlobot"), and on my [blog](http://ekpyroticfrood.net/ "My Blog"). We will write more documentation as we answer questions, and I hope you will also write instructions when you do your build!
 
+
+##Convenience Scripts##
+Look in the scripts folder for a set of handy scripts for starting up and shutting down various aspects of Arlobot.
+

@@ -1,0 +1,36 @@
+{
+  "name": "Arlobot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Node scripts to control my ArloBot robot behavior",
+  "main": "index.js",
+  "dependencies": {
+    "behavior3js": "^0.1.0",
+    "body-parser": "^1.13.3",
+    "chokidar": "^1.1.0",
+    "eddystone-beacon-scanner": "^3.0.0",
+    "express": "^4.13.3",
+    "mkdirp": "^0.5.1",
+    "ps-tree": "^1.0.0",
+    "pushover-notifications": "^0.2.2",
+    "redis": "^2.6.0-1",
+    "roslib": "^0.18.0",
+    "say": "^0.9.0",
+    "serialport": "^3.0.1",
+    "socket.io": "^1.4.6",
+    "stochator": "^0.6.2",
+    "twilio": "^3.3.0-edge"
+  },
+  "devDependencies": {
+    "jasmine": "^2.3.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ChrisL8",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/chrisl8/ArloBot.git"
+  }
+}

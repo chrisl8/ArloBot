@@ -1,0 +1,113 @@
+Direct Serial Testing Lines:
+
+Initialize:
+d,0.403000,0.006760,0,0,0,0,0,0.0,0.0,0.0
+
+With the above line though, sensors can cause the robot to not move or even move by itself to get away from obstacles,
+So if you want to ignore ALL sensors use this line:
+d,0.403000,0.006760,1,0,0,0,0,0.0,0.0,0.0
+
+BE CAREFUL, you can run it into walls now!
+
+AFTER the robot is initialized, you can send these lines to change options:
+
+ignoreProximity:
+d,0.403000,0.006760,1,0,0,0,0
+
+ignoreCliffSensors:
+d,0.403000,0.006760,0,1,0,0,0
+
+ignoreIRSensors:
+d,0.403000,0.006760,0,0,1,0,0
+
+ignoreFloorSensors:
+d,0.403000,0.006760,0,0,0,1,0
+
+pluggedIn
+d,0.403000,0.006760,0,0,0,0,1
+
+Ignore nothing:
+d,0.403000,0.006760,0,0,0,0,0
+
+Hopefully you can get an idea of what each "bit" does based on that too.
+
+Once the robot is initialized you will get two kinds of lines,
+o lines = odometry
+s lines = status
+
+Odometry lines:
+o       0.000   0.000   0.000   0.000   0.000   0.000   {"p0":0,"p1":0,"p2":0,"p3":0,"p4":0,"p5":0,"p6":0,"p7":0,"p8":0,"p9":0,"p10":0,"p11":0,"p12":0,"p13":0}
+
+The first set of decimal numbers are the odometry data for ROS in this order:
+(Copied right out of `ROS Interface for ArloBot.c` line 552)
+X, Y, Heading, gyroHeading, V, Omega
+
+gyroHeading will always be 0.00 if you don't have one, which most don't.
+The most important thing about these numbers is to understand that they should change as your robot moves. If they don't, something is wrong.
+Understanding what they mean requires learning more about ROS.
+
+The "p" and "i" numbers are the sensor distance readings. You will have different amounts of them based on your setup.
+
+Status Lines:
+s       1       1       0       100     100     0       4.69    4.69    0       0
+
+First, if the line looks just like this, you should be good to go. The robot is working and has no obstacles.
+
+They  mean:
+(Copied right out of `ROS Interface for ArloBot.c` line 584)
+safeToProceed, safeToRecede, Escaping, abd_speedLimit, abdR_speedLimit, minDistanceSensor, leftMotorPower, rightMotorPower, cliff, floorO
+
+Here is the definitions of each:
+safeToProceed - Means the robot thinks it is OK to move forward. If this is 0 the robot will NOT move forward. So this needs to be 1 for the robot to move forward.
+
+safeToRecede - Means the robot thinks it is OK to move backward. If this is 0 the robot will NOT move backward. So this needs to be 1 for the robot to move backward.
+
+Escaping - Means the robot is trying to get away from an obstacle that is too near. If this is 1, the robot will ignore speed commands from you or ROS while it tries to "escape". So this needs to be 0 for the robot to respond.
+
+abd_speedLimit - Forward speed limit percentage, 100 is max. This gets lower when an obstacle is in front of the robot.
+
+abdR_speedLimit - Reverse speed limit percentage, 100 is max. This gets lower when an obstacle is behind the robot.
+
+minDistanceSensor - This tells you which sensor has the shortest reading.
+
+leftMotorPower & rightMotorPower - If you have a voltage sensor this tells you how much voltage your left motor is getting. It is an analog number representing a range from 0 to 5v. 4.69 is "100%" and means either full voltage, or you don't have this. TL;DR: 4.69 is good.
+cliff - This means the robot is halted because it detects a cliff it is is 1.
+floorO - This means the robot is halted because it detects a floor obstacle if it is 1.
+
+NOTE that all of the above are also visually represented in the Remote Control web interface, so when you get that far you can more easily see what is going on inside the Propeller code.
+
+
+Now, to Drive the robot, send some "speed" lines.
+The format is:
+s,linear velocity in meters/second,angular velocity in radians/second
+So to be still: (keep that ready to stop your robot!)
+s,0.0,0.0
+Slow Forward:
+s,0.100,0.000
+Slow Reverse:
+s,-0.100,0.000
+Slow turn left or right:
+s,0.00,0.50
+s,0.00,-0.50
+Stop: (again)
+s,0.0,0.0
+
+Now later when you run ROS, you can echo the "serial" topic and see these exact same kind of input/output and understand what ROS is telling the robot to do, and what the robot is telling ROS about its status.
+Here is an example:
+
+chrisl8@ArloBot (master *+) scripts $ rostopic echo serial|grep out
+data: 1928, out: d,0.403000,0.006760,1,0,0,0,1
+data: 2192, out: d,0.403000,0.006760,1,1,0,0,1
+data: 2214, out: d,0.403000,0.006760,1,0,0,0,1
+data: 2225, out: d,0.403000,0.006760,1,0,1,0,1
+data: 2236, out: d,0.403000,0.006760,1,0,0,0,1
+data: 2258, out: d,0.403000,0.006760,0,0,0,0,1
+data: 2346, out: d,0.403000,0.006760,0,0,0,0,0
+data: 2390, out: d,0.403000,0.006760,0,0,0,0,1
+data: 3534, out: d,0.403000,0.006760,0,0,1,0,1
+data: 3545, out: d,0.403000,0.006760,0,0,0,0,1
+data: 3556, out: d,0.403000,0.006760,0,1,0,0,1
+data: 3567, out: d,0.403000,0.006760,0,0,0,0,1
+data: 3578, out: d,0.403000,0.006760,1,0,0,0,1
+data: 3589, out: d,0.403000,0.006760,0,0,0,0,1
+
