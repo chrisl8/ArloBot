@@ -55,7 +55,7 @@
     "speechProgram": "nodeSay",
     "speech_engine": "~/catkin_ws/src/ArloBot/scripts/tts.sh",
     "script_location": "~/catkin_ws/src/ArloBot/scripts",
-    "web_folder": "~/catkin_ws/src/ArloBot/node/public",
+    "web_folder": "~/catkin_ws/src/ArloBot/website",
     "webServerPort": 8080,
     "launchBrowser": true,
     "useQRcodes": false,

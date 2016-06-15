@@ -11,8 +11,8 @@ node/node_modules/
 node/build/
 scripts/mjpg-streamer/
 node/public/lcars/
-node/public/xscreen.png
-node/public/xscreenOld.png
+website/xscreen.png
+website/xscreenOld.png
 server/node_modules/
 website/node_modules/
 website/typings/
