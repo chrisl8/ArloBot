@@ -15,7 +15,11 @@ function resolvePath(str) {
 const saveScreenShotForWeb = function () {
     const oldFileName = resolvePath(personalData.web_folder + '/xscreenOld.png');
     const newFileName = resolvePath(personalData.web_folder + '/xscreen.png');
-    fs.renameSync(newFileName, oldFileName);
+    try {
+        fs.renameSync(newFileName, oldFileName);
+    } catch (err) {
+        console.log("Old screenshot doens't exist yet!");
+    }
     const command = "DISPLAY=:0.0 /usr/bin/import -window root " + newFileName;
     exec(command, () => { // Argument options: error, stdout, stderr
         const compare = "compare -metric RMSE " + newFileName + " " + oldFileName + " /dev/null";

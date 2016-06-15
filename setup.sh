@@ -240,7 +240,7 @@ ARLOHOME=${HOME}/.arlobot
 
 if [ -e ${ARLOHOME}/arlobot.yaml ]
     then
-    if ! (diff ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/arlobot.yaml)
+    if ! (diff ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/arlobot.yaml > /dev/null)
         then
         printf "\n${GREEN}The arlobot.yaml file in the repository is different from the one${NC}\n"
         printf "${GREEN}in your local settings.${NC}\n"

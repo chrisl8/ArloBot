@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 ssh arlobot 'pkill avconv'
 ssh arlobot '/home/chrisl8/catkin_ws/src/ArloBot/scripts/streamAudioInBackground.sh' > /dev/null
 echo "Run 'quit' to exit VLC and close audio stream."

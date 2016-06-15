@@ -80,6 +80,7 @@ npm update
 cd ${SCRIPTDIR}/../website
 npm install
 npm update
+npm run tsc
 cd ${SCRIPTDIR}/../website/lib
 wget -q -N http://cdn.robotwebtools.org/roslibjs/current/roslib.js -O roslib.js
 
