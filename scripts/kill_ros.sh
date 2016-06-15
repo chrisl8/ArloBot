@@ -21,11 +21,11 @@ then
         sleep 1
     done
 fi
-if (pkill -f metatron.launch)
+if (pkill -f robot.launch)
 then
-    while (pgrep -f metatron.launch)
+    while (pgrep -f robot.launch)
     do
-        echo "Waiting for Metatron to close . . ."
+        echo "Waiting for Robot to close . . ."
         sleep 1
     done
 fi

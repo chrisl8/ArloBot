@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 MAPFILE=${HOME}/.arlobot/rosmaps/${1}
 if [ $# -eq 0 ]
 then
@@ -17,17 +18,17 @@ then
     exit 1
 fi
 
-pgrep -f metatron.launch
+pgrep -f robot.launch
 if [ $? -eq 0 ]
 then
     if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true  ]
     then
-        roslaunch metatron_launchers load_map_xv11.launch map_file:=${MAPFILE}
+        roslaunch arlobot_launchers load_map_xv11.launch map_file:=${MAPFILE}
     else
-        roslaunch metatron_launchers load_map.launch map_file:=${MAPFILE}
+        roslaunch arlobot_launchers load_map.launch map_file:=${MAPFILE}
     fi
 else
-    echo "Metatron must be running to start this."
+    echo "Robot must be running to start this."
     exit 1
 fi
 

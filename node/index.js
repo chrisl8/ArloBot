@@ -825,7 +825,7 @@ arloTree.load(arloNodeData, customNodeNames);
 
 robotModel.ROSprocess = new LaunchScript({
     name: 'ROS',
-    scriptName: '../scripts/start-metatron.sh',
+    scriptName: '../scripts/start-robot.sh',
     successString: 'process[arlobot-4]: started with pid' // NOTE: The number (5) will change if the number ROS launch processes changes! i.e. when we removed metatron-babelfish, it went from 6 to 5.
 });
 
@@ -844,9 +844,9 @@ robotModel.goToWaypointProcess = new LaunchScript({
 
 var exploreCommand;
 if (personalData.use_xv11) {
-    exploreCommand = 'unbuffer roslaunch metatron_launchers add_autonomous_explore_xv11.launch';
+    exploreCommand = 'unbuffer roslaunch arlobot_launchers add_autonomous_explore_xv11.launch';
 } else {
-    exploreCommand = 'unbuffer roslaunch metatron_launchers add_autonomous_explore.launch';
+    exploreCommand = 'unbuffer roslaunch arlobot_launchers add_autonomous_explore.launch';
 }
 robotModel.exploreProcess = new LaunchScript({
     name: 'Explore',
@@ -856,9 +856,9 @@ robotModel.exploreProcess = new LaunchScript({
 
 var loadMapCommand;
 if (personalData.use_xv11) {
-    loadMapCommand = 'unbuffer roslaunch metatron_launchers load_map_xv11.launch map_file:=';
+    loadMapCommand = 'unbuffer roslaunch arlobot_launchers load_map_xv11.launch map_file:=';
 } else {
-    loadMapCommand = 'unbuffer roslaunch metatron_launchers load_map.launch map_file:=';
+    loadMapCommand = 'unbuffer roslaunch arlobot_launchers load_map.launch map_file:=';
 }
 robotModel.loadMapProcess = new LaunchScript({
     name: 'LoadMap',

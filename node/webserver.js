@@ -139,9 +139,9 @@ var startColorFollower = function () {
     return colorFollowerProcess;
 };
 var stopColorFollower = function () {
-    //pkill -f "roslaunch metatron_launchers object_follower.launch"
+    //pkill -f "roslaunch arlobot_launchers object_follower.launch"
     var command = '/usr/bin/pkill';
-    var commandArgs = ['-f', 'roslaunch metatron_launchers object_follower.launch'];
+    var commandArgs = ['-f', 'roslaunch arlobot_launchers object_follower.launch'];
     var process = spawn(command, commandArgs);
     process.stdout.setEncoding('utf8');
     process.stdout.on('data', function (data) {

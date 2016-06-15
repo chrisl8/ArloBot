@@ -5,13 +5,13 @@
 # follow it around the room.
 # Note that you must have Patrick's code cloned and imported into your system for this to work,
 # and I suggest buying his book to learn how, although technically you could just get it from Github.
-pgrep -f metatron.launch > /dev/null
+pgrep -f robot.launch > /dev/null
 if [ $? -eq 0 ]
 then
     echo $DISPLAY|grep : > /dev/null
     if [ $? -eq 0 ]
     then
-        roslaunch metatron_launchers object_tracker.launch
+        roslaunch arlobot_launchers object_tracker.launch
     else
         echo "This must be run from XWindows."
         exit 1

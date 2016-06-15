@@ -1,4 +1,4 @@
-<!-- This will only work if Metatron & Alrobot are already running -->
+<!-- This will only work if Robot & Alrobot are already running -->
 <launch>
   <include file="$(find arlobot_navigation)/launch/gmapping_demo_xv11DWAonly.launch" />
   <include file="$(find arlobot_explore)/launch/exploration_planner.launch" />

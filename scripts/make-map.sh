@@ -1,4 +1,5 @@
-pgrep -f metatron.launch
+#!/usr/bin/env bash
+pgrep -f robot.launch
 if [ $? -eq 0 ]
 then
     echo "When you are done, save your map!"

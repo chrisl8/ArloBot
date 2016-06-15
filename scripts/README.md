@@ -7,7 +7,7 @@ These are scripts that are meant to make it easy to start up basic ROS functions
 <li>setup.sh - Set up everything Metatron and Arlobot need in your environment.</li>
 <li>kill_ros.sh - This will stop all ROS programs and reset everything.</li>
 <li>start-arlobot-only.sh - This will start up just the ArloBot basic ROS package</li>
-<li>start-metatron.sh - This will start up Arlobot and Metatron, basically everything.</li>
+<li>start-robot.sh - This will start up Arlobot, web interface and behavior, basically everything.</li>
 <li>follow-object.sh - This will start the follow package and set the robot following objects.</li>
 <li>auto-explore.sh - This will start up the autonomous exploration package and set the robot exploring! Be sure to save your map before killing this!</li>
 <li>save-map.sh - Use this to save a map you've made before shutting down gmapping.</li>

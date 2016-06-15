@@ -1,9 +1,9 @@
 {
-  "name": "Metatron",
+  "name": "Arlobot",
   "version": "1.0.0",
   "private": true,
   "description": "Node scripts to control my ArloBot robot behavior",
-  "main": "robot-server.js",
+  "main": "index.js",
   "dependencies": {
     "behavior3js": "^0.1.0",
     "body-parser": "^1.13.3",
@@ -31,6 +31,6 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git://github.com/chrisl8/Metatron.git"
+    "url": "git://github.com/chrisl8/ArloBot.git"
   }
 }
