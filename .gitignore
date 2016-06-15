@@ -7,11 +7,11 @@
 .idea
 src/CMakeLists.txt
 node/node_modules/
-node/node_modules-OLD/
 node/build/
 scripts/mjpg-streamer/
 node/public/lcars/
 node/public/xscreen.png
+node/public/xscreenOld.png
 server/node_modules/
 website/node_modules/
 website/typings/
