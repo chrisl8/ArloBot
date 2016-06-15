@@ -11,6 +11,6 @@ then
         roslaunch arlobot_launchers add_autonomous_explore.launch
     fi
 else
-    echo "Metatron must be running to start this."
+    echo "Robot must be running to start this."
 fi
 

@@ -826,7 +826,8 @@ arloTree.load(arloNodeData, customNodeNames);
 robotModel.ROSprocess = new LaunchScript({
     name: 'ROS',
     scriptName: '../scripts/start-robot.sh',
-    successString: 'process[arlobot-4]: started with pid' // NOTE: The number (5) will change if the number ROS launch processes changes! i.e. when we removed metatron-babelfish, it went from 6 to 5.
+    successString: 'process[arlobot-4]: started with pid' // NOTE: The number (4) will change if the number ROS launch processes changes! i.e. when we removed something from the arlobot_launchers/launch/robot.launch file, it went from 6 to 5!
+    // TODO: This could be set to "true" by the ROSlibJS connection instead?!
 });
 
 /* GotoWaypoint Process output:

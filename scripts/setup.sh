@@ -1,6 +1,6 @@
 #!/bin/bash
 # This script is meant to help set up your machine
-# and user environment for Metatron and Arlobot to work
+# and user environment for Arlobot to work
 
 # Grab and save the path to this script
 # http://stackoverflow.com/a/246128

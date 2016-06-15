@@ -11,6 +11,6 @@ then
         roslaunch arlobot_navigation gmapping_demo.launch
     fi
 else
-    echo "Metatron must be running to start this."
+    echo "Robot must be running to start this."
 fi
 

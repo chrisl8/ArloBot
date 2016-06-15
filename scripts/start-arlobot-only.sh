@@ -1,6 +1,6 @@
 #!/bin/bash
 # Start just the basic ArloBot ROS setup.
-# Use start_metatron.sh to start EVERYTHING instead
+# Use start-robot.sh to start EVERYTHING instead
 
 # Set up ROS Environment
 export ROS_HOSTNAME=`uname -n`

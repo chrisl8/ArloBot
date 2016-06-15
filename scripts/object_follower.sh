@@ -15,6 +15,6 @@ if [ $? -eq 0 ]
     export DISPLAY=:0
     unbuffer roslaunch arlobot_launchers object_follower.launch --screen
 else
-    echo "Metatron must be running to start this."
+    echo "Robot must be running to start this."
     exit 1
 fi
