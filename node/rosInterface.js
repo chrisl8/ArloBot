@@ -52,19 +52,18 @@ var rosParameters = {
     }
 };
 
-var unplugRobot = function(value)
-{
+var unplugRobot = function (value) {
     var unplugRequest = new ROSLIB.ServiceRequest({
         // args from rosservice info <service>
         unPlug: value // Note javaScript uses true not True for bool
     });
-    unplug.callService(unplugRequest, function(result) {
+    unplug.callService(unplugRequest, function (result) {
         console.log(result);
         webModelFunctions.scrollingStatusUpdate(result);
     })
 };
 
-var talkToROS = function() {
+var talkToROS = function () {
     // If you wanted to dump ALL params:
     //ros.getParams(function(params) {
     //    console.log('ROSLIB Params:');
@@ -93,9 +92,9 @@ var talkToROS = function() {
     pollParams();
 };
 
-var pollParams = function() {
+var pollParams = function () {
     function checkParameter(prop) {
-        rosParameters[prop].param.get(function(value) {
+        rosParameters[prop].param.get(function (value) {
             //console.log(rosParameters[prop].label + ': ' + value);
             // Assign state to webModel object for view by web page.
             if (webModel.rosParameters.hasOwnProperty(prop)) {
@@ -115,7 +114,7 @@ var pollParams = function() {
     setTimeout(pollParams, longDelay);
 };
 
-var setParam = function(paramLabel, value) {
+var setParam = function (paramLabel, value) {
     if (rosParameters.hasOwnProperty(paramLabel)) {
         if (rosParameters[paramLabel].param) {
             rosParameters[paramLabel].param.set(value);
@@ -123,7 +122,7 @@ var setParam = function(paramLabel, value) {
     }
 };
 
-var closeDeadROSConnection = function() {
+var closeDeadROSConnection = function () {
     // TODO: Does this ever happen?
     'use strict';
     console.log("Closing dead ROS connection.");
@@ -133,21 +132,16 @@ var closeDeadROSConnection = function() {
     console.log("CLOSED dead ROS connection!");
 };
 
-var subscribeToActiveStatus = function() {
+var subscribeToActiveStatus = function () {
     'use strict';
     // Remember to add new instances to talkToROS() at the end!
     // This should serve as a template for all topic subscriptions
     // Make sure we are still connected.
-    // NOT NEEDED IN NODE? THIS WAS FOR WEB SOCKET CONNECTIONS.
-    // No need to recall myself as a new connect will do that.
-    //if (!connectedToROS) {
-    //    console.log('not connected');
-    //    return;
-    //}
+
     // Make sure service exists:
     var closeDeadConnectionTime;
     closeDeadConnectionTime = setTimeout(closeDeadROSConnection, longDelay);
-    ros.getTopics(function(result) { // Unfortunately this can stall with no output!
+    ros.getTopics(function (result) { // Unfortunately this can stall with no output!
         clearTimeout(closeDeadConnectionTime);
 
         // THIS is where you put the subscription code:
@@ -156,8 +150,7 @@ var subscribeToActiveStatus = function() {
             name: '/cmd_vel_mux/active', // Obtain name by running 'rostopic list'
             messageType: 'std_msgs/String' // Obtain Type by running 'rostopic info <name>'
         }); // Obtain message.??? by running 'rosmsg show <messageType>'
-
-        cmd_activeStatus.subscribe(function(message) {
+        cmd_activeStatus.subscribe(function (message) {
             robotModel.active_cmd = message.data;
             console.log('Command Velocity Topic says: ' + message.data);
             if (message.data === 'idle') {
@@ -167,13 +160,28 @@ var subscribeToActiveStatus = function() {
                 robotModel.lastMovementTime = Date.now();
             }
         });
+
+        // THIS is where you put the subscription code:
+        var arlobot_arlo_status = new ROSLIB.Topic({
+            ros: ros,
+            name: '/arlo_status', // Obtain name by running 'rostopic list'
+            messageType: 'arlobot_msgs/arloStatus' // Obtain Type by running 'rostopic info <name>'
+        }); // Obtain message.??? by running 'rosmsg show <messageType>'
+        arlobot_arlo_status.subscribe(function (message) {
+            for (let key in message) {
+                if (message.hasOwnProperty(key) && webModel.rosParameters.hasOwnProperty(key)) {
+                    webModelFunctions.updateRosParameter(key, message[key]);
+                }
+            }
+        });
+
     });
 };
 
 // Copied from arloweb.js
 // Be sure to set url to point to localhost,
 // and change any references to web objects with console.log (i.e. setActionField)
-var pollROS = function() {
+var pollROS = function () {
     // console.log('ROSLIB pollROS run');
     connectedToROS = false;
 
@@ -183,7 +191,7 @@ var pollROS = function() {
         encoding: 'ascii'
     });
 
-    ros.on('connection', function() {
+    ros.on('connection', function () {
         webModelFunctions.scrollingStatusUpdate('ROSLIB Websocket connected.');
         // Set last movement to now to initiate the idle timer
         robotModel.lastMovementTime = Date.now();
@@ -193,7 +201,7 @@ var pollROS = function() {
         setTimeout(talkToROS, longDelay);
     });
 
-    ros.on('error', function(error) {
+    ros.on('error', function (error) {
         //console.log('Error connecting to websocket server: ', error);
         //console.log('ROSLIB Websocket error');
         if (ros !== undefined) {
@@ -202,7 +210,7 @@ var pollROS = function() {
         setTimeout(pollROS, shortDelay);
     });
 
-    ros.on('close', function() {
+    ros.on('close', function () {
         //console.log('Connection to websocket server closed.');
         webModelFunctions.scrollingStatusUpdate('ROSLIB Websocket closed');
         connectedToROS = false;

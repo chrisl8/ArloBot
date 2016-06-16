@@ -1,5 +1,14 @@
 ##TODO List:##
 
+Run this to see what it should see:
+rosrun tf tf_echo /map /base_link
+
+Run this to see what really happens:
+cd catkin_ws/src/ArloBot/node
+node getCurrentPosition.js
+
+Why doesn't it get the output of the rosrun command?
+
 Use these to put in some delay and idle checkers:
 var bootTime = new Date() // Time the node script was initialized
 var startROSTime = new Date() // Time that ROS start was completed.

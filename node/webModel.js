@@ -44,7 +44,24 @@ module.exports = {
         ignoreFloorSensors: false,
         monitorACconnection: true,
         mapName: null,
-        explorePaused: false
+        explorePaused: false,
+        // From ROS Topic /arlo_status
+        floorObstacle: false,
+        safeToRecede: true,
+        safeToProceed: true,
+        Escaping: false,
+        acPower: true,
+        gyroHeading: 0,
+        rightMotorPower: false,
+        minDistanceSensor: 3,
+        abd_speedLimit: 10,
+        abdR_speedLimit: 100,
+        leftMotorPower: false,
+        laptopBatteryPercent: 0,
+        robotBatteryLow: false,
+        Heading: 0,
+        robotBatteryLevel: 0,
+        cliff: false
     },
     unplugYourself: false, // Indicates that robot should unplug itself.
     wayPointNavigator: {

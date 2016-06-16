@@ -48,6 +48,11 @@
                 <li>Telementry from Remote Control site. Should it be another group?</li>
             </ul>
         </accordion-group>
+        <accordion-group heading="Telemetry">
+            <ul *ngFor='let entry of arlobotSvc.webModel.rosParameters | keys'>
+                <li>{{entry.key}}: {{entry.value}}</li>
+            </ul>
+        </accordion-group>
         <accordion-group heading="Relays">
             <span *ngFor="let relay of arlobotSvc.webModel.relays">
             <button type="button" class="btn" [ngClass]="{'btn-success': relay.relayOn}"
@@ -298,8 +303,9 @@
             <img id="videoFeed" alt="Video feed" [src]="arlobotSvc.webModel.videoSource" style="width: 100%;">
         </accordion-group>
         <accordion-group heading="Old Web Site">
-            <a href="old-site/" class="btn btn-primary">Old Home Page</a>
-            <a href="old-site/remote-control.html" class="btn btn-primary">Old Remote Control Page</a>
+            <a href="old-site/" class="btn btn-primary" style="color: white;">Old Home Page</a>
+            <a href="old-site/remote-control.html" class="btn btn-primary" style="color: white;">Old Remote Control
+                Page</a>
         </accordion-group>
     </accordion>
     <p id="footer-line"><a href="https://github.com/chrisl8/ArloBot">https://github.com/chrisl8/ArloBot</a></p>
