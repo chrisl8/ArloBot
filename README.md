@@ -6,11 +6,8 @@ ArloBot Package for ROS
 
 2. This package also installs a node.js based front end GUI for the robot, complete with Twilio and Pushover integration and push button access to ROS functions:
 
-![Alt text](/screenshots/controlpanel.png?raw=true "Control Panel")
-
-3. The GUI also includes a remote control "Teleop" interface:
-
-![Alt text](/screenshots/remotecontrol.png?raw=true "Control Panel")
+New Mobile friendly web layout:
+![Alt text](/screenshots/arlobotNewWebInterface.png "Web Interface")
 
 Here is a demonstration video of this code on my ArloBot:
 http://youtu.be/7qJaA6K_WPE
