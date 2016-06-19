@@ -9,7 +9,7 @@ var updateRobotURL = function () {
     if (personalData.cloudServer.exists && webModel.robotURL !== robotURL) {
         webModelFunctions.update('robotIP', robotIP);
 
-        const serverURL = 'http://' + personalData.cloudServer.fqdn + ':' + personalData.cloudServer.port + '/updateRobotURL';
+        const serverURL = personalData.cloudServer.service + '://' + personalData.cloudServer.fqdn + ':' + personalData.cloudServer.port + '/updateRobotURL';
 
         request.post(
             serverURL,
@@ -26,7 +26,8 @@ var updateRobotURL = function () {
                     console.log('webModel.robotIP:', webModel.robotIP);
                     console.log('webModel.robotURL:', webModel.robotURL);
                 } else {
-                    console.log(error, response, body);
+                    console.log('Robot URL Update failed. Check Internet connection and personalData settings.');
+                    console.log('Server URL: ' + serverURL);
                 }
             }
         );

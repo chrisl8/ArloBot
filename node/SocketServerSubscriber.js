@@ -1,7 +1,7 @@
 var personalData = require('./personalData');
 
 function SocketServerSubscriber(messageHandler) {
-    this.remoteServer = 'http://' + personalData.cloudServer.fqdn;
+    this.remoteServer = personalData.cloudServer.service + '://' + personalData.cloudServer.fqdn;
     this.messageHandler = messageHandler;
 }
 
@@ -14,7 +14,7 @@ SocketServerSubscriber.prototype.start = function() {
         socket.on('connect', function() {
             self.messageHandler({
                 event: 'connect'
-            })
+            });
             socket.emit('new robot', personalData.robotName);
         });
         socket.on('event', function(data) {
@@ -41,7 +41,7 @@ SocketServerSubscriber.prototype.start = function() {
             self.messageHandler({
                 event: 'welcome'
             });
-        })
+        });
         socket.on('disconnect', function() {
             messageHandler({
                 event: 'disconnect'
