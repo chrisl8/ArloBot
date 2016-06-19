@@ -43,21 +43,26 @@
             <button type="button" class="btn" [ngClass]="{'btn-success': arlobotSvc.webModel.masterRelayOn}"
                     (click)="sendSpecificSignalToArlobot('toggleMasterRelay')">Master Relay <span class="badge">{{arlobotSvc.webModel.masterRelayOn | boolToOnOff}}</span>
             </button>
-            <h1>Things To Add</h1>
-            <ul>
-                <li>Telementry from Remote Control site. Should it be another group?</li>
-            </ul>
         </accordion-group>
         <accordion-group heading="Telemetry">
-            <ul *ngFor='let entry of arlobotSvc.webModel.rosParameters | keys'>
-                <li>{{entry.key}}: {{entry.value}}</li>
-            </ul>
+            <p *ngIf="!arlobotSvc.webModel.ROSisRunning">These do not work until ROS is Running.</p>
+            <div *ngIf="arlobotSvc.webModel.ROSisRunning">
+            <span *ngFor='let entry of arlobotSvc.webModel.rosTopicItems'>
+                <button *ngIf="[false, true].indexOf(entry.status) != -1" type="button" class="btn"
+                        [ngClass]="entry.btnClass">{{entry.fancyName}} <span class="badge">{{entry.status}}</span>
+                </button>
+                <button *ngIf="[false, true].indexOf(entry.status) == -1" type="button" class="btn"
+                        [ngClass]="entry.btnClass">{{entry.fancyName}} <span class="badge">{{entry.status}}</span>
+                </button>
+            </span>
+            </div>
         </accordion-group>
         <accordion-group heading="Relays">
             <span *ngFor="let relay of arlobotSvc.webModel.relays">
             <button type="button" class="btn" [ngClass]="{'btn-success': relay.relayOn}"
                     (click)="sendDataToArlobot('toggleRelay', relay.number)"><span *ngIf="relay.name !== 'empty'">{{relay.fancyName}}</span><span
-                    *ngIf="relay.name === 'empty'">Relay {{relay.number}}</span> <span class="badge">{{relay.relayOn | boolToOnOff}}</span></button></span>
+                    *ngIf="relay.name === 'empty'">Relay {{relay.number}}</span> <span class="badge">{{relay.relayOn | boolToOnOff}}</span></button>
+            </span>
         </accordion-group>
         <accordion-group heading="Behavior">
             <div class="lcarish-toggle-button" id="talk-bequiet-button"
@@ -288,8 +293,6 @@
                     (click)="status.openStartup = true">Dangerous Doors Open <span class="badge">{{arlobotSvc.webModel.doorsOpen | boolToYesNo}}</span>
             </button>
             <!--https://github.com/JorgeArino/virtualjoystick.js-->
-            <p>Todo: Increase max speed or adjust rate so we can go faster if we want to without losing fine
-                control.</p>
             <button *ngIf="!arlobotSvc.webModel.doorsOpen && arlobotSvc.webModel.ROSisRunning" type="button"
                     class="btn btn-primary"
                     (click)="virtualJoystickFunction()">

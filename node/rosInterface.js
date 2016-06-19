@@ -169,8 +169,8 @@ var subscribeToActiveStatus = function () {
         }); // Obtain message.??? by running 'rosmsg show <messageType>'
         arlobot_arlo_status.subscribe(function (message) {
             for (let key in message) {
-                if (message.hasOwnProperty(key) && webModel.rosParameters.hasOwnProperty(key)) {
-                    webModelFunctions.updateRosParameter(key, message[key]);
+                if (message.hasOwnProperty(key)) {
+                    webModelFunctions.updateRosTopicItem(key, message[key]);
                 }
             }
         });

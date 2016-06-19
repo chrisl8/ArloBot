@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {BoolToYesNo} from './booleanToYesNo.pipe';
 import {BoolToOnOff} from './boolToOnOff.pipe';
 import {KeysPipe} from './keys.pipe';
+import {FancyName} from './fancyName.pipe';
 import {CORE_DIRECTIVES, FORM_DIRECTIVES} from '@angular/common';
 // http://stackoverflow.com/a/34546950/4982408
 import {ACCORDION_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
@@ -19,7 +20,7 @@ declare var VirtualJoystick:any;
     providers: [WebSocket, RosLibJS],
     directives: [ACCORDION_DIRECTIVES, CORE_DIRECTIVES, FORM_DIRECTIVES],
     templateUrl: 'arlobot.html',
-    pipes: [BoolToYesNo, BoolToOnOff, KeysPipe]
+    pipes: [BoolToYesNo, BoolToOnOff, KeysPipe, FancyName]
     /* Good stuff here:
      *http://www.syntaxsuccess.com/viewarticle/input-controls-in-angular-2.0
      *

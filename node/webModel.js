@@ -44,25 +44,27 @@ module.exports = {
         ignoreFloorSensors: false,
         monitorACconnection: true,
         mapName: null,
-        explorePaused: false,
-        // From ROS Topic /arlo_status
-        floorObstacle: false,
-        safeToRecede: true,
-        safeToProceed: true,
-        Escaping: false,
-        acPower: true,
-        gyroHeading: 0,
-        rightMotorPower: false,
-        minDistanceSensor: 3,
-        abd_speedLimit: 10,
-        abdR_speedLimit: 100,
-        leftMotorPower: false,
-        laptopBatteryPercent: 0,
-        robotBatteryLow: false,
-        Heading: 0,
-        robotBatteryLevel: 0,
-        cliff: false
+        explorePaused: false
     },
+    rosTopicItems: [
+        // From ROS Topic /arlo_status
+        {rosName: 'cliff', fancyName: 'Cliff Detected', status: '', btnClass: '', alertOn: true, alertBtnClass: 'btn-danger'},
+        {rosName: 'floorObstacle', fancyName: 'Floor Obstacle', status: '', btnClass: '', alertOn: true, alertBtnClass: 'btn-danger'},
+        {rosName: 'safeToRecede', fancyName: 'Safe To Recede', status: '', btnClass: '', alertOn: false, alertBtnClass: 'btn-danger'},
+        {rosName: 'safeToProceed', fancyName: 'Safe To Proceed', status: '', btnClass: '', alertOn: false, alertBtnClass: 'btn-danger'},
+        {rosName: 'Escaping', fancyName: 'Escaping', status: '', btnClass: '', alertOn: true, alertBtnClass: 'btn-danger'},
+        {rosName: 'minDistanceSensor', fancyName: 'Min Distance Sensor', status: '', btnClass: '', alertOn: false, alertBtnClass: 'btn-danger'},
+        {rosName: 'abd_speedLimit', fancyName: 'Forward Speed Limit', status: '', btnClass: '', alertOn: '<', alertValue: 100, alertBtnClass: 'btn-warning', specialCompare: true},
+        {rosName: 'abdR_speedLimit', fancyName: 'Reverse Speed Limit', status: '', btnClass: '', alertOn: '<', alertValue: 100, alertBtnClass: 'btn-warning', specialCompare: true},
+        {rosName: 'acPower', fancyName: 'AC Power', status: '', btnClass: '', alertOn: true, alertBtnClass: 'btn-danger'},
+        {rosName: 'Heading', fancyName: 'Heading', status: '', btnClass: '', alertOn: false, alertBtnClass: 'btn-danger'},
+        {rosName: 'gyroHeading', fancyName: 'Gyro Heading', status: '', btnClass: '', alertOn: false, alertBtnClass: 'btn-danger'},
+        {rosName: 'leftMotorPower', fancyName: 'Left Motor Power', status: '', btnClass: '', alertOn: false, alertBtnClass: 'btn-danger'},
+        {rosName: 'rightMotorPower', fancyName: 'Right Motor Power', status: '', btnClass: '', alertOn: false, alertBtnClass: 'btn-danger'},
+        {rosName: 'laptopBatteryPercent', fancyName: 'Laptop Battery Percent', status: '', btnClass: '', alertOn: false, alertBtnClass: 'btn-danger'},
+        {rosName: 'robotBatteryLevel', fancyName: 'Robot Battery Level', status: '', btnClass: '', alertOn: '<', alertValue: 12, alertBtnClass: 'btn-danger'},
+        {rosName: 'robotBatteryLow', fancyName: 'Robot Battery Low', status: '', btnClass: '', alertOn: true, alertBtnClass: 'btn-danger'}
+    ],
     unplugYourself: false, // Indicates that robot should unplug itself.
     wayPointNavigator: {
         wayPointName: undefined,

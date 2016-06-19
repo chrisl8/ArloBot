@@ -72,6 +72,37 @@ var updateRosParameter = function (key, value) {
 };
 exports.updateRosParameter = updateRosParameter;
 
+var updateRosTopicItem = function (key, value) {
+    if (key === 'robotBatteryLevel') {
+        value = value.toFixed(1);
+    }
+    let arrayIndex = webModel.rosTopicItems.findIndex(x=> x.rosName === key);
+    if (arrayIndex !== -1 && (webModel.rosTopicItems[arrayIndex].status !== value)) {
+        webModel.rosTopicItems[arrayIndex].status = value;
+        // Set alert classes:
+        if ([true, false].indexOf(webModel.rosTopicItems[arrayIndex].alertOn) === -1) {
+            let operators = {
+                '>': function(a, b) { return a > b },
+                '<': function(a, b) { return a < b },
+                // ...
+            };
+            if (operators[webModel.rosTopicItems[arrayIndex].alertOn](value, webModel.rosTopicItems[arrayIndex].alertValue)) {
+                webModel.rosTopicItems[arrayIndex].btnClass = webModel.rosTopicItems[arrayIndex].alertBtnClass
+            } else {
+                webModel.rosTopicItems[arrayIndex].btnClass = '';
+            }
+        } else {
+            if (value === webModel.rosTopicItems[arrayIndex].alertOn) {
+                webModel.rosTopicItems[arrayIndex].btnClass = webModel.rosTopicItems[arrayIndex].alertBtnClass
+            } else {
+                webModel.rosTopicItems[arrayIndex].btnClass = '';
+            }
+        }
+        emitter.emit('change', key, value);
+    }
+};
+exports.updateRosTopicItem = updateRosTopicItem;
+
 var updateWayPointNavigator = function (key, value) {
     if ((webModel.wayPointNavigator[key] != value)) {
         webModel.wayPointNavigator[key] = value;
