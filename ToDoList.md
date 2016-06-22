@@ -1,13 +1,9 @@
 ##TODO List:##
 
-Run this to see what it should see:
-rosrun tf tf_echo /map /base_link
-
-Run this to see what really happens:
-cd catkin_ws/src/ArloBot/node
-node getCurrentPosition.js
-
-Why doesn't it get the output of the rosrun command?
+Navigation:
+It needs to trust the camera over the odometry. It keeps getting twisted when the wheels slip and doesn't correct.
+When going to a waypoint it should do a "clear and rotate", but it doesn't.
+What is the timeout on waypoint navigation?
 
 Use these to put in some delay and idle checkers:
 var bootTime = new Date() // Time the node script was initialized
