@@ -75,6 +75,8 @@ exports.updateRosParameter = updateRosParameter;
 var updateRosTopicItem = function (key, value) {
     if (key === 'robotBatteryLevel') {
         value = value.toFixed(1);
+    } else if (key === 'Heading' || key === 'gyroHeading') {
+        value = value.toFixed(3);
     }
     let arrayIndex = webModel.rosTopicItems.findIndex(x=> x.rosName === key);
     if (arrayIndex !== -1 && (webModel.rosTopicItems[arrayIndex].status !== value)) {
