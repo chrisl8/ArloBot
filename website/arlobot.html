@@ -215,11 +215,6 @@
                     Auto Explore
                 </button>
             </div>
-            <div *ngIf="arlobotSvc.webModel.mapName !== '' && !arlobotSvc.webModel.autoExplore && arlobotSvc.webModel.ROSisRunning">
-                <button type="button" class="btn btn-warning" (click)="status.showDestinationPicker = true">
-                    Send Robot to Destination
-                </button>
-            </div>
             <button type="button" class="btn btn-success"
                     *ngIf="!arlobotSvc.webModel.ROSisRunning && (arlobotSvc.webModel.mapName !== '' || arlobotSvc.webModel.autoExplore)"
                     (click)="sendSpecificSignalToArlobot('clearMap')">
@@ -242,8 +237,8 @@
                             (click)="sendDataToArlobot('setMap', item)">{{item}}</button></li></span>
                 </ul>
             </div>
-            <div *ngIf="status.showDestinationPicker && arlobotSvc.webModel.mapName !== '' && !arlobotSvc.webModel.autoExplore && arlobotSvc.webModel.ROSisRunning">
-                <h3>Pick a destination:</h3>
+            <div *ngIf="arlobotSvc.webModel.mapName !== '' && !arlobotSvc.webModel.autoExplore && arlobotSvc.webModel.ROSisRunning && arlobotSvc.webModel.wayPoints.length > 0">
+                <h3>Send Robot To a Destination:</h3>
                 <ul>
                     <span *ngFor="let item of arlobotSvc.webModel.wayPoints"><li><button type="button"
                                                                                          class="btn btn-primary"
@@ -257,7 +252,7 @@
                            placeholder="Enter name for current location . . ." [(ngModel)]="newWaypointName"/>
                     <button type="button"
                             class="btn btn-primary" style="float: left;"
-                            (click)="sendDataToArlobot('setWayPoint', newWaypointName)">Set Waypoint
+                            (click)="sendDataToArlobot('setWayPoint', newWaypointName)">Save Current Location
                     </button>
                 </form>
             </div>
