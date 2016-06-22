@@ -8,26 +8,13 @@ module.exports = function (callback) {
 var runROScommand = function (callback) {
     var rawData;
     const wayPointName = arguments[1];
-    const process = spawn('rosrun', ['tf', 'tf_echo', '/map', '/base_link']);
+    const process = spawn('unbuffer', ['../scripts/getPositionHelperScript.sh']);
     process.stdout.on('data', (data) => {
-        //console.log(data);
         if (data.indexOf('Translation') !== -1) {
-            console.log(data);
-            rawData = data;
+            rawData = data.toString();
             process.kill();
         }
-        //        if (data.indexOf('Rotation') > -1) {
-        //            console.log(data);
-        //            process.kill();
-        //        }
     });
-    //    process.stderr.setEncoding('utf8');
-    //    process.stderr.on('data', function(data) {
-    //
-    //    });
-    //    process.on('error', function(err) {
-    //
-    //    });
 
     /*
      If I get the CURRENT position and send it, it should stay still, right?
