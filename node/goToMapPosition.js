@@ -1,13 +1,13 @@
 var spawn = require('child_process').spawn;
 
-module.exports = function(position) {
-    var process = spawn('unbuffer', ['rosservice', 'call', '/arlobot_goto/go_to_goal', position]);
+const goToMapPosition = function(position) {
+    var process = spawn('unbuffer', ['../scripts/gotoMapPositionHelperScript.sh', position]);
     process.stdout.setEncoding('utf8');
     process.stdout.on('data', function(data) {
         console.log(data);
     });
-    process.on('exit', function(code) {
-        console.log('Done.');
+    process.on('close', function(code) {
+        console.log(`Done: ${code}`);
     });
     this.process.stderr.setEncoding('utf8');
     this.process.stderr.on('data', function(data) {
@@ -17,3 +17,8 @@ module.exports = function(position) {
         console.log(self.name + ' error:' + err);
     });
 };
+module.exports = goToMapPosition;
+
+if (require.main === module) {
+    goToMapPosition(process.argv[2]);
+}
