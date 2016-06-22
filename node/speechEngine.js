@@ -183,7 +183,7 @@ function talkAboutEvents(key, value) {
         }
         if (eventModel[key] && howManySecondsSince(lastSpoke) >= eventModel[key].delay) {
             // and if we've already said it too recently we should say something else or skip it.
-            if (howManySecondsSince(eventInMemoryObject[key][value].lastSaid) >= eventModel[key].repeatInterval) {
+            if (eventInMemoryObject[key][value] && howManySecondsSince(eventInMemoryObject[key][value].lastSaid) >= eventModel[key].repeatInterval) {
                 tts(getSomethingToSay(eventModel[key], eventInMemoryObject[key], value));
                 lastSpoke = new Date();
                 eventInMemoryObject[key][value].lastSaid = new Date();
