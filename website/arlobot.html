@@ -1,6 +1,7 @@
 <!--Accordian info: http://valor-software.com/ng2-bootstrap/-->
 <div id="decorative-border">
-    <p id="status-line">{{arlobotSvc.webModel.status}}&nbsp;&nbsp;{{arlobotSvc.webModel.behaviorStatus}}
+    <h1 style="text-align: center; font-weight: bold" *ngIf="arlobotSvc.webModel.status === 'Robot offline.'">Robot is Offline!</h1>
+    <p id="status-line" *ngIf="arlobotSvc.webModel.status != 'Robot offline.'">{{arlobotSvc.webModel.status}}&nbsp;&nbsp;{{arlobotSvc.webModel.behaviorStatus}}
         <span style="float: right;">
         <button type="button" class="btn btn-danger" *ngIf="!arlobotSvc.webModel.haltRobot"
                 (click)="sendSpecificSignalToArlobot('haltRobot')">Emergency STOP
@@ -10,7 +11,7 @@
         </button>
             </span>
     </p>
-    <accordion [closeOthers]="oneAtATime">
+    <accordion [closeOthers]="oneAtATime" *ngIf="arlobotSvc.webModel.status != 'Robot offline.'">
         <accordion-group heading="Status"
                          [isOpen]="status.isFirstOpen"
                          [isDisabled]="status.isFirstDisabled">
