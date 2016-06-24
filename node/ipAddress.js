@@ -1,4 +1,5 @@
 var ipAddress = function () {
+    var ip = false;
     var firstInterface = undefined;
     // require('os').networkInterfaces().wlan0[0].address;
     var interfaces = require('os').networkInterfaces();
@@ -7,7 +8,10 @@ var ipAddress = function () {
             firstInterface = interface;
         }
     }
-    return interfaces[firstInterface][0].address;
+    if (firstInterface) {
+        ip = interfaces[firstInterface][0].address;
+    }
+    return ip;
 };
 exports.ipAddress = ipAddress;
 if (require.main === module) {

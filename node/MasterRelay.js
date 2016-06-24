@@ -64,8 +64,7 @@ var usbRelay = function (operation, runFromCommandLine) {
 
                 portObj.open(function (error) {
                     if (error) {
-                        console.error('Failed to open port: ' + error);
-                        process.exit(1);
+                        console.log('Master Relay Error: ' + error);
                     } else {
                         if (operation === 'read') {
                             portObj.write("relay read 0\r", function (err, result) {
