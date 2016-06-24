@@ -18,7 +18,7 @@ then
     exit 1
 fi
 
-pgrep -f robot.launch
+pgrep -f robot.launch > /dev/null
 if [ $? -eq 0 ]
 then
     if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true  ]
