@@ -10,6 +10,7 @@ src/CMakeLists.txt
 node/node_modules/
 node/build/
 scripts/mjpg-streamer/
+scripts/meld/
 node/public/lcars/
 website/xscreen.png
 website/xscreenOld.png

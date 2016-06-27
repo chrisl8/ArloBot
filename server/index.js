@@ -36,10 +36,30 @@ getRedisMessages.on('error', function (err) {
 // and doesn't require it as a part of its basic function.
 
 var express = require('express');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+var RedisStore = require('connect-redis')(session); // Express.js says NOT to use their session store for production.
 
 // Fancy Express Web Server
 // All of my "static" web pages are in the public folder
 var app = express();
+app.disable('x-powered-by'); // Do not volunteer system info!
+
+app.use(session({
+    store: new RedisStore({
+        host: 'localhost',
+        prefix: 'robot-site-sessions'
+    }),
+    secret: '0sRqRRX3XIyhssWPNBj2LWDjfmmIgEYuk8zXkTWrYpL4c38vSdNf32whnEsFuoDR',
+    saveUninitialized: false, // True for built in, false for redis-connect
+    resave: false
+}));
+app.use(cookieParser());
+
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
+
+app.use(express.static(__dirname + '/public'));
 
 // For parsing Post data
 var bodyParser = require('body-parser');
@@ -112,11 +132,13 @@ function robotById(id) {
 
 app.use(express.static(__dirname + '/public'));
 
+// Public Robot Front Page
 app.get('/', function (req, res) {
-    // TODO: Use the websocket based status ("is robot online?")
-    // to determine if the robot IS online and provide a "landing page"
-    // if it isn't, instead of dumping the user to a broken link.
-    // ALSO, maybe clear this link when robot is offline.
+    res.render('landingPage');
+});
+
+// Redirect to local robot URL
+app.get('/redirect', function (req, res) {
     var clientResponse = res;
     // Default, hoping you named your computer 'arlobot',
     // and that the name can be resolved on your network.
