@@ -12,6 +12,21 @@ var arloBot = redis.createClient(6379, redisServer, {});
 // cannot issue any commands once it is subscribed.
 var getRedisMessages = redis.createClient(6379, redisServer, {});
 
+const chatbot = require('./chatbot');
+
+var mongoose = require('mongoose');
+var passport = require('passport');
+var flash = require('connect-flash');
+
+var morgan = require('morgan');
+
+var configDB = {
+    url: 'mongodb://localhost:27017/passport'
+};
+mongoose.connect(configDB.url);
+
+require('./config/passport')(passport); // pass passport for configuration
+
 // What if the redis server doesn't exist?
 //var failedRedis = redis.createClient(6379, 'pi', {});
 // Be sure to have an on.('error' handler!
@@ -45,12 +60,13 @@ var RedisStore = require('connect-redis')(session); // Express.js says NOT to us
 var app = express();
 app.disable('x-powered-by'); // Do not volunteer system info!
 
+app.use(morgan('dev')); // log every request to the console
 app.use(session({
     store: new RedisStore({
         host: 'localhost',
         prefix: 'robot-site-sessions'
     }),
-    secret: '0sRqRRX3XIyhssWPNBj2LWDjfmmIgEYuk8zXkTWrYpL4c38vSdNf32whnEsFuoDR',
+    secret: personalData.cloudServer.sessionSecret,
     saveUninitialized: false, // True for built in, false for redis-connect
     resave: false
 }));
@@ -68,6 +84,14 @@ app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
     extended: true
 }));
 
+app.use(passport.initialize());
+app.use(passport.session()); // persistent login sessions
+app.use(flash()); // use connect-flash for flash messages stored in session
+
+// routes ======================================================================
+require('./app/routes.js')(app, passport); // load our routes and pass in our app and fully configured passport
+//
+
 var robotSubscribers = [];
 var Robot = require('./Robot');
 var port = process.env.PORT || 3003;
@@ -77,12 +101,13 @@ var socket = require('socket.io').listen(webServer);
 
 function sendOldMessages() {
     if (robotSubscribers.length > 0) {
-        client.lpop('twilio', function(listName, item) {
+        client.lpop('twilio', function (listName, item) {
             if (item !== null) {
-            console.log(item);
-            socket.sockets.emit('oldMessage', item);
-            sendOldMessages();
-        }});
+                console.log(item);
+                socket.sockets.emit('oldMessage', item);
+                sendOldMessages();
+            }
+        });
     }
 }
 
@@ -91,7 +116,7 @@ socket.sockets.on('connection', onSocketConnection);
 function onSocketConnection(client) {
     console.log('Socket connection started:');
     //console.log(client);
-    
+
     client.on('new robot', onNewRobot);
     client.on('disconnect', onClientDisconnect);
 }
@@ -122,7 +147,7 @@ function onClientDisconnect() {
 
 function robotById(id) {
     var i;
-    for (i=0; i < robotSubscribers.length; i++) {
+    for (i = 0; i < robotSubscribers.length; i++) {
         if (robotSubscribers[i].id === id) {
             return robotSubscribers[i];
         }
@@ -131,11 +156,6 @@ function robotById(id) {
 }
 
 app.use(express.static(__dirname + '/public'));
-
-// Public Robot Front Page
-app.get('/', function (req, res) {
-    res.render('landingPage');
-});
 
 // Redirect to local robot URL
 app.get('/redirect', function (req, res) {
@@ -153,6 +173,48 @@ app.get('/redirect', function (req, res) {
             console.log('robotURL: ' + res);
         }
         clientResponse.redirect(robotURL);
+    });
+});
+
+// var talkParams = {
+//     client_name: YOUR_CLIENT_NAME,
+//     sessionid: YOUR_SESSION_ID,
+//     input: YOUR_INPUT,
+//     extra: BOOLEAN,
+//     trace: BOOLEAN,
+//     recent: BOOLEAN
+// };
+
+// Chatbot
+const fs = require('fs');
+const reBracketText = /\[(.*?)\]/g;
+app.post('/chat', function (req, res) {
+    console.log(req.body);
+    res.setHeader('Content-Type', 'application/json');
+    // bot.talk(talkParams, function (err, res) {
+    chatbot.talk({input: req.body.say, sessionid: req.body.sessionid}, function (error, chatbotResponse) {
+        if (error || chatbotResponse.status === 'error') {
+            console.log(error, chatbotResponse.status);
+            res.send(JSON.stringify({botsay: "Sorry, I'm confused and lost."}));
+        } else {
+            console.log(chatbotResponse.responses);
+            let thisResponse = 'Sorry, come again?';
+            if (chatbotResponse.responses.length > 0) {
+                thisResponse = chatbotResponse.responses[0];
+                let variableArray = thisResponse.match(reBracketText);
+                if (variableArray && variableArray.length > 0) {
+                    console.log(`Variables: `);
+                    for (let i = 0; i < variableArray.length; i++) {
+                        console.log(variableArray[i].replace(/[\[,\]]/g, ''));
+                    }
+                }
+            }
+            console.log(thisResponse);
+            res.send(JSON.stringify({botsay: thisResponse, sessionid: chatbotResponse.sessionid}));
+        }
+        if (chatbotResponse.sessionid) {
+            fs.appendFile(`chatlogs/${chatbotResponse.sessionid}.log`, `Input: ${req.body.say}\nTwoFlower: ${chatbotResponse.responses[0]}\n`);
+        }
     });
 });
 
@@ -192,7 +254,7 @@ app.post('/updateRobotURL', function (req, res) {
     }
 });
 
-app.post('/twilio', function(request, response) {
+app.post('/twilio', function (request, response) {
     if (twilio.validateExpressRequest(request, personalData.twilio.auth_token, {url: personalData.twilio.smsWebhook})) {
         var messageForRedis = {
             smsText: request.body.Body,
@@ -216,4 +278,3 @@ app.post('/twilio', function(request, response) {
         response.sendStatus(403);
     }
 });
-
