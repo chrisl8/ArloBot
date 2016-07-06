@@ -1,14 +1,16 @@
-var personalData = require('./personalData');
-var webModel = require('./webModel');
+'use strict';
+const personalData = require('./personalData');
+const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
 const Camera = require('./Camera');
-var camera = new Camera('Camera', personalData.camera0name);
+/** @namespace personalData.camera0name */
+const camera = new Camera('Camera', personalData.camera0name);
 var robotModel = require('./robotModel');
 const LaunchScript = require('./LaunchScript');
 const tts = require('./tts');
 
 const WayPoints = require('./WayPoints.js');
-var wayPointEditor = new WayPoints();
+const wayPointEditor = new WayPoints();
 
 const rosInterface = require('./rosInterface');
 const fs = require('fs');
@@ -18,20 +20,23 @@ const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 // Because Express.js says not to use their session store for production.
 const jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
-var cookieParser = require('cookie-parser');
+const cookieParser = require('cookie-parser');
 
 const spawn = require('child_process').spawn;
 const bodyParser = require('body-parser');
 const masterRelay = require('./MasterRelay');
 const UsbRelay = require('./UsbRelayControl');
-var usbRelay = new UsbRelay();
+const usbRelay = new UsbRelay();
 
 const updateMapList = require('./updateMapList');
 updateMapList();
 
-var app = express();
+const app = express();
 app.use(cookieParser());
-let hour = 3600000;
+const hour = 3600000;
+/** @namespace personalData.webSiteSettings */
+//noinspection JSCheckFunctionSignatures
+/** @namespace personalData.webSiteSettings.sessionSecret */
 app.use(session({
     store: new RedisStore({
         host: 'localhost',
@@ -62,11 +67,13 @@ app.use(bodyParser.urlencoded({
 app.post('/', function (req, res) {
     // Allow for local plaintext password (in case we are offline) by creating and sending ourselves a token.
     // This is kind of overkill, but I did it to test the system locally before building it remotely.
+    /** @namespace personalData.webSiteSettings.basicAuthPassword */
     if (req.body.name && req.body.password === personalData.webSiteSettings.basicAuthPassword) {
         /* Token help:
          https://stormpath.com/blog/nodejs-jwt-create-verify
          https://scotch.io/tutorials/authenticate-a-node-js-api-with-json-web-tokens
          */
+        /** @namespace personalData.webSiteSettings.tokenSecret */
         var token = jwt.sign({name: req.body.name}, personalData.webSiteSettings.tokenSecret, {
             expiresIn: '24h'
         });
@@ -116,6 +123,7 @@ app.post('/', function (req, res) {
 
 // Require session for all pages unless personalData.webSiteSettings.requirePassword is OFF:
 app.use(function (req, res, next) {
+    /** @namespace personalData.webSiteSettings.requirePassword */
     if (req.url === '/basicLogin.html' || !personalData.webSiteSettings.requirePassword) {
         next();
     } else {
@@ -147,9 +155,8 @@ var handleSemaphoreFiles = require('./handleSemaphoreFiles');
 handleSemaphoreFiles.readSemaphoreFiles();
 
 var saveMap = function (newMapName) {
-    //TODO: mapDir should be defined less statically, no?
     var mapDir = process.env.HOME + '/.arlobot/rosmaps/';
-    serverMapProcess = new LaunchScript({
+    let serverMapProcess = new LaunchScript({
         name: 'SaveMap',
         callback: updateMapList,
         ROScommand: 'rosrun map_server map_saver -f ' + mapDir + newMapName,
@@ -200,7 +207,7 @@ var stopLogStreamer = function () {
     process.on('error', function (err) {
         //console.log(err);
     });
-    process.on('exit', function (code) {
+    process.on('exit', function () { // Argument Options: code
         //console.log(code);
         webModelFunctions.scrollingStatusUpdate('Log streamer killed');
         webModelFunctions.update('logStreamerRunning', false);
@@ -269,6 +276,7 @@ var stopColorFollower = function () {
 };
 
 function start() {
+    /** @namespace personalData.webServerPort */
     var webServer = app.listen(personalData.webServerPort);
     var io = require("socket.io").listen(webServer);
 

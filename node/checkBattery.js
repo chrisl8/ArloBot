@@ -1,16 +1,16 @@
 'use strict';
-var exec = require('child_process').exec;
-var personalData = require('./personalData');
-var webModel = require('./webModel');
-var webModelFunctions = require('./webModelFunctions');
+const exec = require('child_process').exec;
+const personalData = require('./personalData');
+const webModel = require('./webModel');
+const webModelFunctions = require('./webModelFunctions');
 var working = false;
 
-var checkBattery = function (logIt) {
+const checkBattery = function (logIt) {
     if (!working) {
         working = true;
-        var batteryCommand = '/usr/bin/upower -d';
+        const batteryCommand = '/usr/bin/upower -d';
         var collectedData = '';
-        var batteryCheck = exec(batteryCommand);
+        const batteryCheck = exec(batteryCommand);
         batteryCheck.stdout.on('data', (data) => {
             collectedData += data;
         });
@@ -45,6 +45,7 @@ var checkBattery = function (logIt) {
     }
 };
 module.exports = checkBattery;
+
 if (require.main === module) {
     // Run the function if this is called directly instead of required.
     checkBattery(true);

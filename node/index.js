@@ -1,14 +1,14 @@
 // 'use strict'; // I cannot do this until b3 is fixed. See the b3 = {}; line below.
-var personalData = require('./personalData');
-var webModel = require('./webModel');
+const personalData = require('./personalData');
+const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
 webModelFunctions.update('robotName', personalData.robotName);
-var robotModel = require('./robotModel');
+const robotModel = require('./robotModel');
 const speechEngine = require('./speechEngine');
 const checkBattery = require('./checkBattery');
 const masterRelay = require('./MasterRelay');
 const UsbRelay = require('./UsbRelayControl');
-var usbRelay = new UsbRelay();
+const usbRelay = new UsbRelay();
 const howManySecondsSince = require('./howManySecondsSince');
 const Stochator = require('stochator');
 const fs = require('fs');
@@ -45,14 +45,14 @@ if (personalData.useBlueToothBeacon) {
 }
 const SocketServerSubscriber = require('./SocketServerSubscriber');
 const RemoteMessageHandler = require('./RemoteMessageHandler');
-var remoteMessageHandler = new RemoteMessageHandler();
-var socketServerSubscriber = new SocketServerSubscriber(remoteMessageHandler.handleMessage);
+const remoteMessageHandler = new RemoteMessageHandler();
+const socketServerSubscriber = new SocketServerSubscriber(remoteMessageHandler.handleMessage);
 socketServerSubscriber.start();
 
 const WayPoints = require('./WayPoints.js');
-var wayPointEditor = new WayPoints();
+const wayPointEditor = new WayPoints();
 
-var arloTree = new b3.BehaviorTree();
+const arloTree = new b3.BehaviorTree();
 
 rosInterface.start();
 

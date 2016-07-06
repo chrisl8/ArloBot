@@ -33,7 +33,7 @@ version=`lsb_release -sc`
 
 printf "\n${YELLOW}[Checking the Ubuntu version]${NC}\n"
 printf "${BLUE}Ubuntu ${version} found${NC}\n"
-case $version in
+case ${version} in
   "wily" | "xenial")
 ;;
 *)
@@ -109,7 +109,7 @@ if ! [ -d ~/catkin_ws/src ]
     catkin_init_workspace
     cd ~/catkin_ws/
     catkin_make
-    source ~/catkin_ws/devel/setup.bash
+    source ${HOME}/catkin_ws/devel/setup.bash
     rospack profile
 fi
 
@@ -213,7 +213,7 @@ fi
 printf "\n${YELLOW}[NOT Building ROS Source files.]${NC}\n"
 printf "${BLUE}The ArloBot source will not build in Kinetic yet.${NC}\n"
 printf "${BLUE}The unbuilt files are enough to allow RVIZ and other GUI tools to work.${NC}\n"
-source ~/catkin_ws/devel/setup.bash
+source ${HOME}/catkin_ws/devel/setup.bash
 
 # We will use ~/.arlobot to store "private" data
 # That is data that doesn't need to be part of
