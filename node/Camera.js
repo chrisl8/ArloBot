@@ -1,17 +1,19 @@
-var personalData = require('./personalData');
-var webModel = require('./webModel');
-var webModelFunctions = require('./webModelFunctions');
-var robotModel = require('./robotModel');
+'use strict';
+const personalData = require('./personalData');
+const webModel = require('./webModel');
+const webModelFunctions = require('./webModelFunctions');
 const spawn = require('child_process').spawn;
-var ipAddress = require('./ipAddress');
+const ipAddress = require('./ipAddress');
 const masterRelay = require('./MasterRelay');
 const UsbRelay = require('./UsbRelayControl');
-var usbRelay = new UsbRelay();
+const usbRelay = new UsbRelay();
 
-module.exports = class Camera {
-    constructor(cameraName, model) {
+class Camera {
+    /** @namespace personalData.relays.has_fiveVolt */
+    /** @namespace personalData.useMasterPowerRelay */
+    constructor(cameraName, cameraModel) {
         this.cameraName = cameraName;
-        this.model = model;
+        this.cameraModel = cameraModel;
         this.video = '/dev/video0'; // Default, but findAndSwitchOn() will set this.
         this.robotIP = ipAddress.ipAddress();
         this.originalVideoSource = webModel.videoSource;
@@ -31,7 +33,7 @@ module.exports = class Camera {
         /* Logitech c615 resolution is 1280 x 720 (or HD if you want but I don't want to eat the bandwidth)
            http://www.logitech.com/en-us/product/hd-webcam-c615
         */
-        const process = spawn('mjpg_streamer', ['-i', '/usr/local/lib/input_uvc.so -d ' + this.video + ' -n -f 30 -r 1280x720', '-o', '/usr/local/lib/output_http.so -p 58180 -w ../scripts/mjpg-streamer/mjpg-streamer/www']);
+        const process = spawn('/usr/local/bin/mjpg_streamer', ['-i', '/usr/local/lib/input_uvc.so -d ' + this.video + ' -n -f 30 -r 1280x720', '-o', '/usr/local/lib/output_http.so -p 58180 -w ../scripts/mjpg-streamer/mjpg-streamer/www']);
         process.stdout.on('data', (data) => {
             console.log(`${this.cameraName} stdout: ${data}`);
         });
@@ -72,8 +74,8 @@ module.exports = class Camera {
             webModelFunctions.scrollingStatusUpdate('Camera will be up soon . . .');
         }
         setTimeout(() => {
-            webModelFunctions.scrollingStatusUpdate('Finding Camera ' + this.model);
-            const process = spawn(__dirname + '/../scripts/find_camera.sh', [this.model]);
+            webModelFunctions.scrollingStatusUpdate('Finding Camera ' + this.cameraModel);
+            const process = spawn(__dirname + '/../scripts/find_camera.sh', [this.cameraModel]);
             process.stdout.on('data', (data) => {
                 this.dataHolder = data;
             });
@@ -83,9 +85,17 @@ module.exports = class Camera {
                     this.video = this.dataHolder;
                     this.switchOn();
                 } else {
-                    webModelFunctions.scrollingStatusUpdate(`${this.model} search failed with code: ${code}`);
+                    webModelFunctions.scrollingStatusUpdate(`${this.cameraModel} search failed with code: ${code}`);
                 }
             });
         }, delayForUsb * 1000);
     }
-};
+}
+module.exports = Camera;
+
+if (require.main === module) {
+    // Run the function if this is called directly instead of required.
+    const Camera = require('./Camera');
+    const camera = new Camera('Camera', personalData.camera0name);
+    camera.switchOn();
+}
