@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <!-- page info -->
+    <title>TwoFlower</title>
+
+    <link href="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/css/bootstrap.css" rel="stylesheet" >
+    <link rel="icon" href="/favicon.ico?v=2" />
+</head>
+
+<body>
+<section id="main">
+
+    <div class="container">
+
+        <div class="row page">
+            <div class="col-sm-12 col-md-6">
+                <div id="chat-window">
+                </div>
+		<h1>TwoFlower</h1>
+		<p>Chat with TwoFlower and see how it works out.</p>
+                <div class="say bot">&nbsp;</div>
+                <div class="input-group say-box">
+                    <input type="text" autocomplete="off" class="form-control" id="say" placeholder="Talk to me..." autofocus="autofocus">
+                    <span class="input-group-btn">
+                        <button class="btn btn-success" id="talk-button" type="button">Talk</button>
+                    </span>
+                </div><!-- /input-group -->
+            </div>
+        </div>
+    </div><!-- /container -->
+</section> <!-- /main-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://www.atlasestateagents.co.uk/javascript/tether.min.js"></script><!-- Tether for Bootstrap -->
+<script src="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/js/bootstrap.js" crossorigin="anonymous"></script>
+<script src="chat.js" type="text/javascript"></script>
+</body>
+</html>
+
