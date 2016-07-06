@@ -176,14 +176,14 @@ if ! [ -f ${HOME}/Desktop/listen2robot.desktop ]
     echo "Comment=Listen to robot" >> ${HOME}/Desktop/listen2robot.desktop
     if (which lxterminal)
         then
-        echo "Exec=lxterminal --command \"${HOME}/catkin_ws/src/Metatron/scripts/listenToArlobot.sh\"" >> ${HOME}/Desktop/listen2robot.desktop
+        echo "Exec=lxterminal --command \"${HOME}/catkin_ws/src/ArloBot/scripts/listenToArlobot.sh\"" >> ${HOME}/Desktop/listen2robot.desktop
     elif (which gnome-terminal)
         then
-        echo "Exec=gnome-terminal --command \"${HOME}/catkin_ws/src/Metatron/scripts/listenToArlobot.sh\"" >> ${HOME}/Desktop/listen2robot.desktop
+        echo "Exec=gnome-terminal --command \"${HOME}/catkin_ws/src/ArloBot/scripts/listenToArlobot.sh\"" >> ${HOME}/Desktop/listen2robot.desktop
     fi
-    echo "Icon=${HOME}/catkin_ws/src/Metatron/node/public/icons/mstile-70x70.png" >> ${HOME}/Desktop/listen2robot.desktop
+    echo "Icon=${HOME}/catkin_ws/src/ArloBot/node/public/icons/mstile-70x70.png" >> ${HOME}/Desktop/listen2robot.desktop
     echo "Type=Application" >> ${HOME}/Desktop/listen2robot.desktop
-    echo "Path=${HOME}/catkin_ws/src/Metatron/scripts/" >> ${HOME}/Desktop/listen2robot.desktop
+    echo "Path=${HOME}/catkin_ws/src/ArloBot/scripts/" >> ${HOME}/Desktop/listen2robot.desktop
     echo "Terminal=false" >> ${HOME}/Desktop/listen2robot.desktop
     chmod +x ${HOME}/Desktop/listen2robot.desktop
 fi
@@ -198,14 +198,14 @@ if ! [ -f ${HOME}/Desktop/RVIZ.desktop ]
     echo "Comment=RVIZ" >> ${HOME}/Desktop/RVIZ.desktop
     if (which lxterminal)
         then
-        echo "Exec=lxterminal --command \"bash -ci ${HOME}/catkin_ws/src/Metatron/scripts/view-navigation.sh\"" >> ${HOME}/Desktop/RVIZ.desktop
+        echo "Exec=lxterminal --command \"bash -ci ${HOME}/catkin_ws/src/ArloBot/scripts/view-navigation.sh\"" >> ${HOME}/Desktop/RVIZ.desktop
     elif (which gnome-terminal)
         then
-        echo "Exec=gnome-terminal --command \"bash -ci ${HOME}/catkin_ws/src/Metatron/scripts/view-navigation.sh\"" >> ${HOME}/Desktop/RVIZ.desktop
+        echo "Exec=gnome-terminal --command \"bash -ci ${HOME}/catkin_ws/src/ArloBot/scripts/view-navigation.sh\"" >> ${HOME}/Desktop/RVIZ.desktop
     fi
-    echo "Icon=${HOME}/catkin_ws/src/Metatron/node/public/icons/mstile-70x70.png" >> ${HOME}/Desktop/RVIZ.desktop
+    echo "Icon=${HOME}/catkin_ws/src/ArloBot/node/public/icons/mstile-70x70.png" >> ${HOME}/Desktop/RVIZ.desktop
     echo "Type=Application" >> ${HOME}/Desktop/RVIZ.desktop
-    echo "Path=${HOME}/catkin_ws/src/Metatron/scripts/" >> ${HOME}/Desktop/RVIZ.desktop
+    echo "Path=${HOME}/catkin_ws/src/ArloBot/scripts/" >> ${HOME}/Desktop/RVIZ.desktop
     echo "Terminal=false" >> ${HOME}/Desktop/RVIZ.desktop
     chmod +x ${HOME}/Desktop/RVIZ.desktop
 fi
@@ -228,10 +228,10 @@ ARLOHOME=${HOME}/.arlobot
 
 if [ -e ${ARLOHOME}/personalDataForBehavior.json ]
     then
-    node ~/catkin_ws/src/Metatron/node/personalData.js
+    node ~/catkin_ws/src/ArloBot/node/personalData.js
 else
     printf "\n"
-    cp ~/catkin_ws/src/Metatron/scripts/dotarlobot/personalDataForBehavior.json ${ARLOHOME}/
+    cp ~/catkin_ws/src/ArloBot/scripts/dotarlobot/personalDataForBehavior.json ${ARLOHOME}/
     printf "${GREEN}A brand new ${RED}~/.arlobot/personalDataForBehavior.json${GREEN} file has been created,${NC}\n"
     printf "${LIGHTPURPLE}Please edit this file to customize according to your robot!${NC}\n"
 fi
@@ -260,5 +260,5 @@ printf "\n${PURPLE}Anytime you want to update ArloBot code from the web you can 
 printf "\n${YELLOW}-----------------------------------${NC}\n"
 printf "${YELLOW}ALL DONE! REBOOT AND TRY RVIZ${NC}\n"
 printf "${BLUE}Fire up your Arlobot on its machine, and then try these on here:${NC}\n"
-printf "${BLUE}~/catkin_ws/src/Metatron/scripts/view-navigation.sh${NC}\n"
+printf "${BLUE}~/catkin_ws/src/ArloBot/scripts/view-navigation.sh${NC}\n"
 printf "${BLUE}rqt_graph${NC}\n"
