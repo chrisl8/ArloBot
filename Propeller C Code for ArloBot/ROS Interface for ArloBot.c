@@ -770,7 +770,8 @@ void pollGyro(void *par) {
    2. Make sure "escape" operations are fast and accurate.
    */
    void safetyOverride(void *par) {
-    int throttleRamp = 0;
+    int increaseThrottleRamp = 0;
+    int decreaseThrottleRamp = 0;
     // Declare all variables up front so they do not have to be created in the loop, only set.
     // This may or may not improve performance.
     int blockedSensor[NUMBER_OF_PING_SENSORS] = {0};
@@ -783,6 +784,7 @@ void pollGyro(void *par) {
             blockedR = 0;
             pleaseEscape = 0;
             minDistance = 255;
+            minRDistance = 255;
 
             #ifdef hasCliffSensors
             foundCliff = 0;
@@ -1023,18 +1025,18 @@ void pollGyro(void *par) {
                 }
                 // Ramp and limit affect of random hits
                 if (newSpeedLimit > abd_speedLimit) {
-                    if (throttleRamp == THROTTLE_STOP) {
+                    if (increaseThrottleRamp == INCREASE_THROTTLE_RATE) {
                         abd_speedLimit = abd_speedLimit + 1;
                     }
                 } else if (newSpeedLimit < abd_speedLimit) {
-                    if (throttleRamp == THROTTLE_STOP) {
+                    if (decreaseThrottleRamp == DECREASE_THROTTLE_RATE) {
                         abd_speedLimit = abd_speedLimit - 1;
                     }
                 }
             } else {
                 // Ramp return to full if all obstacles are clear
                 if (abd_speedLimit < 100) {
-                    if (throttleRamp == THROTTLE_STOP) // Slow ramping down
+                    if (increaseThrottleRamp == INCREASE_THROTTLE_RATE) // Slow ramping up
                         abd_speedLimit = abd_speedLimit + 1;
                 }
             }
@@ -1052,18 +1054,18 @@ void pollGyro(void *par) {
                 }
                 // Ramp and limit affect of random hits
                 if (newSpeedLimit > abdR_speedLimit) {
-                    if (throttleRamp == THROTTLE_STOP) {
+                    if (increaseThrottleRamp == INCREASE_THROTTLE_RATE) {
                         abdR_speedLimit = abdR_speedLimit + 1;
                     }
                 } else if (newSpeedLimit < abdR_speedLimit) {
-                    if (throttleRamp == THROTTLE_STOP) {
+                    if (decreaseThrottleRamp == DECREASE_THROTTLE_RATE) {
                         abdR_speedLimit = abdR_speedLimit - 1;
                     }
                 }
             } else {
                 // Ramp return to full if all obstacles are clear
                 if (abdR_speedLimit < 100) {
-                    if (throttleRamp == THROTTLE_STOP) // Slow ramping down
+                    if (increaseThrottleRamp == INCREASE_THROTTLE_RATE) // Slow ramping up
                         abdR_speedLimit = abdR_speedLimit + 1;
                 }
             }
@@ -1178,9 +1180,12 @@ void pollGyro(void *par) {
                 }
             }
 
-            throttleRamp = throttleRamp + 1;
-            if(throttleRamp > THROTTLE_STOP)
-                throttleRamp = 0;
+            increaseThrottleRamp = increaseThrottleRamp + 1;
+            if(increaseThrottleRamp > INCREASE_THROTTLE_RATE)
+                increaseThrottleRamp = 0;
+            decreaseThrottleRamp = decreaseThrottleRamp + 1;
+            if(decreaseThrottleRamp > DECREASE_THROTTLE_RATE)
+                decreaseThrottleRamp = 0;
 
         } else {
             /* All limits and blocks must be cleared if we are going to ignore

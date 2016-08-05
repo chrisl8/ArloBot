@@ -26,8 +26,9 @@ By using the #define lines, code for items you do not have is never seen by the 
 // What is the minimum speed that the speed limiter should set the robot to?
 #define MINIMUM_SPEED 10
 // THROTTLE_STOP determines how quickly the speed limit is changed.
-// Make this number bigger to allow the speed to change more rapidly.
-#define THROTTLE_STOP 5
+// Make this number bigger to cause the speed to change more slowly.
+#define INCREASE_THROTTLE_RATE 50
+#define DECREASE_THROTTLE_RATE 5
 
 // QUESTION: Does your robot have a 2nd Propeller "QuickStart" board where the PING sensors are connected?
 //#define hasQuickStartBoard
@@ -39,7 +40,7 @@ By using the #define lines, code for items you do not have is never seen by the 
 // SETTING: Which pin on the Activity Board is the TX pin connected in from the QuickStart board?
 #define QUICKSTART_TX_PIN 6
 
-// Settings for PING and IR (Infrared) sensors connected DIRECLTY to the Activity Board:
+// Settings for PING and IR (Infrared) sensors connected DIRECTLY to the Activity Board:
 // SETTING: Which pin on the Activity Board is the first PING sensor connected to?
 #define FIRST_PING_SENSOR_PIN 5
 
@@ -211,7 +212,7 @@ Do not try to use it with ROS, as the extra output will confuse it. */
 //#define debugModeOn
 
 /* You can disable this for use with the
-/home/chrisl8/catkin_ws/src/ArloBot/scripts/direct2PropSerialTest.sh
+~/catkin_ws/src/ArloBot/scripts/direct2PropSerialTest.sh
 script in order to disable the normal sensor data lines.
 Sometimes this is helpful to clean up the output for debugging.
 This MUST be enabled for ROS to work though!
