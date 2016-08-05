@@ -66,6 +66,15 @@
             </span>
         </accordion-group>
         <accordion-group heading="Behavior">
+            <div class="lcarish-toggle-button" id="idle-timeout-button"
+                 (click)="updateWebModelKey('idleTimeout', 'stopIdleTimer', 'startIdleTimer')">
+                <label class="toggler" [class.brightly-positive-text]="!arlobotSvc.webModel.idleTimeout">Never</label>
+                <div class="toggle toggle-off" [class.toggle-on]="arlobotSvc.webModel.idleTimeout">
+                    <input type="checkbox" class="check" [ngModel]="arlobotSvc.webModel.idleTimeout"/><span
+                        class="b switch">Idle</span>
+                </div>
+                <label class="toggler" [class.brightly-negative-text]="arlobotSvc.webModel.idleTimeout">Timeout</label>
+            </div>
             <div class="lcarish-toggle-button" id="talk-bequiet-button"
                  (click)="updateWebModelKey('beQuiet', 'talk', 'beQuiet')">
                 <label class="toggler" [class.brightly-positive-text]="!arlobotSvc.webModel.beQuiet">Talk</label>
@@ -92,6 +101,9 @@
             </button>
             <button type="button" class="btn btn-danger" *ngIf="arlobotSvc.webModel.colorFollowerRunning"
                     (click)="sendSpecificSignalToArlobot('stopColorFollower')">Stop Color Follower
+            </button>
+            <button type="button" class="btn"
+                    (click)="sendSpecificSignalToArlobot('arduino')">Lights
             </button>
         </accordion-group>
         <accordion-group heading="Sensors" *ngIf="arlobotSvc.webModel.rosParameters">
