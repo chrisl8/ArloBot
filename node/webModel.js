@@ -16,6 +16,7 @@ module.exports = {
     pluggedIn: true, // Assume the most restrictive setting.
     autoExplore: false,
     pauseExplore: false,
+    idleTimeout: true,
     beQuiet: false,
     haltRobot: false,
     doorsOpen: true, // Track if any doors are open that pose a danger to Daleks
