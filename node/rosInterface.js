@@ -1,9 +1,10 @@
-var webModel = require('./webModel');
+const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
+const tts = require('./tts');
 var robotModel = require('./robotModel');
 // Set last movement to now to initiate the idle timer
 robotModel.lastMovementTime = Date.now();
-var ROSLIB = require('roslib');
+const ROSLIB = require('roslib');
 var unplug; // Empty global for actual topic
 
 // Copied from arloweb.js
@@ -175,6 +176,42 @@ var subscribeToActiveStatus = function () {
             }
         });
 
+        // THIS is where you put the subscription code:
+        var arlobot_joystick = new ROSLIB.Topic({
+            ros: ros,
+            name: '/joy', // Obtain name by running 'rostopic list'
+            messageType: 'sensor_msgs/Joy' // Obtain Type by running 'rostopic info <name>'
+        }); // Obtain message.??? by running 'rosmsg show <messageType>'
+        arlobot_joystick.subscribe(function (message) {
+            //console.log(message.buttons);
+            // A, B, X, Y, LB, RB, BACK, START, Xbox360, LeftStick, RightStick, Left, Right, Up, Down
+            if (message.buttons[0] === 1) {
+                tts('Hello, my name is two flower')
+            } else if (message.buttons[1] === 1) {
+                tts('What is your name?');
+            } else if (message.buttons[3] === 1) {
+                tts('Nice to meet you.');
+            } else if (message.buttons[2] === 1) {
+                tts('Excuse me.');
+            } else if (message.buttons[5] === 1) {
+                tts('~/.arlobot/sounds/readyMaster.wav');
+            } else if (message.buttons[11] === 1) {
+                tts('~/.arlobot/sounds/Exterminate.wav');
+            } else if (message.buttons[12] === 1) {
+                tts('~/.arlobot/sounds/input1.wav');
+            } else if (message.buttons[13] === 1) {
+                tts('~/.arlobot/sounds/affirmative.wav');
+            } else if (message.buttons[14] === 1) {
+                tts('~/.arlobot/sounds/depressed.wav');
+            }
+            /*
+            for (let key in message) {
+                if (message.hasOwnProperty(key)) {
+                    webModelFunctions.updateRosTopicItem(key, message[key]);
+                }
+            }
+            */
+        });
     });
 };
 
