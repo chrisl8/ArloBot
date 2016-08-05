@@ -5,6 +5,8 @@ const webModelFunctions = require('./webModelFunctions');
 const Camera = require('./Camera');
 /** @namespace personalData.camera0name */
 const camera = new Camera('Camera', personalData.camera0name);
+const Arduino = require('./Arduino');
+const arduino = new Arduino(true);
 var robotModel = require('./robotModel');
 const LaunchScript = require('./LaunchScript');
 const tts = require('./tts');
@@ -356,6 +358,15 @@ function start() {
             handleSemaphoreFiles.setSemaphoreFiles('markDoorsClosed');
         });
 
+        socket.on('stopIdleTimer', function () {
+            webModelFunctions.scrollingStatusUpdate("Idle Timer Stopped.");
+            webModelFunctions.update('idleTimeout', false);
+        });
+        socket.on('startIdleTimer', function () {
+            webModelFunctions.scrollingStatusUpdate("Idle Timer Restarted.");
+            webModelFunctions.update('idleTimeout', true);
+        });
+
         socket.on('pauseAutoExplore', function () {
             webModelFunctions.update('pauseExplore', true);
         });
@@ -450,6 +461,9 @@ function start() {
             console.log('Shutdown requested from web interface!');
             webModelFunctions.scrollingStatusUpdate('Shutdown requested from web interface!');
             webModelFunctions.update('shutdownRequested', true);
+        });
+        socket.on('arduino', function () {
+            arduino.init();
         });
     });
 }
