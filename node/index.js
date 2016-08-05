@@ -186,6 +186,7 @@ Poll.prototype.tick = function () { // Argument options: tick
     // and it still will not set those two again (due to code in getQRcodes),
     // but it may fill in a map or fill in the webModel.QRcode line.
     // This may cause it to fight with other camera operations though.
+    /** @namespace personalData.useQRcodes */
     if (intervalCount === 9 && !webModel.hasSetupViaQRcode && personalData.useQRcodes && !robotModel.gettingQRcode && !kill_rosHasRun && (robotModel.cmdTopicIdle || !webModel.ROSstart)) {
         // Old school thread control
         // It reduces how often zbarcam is run,
@@ -792,7 +793,8 @@ GotoRandomLocation.prototype.tick = function () { // Argument options: tick
 
 // Build this file with http://behavior3js.guineashots.com/editor/#
 // and you can LOAD this data into the editor to start where you left off again
-var arloNodeData = JSON.parse(fs.readFileSync('arloTreeData.json', 'utf8'));
+const arloNodeData = require('./arloTreeData');
+// var arloNodeData = JSON.parse(fs.readFileSync('arloTreeData.json', 'utf8'));
 
 // Despite the Editor creating a beautiful JSON behavior tree for us,
 // we still have to list the custom nodes for it by hand like this:
