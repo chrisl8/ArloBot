@@ -41,7 +41,7 @@ module.exports = function(sound) {
             // decide what it is!
             var possibleExtension = sound.slice(-4).toLowerCase();
             if (possibleExtension === '.wav') {
-                exec('/usr/bin/aplay -q ' + sound);
+                exec('/usr/bin/mplayer -quiet ' + sound + ' > /dev/null 2>&1');
             } else {
                 if (personalData.speechProgram === 'nodeSay') {
                     // https://github.com/marak/say.js/
