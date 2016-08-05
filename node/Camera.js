@@ -97,5 +97,5 @@ if (require.main === module) {
     // Run the function if this is called directly instead of required.
     const Camera = require('./Camera');
     const camera = new Camera('Camera', personalData.camera0name);
-    camera.switchOn();
+    camera.findAndSwitchOn();
 }
