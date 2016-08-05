@@ -212,7 +212,8 @@ Poll.prototype.tick = function () { // Argument options: tick
     }
 
     // Idle timer to shut off robot when left unattended
-    if (personalData.idleTimeoutInMinutes > 0 && (webModel.ROSisRunning || webModel.masterRelayOn)) {
+    /** @namespace personalData.idleTimeoutInMinutes */
+    if (webModel.idleTimeout && personalData.idleTimeoutInMinutes > 0 && (webModel.ROSisRunning || webModel.masterRelayOn)) {
         // Set to now to fake out idle timer if no action is required.
         let lastActionDate = new Date();
         let dateNow = lastActionDate;
