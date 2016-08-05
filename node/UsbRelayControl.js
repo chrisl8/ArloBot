@@ -18,6 +18,7 @@ module.exports = class UsbRelay {
         this.dataHolder = '';
         this.busy = false;
         this.script = __dirname + '/../scripts/switch_relay_name.sh';
+        this.updateAllRelayState();
     }
 
     findRelayName(relayNumber) {
