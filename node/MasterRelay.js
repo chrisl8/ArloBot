@@ -8,6 +8,8 @@ var personalData = require('./personalData');
 var working = false; // Prevent multiple instances from running at once in the same program
 
 var getPortName = function () {
+    /** @namespace personalData.masterPowerRelayStringLocation */
+    /** @namespace personalData.masterPowerRelayUniqueString */
     var relayDevice = new UsbDevice(personalData.masterPowerRelayUniqueString, personalData.masterPowerRelayStringLocation);
     return relayDevice.findDeviceName();
 };
@@ -20,7 +22,7 @@ var usbRelay = function (operation, runFromCommandLine) {
 
                 var wrapUp = function (runFromCommandLine, error) {
                     if (runFromCommandLine && error) {
-                        console.error('Failed to write to port: ' + err);
+                        console.error('Failed to write to port: ' + error);
                         process.exit(1);
                     }
                     working = false;
@@ -67,14 +69,14 @@ var usbRelay = function (operation, runFromCommandLine) {
                         console.log('Master Relay Error: ' + error);
                     } else {
                         if (operation === 'read') {
-                            portObj.write("relay read 0\r", function (err, result) {
+                            portObj.write("relay read 0\r", function (err) { // Argument Options: err, result
                                 if (err) {
                                     wrapUp(runFromCommandLine, err);
                                 }
                             });
                         } else {
-                            webModelFunctions.scrollingStatusUpdate(`Switching Master Relay ${operation}.`)
-                            portObj.write("relay " + operation + " 0\r", function (err, results) {
+                            webModelFunctions.scrollingStatusUpdate(`Switching Master Relay ${operation}.`);
+                            portObj.write("relay " + operation + " 0\r", function (err) { // Argument Options: err, result
                                 if (err) {
                                     wrapUp(runFromCommandLine, err);
                                 }
