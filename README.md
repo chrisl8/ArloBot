@@ -1,5 +1,14 @@
 ArloBot Package for ROS
 =======================
+## NOTICE: HB-25 Motor Controller Support Ending Soon! ##
+Parallax has updated the Arlo platform to use their new DHB-10 Dual H-Bridge controller.  
+I have plans to update my robot and this code to use that controller.  
+Once I have that code working I will cease support for the HB-25.  
+My guess is that everybody who has an HB-25 already cloned or forked this code and does not follow updates, so it doesn't matter.
+# If you need me to keep supporting the HB-25 in future updates to this code, file an issue in github to let me know! #
+Otherwise I will freeze the last version with HB-25 support in a branch and stop updating it with future changes.
+
+
 ## and SO MUCH MORE! ##
 
 1. This package provides a set of ROS packages for using a [Parallax Arlo Platform](http://www.parallax.com/product/arlo-robotic-platform-system "Parallax") robot to run all of the demonstration projects for the [Robot Operating System (ROS)](http://www.ros.org/ "ROS") based [TurtleBot](http://wiki.ros.org/Robots/TurtleBot "TurtleBot")
