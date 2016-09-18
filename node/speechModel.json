@@ -1,22 +1,4 @@
 {
-    "startUpGreeting": {
-        "repeatInterval": 31536000,
-        "delay": 0,
-        "Test": "true",
-        "thingsToSay": {
-            "repeat": true,
-            "Normal": {
-                "text": "Hello, my name is two flower.",
-                "weight": 0.99,
-                "instance": 1
-            },
-            "Hello world": {
-                "text": "Hello world.",
-                "weight": 0.01,
-                "instance": 1
-            }
-        }
-    },
     "randomGreeting": {
         "repeatInterval": 10,
         "delay": 10,
@@ -227,7 +209,7 @@
                 "weight": 0.01,
                 "instance": 1
             },
-            "giblets": {
+            "higgs": {
                 "text": "I'm just trying to brew up a good higgs field, but everything keeps getting in the way.",
                 "weight": 0.01,
                 "instance": 1

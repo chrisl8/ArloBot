@@ -139,6 +139,22 @@ process.on('uncaughtException', exitHandler.bind(null, {
 
 webserver.start();
 
+if (personalData.useMyCroft) {
+    // The purpose of using myCroft to simply announce the robot's name is to validate that MyCroft is up.
+    // Also, If you use the robot's name as a wake word and send it via TTS, MyCroft hears it and tries to respond.
+    // Otherwise the normal speech engine is the better option for event based announcements.
+    // MyCroft is primarily for interactive operations, such as asking the robot to do things.
+    const myCroft = require('./MyCroft');
+    webModelFunctions.update('myCroftIsRunning', true);
+    myCroft.init();
+    setTimeout(() => {
+        // Give init time to finish.
+        myCroft.injectText(`arlobotstartupskill ${personalData.robotName}`);
+    }, 3000);
+} else {
+    tts(`Hello, my name is ${personalData.robotName}`);
+}
+
 // ## Here are the Behavior Tree Nodes ##
 var intervalCount = 0; // Use this to throttle or space out polling items.
 var intervalTop = 10;
@@ -154,11 +170,11 @@ Poll.prototype.tick = function () { // Argument options: tick
         webModelFunctions.scrollingStatusUpdate(this.name, intervalCount);
     }
     /* Some things just need to be polled, there is no way around it. Put those here.
-       This only repeats about once per second, so it is a pretty good spacing, even without fancy code to slow things down
-       but if you want to , set it to only happen when interval === some number
-       below intervalTop.
-       Or use some division to hit every odd/even number or multiple of 3.
-       */
+     This only repeats about once per second, so it is a pretty good spacing, even without fancy code to slow things down
+     but if you want to , set it to only happen when interval === some number
+     below intervalTop.
+     Or use some division to hit every odd/even number or multiple of 3.
+     */
     handleSemaphoreFiles.readSemaphoreFiles();
     if (intervalCount === 5) {
         publishRobotURL.updateRobotURL();

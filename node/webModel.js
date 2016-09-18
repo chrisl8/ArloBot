@@ -6,6 +6,7 @@
 
 module.exports = {
     robotName: 'ArloBot', // This will be overridden by personalData in index.js,
+    myCroftIsRunning: false,
     lastUpdateTime: 0,
     videoSource: 'xscreen.png',
     masterRelayOn: false,

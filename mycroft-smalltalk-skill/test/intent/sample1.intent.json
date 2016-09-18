@@ -1,0 +1,7 @@
+{
+  "utterance": "hi",
+  "intent_type": "HiIntent",
+  "intent": {
+    "HiKeyword": "hi"
+  }
+}

@@ -19,3 +19,4 @@ website/node_modules/
 website/typings/
 website/app/*.js
 website/app/*.js.map
+/mycroft-core

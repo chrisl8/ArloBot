@@ -7,6 +7,7 @@ const Camera = require('./Camera');
 const camera = new Camera('Camera', personalData.camera0name);
 const Arduino = require('./Arduino');
 const arduino = new Arduino(true);
+const myCroft = require('./MyCroft');
 var robotModel = require('./robotModel');
 const LaunchScript = require('./LaunchScript');
 const tts = require('./tts');
@@ -330,7 +331,12 @@ function start() {
             setTimeout(wayPointEditor.updateWayPointList, 5000);
         });
         socket.on('tts', function (data) {
-            tts(data);
+            // TODO: Set up web interface to be different, If using mycroft, it should be more like 'talk to <robot name>' instead of speak, and it should have a note about using 'say' to have it speak.
+            if (personalData.useMyCroft) {
+                myCroft.injectText(data);
+            } else {
+                tts(data);
+            }
         });
         socket.on('startROS', function () {
             if (webModel.logStreamerRunning) {
@@ -465,6 +471,9 @@ function start() {
         socket.on('arduino', function () {
             arduino.init();
         });
+        // socket.on('toggleMycroft', function () {
+        //     myCroft.start();
+        // });
     });
 }
 

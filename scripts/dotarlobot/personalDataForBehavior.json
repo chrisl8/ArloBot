@@ -3,6 +3,7 @@
   "_comment": "I am using a _ instance of each field for comments.",
   "idleTimeoutInMinutes": 15,
   "_idleTimeoutInMinutes": "Use 0 to disable automatic shutdown of ROS and server reset after idle timeout",
+  "useMyCroft": false,
   "_pushover": "If you use pushover include your tokens here.",
   "pushover": {
     "TOKEN": "",
@@ -26,6 +27,7 @@
   "_cloudServer": "For use if you have a cloud based server that the robot communicates with for various online functions.",
   "cloudServer": {
     "exists": false,
+    "service": "http",
     "fqdn": "server.example.com",
     "port": 80,
     "password": "sueprSecret1785"
@@ -61,6 +63,7 @@
   "hasActivityBoard": true,
   "_speechVolumeLevelDefault": "Default volume level for speech. 0 to 100",
   "speechVolumeLevelDefault": 100,
+  "defaultMicrophoneName": "",
   "_speechProgram": "Set this to a script that will convert text to speech and play it. Use 'nodeSay' if you do not have one. You can also use 'espeak' if you install it on your system.",
   "speechProgram": "nodeSay",
   "speech_engine": "~/catkin_ws/src/ArloBot/scripts/tts.sh",

@@ -115,8 +115,9 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 #libftdi1 is required by SimpleIDE for the Parallax Propeller board
 #libgif-dev is required for roslib in order to build canvas
 #rtabmap is for 3D mapping
+#pulseaudio pavucontrol are for setting the default microphone. I use this for mycroft among other things
 
-sudo apt install -y ros-indigo-rqt-* ros-indigo-turtlebot ros-indigo-turtlebot-apps ros-indigo-turtlebot-interactions ros-indigo-turtlebot-simulator ros-indigo-kobuki-ftdi python-ftdi python-pip python-serial ros-indigo-openni-* ros-indigo-openni2-* ros-indigo-freenect-* ros-indigo-vision-opencv ros-indigo-rtabmap-ros ros-indigo-scan-tools libopencv-dev python-opencv ros-indigo-rosbridge-server imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi1 libgif-dev
+sudo apt install -y ros-indigo-rqt-* ros-indigo-turtlebot ros-indigo-turtlebot-apps ros-indigo-turtlebot-interactions ros-indigo-turtlebot-simulator ros-indigo-kobuki-ftdi python-ftdi python-pip python-serial ros-indigo-openni-* ros-indigo-openni2-* ros-indigo-freenect-* ros-indigo-vision-opencv ros-indigo-rtabmap-ros ros-indigo-scan-tools libopencv-dev python-opencv ros-indigo-rosbridge-server imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol
 
 # For 8-CH USB Relay board:
 sudo pip install pylibftdi
@@ -186,6 +187,29 @@ if ! [ -d ~/catkin_ws/src/usb_cam ]
 else
     cd ~/catkin_ws/src/usb_cam
     git pull
+fi
+cd ~/catkin_ws/src/ArloBot
+# If you want to use MyCroft
+if ! [ -d ~/catkin_ws/src/ArloBot/mycroft-core ]
+    then
+    git clone https://github.com/MycroftAI/mycroft-core.git
+    printf "\n${YELLOW}[IF you want to use MyCroft:]${NC}\n"
+    printf "\n${YELLOW}[After setup is done please run ./build_host_setup.sh to finish MyCroft setup]${NC}\n"
+    printf "\n${YELLOW}[Then see https://docs.mycroft.ai/development/cerberus for configuration info.]${NC}\n"
+else
+    cd ~/catkin_ws/src/ArloBot/mycroft-core
+    git pull
+fi
+if [ ! -d ~/.mycroft/third_party_skills ]; then
+    mkdir -p ~/.mycroft/third_party_skills
+fi
+if [ ! -L ~/.mycroft/third_party_skills/mycroft-arlobot-skill ]; then
+    cd ~/.mycroft/third_party_skills/
+    ln -s ~/catkin_ws/src/ArloBot/mycroft-arlobot-skill
+fi
+if [ ! -L ~/.mycroft/third_party_skills/mycroft-smalltalk-skill ]; then
+    cd ~/.mycroft/third_party_skills/
+    ln -s ~/catkin_ws/src/ArloBot/mycroft-smalltalk-skill
 fi
 cd ~/catkin_ws/src
 printf "\n${YELLOW}[(Re)Building ROS Source files.]${NC}\n"
