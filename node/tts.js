@@ -48,8 +48,7 @@ module.exports = function(sound) {
                     // no callback, fire and forget
                     say.speak(sound);
                 } else if (personalData.speechProgram) {
-                    var speechCommand = personalData.speechProgram + ' ' + sound;
-                    exec(speechCommand);
+                    exec(`${personalData.speechProgram} "${sound}"`);
                 }
             }
         } else {
