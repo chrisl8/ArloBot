@@ -7,7 +7,7 @@
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
 const UsbDevice = require('./UsbDevice.js');
-const SerialPort = require("serialport").SerialPort;
+const SerialPort = require("serialport");
 const howManySecondsSince = require('./howManySecondsSince');
 const masterRelay = require('./MasterRelay');
 const UsbRelay = require('./UsbRelayControl');
@@ -105,20 +105,25 @@ class Arduino {
 
     turnOnRelays() {
         return new Promise((resolve) => {
+            var delay = 0;
             if (personalData.useMasterPowerRelay && !webModel.masterRelayOn) {
                 masterRelay('on');
+                delay = 3000;
             }
             setTimeout(() => {
+                var delayTwo = 0;
                 if (personalData.relays.has_arduino && !webModel.relays.find(x=> x.name === 'arduino')['relayOn']) {
                     usbRelay.switch(webModel.relays.find(x=> x.name === 'arduino')['number'], 'on');
+                    delayTwo = 2000;
                 }
                 if (personalData.relays.has_fiveVolt && !webModel.relays.find(x=> x.name === 'fiveVolt')['relayOn']) {
                     usbRelay.switch(webModel.relays.find(x=> x.name === 'fiveVolt')['number'], 'on');
+                    delayTwo = 2000;
                 }
                 setTimeout(()=> {
                     resolve();
-                }, 2000);
-            }, 3000);
+                }, delayTwo);
+            }, delay);
         })
     }
 
@@ -172,8 +177,9 @@ class Arduino {
                         // };
 
                         this.portObj = new SerialPort(port, {
-                            baudrate: baudrate
-                        }, false);
+                            baudrate: baudrate,
+                            autoOpen: false
+                        });
 
                         this.portObj.on('data', (data) => {
                             // The "buffer" has to be converted into a string.

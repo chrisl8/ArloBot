@@ -3,7 +3,7 @@
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
 const UsbDevice = require('./UsbDevice.js');
-const SerialPort = require("serialport").SerialPort;
+const SerialPort = require("serialport");
 var personalData = require('./personalData');
 var working = false; // Prevent multiple instances from running at once in the same program
 
@@ -37,8 +37,9 @@ var usbRelay = function (operation, runFromCommandLine) {
                 }
 
                 var portObj = new SerialPort(port, {
-                    baudrate: 19200
-                }, false);
+                    baudrate: 19200,
+                    autoOpen: false
+                });
 
                 portObj.on('data', function (data) {
                         if (runFromCommandLine) {
