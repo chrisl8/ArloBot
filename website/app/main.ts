@@ -1,8 +1,9 @@
-import {bootstrap}    from '@angular/platform-browser-dynamic';
-import {AppComponent} from './app.component';
-import {enableProdMode} from '@angular/core';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {AppModule} from './app.module';
 
 // enable production mode and thus disable debugging information
+import {enableProdMode} from '@angular/core';
 enableProdMode();
 
-bootstrap(AppComponent);
+const platform = platformBrowserDynamic();
+platform.bootstrapModule(AppModule);
