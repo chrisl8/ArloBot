@@ -1,3 +1,4 @@
+const personalData = require('./personalData');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
 const tts = require('./tts');
@@ -10,8 +11,7 @@ var unplug; // Empty global for actual topic
 // Copied from arloweb.js
 var connectedToROS = false, // Track my opinion of the connection
     ros, // Empty global for actual connection.
-    shortDelay = 1000,
-    longDelay = 3000
+    longDelay = personalData.rosLibDelay * 1000;
 
 // Define a list of ROS Parameters to monitor
 // NOTE: Add an instance to webModel if you want this sent to the web app!
@@ -73,7 +73,7 @@ var talkToROS = function () {
 
     // Start subscriptions:
     // Each topic function will do its own checking to see if the topic is live or not.
-    setTimeout(subscribeToActiveStatus, shortDelay); // Start with a slight delay
+    setTimeout(subscribeToActiveStatus, longDelay); // Start with a slight delay
 
     // Set up services to use
     unplug = new ROSLIB.Service({
@@ -244,7 +244,7 @@ var pollROS = function () {
         if (ros !== undefined) {
             ros.close();
         }
-        setTimeout(pollROS, shortDelay);
+        setTimeout(pollROS, longDelay);
     });
 
     ros.on('close', function () {
@@ -252,7 +252,7 @@ var pollROS = function () {
         webModelFunctions.scrollingStatusUpdate('ROSLIB Websocket closed');
         connectedToROS = false;
         //updateConnectedButton();
-        setTimeout(pollROS, shortDelay);
+        setTimeout(pollROS, longDelay);
     });
 };
 
