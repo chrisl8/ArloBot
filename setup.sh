@@ -140,7 +140,7 @@ printf "\n${YELLOW}[Cloning or Updating git repositories]${NC}\n"
 cd ~/catkin_ws/src
 if ! [ -d ~/catkin_ws/src/hector_slam ]
     then
-    git clone https://github.com/chrisl8/hector_slam.git
+    git clone https://github.com/tu-darmstadt-ros-pkg/hector_slam.git
 else
     cd ~/catkin_ws/src/hector_slam
     git pull
@@ -148,7 +148,7 @@ fi
 cd ~/catkin_ws/src
 if ! [ -d ~/catkin_ws/src/hector_navigation ]
     then
-    git clone https://github.com/chrisl8/hector_navigation.git
+    git clone https://github.com/tu-darmstadt-ros-pkg/hector_navigation.git
 else
     cd ~/catkin_ws/src/hector_navigation
     git pull
@@ -174,7 +174,7 @@ cd ~/catkin_ws/src
 # If you have the excellent ROS by Example book now is a good time to clone the code for following along in the book:
 if ! [ -d ~/catkin_ws/src/rbx1 ]
     then
-    git clone -b indigo-devel https://github.com/chrisl8/rbx1.git
+    git clone -b indigo-devel https://github.com/pirobot/rbx1.git
 else
     cd ~/catkin_ws/src/rbx1
     git pull
@@ -281,22 +281,22 @@ else
     printf "${LIGHTPURPLE}Please edit this file to customize according to your robot!${NC}\n"
 fi
 
-for i in `ls ${HOME}/catkin_ws/src/ArloBot/Propeller\ C\ Code\ for\ ArloBot/dotfiles/`
+for i in `ls ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/`
 do
     if [ -e  ${ARLOHOME}/${i} ]
         then
-        if ! (diff ${HOME}/catkin_ws/src/ArloBot/Propeller\ C\ Code\ for\ ArloBot/dotfiles/${i} ${ARLOHOME}/${i} > /dev/null)
+        if ! (diff ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLOHOME}/${i} > /dev/null)
             then
             printf "\n${GREEN}The ${RED}${i}${GREEN} file in the repository is different from the one${NC}\n"
             printf "${GREEN}in your local settings.${NC}\n"
             printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
             printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
-            diff ${HOME}/catkin_ws/src/ArloBot/Propeller\ C\ Code\ for\ ArloBot/dotfiles/${i} ${ARLOHOME}/${i}
-            cp -i ${HOME}/catkin_ws/src/ArloBot/Propeller\ C\ Code\ for\ ArloBot/dotfiles/${i} ${ARLOHOME}/
+            diff ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLOHOME}/${i}
+            cp -i ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLOHOME}/
         fi
     else
         printf "\n"
-        cp ${HOME}/catkin_ws/src/ArloBot/Propeller\ C\ Code\ for\ ArloBot/dotfiles/${i} ${ARLOHOME}/
+        cp ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLOHOME}/
         printf "${GREEN}A brand new ${RED}${ARLOHOME}/${i}${GREEN} file has been created,${NC}\n"
         printf "${LIGHTPURPLE}Please edit this file to customize according to your robot!${NC}\n"
     fi
