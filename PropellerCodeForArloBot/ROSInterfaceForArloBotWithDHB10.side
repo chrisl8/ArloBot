@@ -1,4 +1,4 @@
-ROS Interface for ArloBot.c
+ROSInterfaceForArloBotWithDHB10.c
 >compiler=C
 >memtype=cmm main ram compact
 >optimize=-Os
