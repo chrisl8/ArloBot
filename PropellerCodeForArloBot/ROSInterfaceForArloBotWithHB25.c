@@ -1,4 +1,5 @@
 /* ATTENTION! ATTENTION! ATTENTION! ATTENTION! ATTENTION! ATTENTION!
+NOTE: This is the code for the HB-25 motor controller from the old Arlo platform.
 You MUST edit the settings in
 ~/.arlobot/per_robot_settings_for_propeller_c_code.h
 based on the physical layout of your robot!
