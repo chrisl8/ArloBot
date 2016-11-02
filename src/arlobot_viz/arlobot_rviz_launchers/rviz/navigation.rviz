@@ -211,9 +211,9 @@ Visualization Manager:
       Frames:
         All Enabled: false
         base_footprint:
-          Value: true
-        base_link:
           Value: false
+        base_link:
+          Value: true
         battery_box:
           Value: false
         camera_depth_frame:
