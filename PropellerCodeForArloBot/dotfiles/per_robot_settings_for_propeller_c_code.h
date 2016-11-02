@@ -199,9 +199,12 @@ That is all, you are ready to attempt to build this code and load it
 onto your Propeller Activity board!
 */
 
+// Maximum speed in ticks per second. Even if ROS asks us to go faster, we will not.
+#define MAXIMUM_SPEED 200 // 200 is default in arlodrive too, but we may change it.
+
 /* Timeout setting. After this period (loops) the robot will stop if it
-has not received anything from ROS */
-#define ROStimeout 1000 // 1000 = about 10 seconds.
+has not received a twist command from ROS */
+#define ROStimeout 200 // 100 = about 1 second.
 
 /* Enable this to turn on extra debugging information,
 for use with the
