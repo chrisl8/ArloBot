@@ -31,6 +31,11 @@ printf "${GREEN}You will be asked for your password for running commands as root
 
 version=`lsb_release -sc`
 
+if [ ${version} == "yakkety" ]
+    then
+    version="xenial"
+fi
+
 printf "\n${YELLOW}[Checking the Ubuntu version]${NC}\n"
 printf "${BLUE}Ubuntu ${version} found${NC}\n"
 case ${version} in
