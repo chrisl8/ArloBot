@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # This script helps to test the Propeller Activity Board
 # by monitoring the serial port directly and suggesting
 # commands that you can send to it.
