@@ -244,7 +244,9 @@ Poll.prototype.tick = function () { // Argument options: tick
             lastActionDate = new Date(webModel.lastUpdateTime);
         }
         let idleMinutes = (dateNow - lastActionDate) / 1000 / 60;
-        // console.log(`Idle Check: ${dateNow} - ${lastActionDate} = ${idleMinutes}`);
+        if (webModel.debugging) {
+            console.log(`Idle Check: ${dateNow} - ${lastActionDate} = ${idleMinutes}`);
+        }
         if (idleMinutes > personalData.idleTimeoutInMinutes) {
             if (webModel.ROSisRunning) {
                 console.log("Idle shutdown.");
