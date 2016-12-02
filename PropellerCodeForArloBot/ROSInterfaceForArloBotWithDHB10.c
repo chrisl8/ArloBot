@@ -514,14 +514,14 @@ int main() {
         } else {
           sscan(reply, "%d%d", &ticksLeft, &ticksRight);
         }
-        //dprint(term, "DIST %s %d %d\n", reply, Heading, ticksLeft, ticksRight);  // For Debugging
+        //dprint(term, "d\tDIST\t%d\t%d\n", ticksLeft, ticksRight);  // For Debugging
 
         reply = dhb10_com("SPD\r");
         if (*reply == '\r') {
           speedLeft = 0;
           speedRight = 0;
         } else {
-          sscan(reply, "%d%d", &speedLeft, &ticksRight);
+          sscan(reply, "%d%d", &speedLeft, &speedRight);
         }
         //dprint(term, "SPD %s %d %d\n", reply, Heading, speedLeft, speedRight); // For Debugging
         #ifdef hasGyro
