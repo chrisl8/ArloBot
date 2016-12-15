@@ -375,10 +375,13 @@ AutoExplore.prototype.tick = function () { // Argument options: tick
         if (robotModel.exploreProcess.started) {
 
             // Catch changes in pauseExplore and send them to the arlobot_explore pause_explorer service
-            if (webModel.rosParameters.explorePaused !== webModel.pauseExplore) {
-                // TODO: Should this use  the rosInterface?
-                var command = '/opt/ros/indigo/bin/rosservice call /arlobot_explore/pause_explorer ' + webModel.pauseExplore;
-                exec(command);
+            if (webModel.rosParameters.explorePaused !== null && webModel.rosParameters.explorePaused !== webModel.pauseExplore) {
+                if (webModel.pauseExplore) {
+                    webModelFunctions.scrollingStatusUpdate('Pausing Explorer...');
+                } else {
+                    webModelFunctions.scrollingStatusUpdate('Resuming Explorer...');
+                }
+                rosInterface.callPauseExplore(webModel.pauseExplore);
             }
 
             if (robotModel.exploreProcess.startupComplete) {

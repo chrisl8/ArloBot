@@ -6,7 +6,7 @@ var robotModel = require('./robotModel');
 // Set last movement to now to initiate the idle timer
 robotModel.lastMovementTime = Date.now();
 const ROSLIB = require('roslib');
-var unplug; // Empty global for actual topic
+var unplug, pauseExplore; // Empty global for actual topic
 
 // Copied from arloweb.js
 var connectedToROS = false, // Track my opinion of the connection
@@ -17,37 +17,37 @@ var connectedToROS = false, // Track my opinion of the connection
 // NOTE: Add an instance to webModel if you want this sent to the web app!
 var rosParameters = {
     ignoreCliffSensors: {
-        param: null,
+        param: webModel.rosParameters.ignoreCliffSensors,
         label: 'ignoreCliffSensors',
         path: '/arlobot/ignoreCliffSensors'
     },
     ignoreProximity: {
-        param: null,
+        param: webModel.rosParameters.ignoreProximity,
         label: 'ignoreProximity',
         path: '/arlobot/ignoreProximity'
     },
     ignoreIRSensors: {
-        param: null,
+        param: webModel.rosParameters.ignoreIRSensors,
         label: 'ignoreIRSensors',
         path: '/arlobot/ignoreIRSensors'
     },
     ignoreFloorSensors: {
-        param: null,
+        param: webModel.rosParameters.ignoreFloorSensors,
         label: 'ignoreFloorSensors',
         path: '/arlobot/ignoreFloorSensors'
     },
     monitorACconnection: {
-        param: null,
+        param: webModel.rosParameters.monitorACconnection,
         label: 'monitorACconnection',
         path: '/arlobot/monitorACconnection'
     },
     mapName: {
-        param: null,
+        param: webModel.rosParameters.mapName,
         label: 'mapName',
         path: '/arlobot/mapname'
     },
     explorePaused: {
-        param: null,
+        param: webModel.rosParameters.explorePaused,
         label: 'explorePaused',
         path: '/arlobot_explore/pause'
     }
@@ -60,7 +60,18 @@ var unplugRobot = function (value) {
     });
     unplug.callService(unplugRequest, function (result) {
         console.log(result);
-        webModelFunctions.scrollingStatusUpdate(result);
+        // webModelFunctions.scrollingStatusUpdate(result);
+    })
+};
+
+var callPauseExplore = function (value) {
+    var pauseExploreRequest = new ROSLIB.ServiceRequest({
+        // args from rosservice info <service>
+        pause_explorer: value // Note javaScript uses true not True for bool
+    });
+    pauseExplore.callService(pauseExploreRequest, function (result) {
+        console.log(result);
+        // webModelFunctions.scrollingStatusUpdate(result);
     })
 };
 
@@ -79,6 +90,12 @@ var talkToROS = function () {
     unplug = new ROSLIB.Service({
         ros: ros,
         name: '/arlobot_unplug', // rosservice list
+        serviceType: 'arlobot_msgs/pause_explorer' // rosservice info <service>
+    });
+
+    pauseExplore = new ROSLIB.Service({
+        ros: ros,
+        name: '/arlobot_explore/pause_explorer', // rosservice list
         serviceType: 'arlobot_msgs/UnPlug' // rosservice info <service>
     });
 
@@ -263,3 +280,4 @@ function start() {
 exports.start = start;
 exports.setParam = setParam;
 exports.unplugRobot = unplugRobot;
+exports.callPauseExplore = callPauseExplore;
