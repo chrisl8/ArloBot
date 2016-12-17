@@ -1,26 +1,28 @@
+'use strict';
 // Numato Lab - http://numato.com
 // https://github.com/numato/samplecode/blob/master/RelayAndGPIOModules/USBRelayAndGPIOModules/node.js/usbrelay/UsbRelay.js
+const process = require('process');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
 const UsbDevice = require('./UsbDevice.js');
 const SerialPort = require("serialport");
-var personalData = require('./personalData');
-var working = false; // Prevent multiple instances from running at once in the same program
+const personalData = require('./personalData');
+let working = false; // Prevent multiple instances from running at once in the same program
 
-var getPortName = function () {
+function getPortName() {
     /** @namespace personalData.masterPowerRelayStringLocation */
     /** @namespace personalData.masterPowerRelayUniqueString */
-    var relayDevice = new UsbDevice(personalData.masterPowerRelayUniqueString, personalData.masterPowerRelayStringLocation);
+    const relayDevice = new UsbDevice(personalData.masterPowerRelayUniqueString, personalData.masterPowerRelayStringLocation);
     return relayDevice.findDeviceName();
-};
+}
 
-var usbRelay = function (operation, runFromCommandLine) {
+function usbRelay(operation, runFromCommandLine) {
     if (operation !== 'read' || !working) {
         working = true;
         getPortName()
             .then((port) => {
 
-                var wrapUp = function (runFromCommandLine, error) {
+                const wrapUp = function (runFromCommandLine, error) {
                     if (runFromCommandLine && error) {
                         console.error('Failed to write to port: ' + error);
                         process.exit(1);
@@ -36,7 +38,7 @@ var usbRelay = function (operation, runFromCommandLine) {
                     }
                 }
 
-                var portObj = new SerialPort(port, {
+                const portObj = new SerialPort(port, {
                     baudrate: 19200,
                     autoOpen: false
                 });
@@ -58,6 +60,8 @@ var usbRelay = function (operation, runFromCommandLine) {
                                     result = true;
                                 }
                                 webModelFunctions.update('masterRelayOn', result);
+                            } else {
+                                usbRelay('read');
                             }
                         }
                         portObj.close();
@@ -87,8 +91,9 @@ var usbRelay = function (operation, runFromCommandLine) {
                 });
             });
     }
-};
+}
 module.exports = usbRelay;
+
 if (require.main === module) {
     // Run the function if this is called directly instead of required as a module.
     if (process.argv.length < 3) {
