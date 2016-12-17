@@ -10,7 +10,10 @@ baudRate: 115200
 # Distance Per Tick for Arlo: http://forums.parallax.com/showthread.php/154274-The-quot-Artist-quot-robot?p=1271544&viewfull=1#post1271544
 # Track Width for Arlo is from measurement and then testing
 # You can customize this if you think you have better numbers please post a note in GitHub for me!
-driveGeometry: {trackWidth: 0.403, distancePerCount: 0.00676}
+# HB-25 numbers;
+#driveGeometry: {trackWidth: 0.403, distancePerCount: 0.00676}
+# DHB-10 numbers:
+driveGeometry: {trackWidth: 0.403, distancePerCount: 0.00338}
 # Note that updates to tracWidth & distancePerCount will be sent to the robot in real time.
 # Set usbRelayInstalled to False if you do not have a USB Relay installed to turn your motors on and off,
 # In which case it will be assumed they are always on, or at least that you turn them on by hand
@@ -29,9 +32,10 @@ usbRightMotorRelay: "2"
 # Lables for Left and Right motors. These are set in arlobot_usbrelay/param/usbrelay.yaml
 usbLeftMotorRelayLabel: "LeftMotor"
 usbRightMotorRelayLabel: "RightMotor"
-# Set monitorACconnection to False if you do not want arlobot_safety to monitor the computer's
-# power connection. This works for my laptop, but it may not work for your situation.
-monitorACconnection: True
+# WARNING: BY DEFAULT YOUR ROBOT WILL TRY TO MOVE EVEN WHEN IT IS PLUGGED IN!!!!
+# Set monitorACconnection to True to have ROS monitor the power connection and FREEZE
+# the robot whenever the laptop is plugged into AC power
+monitorACconnection: False
 # Set ignoreProximity to have robot ignore the proximity sensors
 # and simply operate 100% under ROS control.
 # This should also work if changed on the fly.
