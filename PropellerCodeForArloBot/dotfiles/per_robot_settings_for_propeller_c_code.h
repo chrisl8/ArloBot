@@ -16,6 +16,11 @@ Example, My robot has a "Thing1", but not a "Thing2"
 and if you do have the thing, adjust the numbers on the other definition as needed.
 By using the #define lines, code for items you do not have is never seen by the compiler and is never even loaded on the Propeller bard, saving memory. */
 
+/* NOTICE NOTICE NOTICE
+Changes to this file will NOT have any affect until you RELOAD the C code onto the
+propeller board with SimpleIDE!!!
+*/
+
 // PROXIMITY SENSOR TUNING
 // Use these to tune the robots responses!
 // What is the maximum distance at which sensor readings should be noticed?
@@ -202,9 +207,21 @@ onto your Propeller Activity board!
 // Maximum speed in ticks per second. Even if ROS asks us to go faster, we will not.
 #define MAXIMUM_SPEED 200 // 200 is default in arlodrive too, but we may change it.
 
+/* These settings affect the speed at which the "loop" on the robot runs.
+If it runs too fast we overwhelm serial connections and crash things or get garbage.
+Running too slow will reduce the responsiveness of the robot.
+Remember though that going faster and "hanging" isn't more responsive.
+*/
+#define dhb10OverloadPause 2 // Pause before each read/write to DHB10 to avoid overloading it.
+// 1 seems to work fine. 2 seems perfectly safe without any ill affects. I suggest filing a github issue before increasing this.
+#define mainLoopPause 10 // Pause after each main loop. 10 seems to work fine.
+// The total loop "pause" time is (dhb10OverloadPause * 4 ) + mainLoopPause
+// So you can probalby decrease mainLoopPause if you increase dhb10OverloadPause
 /* Timeout setting. After this period (loops) the robot will stop if it
-has not received a twist command from ROS */
-#define ROStimeout 200 // 100 = about 1 second.
+has not received a twist command from ROS.
+The loop speed is determined by the above two settings, so it isn't a strict time.
+*/
+#define ROStimeout 10 // 10 = about 1 second if dhb10OverloadPause === 2 && mainLoopPause === 10
 
 /* Enable this to turn on extra debugging information,
 for use with the

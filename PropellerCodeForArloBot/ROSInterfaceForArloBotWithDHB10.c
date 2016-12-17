@@ -224,6 +224,7 @@ int main() {
 
     // Halt motors in case they are moving and reset all stats.
     reply = dhb10_com("GOSPD 0 0\r");
+    pause(dhb10OverloadPause);
     reply = dhb10_com("RST\r");
 
     // For Odometry
@@ -246,7 +247,8 @@ int main() {
     // See ~/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml for most up to date values
     /*
        trackWidth = 0.403000; // from measurement and then testing
-       distancePerCount = 0.006760; // http://forums.parallax.com/showthread.php/154274-The-quot-Artist-quot-robot?p=1271544&viewfull=1#post1271544
+       distancePerCount = 0.00338;
+       // http://forums.parallax.com/showthread.php/154274-The-quot-Artist-quot-robot?p=1271544&viewfull=1#post1271544
        robotInitialized = 1;
        */
     // Comment out above lines for use with ROS
@@ -507,6 +509,7 @@ int main() {
         ticksLeftOld = ticksLeft;
         ticksRightOld = ticksRight;
 
+        pause(dhb10OverloadPause);
         reply = dhb10_com("DIST\r");
         if (*reply == '\r') {
           ticksLeft = 0;
@@ -516,6 +519,7 @@ int main() {
         }
         //dprint(term, "d\tDIST\t%d\t%d\n", ticksLeft, ticksRight);  // For Debugging
 
+        pause(dhb10OverloadPause);
         reply = dhb10_com("SPD\r");
         if (*reply == '\r') {
           speedLeft = 0;
@@ -532,6 +536,7 @@ int main() {
         }
         #endif
 
+        pause(dhb10OverloadPause);
         reply = dhb10_com("HEAD\r");
         if (*reply == '\r') {
           heading = 0;
@@ -614,7 +619,7 @@ int main() {
         dprint(term, "DEBUG: %d %d %d %d %d\n", ignoreProximity, ignoreCliffSensors, ignoreIRSensors, ignoreFloorSensors, pluggedIn);
         #endif
 
-        pause(20); // Maximum read frequency. TODO: Is this required? Is it the right length?
+        pause(20); // Maximum read frequency.
     }
 }
 
