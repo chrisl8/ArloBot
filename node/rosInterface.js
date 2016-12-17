@@ -1,21 +1,23 @@
+'use strict';
 const personalData = require('./personalData');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
 const tts = require('./tts');
-var robotModel = require('./robotModel');
+const robotModel = require('./robotModel');
 // Set last movement to now to initiate the idle timer
 robotModel.lastMovementTime = Date.now();
 const ROSLIB = require('roslib');
-var unplug, pauseExplore; // Empty global for actual topic
+let unplug, pauseExplore; // Empty global for actual topic
 
 // Copied from arloweb.js
-var connectedToROS = false, // Track my opinion of the connection
+/** @namespace personalData.rosLibDelay */
+let connectedToROS = false, // Track my opinion of the connection
     ros, // Empty global for actual connection.
     longDelay = personalData.rosLibDelay * 1000;
 
 // Define a list of ROS Parameters to monitor
 // NOTE: Add an instance to webModel if you want this sent to the web app!
-var rosParameters = {
+const rosParameters = {
     ignoreCliffSensors: {
         param: webModel.rosParameters.ignoreCliffSensors,
         label: 'ignoreCliffSensors',
@@ -53,29 +55,33 @@ var rosParameters = {
     }
 };
 
-var unplugRobot = function (value) {
-    var unplugRequest = new ROSLIB.ServiceRequest({
-        // args from rosservice info <service>
-        unPlug: value // Note javaScript uses true not True for bool
-    });
-    unplug.callService(unplugRequest, function (result) {
-        console.log(result);
-        // webModelFunctions.scrollingStatusUpdate(result);
-    })
-};
+function unplugRobot(value) {
+    if (unplug) {
+        const unplugRequest = new ROSLIB.ServiceRequest({
+            // args from rosservice info <service>
+            unPlug: value // Note javaScript uses true not True for bool
+        });
+        unplug.callService(unplugRequest, function (result) {
+            console.log(result);
+            // webModelFunctions.scrollingStatusUpdate(result);
+        })
+    }
+}
 
-var callPauseExplore = function (value) {
-    var pauseExploreRequest = new ROSLIB.ServiceRequest({
-        // args from rosservice info <service>
-        pause_explorer: value // Note javaScript uses true not True for bool
-    });
-    pauseExplore.callService(pauseExploreRequest, function (result) {
-        console.log(result);
-        // webModelFunctions.scrollingStatusUpdate(result);
-    })
-};
+function callPauseExplore(value) {
+    if (pauseExplore) {
+        const pauseExploreRequest = new ROSLIB.ServiceRequest({
+            // args from rosservice info <service>
+            pause_explorer: value // Note javaScript uses true not True for bool
+        });
+        pauseExplore.callService(pauseExploreRequest, function (result) {
+            console.log(result);
+            // webModelFunctions.scrollingStatusUpdate(result);
+        })
+    }
+}
 
-var talkToROS = function () {
+function talkToROS() {
     // If you wanted to dump ALL params:
     //ros.getParams(function(params) {
     //    console.log('ROSLIB Params:');
@@ -100,7 +106,7 @@ var talkToROS = function () {
     });
 
     // Enumerate parameters to watch
-    for (var prop in rosParameters) {
+    for (let prop in rosParameters) {
         rosParameters[prop].param = new ROSLIB.Param({
             ros: ros,
             name: rosParameters[prop].path
@@ -108,9 +114,9 @@ var talkToROS = function () {
     }
     // and poll them.
     pollParams();
-};
+}
 
-var pollParams = function () {
+function pollParams() {
     function checkParameter(prop) {
         rosParameters[prop].param.get(function (value) {
             //console.log(rosParameters[prop].label + ': ' + value);
@@ -123,47 +129,45 @@ var pollParams = function () {
         });
     }
 
-    for (var prop in rosParameters) {
+    for (let prop in rosParameters) {
         if (rosParameters.hasOwnProperty(prop)) {
             checkParameter(prop);
         }
     }
 
     setTimeout(pollParams, longDelay);
-};
+}
 
-var setParam = function (paramLabel, value) {
+function setParam(paramLabel, value) {
     if (rosParameters.hasOwnProperty(paramLabel)) {
         if (rosParameters[paramLabel].param) {
             rosParameters[paramLabel].param.set(value);
         }
     }
-};
+}
 
-var closeDeadROSConnection = function () {
+function closeDeadROSConnection() {
     // TODO: Does this ever happen?
-    'use strict';
     console.log("Closing dead ROS connection.");
     if (ros !== undefined) {
         ros.close();
     }
     console.log("CLOSED dead ROS connection!");
-};
+}
 
-var subscribeToActiveStatus = function () {
-    'use strict';
+function subscribeToActiveStatus() {
     // Remember to add new instances to talkToROS() at the end!
     // This should serve as a template for all topic subscriptions
     // Make sure we are still connected.
 
     // Make sure service exists:
-    var closeDeadConnectionTime;
+    let closeDeadConnectionTime;
     closeDeadConnectionTime = setTimeout(closeDeadROSConnection, longDelay);
-    ros.getTopics(function (result) { // Unfortunately this can stall with no output!
+    ros.getTopics(function () { // Arguments: result // Unfortunately this can stall with no output!
         clearTimeout(closeDeadConnectionTime);
 
         // THIS is where you put the subscription code:
-        var cmd_activeStatus = new ROSLIB.Topic({
+        const cmd_activeStatus = new ROSLIB.Topic({
             ros: ros,
             name: '/cmd_vel_mux/active', // Obtain name by running 'rostopic list'
             messageType: 'std_msgs/String' // Obtain Type by running 'rostopic info <name>'
@@ -180,7 +184,7 @@ var subscribeToActiveStatus = function () {
         });
 
         // THIS is where you put the subscription code:
-        var arlobot_arlo_status = new ROSLIB.Topic({
+        const arlobot_arlo_status = new ROSLIB.Topic({
             ros: ros,
             name: '/arlo_status', // Obtain name by running 'rostopic list'
             messageType: 'arlobot_msgs/arloStatus' // Obtain Type by running 'rostopic info <name>'
@@ -194,7 +198,7 @@ var subscribeToActiveStatus = function () {
         });
 
         // THIS is where you put the subscription code:
-        var arlobot_joystick = new ROSLIB.Topic({
+        const arlobot_joystick = new ROSLIB.Topic({
             ros: ros,
             name: '/joy', // Obtain name by running 'rostopic list'
             messageType: 'sensor_msgs/Joy' // Obtain Type by running 'rostopic info <name>'
@@ -222,20 +226,20 @@ var subscribeToActiveStatus = function () {
                 tts('~/.arlobot/sounds/depressed.wav');
             }
             /*
-            for (let key in message) {
-                if (message.hasOwnProperty(key)) {
-                    webModelFunctions.updateRosTopicItem(key, message[key]);
-                }
-            }
-            */
+             for (let key in message) {
+             if (message.hasOwnProperty(key)) {
+             webModelFunctions.updateRosTopicItem(key, message[key]);
+             }
+             }
+             */
         });
     });
-};
+}
 
 // Copied from arloweb.js
 // Be sure to set url to point to localhost,
 // and change any references to web objects with console.log (i.e. setActionField)
-var pollROS = function () {
+function pollROS() {
     // console.log('ROSLIB pollROS run');
     connectedToROS = false;
 
@@ -255,7 +259,7 @@ var pollROS = function () {
         setTimeout(talkToROS, longDelay);
     });
 
-    ros.on('error', function (error) {
+    ros.on('error', function () { // Arguments: error
         //console.log('Error connecting to websocket server: ', error);
         //console.log('ROSLIB Websocket error');
         if (ros !== undefined) {
@@ -271,7 +275,7 @@ var pollROS = function () {
         //updateConnectedButton();
         setTimeout(pollROS, longDelay);
     });
-};
+}
 
 function start() {
     pollROS();
