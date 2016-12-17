@@ -1,46 +1,57 @@
 'use strict';
-const exec = require('child_process').exec;
 const personalData = require('./personalData');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
-var working = false;
+const fs = require('fs');
+const glob = require('glob');
+const batteryLevelFileWildcard = '/sys/class/power_supply/BAT*/uevent';
+const pluggedInFileWildcard = '/sys/class/power_supply/AC*/uevent';
+var pluggedInFile, batteryLevelFile;
+
+glob(pluggedInFileWildcard, function (er, fileName) {
+    if (er) {
+        console.error('Error finding AC status file.');
+    } else {
+        pluggedInFile = fileName[0];
+    }
+});
+
+glob(batteryLevelFileWildcard, function (er, fileName) {
+    if (er) {
+        console.error('Error finding Battery status file.');
+    } else {
+        batteryLevelFile = fileName[0]; // TODO: Make battery number configurable?
+    }
+});
 
 const checkBattery = function (logIt) {
-    if (!working) {
-        working = true;
-        const batteryCommand = '/usr/bin/upower -d';
-        var collectedData = '';
-        const batteryCheck = exec(batteryCommand);
-        batteryCheck.stdout.on('data', (data) => {
-            collectedData += data;
-        });
-        batteryCheck.on('close', () => {
-            let re = /\s+/;
-            let output = collectedData.split('\n');
-            let percentageFound = false;
-            for (let i = 0; i < output.length; i++) {
-                if (output[i].indexOf('online') > -1) {
-                    let pluggedIn = output[i].split(re)[2];
-                    if (pluggedIn.match('no')) {
-                        webModelFunctions.update('pluggedIn', false);
-                    }
-                    if (pluggedIn.match('yes')) {
-                        webModelFunctions.update('pluggedIn', true);
-                    }
-                } else if (!percentageFound && output[i].indexOf('percentage') > -1) {
-                    webModelFunctions.update('laptopBatteryPercentage', output[i].split(re)[2].slice(0, -1));
-                    percentageFound = true;
+    if (batteryLevelFile) {
+        fs.readFile(batteryLevelFile, 'utf8', function (err, data) {
+            if (err) {
+                console.error('Error getting battery level');
+            } else {
+                webModelFunctions.update('laptopBatteryPercentage', parseInt(data.split('\n').find(function (data) {
+                    return data.indexOf('POWER_SUPPLY_CAPACITY') > -1;
+                }).split('=')[1]));
+                if (webModel.laptopBatteryPercentage >= personalData.batteryConsideredFullAt) {
+                    webModelFunctions.update('laptopFullyCharged', true);
+                } else {
+                    webModelFunctions.update('laptopFullyCharged', false);
+                }
+                if (logIt) {
+                    console.log(webModel.laptopBatteryPercentage, webModel.pluggedIn, webModel.laptopFullyCharged);
                 }
             }
-            if (webModel.laptopBatteryPercentage >= personalData.batteryConsideredFullAt) {
-                webModelFunctions.update('laptopFullyCharged', true);
+        });
+    }
+
+    if (pluggedInFile) {
+        fs.readFile(pluggedInFile, 'utf8', function (err, data) {
+            if (err) {
+                console.error('Error reading AC status file.');
             } else {
-                webModelFunctions.update('laptopFullyCharged', false);
+                webModelFunctions.update('pluggedIn', data.split('\n').indexOf('POWER_SUPPLY_ONLINE=1') > -1)
             }
-            if (logIt) {
-                console.log(webModel.laptopBatteryPercentage, webModel.pluggedIn, webModel.laptopFullyCharged);
-            }
-            working = false;
         });
     }
 };
@@ -48,5 +59,11 @@ module.exports = checkBattery;
 
 if (require.main === module) {
     // Run the function if this is called directly instead of required.
-    checkBattery(true);
+    // It takes a few millisceonds for glob to get the batter file name.
+    // To save processing time this is stored and reused.
+    // In normal operation a "miss" early on doesn't matter, but if we run it from
+    // the terminal, missing the first and only run is catastrophic, thus the timeout.
+    setTimeout(function () {
+        checkBattery(true);
+    }, 50);
 }
