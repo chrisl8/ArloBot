@@ -113,11 +113,11 @@ class Arduino {
             setTimeout(() => {
                 var delayTwo = 0;
                 if (personalData.relays.has_arduino && !webModel.relays.find(x=> x.name === 'arduino')['relayOn']) {
-                    usbRelay.switch(webModel.relays.find(x=> x.name === 'arduino')['number'], 'on');
+                    usbRelay.switchRelay(webModel.relays.find(x=> x.name === 'arduino')['number'], 'on');
                     delayTwo = 2000;
                 }
                 if (personalData.relays.has_fiveVolt && !webModel.relays.find(x=> x.name === 'fiveVolt')['relayOn']) {
-                    usbRelay.switch(webModel.relays.find(x=> x.name === 'fiveVolt')['number'], 'on');
+                    usbRelay.switchRelay(webModel.relays.find(x=> x.name === 'fiveVolt')['number'], 'on');
                     delayTwo = 2000;
                 }
                 setTimeout(()=> {

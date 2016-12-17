@@ -31,7 +31,7 @@ module.exports = function(sound) {
             //     const UsbRelay = require('./UsbRelayControl');
             //     var usbRelay = new UsbRelay();
             //     if (webModel.relays.find(x=> x.name === 'fiveVolt') && !webModel.relays.find(x=> x.name === 'fiveVolt')['relayOn']) {
-            //         usbRelay.switch(webModel.relays.find(x=> x.name === 'fiveVolt')['number'],'on');
+            //         usbRelay.switchRelay(webModel.relays.find(x=> x.name === 'fiveVolt')['number'],'on');
             //     }
             // }
 

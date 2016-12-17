@@ -256,7 +256,7 @@ Poll.prototype.tick = function () { // Argument options: tick
                 console.log("Idle power down.");
                 webModelFunctions.scrollingStatusUpdate("Idle power down.");
                 masterRelay('off');
-                usbRelay.switch('all', 'off');
+                usbRelay.switchRelay('all', 'off');
             }
         }
     }

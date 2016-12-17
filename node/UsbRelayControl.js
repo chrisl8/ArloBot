@@ -1,9 +1,10 @@
-var personalData = require('./personalData');
-var webModel = require('./webModel');
-var webModelFunctions = require('./webModelFunctions');
-var robotModel = require('./robotModel');
+'use strict';
+const personalData = require('./personalData');
+const webModel = require('./webModel');
+const webModelFunctions = require('./webModelFunctions');
+const robotModel = require('./robotModel');
 const spawn = require('child_process').spawn;
-var ipAddress = require('./ipAddress');
+const ipAddress = require('./ipAddress');
 
 /*
  To get the state of all relays:
@@ -13,7 +14,7 @@ var ipAddress = require('./ipAddress');
  personalData.relays
  */
 
-module.exports = class UsbRelay {
+class UsbRelay {
     constructor() {
         this.dataHolder = '';
         this.busy = false;
@@ -21,7 +22,7 @@ module.exports = class UsbRelay {
         this.updateAllRelayState();
     }
 
-    findRelayName(relayNumber) {
+    static findRelayName(relayNumber) {
         for (let key in personalData.relays) {
             if (personalData.relays.hasOwnProperty(key)) {
                 if (personalData.relays[key] === relayNumber) {
@@ -59,7 +60,7 @@ module.exports = class UsbRelay {
                     for (let i = 0; i < relayStatusArray.length; i++) {
                         let relayNumber = i + 1;
                         let relayState = relayStatusArray[i];
-                        let relayName = this.findRelayName(relayNumber);
+                        let relayName = UsbRelay.findRelayName(relayNumber);
                         webModelFunctions.publishRelayState(relayNumber, relayState, relayName);
                     }
                     this.dataHolder = '';
@@ -73,17 +74,17 @@ module.exports = class UsbRelay {
     }
 
     toggle(relayNumber) {
-        const relayObject = webModel.relays.find(x=> x.number === relayNumber);
+        const relayObject = webModel.relays.find(x => x.number === relayNumber);
         if (relayObject) {
             if (relayObject.relayOn) {
-                this.switch(relayNumber, 'off');
+                this.switchRelay(relayNumber, 'off');
             } else {
-                this.switch(relayNumber, 'on');
+                this.switchRelay(relayNumber, 'on');
             }
         }
     }
 
-    switch(relayNumber, onOrOff) {
+    switchRelay(relayNumber, onOrOff) {
         this.busy = true;
         const state = onOrOff.toLowerCase();
         if (state !== 'on' && state !== 'off') {
@@ -99,10 +100,20 @@ module.exports = class UsbRelay {
             if (code === null || code === 0) {
                 webModelFunctions.scrollingStatusUpdate(`Relay ${relayNumber} ${state}`);
             } else {
-                console.log(`UsbRelay State collection failed with code: ${code}`);
+                console.log(`UsbRelay Switch failed with code: ${code}`);
             }
             this.busy = false;
+            this.updateAllRelayState();
         });
     }
 
-};
+}
+module.exports = UsbRelay;
+
+if (require.main === module) {
+    const usbRelay = new UsbRelay();
+    usbRelay.updateAllRelayState();
+    setTimeout(function () {
+        console.log(webModel.relays);
+    }, 1000);
+}

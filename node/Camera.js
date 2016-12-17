@@ -67,7 +67,7 @@ class Camera {
             delayForUsb = 5;
         }
         if (personalData.relays.has_fiveVolt && !webModel.relays.find(x=> x.name === 'fiveVolt')['relayOn']) {
-            usbRelay.switch(webModel.relays.find(x=> x.name === 'fiveVolt')['number'], 'on');
+            usbRelay.switchRelay(webModel.relays.find(x=> x.name === 'fiveVolt')['number'], 'on');
             delayForUsb = 5;
         }
         if (delayForUsb > 0) {
