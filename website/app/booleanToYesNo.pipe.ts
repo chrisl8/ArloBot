@@ -9,7 +9,7 @@ export class BoolToYesNo implements PipeTransform {
         var returnValue = String(value);
         if (value === true) {
             returnValue = 'Yes';
-        } else if (value === false) {
+        } else if (value === false || value === null) {
             returnValue = 'No';
         }
         return returnValue;

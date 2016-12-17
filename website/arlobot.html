@@ -25,8 +25,8 @@
             <button type="button" class="btn" [ngClass]="{'btn-danger': arlobotSvc.webModel.doorsOpen}"
                     (click)="status.openStartup = !status.openStartup">Dangerous Doors Open <span class="badge">{{arlobotSvc.webModel.doorsOpen | boolToYesNo}}</span>
             </button>
-            <button type="button" class="btn" [ngClass]="{'btn-warning': arlobotSvc.webModel.pauseExplore}"
-                    (click)="status.openNavTab = !status.openNavTab">Explore Paused <span class="badge">{{arlobotSvc.webModel.pauseExplore | boolToYesNo}}</span>
+            <button type="button" class="btn" *ngIf="arlobotSvc.webModel.rosParameters" [ngClass]="{'btn-warning': arlobotSvc.webModel.rosParameters.explorePaused}"
+                    (click)="status.openNavTab = !status.openNavTab">Explore Paused <span class="badge">{{arlobotSvc.webModel.rosParameters.explorePaused | boolToYesNo}}</span>
             </button>
             <button type="button" class="btn" [ngClass]="{'btn-success':  arlobotSvc.webModel.mapName !== ''}"
                     (click)="status.openNavTab = !status.openNavTab">Map <span class="badge"><span
