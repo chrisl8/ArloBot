@@ -381,11 +381,19 @@ function start() {
         });
         // unplugYourself
         socket.on('unplugYourself', function () {
+            // Setting the status means if we flip the switch before ROS
+            // is up, it should unplug once it is ready,
+            // but ONLY when the behavior tree is ready.
+            // TODO: Should unplugging be in the poll too?
             webModelFunctions.update('unplugYourself', true);
+            // By calling the rosInterface here ,this allows us to unplug the robot
+            // any time ROS is running, even if the behavior tree isn't at a point
+            // where it wants to do this.
             rosInterface.unplugRobot(true);
         });
         socket.on('doNotUnplugYourself', function () {
             webModelFunctions.update('unplugYourself', false);
+            // Again, this lets us override the behavior tree ASAP if we need to.
             rosInterface.unplugRobot(false);
         });
 
