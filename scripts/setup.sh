@@ -256,7 +256,7 @@ if [ "${USER}" == chrisl8 ]
     printf "\n${YELLOW}You are using this version of node:${NC} "
     node --version
     printf "${YELLOW}and this is the current stable version of node:${NC} "
-    nvm ls-remote stable
+    nvm ls-remote --lts | tail -1
     printf "\n${YELLOW}Checking for out of date global node modules:${NC}\n"
     npm-check -g
     printf "${YELLOW}Checking for out of date package node modules:${NC}\n"
