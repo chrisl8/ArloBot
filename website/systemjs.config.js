@@ -25,6 +25,7 @@
             'rxjs': 'npm:rxjs',
             'angular2-in-memory-web-api': 'npm:angular2-in-memory-web-api',
             'moment': 'node_modules/moment/moment.js',
+            'ng2-bootstrap/ng2-bootstrap': 'node_modules/ng2-bootstrap/bundles/ng2-bootstrap.umd.js',
         },
         // packages tells the System loader how to load when no filename and/or no extension
         packages: {
