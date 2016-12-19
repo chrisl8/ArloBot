@@ -34,7 +34,7 @@ class UsbRelay {
     }
 
     updateAllRelayState() {
-        if (!this.busy) {
+        if (personalData.useUSBrelay && !this.busy) {
             this.busy = true;
             const process = spawn(this.script, ['all', 'state']);
             process.stdout.on('data', (data) => {
