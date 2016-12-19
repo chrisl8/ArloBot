@@ -178,11 +178,14 @@
         </accordion-group>
         <accordion-group [isOpen]="status.openStartup">
             <div accordion-heading>
-                Startup/Shutdown - <span style="font-weight: bold;" *ngIf="arlobotSvc.webModel.ROSisRunning">ROS is Running!</span>
-                <span style="font-weight: bold;" *ngIf="!arlobotSvc.webModel.ROSisRunning">ROS Stopped.</span>
+                Startup/Shutdown - <span style="font-weight: bold;" *ngIf="arlobotSvc.webModel.ROSisRunning">ROS is Running.</span>
+                <span style="font-weight: bold;" *ngIf="!arlobotSvc.webModel.ROSisRunning && !arlobotSvc.webModel.ROSstart">ROS Stopped.</span> <span style="font-weight: bold;" *ngIf="!arlobotSvc.webModel.ROSisRunning && arlobotSvc.webModel.ROSstart">Please wait, ROS is starting . . .</span>
             </div>
-            <button type="button" class="btn btn-success" *ngIf="!arlobotSvc.webModel.ROSisRunning"
+            <button type="button" class="btn btn-success" *ngIf="!arlobotSvc.webModel.ROSisRunning && !arlobotSvc.webModel.ROSstart"
                     (click)="sendSpecificSignalToArlobot('startROS')">Start ROS
+            </button>
+            <button type="button" *ngIf="!arlobotSvc.webModel.ROSisRunning && arlobotSvc.webModel.ROSstart">
+                Starting...
             </button>
             <button type="button" class="btn btn-danger" *ngIf="arlobotSvc.webModel.ROSisRunning"
                     (click)="sendSpecificSignalToArlobot('stopROS')">Stop ROS
@@ -311,6 +314,9 @@
             <div id="virtual-joystick-container"></div>
         </accordion-group>
         <accordion-group heading="Video">
+            <button type="button" class="btn" [ngClass]="{'btn-success': arlobotSvc.webModel.cameraOn}"
+                    (click)="sendSpecificSignalToArlobot('toggleCamera')">Camera <span class="badge">{{arlobotSvc.webModel.cameraOn | boolToOnOff}}</span>
+            </button>
             <img id="videoFeed" alt="Video feed" [src]="arlobotSvc.webModel.videoSource" style="width: 100%;">
         </accordion-group>
         <accordion-group heading="Old Web Site">
