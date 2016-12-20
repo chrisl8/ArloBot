@@ -29,8 +29,8 @@
 
     "angular2-in-memory-web-api": "0.0.20",
     "bootstrap": "^3.3.7",
-    "socket.io-client": "^1.4.8",
-    "ng2-bootstrap": "^1.1.5"
+    "socket.io-client": "^1.7.2",
+    "ng2-bootstrap": "^1.1.16-7"
   },
   "devDependencies": {
     "concurrently": "^2.2.0",

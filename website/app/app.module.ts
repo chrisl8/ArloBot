@@ -6,9 +6,10 @@ import {FancyName} from './fancyName.pipe';
 
 import {BrowserModule} from '@angular/platform-browser';
 import {Ng2BootstrapModule} from 'ng2-bootstrap/ng2-bootstrap';
+import { AccordionModule  } from 'ng2-bootstrap/ng2-bootstrap';
 import {AppComponent}   from './app.component';
 @NgModule({
-    imports: [BrowserModule, Ng2BootstrapModule],
+    imports: [BrowserModule, Ng2BootstrapModule, AccordionModule.forRoot()],
     declarations: [AppComponent, BoolToYesNo, BoolToOnOff, KeysPipe, FancyName],
     bootstrap: [AppComponent]
 })
