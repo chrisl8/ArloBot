@@ -1,14 +1,5 @@
 ArloBot Package for ROS
 =======================
-## NOTICE: HB-25 Motor Controller Support Ending Soon! ##
-Parallax has updated the Arlo platform to use their new DHB-10 Dual H-Bridge controller.  
-I have plans to update my robot and this code to use that controller.  
-Once I have that code working I will cease support for the HB-25.  
-My guess is that everybody who has an HB-25 already cloned or forked this code and does not follow updates, so it doesn't matter.
-# If you need me to keep supporting the HB-25 in future updates to this code, file an issue in github to let me know! #
-Otherwise I will freeze the last version with HB-25 support in a branch and stop updating it with future changes.
-The last version supporting the HB-25 motor controller is in the hb25 branch.
-
 
 ## and SO MUCH MORE! ##
 
@@ -26,19 +17,29 @@ http://youtu.be/7qJaA6K_WPE
 First you need to build a robot!
 
 ## Parts List ##
-The [Parts List](https://github.com/chrisl8/ArloBot/wiki/Parts-List) is now a GitHub Wiki page.
+* Robot
+* On board computer
+* 3D Sensor
+
+Unlike when I built my robot, the Arlo Robotic Platform now comes as a complete kit, which I recommend buying from Parallax: [Arlo Complete Robot System](https://www.parallax.com/product/28966)
+
+You will also need a few other items (laptop and 3D sensor) which I have some details about on the [Parts List Wiki Page](https://github.com/chrisl8/ArloBot/wiki/Parts-List " Parts List")
 
 ## Building ##
+Follow the excellent [Arlo Robot Assembly Guide](http://learn.parallax.com/tutorials/robot/arlo/arlo-robot-assembly-guide "Assembly Gudie") at Parallax to both assemble and test your Arlo Robot platform.  
+ Be sure you have fully understood and run all of their tests before moving on with using ROS.
+
 Check out my blog: [ArloBot Build Index](http://ekpyroticfrood.net/?p=162 "Ekpyrotic Frood Blog")
 
 And also jump on the [Parallax Forums](http://forums.parallax.com/ "Parallax Forums") and start searching and asking questions!
 
-There is no one complete source on how to do this, but we will all help you out. Ask questions in the [Parallax Forums](http://forums.parallax.com/ "Parallax Forums"), on [GitHub](https://github.com/chrisl8/ArloBot/issues "Create an Issue"), on the [ROS for Arlobot Google Group](https://groups.google.com/forum/?utm_medium=email&utm_source=footer#!forum/ros-for-arlobot "ROS for Arlobot"), and on my [blog](http://ekpyroticfrood.net/ "My Blog"). We will write more documentation as we answer questions, and I hope you will also write instructions when you do your build!
+Now that the Arlo platform comes as a kit, things should be pretty straight forward, but we will all help you out with any problmes you run into.  
+Ask questions in the [Parallax Forums](http://forums.parallax.com/ "Parallax Forums"), on [GitHub](https://github.com/chrisl8/ArloBot/issues "Create an Issue"), on the [ROS for Arlobot Google Group](https://groups.google.com/forum/?utm_medium=email&utm_source=footer#!forum/ros-for-arlobot "ROS for Arlobot"), and on my [blog](http://ekpyroticfrood.net/ "My Blog").
 
 Once your robot is built, you can use this package.
 
 ## Requirements ##
-Arlobot operates on ROS Indigo which requires Ubuntu 14.04 LTS, or Xbuntu or Lubuntu of the same version. I personally recommend Lubuntu.
+Arlobot operates on ROS Indigo which requires Ubuntu 14.04 LTS, or Xbuntu or Lubuntu of the same version. I personally use Lubuntu on my robot's on board computer.
 
 If you put a fresh copy of Lubuntu on your robot's laptop then you can use the quick install script below.
 
@@ -229,3 +230,8 @@ Please report an issue for any problems or if you need me to clarify anything!
 ##Convenience Scripts##
 Look in the scripts folder for a set of handy scripts for starting up and shutting down various aspects of Arlobot.
 
+## HB-25 Motor Controller Support untested! ##
+Parallax has updated the Arlo platform to use their new DHB-10 Dual H-Bridge controller.  
+My robot now uses the DHB-10 motor controller.  
+In theory the HB-25 controller should continue to work with this code just fine, but as I no longer have them installed anywhere, I cannot test to be 100% sure I didn't break something with them.  
+If you do find a problem though, open an issue and I will try to fix it. I do not intend to end support for the HB-25, I just need your help to test it if it breaks.
