@@ -8,7 +8,7 @@ Everything else here is just so I know how I got here.
 
 # To build this, first follow the quick setup at:
 https://angular.io/docs/ts/latest/quickstart.html
-* NOTE: Those instructions change with every iteratino of Angular 2, so this site does not line up with the
+* NOTE: Those instructions change with every iteration of Angular 2, so this site does not line up with the
 current tutorial anymore.
 
 # Then install: 

@@ -26,14 +26,14 @@ Unlike when I built my robot, the Arlo Robotic Platform now comes as a complete 
 You will also need a few other items (laptop and 3D sensor) which I have some details about on the [Parts List Wiki Page](https://github.com/chrisl8/ArloBot/wiki/Parts-List " Parts List")
 
 ## Building ##
-Follow the excellent [Arlo Robot Assembly Guide](http://learn.parallax.com/tutorials/robot/arlo/arlo-robot-assembly-guide "Assembly Gudie") at Parallax to both assemble and test your Arlo Robot platform.  
+Follow the excellent [Arlo Robot Assembly Guide](http://learn.parallax.com/tutorials/robot/arlo/arlo-robot-assembly-guide "Assembly Guide") at Parallax to both assemble and test your Arlo Robot platform.  
  Be sure you have fully understood and run all of their tests before moving on with using ROS.
 
 Check out my blog: [ArloBot Build Index](http://ekpyroticfrood.net/?p=162 "Ekpyrotic Frood Blog")
 
 And also jump on the [Parallax Forums](http://forums.parallax.com/ "Parallax Forums") and start searching and asking questions!
 
-Now that the Arlo platform comes as a kit, things should be pretty straight forward, but we will all help you out with any problmes you run into.  
+Now that the Arlo platform comes as a kit, things should be pretty straight forward, but we will all help you out with any problems you run into.  
 Ask questions in the [Parallax Forums](http://forums.parallax.com/ "Parallax Forums"), on [GitHub](https://github.com/chrisl8/ArloBot/issues "Create an Issue"), on the [ROS for Arlobot Google Group](https://groups.google.com/forum/?utm_medium=email&utm_source=footer#!forum/ros-for-arlobot "ROS for Arlobot"), and on my [blog](http://ekpyroticfrood.net/ "My Blog").
 
 Once your robot is built, you can use this package.
@@ -88,7 +88,7 @@ Complete setup and usage instructions are at my blog:
 http://ekpyroticfrood.net/?p=162
 
 ## Serial Interface and Propeller Code Testing ##
-It is a good idea to irst test your serial interface to the propeller board:
+It is a good idea to first test your serial interface to the propeller board:
 ```
 cd ~/catkin_ws/src/ArloBot/scripts/
 ./direct2PropSerialTest.sh
@@ -233,5 +233,5 @@ Look in the scripts folder for a set of handy scripts for starting up and shutti
 ## HB-25 Motor Controller Support untested! ##
 Parallax has updated the Arlo platform to use their new DHB-10 Dual H-Bridge controller.  
 My robot now uses the DHB-10 motor controller.  
-In theory the HB-25 controller should continue to work with this code just fine, but as I no longer have them installed anywhere, I cannot test to be 100% sure I didn't break something with them.  
+In theory the HB-25 controller should continue to work with this code just fine, but as I no longer have them installed anywhere, I cannot test to be 100% sure I did not break something with them.  
 If you do find a problem though, open an issue and I will try to fix it. I do not intend to end support for the HB-25, I just need your help to test it if it breaks.
