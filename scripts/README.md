@@ -1,7 +1,8 @@
 Convenience Scripts
 ===========================
 
-These are scripts that are meant to make it easy to start up basic ROS functions on the robot without having to run dozens of roslaunch commands.
+These are scripts that are meant to make it easy to start up basic ROS functions on the robot without having to run dozens of roslaunch commands.  
+Many of these scripts are also used by the web site and the ROS nodes themselves to accomplish tasks. Using the same code makes testing easy.
 
 <ul>
 <li>setup.sh - Set up everything Arlobot needs in your environment.</li>
@@ -28,4 +29,5 @@ These are scripts that are meant to make it easy to start up basic ROS functions
 <li>view-model.sh - This will start RVIZ just to view the model-robot.</li>
 <li>resetUSB.sh - This will reset all of your USB ports without rebooting.</li>
 <li>ros_prep.sh - This is a helper script to get ports and things ready for ROS.</li>
+<li>There are a lot more scripts in here that I have forgotten to document. Please bug me if you want me to update this.</li>
 </ul>
