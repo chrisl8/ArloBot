@@ -116,7 +116,7 @@ IR sensors. */
 Full details on how to use the DHB-10 Motor Controller on the Parallax Arlo Robot platform with a
 Propeller Activity Board can be found here:
 http://learn.parallax.com/tutorials/robot/arlo/arlo-activity-board-brain
-I highly suggets you work through the instructionsn there and run the example programs and tests before using this code.
+I highly suggets you work through the instructions there and run the example programs and tests before using this code.
 */
 #include "arlodrive.h"
 
@@ -159,8 +159,8 @@ int mcp3208_IR_cm(int); // Function to get distance in CM from IR sensor using M
    As it is though, gmapping, AMCL, etc. work very well off of the Odometry without using the gyro data.
    */
 unsigned char i2cAddr = 0x69;       //I2C Gyro address
-//L3G4200D register addresses & commads.
-//See device datasheet section 7 for more info.
+//L3G4200D register addresses & commands.
+//See device data sheet section 7 for more info.
 unsigned char devId = 0x0f;        //Device ID
 unsigned char ctrl1 = 0x20;        //Control reg1
 unsigned char cfg1 = 0b00011111;   //100 hz, 25 cutoff, power up, axes enabled
@@ -223,9 +223,11 @@ int main() {
     char *reply = dhb10_reply;
 
     // Halt motors in case they are moving and reset all stats.
+    pause(dhb10OverloadPause);
     reply = dhb10_com("GOSPD 0 0\r");
     pause(dhb10OverloadPause);
     reply = dhb10_com("RST\r");
+    pause(dhb10OverloadPause);
 
     // For Odometry
     int ticksLeft, ticksRight, ticksLeftOld, ticksRightOld;
@@ -446,7 +448,7 @@ int main() {
            is sent.
            Without this, if your max speed is 50, and ROS asks us to set
            one wheel at 50 and the other at 100, we will end up with both
-           at 50z changing a turn into a straight line!
+           at 50 changing a turn into a straight line!
 
            Remember that max speed is variable based on parameters within
            this code, such as proximity to walls, etc.
@@ -619,7 +621,7 @@ int main() {
         dprint(term, "DEBUG: %d %d %d %d %d\n", ignoreProximity, ignoreCliffSensors, ignoreIRSensors, ignoreFloorSensors, pluggedIn);
         #endif
 
-        pause(20); // Maximum read frequency.
+        pause(mainLoopPause); // Maximum read frequency.
     }
 }
 
