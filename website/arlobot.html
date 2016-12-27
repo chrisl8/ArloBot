@@ -313,7 +313,12 @@
             <span id="virtual-joystick-result"></span>
             <div id="virtual-joystick-container"></div>
         </accordion-group>
-        <accordion-group heading="Video">
+        <accordion-group>
+            <div accordion-heading>
+                Video - <span style="font-weight: bold;" *ngIf="arlobotSvc.webModel.cameraOn">Camera ON</span>
+                <span *ngIf="!arlobotSvc.webModel.cameraOn">Camera Off</span>
+                <span style="font-weight: bold;" *ngIf="!arlobotSvc.webModel.ROSisRunning && !arlobotSvc.webModel.ROSstart">ROS Stopped.</span> <span style="font-weight: bold;" *ngIf="!arlobotSvc.webModel.ROSisRunning && arlobotSvc.webModel.ROSstart">Please wait, ROS is starting . . .</span>
+            </div>
             <button type="button" class="btn" [ngClass]="{'btn-success': arlobotSvc.webModel.cameraOn}"
                     (click)="sendSpecificSignalToArlobot('toggleCamera')">Camera <span class="badge">{{arlobotSvc.webModel.cameraOn | boolToOnOff}}</span>
             </button>
