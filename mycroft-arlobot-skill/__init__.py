@@ -65,7 +65,7 @@ class ArlobotSkill(MycroftSkill):
             self.register_regex(prefix + ' ' + suffix_regex)
 
     def handle_startup_intent(self, message):
-        words = message.metadata.get("Words")
+        words = message.data.get("Words")
         words = 'Hello my name is ' + words
         self.speak(words)
 

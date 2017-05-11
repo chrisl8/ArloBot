@@ -194,22 +194,20 @@ if ! [ -d ~/catkin_ws/src/ArloBot/mycroft-core ]
     then
     git clone https://github.com/MycroftAI/mycroft-core.git
     printf "\n${YELLOW}[IF you want to use MyCroft:]${NC}\n"
-    printf "\n${YELLOW}[After setup is done please run ./build_host_setup.sh to finish MyCroft setup]${NC}\n"
+    printf "\n${YELLOW}[After setup is done please go to the mycroft-core folder and run build_host_setup_debian.sh and dev_setup.sh to finish MyCroft setup]${NC}\n"
     printf "\n${YELLOW}[Then see https://docs.mycroft.ai/development/cerberus for configuration info.]${NC}\n"
+    printf "\n${YELLOW}[See more info at: https://docs.mycroft.ai/installing.and.running/installation/git.clone.install]${NC}\n"
 else
     cd ~/catkin_ws/src/ArloBot/mycroft-core
     git pull
 fi
-if [ ! -d ~/.mycroft/third_party_skills ]; then
-    mkdir -p ~/.mycroft/third_party_skills
+if [ ! -L /opt/mycroft/skills/mycroft-arlobot-skill ]; then
+    cd /opt/mycroft/skills/
+    ln -s ${HOME}/catkin_ws/src/ArloBot/mycroft-arlobot-skill
 fi
-if [ ! -L ~/.mycroft/third_party_skills/mycroft-arlobot-skill ]; then
-    cd ~/.mycroft/third_party_skills/
-    ln -s ~/catkin_ws/src/ArloBot/mycroft-arlobot-skill
-fi
-if [ ! -L ~/.mycroft/third_party_skills/mycroft-smalltalk-skill ]; then
-    cd ~/.mycroft/third_party_skills/
-    ln -s ~/catkin_ws/src/ArloBot/mycroft-smalltalk-skill
+if [ ! -L /opt/mycroft/skills/mycroft-smalltalk-skill ]; then
+    cd /opt/mycroft/skills/
+    ln -s ${HOME}/catkin_ws/src/ArloBot/mycroft-smalltalk-skill
 fi
 cd ~/catkin_ws/src
 printf "\n${YELLOW}[(Re)Building ROS Source files.]${NC}\n"

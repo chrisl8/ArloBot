@@ -24,8 +24,7 @@ from mycroft.util.log import getLogger
 __author__ = 'chrisl8'
 # Based on helloworld by eward
 
-LOGGER = getLogger(__name__)
-
+LOG = getLogger(__name__)
 
 class SmallTalkSkill(MycroftSkill):
 
@@ -53,6 +52,7 @@ class SmallTalkSkill(MycroftSkill):
             require("GoodMorningKeyword").build()
         self.register_intent(good_morning_intent,
                              self.handle_good_morning_intent)
+        self.emitter.on('intent_failure', self.handle_fallback)
 
     # def handle_thank_you_intent(self, message):
     #     self.speak_dialog("welcome")
@@ -65,6 +65,12 @@ class SmallTalkSkill(MycroftSkill):
 
     def handle_good_morning_intent(self, message):
         self.speak_dialog("good.morning")
+
+    def handle_fallback(self, message):
+        utt = message.data.get('utterance')
+        LOG.debug("SmallTalk fallback attempt: " + utt)
+        self.speak_dialog("fallback", data={'phrase': utt})
+
 
     def stop(self):
         pass

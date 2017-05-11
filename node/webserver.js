@@ -333,7 +333,7 @@ function start() {
         socket.on('tts', function (data) {
             // TODO: Set up web interface to be different, If using mycroft, it should be more like 'talk to <robot name>' instead of speak, and it should have a note about using 'say' to have it speak.
             if (personalData.useMyCroft) {
-                myCroft.injectText(data);
+                myCroft.sayText(data);
             } else {
                 tts(data);
             }
