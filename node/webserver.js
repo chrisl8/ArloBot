@@ -1,4 +1,3 @@
-'use strict';
 const personalData = require('./personalData');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
@@ -8,7 +7,7 @@ const camera = new Camera('Camera', personalData.camera0name);
 const Arduino = require('./Arduino');
 const arduino = new Arduino(true);
 const myCroft = require('./MyCroft');
-var robotModel = require('./robotModel');
+const robotModel = require('./robotModel');
 const LaunchScript = require('./LaunchScript');
 const tts = require('./tts');
 
@@ -77,7 +76,7 @@ app.post('/', function (req, res) {
          https://scotch.io/tutorials/authenticate-a-node-js-api-with-json-web-tokens
          */
         /** @namespace personalData.webSiteSettings.tokenSecret */
-        var token = jwt.sign({name: req.body.name}, personalData.webSiteSettings.tokenSecret, {
+        const token = jwt.sign({name: req.body.name}, personalData.webSiteSettings.tokenSecret, {
             expiresIn: '24h'
         });
         console.log('Token:', token);
@@ -154,11 +153,11 @@ app.use(function (req, res, next) {
 // All web content is housed in the website folder
 app.use(express.static(__dirname + '/../website'));
 
-var handleSemaphoreFiles = require('./handleSemaphoreFiles');
+const handleSemaphoreFiles = require('./handleSemaphoreFiles');
 handleSemaphoreFiles.readSemaphoreFiles();
 
-var saveMap = function (newMapName) {
-    var mapDir = process.env.HOME + '/.arlobot/rosmaps/';
+const saveMap = function (newMapName) {
+    const mapDir = process.env.HOME + '/.arlobot/rosmaps/';
     let serverMapProcess = new LaunchScript({
         name: 'SaveMap',
         callback: updateMapList,
@@ -169,9 +168,9 @@ var saveMap = function (newMapName) {
     serverMapProcess.start();
 };
 
-var startLogStreamer = function () {
-    var command = __dirname + '/../scripts/log-watcher.sh';
-    var logStreamerProcess = spawn(command);
+const startLogStreamer = function () {
+    const command = __dirname + '/../scripts/log-watcher.sh';
+    const logStreamerProcess = spawn(command);
     logStreamerProcess.stdout.setEncoding('utf8');
     logStreamerProcess.stdout.on('data', function (data) {
         //console.log(data);
@@ -195,10 +194,10 @@ var startLogStreamer = function () {
     });
     return logStreamerProcess;
 };
-var stopLogStreamer = function () {
-    var command = '/usr/bin/pkill';
-    var commandArgs = ['-f', 'log.io'];
-    var process = spawn(command, commandArgs);
+const stopLogStreamer = function () {
+    const command = '/usr/bin/pkill';
+    const commandArgs = ['-f', 'log.io'];
+    const process = spawn(command, commandArgs);
     process.stdout.setEncoding('utf8');
     process.stdout.on('data', function (data) {
         //console.log(data);
@@ -225,10 +224,10 @@ var stopLogStreamer = function () {
 // and only show them when ROS is starting.
 // Behaviors like these could also fall into "ramdon activities" when robot is "idle",
 // but then I think that it would need to be in the behavior tree
-var startColorFollower = function () {
+const startColorFollower = function () {
     webModelFunctions.scrollingStatusUpdate('Starting Color Follower.');
-    var command = __dirname + '/../scripts/object_follower.sh';
-    var colorFollowerProcess = spawn(command);
+    const command = __dirname + '/../scripts/object_follower.sh';
+    const colorFollowerProcess = spawn(command);
     colorFollowerProcess.stdout.setEncoding('utf8');
     colorFollowerProcess.stdout.on('data', function (data) {
         if (data.indexOf('ROI messages detected. Starting follower...') > -1) {
@@ -256,11 +255,11 @@ var startColorFollower = function () {
     });
     return colorFollowerProcess;
 };
-var stopColorFollower = function () {
+const stopColorFollower = function () {
     //pkill -f "roslaunch arlobot_launchers object_follower.launch"
-    var command = '/usr/bin/pkill';
-    var commandArgs = ['-f', 'roslaunch arlobot_launchers object_follower.launch'];
-    var process = spawn(command, commandArgs);
+    const command = '/usr/bin/pkill';
+    const commandArgs = ['-f', 'roslaunch arlobot_launchers object_follower.launch'];
+    const process = spawn(command, commandArgs);
     process.stdout.setEncoding('utf8');
     process.stdout.on('data', function (data) {
         //console.log(data);
@@ -280,8 +279,8 @@ var stopColorFollower = function () {
 
 function start() {
     /** @namespace personalData.webServerPort */
-    var webServer = app.listen(personalData.webServerPort);
-    var io = require("socket.io").listen(webServer);
+    const webServer = app.listen(personalData.webServerPort);
+    const io = require("socket.io").listen(webServer);
 
     webModelFunctions.emitter.on('change', function () {
         io.sockets.emit('webModel', webModel);
@@ -290,7 +289,7 @@ function start() {
     // Socket listeners
     io.on('connection', function (socket) {
         socket.emit('startup', webModel);
-        var address = socket.request.connection.remoteAddress;
+        const address = socket.request.connection.remoteAddress;
         console.log("Web connection from " + address);
 
         socket.on('setMap', function (data) {
@@ -331,7 +330,7 @@ function start() {
             setTimeout(wayPointEditor.updateWayPointList, 5000);
         });
         socket.on('tts', function (data) {
-            // TODO: Set up web interface to be different, If using mycroft, it should be more like 'talk to <robot name>' instead of speak, and it should have a note about using 'say' to have it speak.
+            // TODO: This just says text. Might also want to have a "talk to robot" option that will use myCroft.injectText instead.
             if (personalData.useMyCroft) {
                 myCroft.sayText(data);
             } else {
@@ -469,7 +468,7 @@ function start() {
             usbRelay.toggle(data);
         });
         socket.on('toggleRelayByName', function (data) {
-            usbRelay.toggle(webModel.relays.find(x=> x.name === data)['number']);
+            usbRelay.toggle(webModel.relays.find(x => x.name === data)['number']);
         });
         socket.on('exit', function () {
             console.log('Shutdown requested from web interface!');
