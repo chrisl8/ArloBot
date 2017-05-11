@@ -40,7 +40,7 @@ if [ -e  ${HOME}/.nvm/nvm.sh ]
     nvm deactivate
 fi
 
-wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.32.1/install.sh | bash
+wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
 export NVM_DIR="${HOME}/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 
@@ -252,7 +252,7 @@ if [ "${USER}" == chrisl8 ]
     printf "${YELLOW}Does the current version of nvm we installed:${NC} "
     nvm --version
     printf "${YELLOW}Match the version on github:${NC} "
-    wget -qO- https://github.com/creationix/nvm/blob/master/README.markdown|grep install.sh|grep wget|sed -e "s/<pre><code>//"|sed "s/\//\\n/g"|grep ^v|head -1
+    wget -qO- https://github.com/creationix/nvm/blob/master/README.md|grep install.sh|grep wget|sed -e "s/<pre><code>//"|sed "s/\//\\n/g"|grep ^v|head -1
     printf "\n${YELLOW}You are using this version of node:${NC} "
     node --version
     printf "${YELLOW}and this is the current stable version of node:${NC} "
