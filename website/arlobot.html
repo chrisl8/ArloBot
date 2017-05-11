@@ -221,7 +221,10 @@
                 </button>
             </div>
         </accordion-group>
-        <accordion-group heading="Navigation" [isOpen]="status.openNavTab">
+        <accordion-group [isOpen]="status.openNavTab">
+            <div accordion-heading>
+                Navigation<span style="font-weight: bold;" *ngIf="arlobotSvc.webModel.mapName !== ''"> - Map loaded: <span style="color: #337ab7;"> {{ arlobotSvc.webModel.mapName }} </span></span>
+            </div>
             <div *ngIf="arlobotSvc.webModel.mapName === '' && !arlobotSvc.webModel.autoExplore">
                 <button type="button" class="btn btn-warning" (click)="status.showMapPicker = true">
                     Load Map
@@ -236,7 +239,7 @@
                     (click)="sendSpecificSignalToArlobot('clearMap')">
                 Clear Map/Cancel Explore
             </button>
-            <div class="lcarish-toggle-button" id="pause-explore-button"
+            <div class="lcarish-toggle-button" id="pause-explore-button" *ngIf="arlobotSvc.webModel.mapName === ''"
                  (click)="updateWebModelKey('pauseExplore', 'unPauseAutoExplore', 'pauseAutoExplore')">
                 <label class="toggler" [class.brightly-positive-text]="!arlobotSvc.webModel.pauseExplore">Run</label>
                 <div class="toggle toggle-off" [class.toggle-on]="arlobotSvc.webModel.pauseExplore">
@@ -317,7 +320,6 @@
             <div accordion-heading>
                 Video - <span style="font-weight: bold;" *ngIf="arlobotSvc.webModel.cameraOn">Camera ON</span>
                 <span *ngIf="!arlobotSvc.webModel.cameraOn">Camera Off</span>
-                <span style="font-weight: bold;" *ngIf="!arlobotSvc.webModel.ROSisRunning && !arlobotSvc.webModel.ROSstart">ROS Stopped.</span> <span style="font-weight: bold;" *ngIf="!arlobotSvc.webModel.ROSisRunning && arlobotSvc.webModel.ROSstart">Please wait, ROS is starting . . .</span>
             </div>
             <button type="button" class="btn" [ngClass]="{'btn-success': arlobotSvc.webModel.cameraOn}"
                     (click)="sendSpecificSignalToArlobot('toggleCamera')">Camera <span class="badge">{{arlobotSvc.webModel.cameraOn | boolToOnOff}}</span>
