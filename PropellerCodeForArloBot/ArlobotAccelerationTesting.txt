@@ -1,0 +1,136 @@
+Arlobot Acceleration Testing
+(and maximum/minimum speed)
+
+The robot behaves much better if the acceleration is limited.
+Unfortunately both ROS and my code are not great at it,
+plus ROS gets unhappy if I throttle it too much.
+
+What may work is setting the ACC in the motor controller:
+dhb10_com("ACC 150\r");
+
+I used the MotorResponseTesting.c script to get these numbers.
+Be sure to test your robot ON THE FLOOR, because
+everything is different with resistance.
+
+For the maximum speed don't just look for the max it can reach,
+but the max it reaches in a consistent time.
+If it takes 1 second sometimes and 3 others, that is too fast and you are
+just barely hitting that speed randomly.
+
+Default DHB-10 Maximum Linear speed: 0.74 m/s (218 TPS)
+(Found by setting speed to 1 m/s and looking at the result)
+On the Floor:
+It doesn't reach 0.80, at least not in a reasonable distance.
+0.75 equates to 222 TPS, which is above the max angular TPS.
+0.74 seems consistent. It seems like it can got a lot faster in a straight
+line than a circle, probably because of momentum.
+Up on Blocks:
+Maximum is 0.80 (0.815 to 0.825)
+It will never reach 0.830, but it will ramp up to 0.820 quickly.
+0.80 is probably a safe maximum speed to avoid having it bump about close to what it cannot reach.
+It can do 0.80 steadily up on blocks.
+
+NOTE: This depends on setting:
+#define DHB10_NORMAL_ACC 150
+in per_robot_settings_for_propeller_c_code.h
+
+Maximum Linear Acceleration: 0.36 m/s^2
+Up on blocks it is 0.50 m/s
+
+Linear (forward)
+0 to 0.74 m/s
+2058 foward ACC 150
+2063
+2064
+2023
+2017
+1986
+2059
+2148
+2050
+2015
+2011
+1982
+2060
+2057
+2050
+2054
+AVERAGE = 2050 = 0.360975609756098
+http://www.smartconversion.com/unit_calculation/Acceleration_calculator.aspx
+On blocks the avg time to reach 0.80 was 1540 = 0.51948051948052
+
+0.74 to 0 m/s
+2163
+1996
+2155
+1995
+2403
+2077
+1950
+2185
+2486
+2140
+1996
+1951
+1931
+1997
+2334
+http://www.smartconversion.com/unit_calculation/Acceleration_calculator.aspx
+On Blocks it stopped from 0.80 in 1283 ms every single time.
+
+Minimum Linear Velocity: STILL TESTING (0.1 is my guess,
+but I also need to record the TPS, and update the MINIMUM_SPEED so it isn't
+jerky when escaping.)
+Up on blocks:
+At 0.04 it doesn't jerk, but it still waddles a bit.
+At 0.03 and below it just jerks back and forth, each wheel moving a bit.
+
+Angular:
+
+Maximum Angular Velocity: 3.7 rad/s (220 TPS)
+Up on blocks it can do:
+At 4.0 rad/s it consistently reaches the speed every time and runs.
+At 4.1 rad/s it runs forever without attaining the requested speed.
+At 4.2 rad/s one of the motors actually starts to give up and run slow!
+Above this sometimes one wheel actually slows down while the other keeps trying.
+But on the floor:
+It reaches 3.7 very consistently.
+It reaches 3.8 always, but sometimes it takes 1.5 seconds and sometimes 3.3!
+It will never reach 3.9, just spinning forever.
+At 4.0, on the floor, one wheel actually slows down eventually and it gets trippy!
+
+NOTE: This depends on setting:
+#define DHB10_NORMAL_ACC 150
+in per_robot_settings_for_propeller_c_code.h
+
+Angular Acceleration: 3.2 rad/s^2
+Angular (positive) [ON THE FLOOR!]
+0 to 3.7 rad/s
+1233
+1233
+1133
+1233
+1133
+1133
+1333
+1133
+1433
+1133 = 3.26566637246249
+
+3.7 to 0 rad/s
+1584
+1284
+1584
+1285
+1285
+1584
+1285
+1384
+1484
+1584
+
+Minimum Angular Velocity: 0.3 rad/s (18 TPS)
+Below this it is very jerky.
+It sometimes sounds funny at 0.3 rad/s, but it is smooth.
+
+TODO: Get TPS for max/min and set MAXIMUM_SPEED and MINIMUM_SPEED in per robot settings.
