@@ -533,19 +533,19 @@ class PropellerComm(object):
 
         if sensor_data.get('p' + str(10)):
             upperSensor = (sensor_data.get('p' + str(10), artificial_far_distance * 100) / 100.0) + sensor_offset
-            if upperSensor < ping[1]:
+            if upperSensor < max_range_accepted and upperSensor < ping[1]:
                 ping[1] = upperSensor
         if sensor_data.get('p' + str(11)):
             upperSensor = (sensor_data.get('p' + str(11), artificial_far_distance * 100) / 100.0) + sensor_offset
-            if upperSensor < ping[2]:
+            if upperSensor < max_range_accepted and  upperSensor < ping[2]:
                 ping[2] = upperSensor
         if sensor_data.get('p' + str(12)):
             upperSensor = (sensor_data.get('p' + str(12), artificial_far_distance * 100) / 100.0) + sensor_offset
-            if upperSensor < ping[3]:
+            if  upperSensor < max_range_accepted and upperSensor < ping[3]:
                 ping[3] = upperSensor
         if sensor_data.get('p' + str(13)):
             upperSensor = (sensor_data.get('p' + str(13), artificial_far_distance * 100) / 100.0) + sensor_offset
-            if upperSensor < ping[7]:
+            if  upperSensor < max_range_accepted and upperSensor < ping[7]:
                 ping[7] = upperSensor
         # TODO: Duduplicate the above code.
 
