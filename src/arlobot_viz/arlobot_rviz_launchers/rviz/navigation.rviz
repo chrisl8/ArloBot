@@ -234,6 +234,8 @@ Visualization Manager:
           Value: false
         left_wheel_link:
           Value: false
+        map:
+          Value: false
         mount_asus_xtion_pro_link:
           Value: false
         neato_laser:
