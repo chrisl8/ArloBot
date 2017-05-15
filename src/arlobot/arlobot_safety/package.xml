@@ -14,5 +14,4 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <run_depend>arlobot_bringup</run_depend>
 </package>
