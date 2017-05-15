@@ -6,12 +6,9 @@
  * and parameters for ROS
  */
 
-// Use other integer values in place of DHB10_NORMAL_ACC
-// If you want to experiment with the acceleration on the DHB-10
-// The range is 0 to 32767 with a default of 512
-// according to https://www.parallax.com/sites/default/files/downloads/28231-DHB-10-Arlo-Firmware-Guide-v1.0.pdf
-// If you want to change this permanently change DHB10_NORMAL_ACC in per_robot_settings_for_propeller_c_code.h
-#define acc DHB10_NORMAL_ACC
+/* If you want to experiment with the maximum acceleration on the DHB-10
+ * edit DHB10_ACC in per_robot_settings_for_propeller_c_code.h
+ */
 
 /* Adjust the
  * COMMANDED_VELOCITY
@@ -24,15 +21,15 @@
             omega = twist_command.angular.z  # rad/s
  */
 
-#define COMMANDED_VELOCITY 0.74 // m/s
-#define COMMANDED_ANGULAR_VELOCITY 0.0 // rad/s
+#define COMMANDED_VELOCITY 0.0 // m/s
+#define COMMANDED_ANGULAR_VELOCITY -3.6 // rad/s
 
 // Do it forever? (Not really, it will stop at the MAXIMUM_LOOPS count)
 #define FOREVER 0; // 0 for not, in which case it stops when it reaches the stated velocity.
 
 // Prevent runaway, especially useful for max/min speed testing.
 // Start with a safe value like 50, and raise it if it hits this before reaching your requested speed.
-#define MAXIMUM_LOOPS 100;
+#define MAXIMUM_LOOPS 50;
 
 // Experiment to determine:
 // Maximum speed in linear and angular.
@@ -131,13 +128,13 @@ int main() {
     char *reply = dhb10_reply;
 
     // Halt motors in case they are moving and reset all stats.
-    pause(dhb10OverloadPause);
     dhb10_com("GOSPD 0 0\r");
     pause(dhb10OverloadPause);
     dhb10_com("RST\r");
     pause(dhb10OverloadPause);
-    sprint(s, "ACC %d\r", acc);
+    sprint(s, "ACC %d\r", DHB10_ACC);
     dhb10_com(s);
+    pause(dhb10OverloadPause);
 
     // For Odometry
     int ticksLeft, ticksRight, ticksLeftOld, ticksRightOld;
@@ -290,7 +287,12 @@ int main() {
                 // The speed varies, so if you don't use >=, it can go a long time hunting.
                 time += CNT; // Now subtract it to see how long this takes
                 difference = time / millisecond;
-                dprint(term, "It took %d millisecond to reach %.3f m/s.\n", difference, CommandedVelocity);
+                if (CommandedVelocity != 0.0) {
+                    dprint(term, "It took %d millisecond to reach %.3f m/s.\n", difference, CommandedVelocity);
+                }
+                if (CommandedAngularVelocity != 0.0) {
+                    dprint(term, "It took %d millisecond to reach %.3f rad/s.\n", difference, CommandedAngularVelocity);
+                }
                 //            printDetails = 1;
                 time = -CNT; // Get current time as a negative
                 reachedMaxSpeed = 1;
@@ -298,14 +300,13 @@ int main() {
                     stopping = 1;
                     dhb10_com("GOSPD 0 0\r");
                     pause(dhb10OverloadPause);
-                    sprint(s, "ACC %d\r", DHB10_MAX_ACC);
+                    sprint(s, "ACC %d\r", DHB10_ACC);
                     dhb10_com(s);
                 }
             } else if (stopping == 1 && speedLeft == 0 && speedRight == 0) {
                 time += CNT; // Now subtract it to see how long this takes
                 difference = time / millisecond;
-                dprint(term, "It took %d millisecond to stop after reaching %.3f m/s.\n", difference,
-                       CommandedVelocity);
+                dprint(term, "It took %d millisecond to come to a complete stop.\n", difference);
                 //            printDetails = 1;
                 stopping = 0;
                 completed = 1;

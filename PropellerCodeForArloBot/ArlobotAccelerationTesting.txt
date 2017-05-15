@@ -1,31 +1,46 @@
 Arlobot Acceleration Testing
 (and maximum/minimum speed)
 
-The robot behaves much better if the acceleration is limited.
-Unfortunately both ROS and my code are not great at it,
-plus ROS gets unhappy if I throttle it too much.
+NOTE: The actual values here are not specifically used in the parameter files,
+because setting them exactly causes DWA to behave oddly.
+For instance:
+1. You have to set minimum rotational and x speeds to 0, or the robot thinks
+it cannot spin in place, or move forward without rotating.
+2. Setting the exact acceleration values causes the robot to spin and rotate
+without ever achieving its destination.
+3. You may want to set less than actual max speed for health and safety.
 
-What may work is setting the ACC in the motor controller:
+So use this for info and experimenting, but don't go copying these blindly
+into param/*.yaml files.
+
+These settings are used in
+dwa_local_planner_params.yaml
+    under both arlobot_navigation and arlobot_explore
+and base_local_planenr_params.yaml
+    under arlobot_explore
+
+The robot behaves much better if the acceleration is limited.
+I do this by setting the ACC in the motor controller to 150 instead of the default 512:
 dhb10_com("ACC 150\r");
 
 I used the MotorResponseTesting.c script to get these numbers.
 Be sure to test your robot ON THE FLOOR, because
-everything is different with resistance.
+everything is different with resistance than it is if the wheels are off of the ground.
 
 For the maximum speed don't just look for the max it can reach,
 but the max it reaches in a consistent time.
 If it takes 1 second sometimes and 3 others, that is too fast and you are
 just barely hitting that speed randomly.
 
-Default DHB-10 Maximum Linear speed: 0.74 m/s (218 TPS)
-(Found by setting speed to 1 m/s and looking at the result)
+LINEAR (X):
+
+Maximum Linear speed: 0.74 m/s (218 TPS) - max_vel_x
 On the Floor:
 It doesn't reach 0.80, at least not in a reasonable distance.
 0.75 equates to 222 TPS, which is above the max angular TPS.
 0.74 seems consistent. It seems like it can got a lot faster in a straight
 line than a circle, probably because of momentum.
 Up on Blocks:
-Maximum is 0.80 (0.815 to 0.825)
 It will never reach 0.830, but it will ramp up to 0.820 quickly.
 0.80 is probably a safe maximum speed to avoid having it bump about close to what it cannot reach.
 It can do 0.80 steadily up on blocks.
@@ -34,12 +49,271 @@ NOTE: This depends on setting:
 #define DHB10_NORMAL_ACC 150
 in per_robot_settings_for_propeller_c_code.h
 
-Maximum Linear Acceleration: 0.36 m/s^2
-Up on blocks it is 0.50 m/s
+Maximum Linear Acceleration: 0.7 m/s^2 - acc_lim_x
 
 Linear (forward)
 0 to 0.74 m/s
-2058 foward ACC 150
+1033
+1033
+1033
+933
+1033
+1033
+1033
+1033 = 0.716360116166505
+933
+1033
+1033
+933
+1033
+1033
+1033
+933
+http://www.smartconversion.com/unit_calculation/Acceleration_calculator.aspx
+
+0.74 to 0 m/s
+1888
+1588
+1888
+1588
+1888
+1688
+1588
+1888
+1588
+1888
+1988
+1988
+1788
+1488
+1588
+1888
+http://www.smartconversion.com/unit_calculation/Acceleration_calculator.aspx
+On Blocks it stopped from 0.80 in 1283 ms every single time.
+
+Minimum Linear Velocity: 0.06 m/s (18 TPS)
+NOTE: Don't set min_vel_x to this or DWA will not work properly.
+Up on blocks:
+At 0.04 it doesn't jerk, but it still waddles a bit.
+At 0.03 and below it just jerks back and forth, each wheel moving a bit.
+
+ANGULAR (theta):
+
+Maximum Angular Velocity: 3.6 rad/s (214 TPS) - max_rot_vel
+Up on blocks it can do:
+At 4.0 rad/s it consistently reaches the speed every time and runs.
+At 4.1 rad/s it runs forever without attaining the requested speed.
+At 4.2 rad/s one of the motors actually starts to give up and run slow!
+Above this sometimes one wheel actually slows down while the other keeps trying.
+On the floor:
+Setting to 3.6 (214 TPS) because it is still plenty fast enough and stays under max linear TPS of 218, and MAXIMUM SPEED can be set to 220 and be above both.
+It reaches 3.7 (220 TPS) very consistently.
+It reaches 3.8 always, but sometimes it takes 1.5 seconds and sometimes 3.3!
+It will never reach 3.9, just spinning forever.
+At 4.0, on the floor, one wheel actually slows down eventually and it gets crazy!
+
+NOTE: This depends on setting:
+#define DHB10_NORMAL_ACC 150
+in per_robot_settings_for_propeller_c_code.h
+
+Angular Acceleration:  1.5 rad/s^2 - acc_lim_theta
+
+Angular (positive) [ON THE FLOOR!]
+0 to 3.6 rad/s
+936
+1036
+936
+1036
+937
+937
+1037
+1036 = 1.54440154440154
+1036
+936
+935
+
+3.6 to 0 rad/s
+1285
+1185
+1285
+1185
+1184
+1384
+1384
+1284
+1384
+1383
+1185
+
+Minimum Angular Velocity: 0.3 rad/s (18 TPS) - min_trans_vel
+Below this it is very jerky.
+It sometimes sounds funny at 0.3 rad/s, but it is smooth.
+
+If you make changes, be sure to adjust MAXIMUM_SPEED and MINIMUM_SPEED in per_robot_settings_for_propeller_c_code.h
+
+
+Some snippets:
+From a goal in front of the robot:
+data: 19012, out: s,0.060,-0.164
+data: 19013, out: s,0.060,-0.164
+data: 19013, out: s,0.060,-0.164
+data: 19014, out: s,0.060,-0.164
+data: 19014, out: s,0.060,-0.164
+data: 19015, out: s,0.060,-0.164
+data: 19017, out: s,0.060,-0.122
+data: 19017, out: s,0.060,-0.122
+data: 19018, out: s,0.060,-0.097
+data: 19019, out: s,0.060,-0.071
+data: 19019, out: s,0.060,-0.071
+data: 19020, out: s,0.078,-0.012
+data: 19020, out: s,0.078,-0.012
+
+trackWidth: 0.403 - arlobot.yaml
+angularVelocityOffset = CommandedAngularVelocity * (trackWidth * 0.5);
+angularVelocityOffset = (-0.164 * (0.403 * 0.5))
+angularVelocityOffset = −0.033046
+
+
+Normal (if result isn't above max speed, figure that later)
+newCommandedVelocity = CommandedVelocity;
+expectedLeftSpeed = newCommandedVelocity - angularVelocityOffset;
+expectedLeftSpeed = 0.060 - −0.033046;
+expectedLeftSpeed = 0.093046
+
+expectedRightSpeed = newCommandedVelocity + angularVelocityOffset;
+expectedRightSpeed = 0.060 + −0.033046;
+expectedRightSpeed = 0.026954
+
+
+distancePerCount: 0.00338 - arlobot.yaml
+expectedLeftSpeed = expectedLeftSpeed / distancePerCount;
+expectedLeftSpeed = 0.093046 / 0.00338;
+expectedLeftSpeed = 27.528402367
+
+expectedRightSpeed = expectedRightSpeed / distancePerCount;
+expectedRightSpeed = 0.026954 / 0.00338;
+expectedRightSpeed = 7.974556213
+IT WON"T DO THIS!!!  ^^^^^^^^^^^
+
+7 TPS is just too slow, it will either stop or jerk forward.
+
+
+Should be turning, but instead it goes straight:
+data: 20808, out: s,0.060,0.063
+data: 20809, out: s,0.060,0.063
+data: 20810, out: s,0.060,0.088
+data: 20811, out: s,0.060,0.021
+data: 20811, out: s,0.060,0.021
+data: 20812, out: s,0.060,0.029
+data: 20812, out: s,0.060,0.029
+data: 20813, out: s,0.060,0.021
+data: 20814, out: s,0.060,-0.004
+data: 20814, out: s,0.060,-0.004
+data: 20815, out: s,0.060,-0.004
+data: 20816, out: s,0.060,0.000
+data: 20816, out: s,0.060,0.000
+data: 20817, out: s,0.060,0.047
+data: 20818, out: s,0.060,0.080
+data: 20818, out: s,0.060,0.080
+data: 20819, out: s,0.060,0.097
+data: 20819, out: s,0.060,0.097
+data: 20821, out: s,0.060,0.172
+data: 20822, out: s,0.060,0.172
+data: 20822, out: s,0.060,-0.029
+data: 20823, out: s,0.060,-0.029
+data: 20823, out: s,0.060,-0.029
+data: 20824, out: s,0.060,-0.029
+data: 20825, out: s,0.060,-0.072
+data: 20825, out: s,0.060,-0.072
+data: 20826, out: s,0.060,-0.021
+data: 20827, out: s,0.060,-0.021
+data: 20827, out: s,0.060,-0.013
+data: 20828, out: s,0.060,0.072
+data: 20828, out: s,0.060,0.072
+data: 20829, out: s,0.060,0.122
+data: 20830, out: s,0.060,-0.004
+data: 20830, out: s,0.060,-0.004
+data: 20832, out: s,0.060,-0.055
+data: 20832, out: s,0.060,-0.055
+data: 20833, out: s,0.060,-0.030
+data: 20833, out: s,0.060,-0.030
+data: 20834, out: s,0.060,-0.054
+data: 20835, out: s,0.060,-0.071
+data: 20835, out: s,0.060,-0.071
+data: 20836, out: s,0.060,-0.054
+data: 20836, out: s,0.060,-0.054
+data: 20837, out: s,0.060,-0.046
+data: 20838, out: s,0.060,-0.071
+
+
+
+
+DWA Is trying to GET somewhere, but instead the right wheel is moving fast,
+and the left wheel is alternating between slow forward and BACKWARDS:
+
+data: 4311, out: s,0.060,0.308
+data: 4312, out: s,0.060,0.302
+data: 4313, out: s,0.060,0.308
+data: 4313, out: s,0.060,0.308
+data: 4314, out: s,0.060,0.308
+data: 4315, out: s,0.060,0.308
+data: 4316, out: s,0.060,0.302
+data: 4317, out: s,0.060,0.302
+data: 4318, out: s,0.060,0.308
+data: 4318, out: s,0.060,0.308
+data: 4319, out: s,0.060,0.319
+data: 4320, out: s,0.060,0.341
+data: 4321, out: s,0.060,0.341
+data: 4321, out: s,0.060,0.336
+data: 4322, out: s,0.060,0.308
+data: 4323, out: s,0.060,0.319
+data: 4323, out: s,0.060,0.313
+data: 4324, out: s,0.060,0.302
+data: 4325, out: s,0.060,0.308
+data: 4325, out: s,0.060,0.308
+data: 4326, out: s,0.060,0.308
+data: 4328, out: s,0.060,0.302
+data: 4328, out: s,0.060,0.302
+data: 4329, out: s,0.060,0.302
+data: 4330, out: s,0.060,0.302
+data: 4330, out: s,0.060,0.302
+data: 4331, out: s,0.060,0.302
+data: 4332, out: s,0.060,0.302
+data: 4333, out: s,0.060,0.302
+data: 4333, out: s,0.060,0.426
+data: 4334, out: s,0.060,0.397
+data: 4335, out: s,0.060,0.397
+data: 4335, out: s,0.060,0.392
+data: 4336, out: s,0.060,0.308
+data: 4337, out: s,0.060,0.330
+data: 4337, out: s,0.060,0.330
+data: 4339, out: s,0.060,0.307
+data: 4339, out: s,0.060,0.307
+data: 4340, out: s,0.060,0.431
+data: 4341, out: s,0.060,0.431
+data: 4341, out: s,0.060,0.363
+data: 4342, out: s,0.060,0.386
+data: 4342, out: s,0.060,0.386
+data: 4343, out: s,0.060,0.358
+data: 4344, out: s,0.060,0.313
+data: 4344, out: s,0.060,0.313
+data: 4345, out: s,0.060,0.370
+data: 4346, out: s,0.060,0.370
+data: 4346, out: s,0.060,0.397
+data: 4347, out: s,0.060,0.375
+
+
+OK:
+1. If it is just sending a string of 0's and then rotating in place, IT IS STUCK!
+    Check that it doesn't have obstacles painted INSIDE the robot's area in RVIZ.
+    Until it isn't stuck, nothing else matters. :(
+
+Old Acceleration Values
+Linear:
+Maximum Linear Acceleration: 0.36 m/s^2 - acc_lim_x
+Linear (forward)
+0 to 0.74 m/s
+2058 forward ACC 150
 2063
 2064
 2023
@@ -56,9 +330,6 @@ Linear (forward)
 2050
 2054
 AVERAGE = 2050 = 0.360975609756098
-http://www.smartconversion.com/unit_calculation/Acceleration_calculator.aspx
-On blocks the avg time to reach 0.80 was 1540 = 0.51948051948052
-
 0.74 to 0 m/s
 2163
 1996
@@ -77,60 +348,3 @@ On blocks the avg time to reach 0.80 was 1540 = 0.51948051948052
 2334
 http://www.smartconversion.com/unit_calculation/Acceleration_calculator.aspx
 On Blocks it stopped from 0.80 in 1283 ms every single time.
-
-Minimum Linear Velocity: STILL TESTING (0.1 is my guess,
-but I also need to record the TPS, and update the MINIMUM_SPEED so it isn't
-jerky when escaping.)
-Up on blocks:
-At 0.04 it doesn't jerk, but it still waddles a bit.
-At 0.03 and below it just jerks back and forth, each wheel moving a bit.
-
-Angular:
-
-Maximum Angular Velocity: 3.7 rad/s (220 TPS)
-Up on blocks it can do:
-At 4.0 rad/s it consistently reaches the speed every time and runs.
-At 4.1 rad/s it runs forever without attaining the requested speed.
-At 4.2 rad/s one of the motors actually starts to give up and run slow!
-Above this sometimes one wheel actually slows down while the other keeps trying.
-But on the floor:
-It reaches 3.7 very consistently.
-It reaches 3.8 always, but sometimes it takes 1.5 seconds and sometimes 3.3!
-It will never reach 3.9, just spinning forever.
-At 4.0, on the floor, one wheel actually slows down eventually and it gets trippy!
-
-NOTE: This depends on setting:
-#define DHB10_NORMAL_ACC 150
-in per_robot_settings_for_propeller_c_code.h
-
-Angular Acceleration: 3.2 rad/s^2
-Angular (positive) [ON THE FLOOR!]
-0 to 3.7 rad/s
-1233
-1233
-1133
-1233
-1133
-1133
-1333
-1133
-1433
-1133 = 3.26566637246249
-
-3.7 to 0 rad/s
-1584
-1284
-1584
-1285
-1285
-1584
-1285
-1384
-1484
-1584
-
-Minimum Angular Velocity: 0.3 rad/s (18 TPS)
-Below this it is very jerky.
-It sometimes sounds funny at 0.3 rad/s, but it is smooth.
-
-TODO: Get TPS for max/min and set MAXIMUM_SPEED and MINIMUM_SPEED in per robot settings.
