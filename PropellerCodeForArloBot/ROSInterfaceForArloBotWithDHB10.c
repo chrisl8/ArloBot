@@ -1,16 +1,7 @@
 // TODO for DHB-10: Go over EACH line and remove unneeded code relating to old way arlodrive worked
 
-// TODO for DHB-10: How does this change the Python ROS node, since we don't have to monitor the Propellery
-// TODO for DHB-10: before turning on motor power?
-// TODO for DHB-10: Or do we?
-// TODO for DHB-10: If not, how do we build the propeller node to work with both? Or do we?
-
 // TODO for DHB-10: Run through all of the ROS by Example test scripts to see how good our odemtry is,
 // TODO for DHB-10: and see if we need to adjust any settings, and prove that the new setup is better!
-
-// TODO for DHB-10: In the Parallax learn examples they put a piezo speaker on the Propeller board
-// TODO for DHB-10: and beep it when the program boots, for status. Should I add something like this?
-// TODO for DHB-10: Beep or LED blink or something?
 
 // TODO for DHB-10: Finally, clean up all other "TODO" lines in this code!
 
@@ -126,13 +117,27 @@ static int abdR_speedLimit = MAXIMUM_SPEED; // Reverse speed limit to allow robo
 
 fdserial *term;
 
+// Robot description: We will get this from ROS so that it is easier to tweak between runs without reloading the Propeller EEPROM.
+// http://learn.parallax.com/activitybot/calculating-angles-rotation
+static double distancePerCount = 0.0, trackWidth = 0.0;
+/* See ~/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml
+   to set or change this value
+*/
+
 const char delimiter[2] = ","; // Delimiter character for incoming messages from the ROS Python script
+
+static volatile int broadcastSpeedLeft = 0, broadcastSpeedRight = 0;
+// These are global so we can read and set them from ROS on a restart if we want to.
+static double Heading = 0.0, X = 0.0, Y = 0.0;
+void broadcastOdometry(void *par); // Use a cog to broadcast Odometry to ROS continuously
+static int fstack[256]; // If things get weird make this number bigger!
 
 //int adc_IR_cm(int); // Function to get distance in CM from IR sensor using Activty Board built in ADC
 
 // Global Storage for PING & IR Sensor Data:
-int pingArray[NUMBER_OF_PING_SENSORS] = {0};
-int irArray[NUMBER_OF_IR_SENSORS] = {0};
+// int and long are the same in Propeller, but linters don't like using strtol on int
+long pingArray[NUMBER_OF_PING_SENSORS] = {0};
+long irArray[NUMBER_OF_IR_SENSORS] = {0};
 #ifdef hasFloorObstacleSensors
 int floorArray[NUMBER_OF_FLOOR_SENSORS] = {0};
 #endif
@@ -161,19 +166,20 @@ int mcp3208_IR_cm(int); // Function to get distance in CM from IR sensor using M
 unsigned char i2cAddr = 0x69;       //I2C Gyro address
 //L3G4200D register addresses & commands.
 //See device data sheet section 7 for more info.
-unsigned char devId = 0x0f;        //Device ID
+//unsigned char devId = 0x0f;        //Device ID
 unsigned char ctrl1 = 0x20;        //Control reg1
 unsigned char cfg1 = 0b00011111;   //100 hz, 25 cutoff, power up, axes enabled
-unsigned char ctrl2 = 0x21;
+//unsigned char ctrl2 = 0x21;
 unsigned char ctrl3 = 0x22;
 unsigned char cfg3 = 0b00001000;    //Enable data poling (I2_DRDY)
 unsigned char ctrl4 = 0x23;
 unsigned char cfg4 = 0b10000000;    //Block until read, big endian
 unsigned char status = 0x27;
 unsigned char xL = 0x28;            //Reg for x low byte - Next 5 bytes xH, yL, yH, zL, xH
-unsigned char reply;                //Single byte reply
+//unsigned char reply;                //Single byte reply
 char xyz[6];                        //XYZ dat array
-int gyroXvel, gyroYvel, gyroZvel;                       //Axis variables
+//int gyroXvel, gyroYvel, gyroZvel;                       //Axis variables
+int gyroZvel;
 i2c *bus;                           //Declare I2C bus
 // Create a cog for polling the Gyro
 void pollGyro(void *par); // Use a cog to fill range variables with ping distances
@@ -210,35 +216,15 @@ char dhb10_reply[DHB10_LEN];
 
 int main() {
 
-    // Robot description: We will get this from ROS so that it is easier to tweak between runs without reloading the Propeller EEPROM.
-    // http://learn.parallax.com/activitybot/calculating-angles-rotation
-    // See ~/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml to set or change this value
-    double distancePerCount = 0.0, trackWidth = 0.0;
+    // Halt motors as soon as Propeller board starts in case they are moving
+    // This is the only time we will talk to the DHB-10 outside of broadcastOdometry()
+    dhb10_com("GOSPD 0 0\r");
 
-    // For DHB-10 Interaction See drive_speed.c for example code
-    // NOTE: Because this function has a loop, ALL interaction with the DHB-10 is done in this main loop.
-    // Any other cog/function that needs to affect the robot's motors will set variables that are read in this function.
-    char s[32]; // Hold strings converted for sending to DHB-10
-    memset(s, 0, 32);
-    char *reply = dhb10_reply;
-
-    // Halt motors in case they are moving and reset all stats.
-    pause(dhb10OverloadPause);
-    reply = dhb10_com("GOSPD 0 0\r");
-    pause(dhb10OverloadPause);
-    reply = dhb10_com("RST\r");
-    pause(dhb10OverloadPause);
-
-    // For Odometry
-    int ticksLeft, ticksRight, ticksLeftOld, ticksRightOld;
-    double Heading = 0.0, X = 0.0, Y = 0.0, deltaDistance, deltaX, deltaY, V, Omega;
-    int speedLeft, speedRight, throttleStatus = 0, heading, deltaTicksLeft, deltaTicksRight;
-    double leftMotorPower = 4.69;
-    double rightMotorPower = 4.69;
     int wasEscaping = 0;
 
+    // Open terminal here, because we read from it here and write to it in broadcastOdometry();
     simpleterm_close(); // Close simplex serial terminal
-    term = fdserial_open(31, 30, 0, 115200); // Open Full Duplex serial connection
+    term = fdserial_open(31, 30, 0, 115200); // Open global Full Duplex serial connection
 
     /* Wait for ROS to give us the robot parameters,
        broadcasting 'i' until it does to tell ROS that we
@@ -364,21 +350,32 @@ int main() {
     // Start safetyOverride cog: (AFTER the Motors are initialized!)
     cogstart(&safetyOverride, NULL, safetyOverrideStack, sizeof safetyOverrideStack);
 
+    // Start the Odometry broadcast cog
+    cogstart(&broadcastOdometry, NULL, fstack, sizeof fstack);
+
     // To hold received commands
     double CommandedVelocity = 0.0;
-    double newCommandedVelocity = 0.0;
-    double CommandedAngularVelocity = 0.0;
-    double angularVelocityOffset = 0.0, expectedLeftSpeed = 0.0, expectedRightSpeed = 0.0;
+    double newCommandedVelocity;
+    double CommandedAngularVelocity;
+    double angularVelocityOffset = 0.0, expectedLeftSpeed, expectedRightSpeed;
+    int newLeftSpeed = 0, newRightSpeed = 0;
 
     void clearTwistRequest() {
         CommandedVelocity = 0.0;
-        CommandedAngularVelocity = 0.0;
         angularVelocityOffset = 0.0;
     }
 
     // Listen for drive commands
+    int dt = CLKFREQ / 100;
+    // Operates once per every 10 ms
+    // https://lamestation.atlassian.net/wiki/display/SPIN/CLKFREQ
+    int t = CNT;
+    int ROStimeout = ROS_TIMEOUT * 100;
+
     int timeoutCounter = 0;
     while (1) {
+        if (CNT - t > dt) {
+            t += dt;
 
         timeoutCounter++;
 
@@ -434,74 +431,151 @@ int main() {
             timeoutCounter = ROStimeout; // Prevent runaway integer length
         }
 
-        /* This updates the motor controller on EVERY
-           round. This way even if there is no updated twist command
-           from ROS, we will still account for updates in the speed limit
-           from the SaftyOverride cog by recalculating the drive commands
-           based on the new speed limit at every loop.
-
-           This also allows us to have a STOP action if there is no input
-            from ROS for too long.
-           */
-
-        /* Prevent saturation at max wheel speed when a compound command
-           is sent.
-           Without this, if your max speed is 50, and ROS asks us to set
-           one wheel at 50 and the other at 100, we will end up with both
-           at 50 changing a turn into a straight line!
-
-           Remember that max speed is variable based on parameters within
-           this code, such as proximity to walls, etc.
-           */
-
-        //dprint(term, "\nd1:%f\n", CommandedVelocity); // For Debugging
-        // Use forward speed limit for rotate in place.
-        if (CommandedVelocity > 0 && (abd_speedLimit * distancePerCount) - fabs(angularVelocityOffset) < CommandedVelocity) {
-                newCommandedVelocity = (abd_speedLimit * distancePerCount) - fabs(angularVelocityOffset);
-            // Use abdR_speedLimit for reverse movement.
-        } else if (CommandedVelocity < 0 && -((abdR_speedLimit * distancePerCount) - fabs(angularVelocityOffset)) > CommandedVelocity) { // In theory ROS never requests a negative angular velocity, only teleop
-                newCommandedVelocity = -((abdR_speedLimit * distancePerCount) - fabs(angularVelocityOffset));
-        } else {
-            // Not doing this on in place rotations (Velocity = 0)
-            // Or if requested speed does not exceed maximum.
-            newCommandedVelocity = CommandedVelocity;
-        }
-
-        expectedLeftSpeed = newCommandedVelocity - angularVelocityOffset;
-        expectedRightSpeed = newCommandedVelocity + angularVelocityOffset;
-
-        expectedLeftSpeed = expectedLeftSpeed / distancePerCount;
-        expectedRightSpeed = expectedRightSpeed / distancePerCount;
 
         //dprint(term, "\nd1:%f\n", CommandedVelocity); // For Debugging
         if (Escaping == 1) {
-            sprint(s, "GOSPD %d %d\r", escapeLeftSpeed, escapeRightSpeed);
-            reply = dhb10_com(s);
+            newLeftSpeed = escapeLeftSpeed;
+            newRightSpeed = escapeRightSpeed;
             clearTwistRequest();
             wasEscaping = 1;
         } else if (wasEscaping == 1) {
             // Halt robot before continuing normally if we were escaping before now.
-            reply = dhb10_com("GOSPD 0 0\r");
+            // TODO: Is this necessary, it may be the cause of some lack of smooth behavior
+            newLeftSpeed = 0;
+            newRightSpeed = 0;
             clearTwistRequest();
             wasEscaping = 0;
         } else if (CommandedVelocity >= 0 && (cliff == 1 || floorO == 1)) {
             // Cliffs and cats are no joke!
-            reply = dhb10_com("GOSPD 0 0\r");
+            // TODO: This seems redundant, if cliff or floor0 are 1, won't safeToProceed be 0?
+            // TODO: Is this to prevent rotating in place in such situations?
+            newLeftSpeed = 0;
+            newRightSpeed = 0;
             clearTwistRequest();
         } else if ((CommandedVelocity > 0 && safeToProceed == 1) || (CommandedVelocity < 0 && safeToRecede == 1) || CommandedVelocity == 0) {
-            sprint(s, "GOSPD %d %d\r", (int)expectedLeftSpeed, (int)expectedRightSpeed);
-            // For Debugging:
-//            dprint(term, "d,%f %f, %f %f, %d %d\n", CommandedVelocity, newCommandedVelocity, CommandedAngularVelocity, angularVelocityOffset, (int)expectedLeftSpeed, (int)expectedRightSpeed);  // For Debugging
+
+            /* Prevent saturation at max wheel speed when a compound command
+               is sent.
+               Without this, if your max speed is 50, and ROS asks us to set
+               one wheel at 50 and the other at 100, we will end up with both
+               at 50 changing a turn into a straight line!
+
+               Remember that max speed is variable based on parameters within
+               this code, such as proximity to walls, etc.
+               */
+
+            // Use forward speed limit for rotate in place.
+            if (CommandedVelocity > 0 && (abd_speedLimit * distancePerCount) - fabs(angularVelocityOffset) < CommandedVelocity) {
+                    newCommandedVelocity = (abd_speedLimit * distancePerCount) - fabs(angularVelocityOffset);
+                // Use abdR_speedLimit for reverse movement.
+            } else if (CommandedVelocity < 0 && -((abdR_speedLimit * distancePerCount) - fabs(angularVelocityOffset)) > CommandedVelocity) { // In theory ROS never requests a negative angular velocity, only teleop
+                    newCommandedVelocity = -((abdR_speedLimit * distancePerCount) - fabs(angularVelocityOffset));
+            } else {
+                // Not doing this on in place rotations (Velocity = 0)
+                // Or if requested speed does not exceed maximum.
+                newCommandedVelocity = CommandedVelocity;
+            }
+
+            expectedLeftSpeed = newCommandedVelocity - angularVelocityOffset;
+            expectedRightSpeed = newCommandedVelocity + angularVelocityOffset;
+
+            expectedLeftSpeed = expectedLeftSpeed / distancePerCount;
+            expectedRightSpeed = expectedRightSpeed / distancePerCount;
+
+            newLeftSpeed = (int)expectedLeftSpeed;
+            newRightSpeed = (int)expectedRightSpeed;
+
 // TODO: Why doesn't web interface always stop?
 // TODO: Is it as smooth and responsive as we would like?
-// TODO: Test odometry too. ;)
-            reply = dhb10_com(s);
         } else {
             // Not safe to proceed in the requested direction, but also not escaping, so just be still
             // until somebody tells us to "back out" of the situation.
-            reply = dhb10_com("GOSPD 0 0\r");
+            newLeftSpeed = 0;
+            newRightSpeed = 0;
             clearTwistRequest();
         }
+
+        // DHB10 controller only works in even numbers, so let's make life easy on it and ourselves if we are doing any comparisons.
+            if (newLeftSpeed % 2) {
+                newLeftSpeed >= 0 ? newLeftSpeed++ : newLeftSpeed--;
+            }
+            if (newRightSpeed % 2) {
+                newRightSpeed >= 0 ? newRightSpeed++ : newRightSpeed--;
+            }
+
+            broadcastSpeedLeft = newLeftSpeed;
+            broadcastSpeedRight = newRightSpeed;
+
+    }
+    }
+}
+
+void broadcastOdometry(void *par) {
+
+    // ALL Interaction with the DHB-10 happens in here!
+    // For DHB-10 Interaction See drive_speed.c for example code
+    // Any other cog/function that needs to affect the robot's motors will set variables that are read in this function.
+    char s[32]; // Hold strings converted for sending to DHB-10
+    memset(s, 0, 32);
+    char *reply = dhb10_reply;
+
+    // Halt motors and reset counts to 0 in case they are moving somehow, even though we did halt them when the script started.
+    dhb10_com("GOSPD 0 0\r");
+    pause(dhb10OverloadPause);
+    dhb10_com("RST\r");
+    pause(dhb10OverloadPause);
+//    int acc = DHB10_ACC;
+//    int acc = DHB10_MAX_ACC;
+    sprint(s, "ACC %d\r", DHB10_ACC);
+    dhb10_com(s);
+    pause(dhb10OverloadPause);
+
+    // For Odometry
+    int ticksLeft = 0, ticksRight = 0, ticksLeftOld, ticksRightOld;
+    double deltaDistance, deltaX, deltaY, V, Omega;
+    int speedLeft, speedRight, throttleStatus = 0, heading, deltaTicksLeft, deltaTicksRight;
+    double leftMotorPower;
+    double rightMotorPower;
+    int newLeftSpeed = 0, newRightSpeed = 0, oldLeftSpeed = 0, oldRightSpeed = 0;
+
+    int dt = CLKFREQ / 10;
+    // Operates once per every 100 ms
+    // https://lamestation.atlassian.net/wiki/display/SPIN/CLKFREQ
+    int t = CNT;
+
+    int i;
+    while (1) {
+        if (CNT - t > dt) {
+            t += dt;
+
+        oldLeftSpeed = newLeftSpeed;
+        oldRightSpeed = newRightSpeed;
+
+        newLeftSpeed = broadcastSpeedLeft;
+        newRightSpeed = broadcastSpeedRight;
+
+//            // Return ACC to normal BEFORE setting speed if Escaping is off
+//            if (Escaping == 0 && acc != DHB10_NORMAL_ACC) {
+//                acc = DHB10_NORMAL_ACC;
+//                sprint(s, "ACC %d\r", acc);
+//                dhb10_com(s);
+//                pause(dhb10OverloadPause);
+//            }
+
+        // Send resulting speed to wheels IF it is different from last time
+        if (newLeftSpeed != oldLeftSpeed || newRightSpeed != oldRightSpeed) {
+            sprint(s, "GOSPD %d %d\r", newLeftSpeed, newRightSpeed);
+            dhb10_com(s);
+            pause(dhb10OverloadPause);
+        }
+
+//            // Return ACC to MAX after setting speed if Escaping is ON
+//            if (Escaping == 1 && acc != DHB10_MAX_ACC) {
+//                acc = DHB10_MAX_ACC;
+//                sprint(s, "ACC %d\r", acc);
+//                dhb10_com(s);
+//                pause(dhb10OverloadPause);
+//            }
 
         // Broadcast Odometry
         /* Some of the code below came from Dr. Rainer Hessmer's robot.pde
@@ -511,7 +585,6 @@ int main() {
         ticksLeftOld = ticksLeft;
         ticksRightOld = ticksRight;
 
-        pause(dhb10OverloadPause);
         reply = dhb10_com("DIST\r");
         if (*reply == '\r') {
           ticksLeft = 0;
@@ -520,8 +593,8 @@ int main() {
           sscan(reply, "%d%d", &ticksLeft, &ticksRight);
         }
         //dprint(term, "d\tDIST\t%d\t%d\n", ticksLeft, ticksRight);  // For Debugging
-
         pause(dhb10OverloadPause);
+
         reply = dhb10_com("SPD\r");
         if (*reply == '\r') {
           speedLeft = 0;
@@ -537,8 +610,8 @@ int main() {
             isRotating = 1;
         }
         #endif
-
         pause(dhb10OverloadPause);
+
         reply = dhb10_com("HEAD\r");
         if (*reply == '\r') {
           heading = 0;
@@ -553,8 +626,8 @@ int main() {
         deltaTicksLeft = ticksLeft - ticksLeftOld;
         deltaTicksRight = ticksRight - ticksRightOld;
         deltaDistance = 0.5f * (double) (deltaTicksLeft + deltaTicksRight) * distancePerCount;
-        deltaX = deltaDistance * (double) cos(Heading);
-        deltaY = deltaDistance * (double) sin(Heading);
+        deltaX = deltaDistance * cos(Heading);
+        deltaY = deltaDistance * sin(Heading);
 
         X += deltaX;
         Y += deltaY;
@@ -620,11 +693,9 @@ int main() {
         #ifdef debugModeOn
         dprint(term, "DEBUG: %d %d %d %d %d\n", ignoreProximity, ignoreCliffSensors, ignoreIRSensors, ignoreFloorSensors, pluggedIn);
         #endif
-
-        pause(mainLoopPause); // Maximum read frequency.
+        }
     }
 }
-
 
 // For ADC built into Activity Board
 /*
@@ -654,7 +725,9 @@ void pollPropBoard2(void *par) {
     pause(100); // Give the serial connection time to come up. Perhaps this is not required?
     const int bufferLength = 10; // Longer than longest possible received line
     char buf[bufferLength];
-    int count = 0, pingSensorNumber = 0, irSensorNumber = 0, i;
+    int count = 0, i;
+    // Propeller int and long are the same, but linters don't like you to use strtol to assign to int
+    long pingSensorNumber = 0, irSensorNumber = 0;
     int rateLimit = 10; // This is the incoming rate limiter. Without some limit the entire Propeller will hang.
     while (1) {
         pause(rateLimit);
@@ -680,10 +753,10 @@ void pollPropBoard2(void *par) {
                 token = strtok(buf, delimiter);
                 token = strtok(NULL, delimiter);
                 char *unconverted;
-                pingSensorNumber = strtod(token, &unconverted);
+                pingSensorNumber = strtol(token, &unconverted, 10);
                 token = strtok(NULL, delimiter);
                 if (pingSensorNumber < NUMBER_OF_PING_SENSORS) {
-                    pingArray[pingSensorNumber] = strtod(token, &unconverted);
+                    pingArray[pingSensorNumber] = strtol(token, &unconverted, 10);
                     // For Debugging:
                     /* dprint(term, "p%d:%3d ", pingSensorNumber, pingArray[pingSensorNumber]);
                        if(pingSensorNumber == 9)
@@ -694,10 +767,10 @@ void pollPropBoard2(void *par) {
             token = strtok(buf, delimiter);
             token = strtok(NULL, delimiter);
             char *unconverted;
-            irSensorNumber = strtod(token, &unconverted);
+            irSensorNumber = strtol(token, &unconverted, 10);
             token = strtok(NULL, delimiter);
             if (irSensorNumber < NUMBER_OF_IR_SENSORS) {
-                irArray[irSensorNumber] = strtod(token, &unconverted);
+                irArray[irSensorNumber] = strtol(token, &unconverted, 10);
                     // For Debugging:
                     //dprint(term, "i%d:%3d ", irSensorNumber, irArray[irSensorNumber]);
             }
@@ -760,8 +833,8 @@ void pollGyro(void *par) {
         //"Dividing by 114 reduces noise"
         // http://www.parallax.com/sites/default/files/downloads/27911-L3G4200D-Gyroscope-Application-Note.pdf
         // 1 radian/second [rad/s] = 57.2957795130824 degree/second [°/s]
-        gyroXvel = (int) (short) ((xyz[1] << 8) + xyz[0]) / 114; // Perhaps use later to detect tipping?
-        gyroYvel = (int) (short) ((xyz[3] << 8) + xyz[2]) / 114; // Perhaps use later to detect tipping?
+        //gyroXvel = (int) (short) ((xyz[1] << 8) + xyz[0]) / 114; // Perhaps use later to detect tipping?
+        //gyroYvel = (int) (short) ((xyz[3] << 8) + xyz[2]) / 114; // Perhaps use later to detect tipping?
         gyroZvel = (int) (short) ((xyz[5] << 8) + xyz[4]) / 114;
 
         // If Gyro is running at 100Hz then time between readings should be 10 milliseconds
@@ -788,8 +861,6 @@ void pollGyro(void *par) {
                 gyroHeading += 2.0 * PI;
             }
         }
-
-        //pause(250); // Pause between reads, or do we need this? Should we read faster? The !ready loop should handle the Gyro's frequency right?
     }
 }
 #endif
@@ -798,7 +869,7 @@ void pollGyro(void *par) {
    1. Make sure output sensor readings to ROS are near real time.
    2. Make sure "escape" operations are fast and accurate.
    */
-   void safetyOverride(void *par) {
+    void safetyOverride(void *par) {
 
    void setEscapeSpeeds(int left, int right) {
        escapeLeftSpeed = left;
@@ -810,7 +881,8 @@ void pollGyro(void *par) {
     // Declare all variables up front so they do not have to be created in the loop, only set.
     // This may or may not improve performance.
     int blockedSensor[NUMBER_OF_PING_SENSORS] = {0};
-    int i, blockedF = 0, blockedR = 0, foundCliff = 0, floorObstacle = 0, pleaseEscape = 0, minDistance = 255, minRDistance = 255, newSpeedLimit = MAXIMUM_SPEED;
+    int i, blockedF = 0, blockedR = 0, foundCliff = 0, floorObstacle = 0, pleaseEscape = 0;
+    long minDistance, minRDistance, newSpeedLimit; // int and long are the same in Propeller, but linters get fussy.
     while (1) {
         if (ignoreProximity == 0) {
             // Reset blockedSensor array to all zeros.
@@ -1191,6 +1263,6 @@ void pollGyro(void *par) {
             abd_speedLimit = MAXIMUM_SPEED;
             abdR_speedLimit = MAXIMUM_SPEED;
         }
-        pause(1); // Just throttles this cog a little.
+        pause(1); // Just throttles this cog a little. TODO: IS this needed?
     }
 }
