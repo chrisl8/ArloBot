@@ -64,6 +64,9 @@ void handleCommand() {
       case 4:
       theaterChaseRainbow(commandArray[1], commandArray[2], commandArray[3], commandArray[4]);
       break;
+      case 5:
+      alternate(commandArray[1], commandArray[2], commandArray[3], commandArray[4], commandArray[5],commandArray[6], commandArray[7]);
+      break;
       case 9:
         fill_solid(leds, commandArray[4], CRGB(commandArray[1], commandArray[2], commandArray[3]));
         FastLED.show();
@@ -228,4 +231,38 @@ void Wheel(byte WheelPos) {
   globalG = 255 - WheelPos * 3;
   globalB = 0;
   return;
+}
+
+// Trying my own ideas
+// Walk or "back and forth"
+// A "naive" chase that just cycles back and forth,
+// Which won't give a chase effect but more a flashing
+void alternate(int r, int g, int b, uint8_t wait, int startingPixel, int endingPixel, int cycles) {
+  for (int j=0; j<cycles; j++) {
+    for (int q=0; q < 2; q++) {
+      if (endingPixel > startingPixel) {
+          //turn every second pixel on
+          for (uint16_t i=startingPixel; i < endingPixel; i=i+2) {
+            leds[i+q].setRGB(r, g, b);
+          }
+          FastLED.show();
+          delay(1000);
+          //turn every second pixel off
+          for (uint16_t i=startingPixel; i < endingPixel; i=i+2) {
+            leds[i+q].setRGB(0, 0, 0);
+          }
+        } else { // Reverse
+          //turn every third pixel on
+          for (uint16_t i=startingPixel; i > endingPixel; i=i-2) {
+            leds[i-q].setRGB(r, g, b);
+          }
+          FastLED.show();
+          delay(wait);
+          //turn every third pixel off
+          for (uint16_t i=startingPixel; i > endingPixel; i=i-2) {
+            leds[i-q].setRGB(0, 0, 0);
+          }
+      }
+    }
+  }
 }

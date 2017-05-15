@@ -40,6 +40,7 @@ class Arduino {
             rainbowCycle: 2,
             theaterChase: 3,
             theaterChaseRainbow: 4,
+            alternate: 5,
             fillSolid: 9
         };
 
