@@ -1,26 +1,33 @@
 DWAPlannerROS:
 
-# Robot Configuration Parameters - Kobuki
-  max_vel_x: 0.5  # 0.55
-  min_vel_x: 0.0 
+# Robot Configuration Parameters - Arlobot
+  max_vel_x: 0.74
+  min_vel_x: 0.0
+  # Setting min_vel_x above zero means robot will never spin in place!
 
   max_vel_y: 0.0  # diff drive robot
   min_vel_y: 0.0  # diff drive robot
 
-  max_trans_vel: 0.5 # choose slightly less than the base's capability
+  max_trans_vel: 0.74 # choose slightly less than the base's capability - Setting the same as max_vel_x
   min_trans_vel: 0.1  # this is the min trans velocity when there is negligible rotational velocity
   trans_stopped_vel: 0.1
+  # Do not set min_trans_vel or trans_stopped_vel to 0, 0.1 seems to work fine.
+  # Anything below 0.1 for min_trans_vel can produce strange results.
 
   # Warning!
   #   do not set min_trans_vel to 0.0 otherwise dwa will always think translational velocities
   #   are non-negligible and small in place rotational velocities will be created.
 
-  max_rot_vel: 2.0  # Five is WAY too fast for ArloBot. arlobot_explore uses a calm 1! Test and increase as you see fit.
-  min_rot_vel: 0.4  # this is the min angular velocity when there is negligible translational velocity
-  rot_stopped_vel: 0.4
+  max_rot_vel: 3.6
+  min_rot_vel: 0.0  # this is the min angular velocity when there is negligible translational velocity
+  # Setting this above zero means it will never travel in a straight line!
+  rot_stopped_vel: 0.3 # Set the same as min_rot_vel? That is what Turtlebot Does.
   
-  acc_lim_x: 1.0 # maximum is theoretically 2.0, but we 
-  acc_lim_theta: 2.0
+   # Setting acc_lim_x & acc_lim_theta to real values causes DWA to behave oddly and fail to reach goals.
+  acc_lim_x: 2.5
+  # 2.5 seems to be a minimum that works well.
+  acc_lim_theta: 20.0
+  # 20 seems extreme, but it works well.
   acc_lim_y: 0.0      # diff drive robot
 
 # Goal Tolerance Parameters
