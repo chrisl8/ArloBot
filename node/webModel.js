@@ -37,6 +37,7 @@ module.exports = {
     userLightOnRequested: false,
     robotIP: undefined,
     robotURL: undefined,
+    neoPixelsOn: false,
     relays: [],
     wayPoints: [],
     rosParameters: { // These are the parameters we will send to the web

@@ -476,7 +476,11 @@ function start() {
             webModelFunctions.update('shutdownRequested', true);
         });
         socket.on('arduino', function () {
-            arduino.init();
+            if (webModel.neoPixelsOn) {
+                arduino.lightsOut();
+            } else {
+                arduino.init();
+            }
         });
         // socket.on('toggleMycroft', function () {
         //     myCroft.start();

@@ -100,28 +100,28 @@ class Arduino {
     static getPortName() {
         /** @namespace personalData.masterPowerRelayStringLocation */
         /** @namespace personalData.masterPowerRelayUniqueString */
-        var arduinoDevice = new UsbDevice(personalData.arduinoUniqueString, personalData.arduinoStringLocation);
+        const arduinoDevice = new UsbDevice(personalData.arduinoUniqueString, personalData.arduinoStringLocation);
         return arduinoDevice.findDeviceName();
     }
 
     turnOnRelays() {
         return new Promise((resolve) => {
-            var delay = 0;
+            let delay = 0;
             if (personalData.useMasterPowerRelay && !webModel.masterRelayOn) {
                 masterRelay('on');
                 delay = 3000;
             }
             setTimeout(() => {
-                var delayTwo = 0;
-                if (personalData.relays.has_arduino && !webModel.relays.find(x=> x.name === 'arduino')['relayOn']) {
-                    usbRelay.switchRelay(webModel.relays.find(x=> x.name === 'arduino')['number'], 'on');
+                let delayTwo = 0;
+                if (personalData.relays.has_arduino && !webModel.relays.find(x => x.name === 'arduino')['relayOn']) {
+                    usbRelay.switchRelay(webModel.relays.find(x => x.name === 'arduino')['number'], 'on');
                     delayTwo = 2000;
                 }
-                if (personalData.relays.has_fiveVolt && !webModel.relays.find(x=> x.name === 'fiveVolt')['relayOn']) {
-                    usbRelay.switchRelay(webModel.relays.find(x=> x.name === 'fiveVolt')['number'], 'on');
+                if (personalData.relays.has_fiveVolt && !webModel.relays.find(x => x.name === 'fiveVolt')['relayOn']) {
+                    usbRelay.switchRelay(webModel.relays.find(x => x.name === 'fiveVolt')['number'], 'on');
                     delayTwo = 2000;
                 }
-                setTimeout(()=> {
+                setTimeout(() => {
                     resolve();
                 }, delayTwo);
             }, delay);
@@ -133,7 +133,7 @@ class Arduino {
             clearTimeout(this.repeatTimeout);
         }
         if (!this.arduinoReady || (this.arduinoBusy && howManySecondsSince(this.arduinoBusyStartTime) < this.arduinoBusyTimeoutSeconds)) {
-            this.repeatTimeout = setTimeout(()=> {
+            this.repeatTimeout = setTimeout(() => {
                 this.sendCommandToArduino();
             }, retrySendDelay);
         } else {
@@ -160,12 +160,13 @@ class Arduino {
 
     init() {
         // See Camera.js for example
-        var inputStream = '';
-        var inputArray = [];
+        let inputStream = '';
+        const inputArray = [];
         if (!this.programIsBusy) {
+            webModelFunctions.update('neoPixelsOn', true);
             this.programIsBusy = true;
             this.turnOnRelays()
-                .then(()=> Arduino.getPortName()
+                .then(() => Arduino.getPortName()
                     .then((port) => {
                         this.currentCommandArrayPoint = 0;
 
@@ -202,7 +203,7 @@ class Arduino {
                                     if (this.repeatTimeout) {
                                         clearTimeout(this.repeatTimeout);
                                     }
-                                    this.repeatTimeout = setTimeout(()=> {
+                                    this.repeatTimeout = setTimeout(() => {
                                         this.sendCommandToArduino();
                                     }, postSendDelay);
                                     this.arduinoBusy = false;
@@ -212,7 +213,7 @@ class Arduino {
                                     if (this.repeatTimeout) {
                                         clearTimeout(this.repeatTimeout);
                                     }
-                                    this.repeatTimeout = setTimeout(()=> {
+                                    this.repeatTimeout = setTimeout(() => {
                                         this.sendCommandToArduino();
                                     }, retrySendDelay);
                                     this.arduinoBusy = false;
@@ -224,7 +225,7 @@ class Arduino {
                             if (error) {
                                 console.log('Arduino Connection Error: ' + error);
                             } else {
-                                this.repeatTimeout = setTimeout(()=> {
+                                this.repeatTimeout = setTimeout(() => {
                                     this.sendCommandToArduino();
                                 }, retrySendDelay);
                             }
@@ -241,11 +242,11 @@ class Arduino {
     }
 
     waitUntilNotBusy(callback) {
-        setTimeout(()=> {
+        setTimeout(() => {
             if (!this.arduinoBusy) {
                 callback();
             } else {
-                setTimeout(()=> {
+                setTimeout(() => {
                     this.waitUntilNotBusy(callback);
                 }, 1000);
             }
@@ -257,9 +258,9 @@ class Arduino {
         this.currentCommandArray = [
             `${this.lightPattern.fillSolid},0,0,0,${this.pixel.LOOP_END}`
         ];
-        this.waitUntilNotBusy(()=> {
+        this.waitUntilNotBusy(() => {
             console.log('not busy, will pause soon');
-            setTimeout(()=> {
+            setTimeout(() => {
                 // Give it time to send the new command at least once.
                 this.pause();
             }, 2000);
