@@ -42,10 +42,11 @@ obstacle_layer:
     max_obstacle_height: 0.15
 
 #cost_scaling_factor and inflation_radius were now moved to the inflation_layer ns
+# See http://www.zkytony.com/documents/navguide.pdf for ideas
 inflation_layer:
   enabled:              true
-  cost_scaling_factor:  5.0  # exponential rate at which the obstacle cost drops off (default: 10)
-  inflation_radius:     0.37  # max. distance from an obstacle at which costs are incurred for planning paths.
+  cost_scaling_factor:  2.58  # exponential rate at which the obstacle cost drops off (default: 10)
+  inflation_radius:     1.75  # max. distance from an obstacle at which costs are incurred for planning paths.
 
 static_layer:
   enabled:              true
