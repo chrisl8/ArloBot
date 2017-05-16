@@ -961,10 +961,9 @@ class PropellerComm(object):
             self._wasUnplugging = True
             # Slow backup until unplugged
             # This should be a slow backward crawl
-            # -0.01 is about as slow as possible
-            # -0.02 works more reliably
+            # Minimum Linear Velocity: 0.06 m/s (18 TPS)
             rospy.loginfo("Unplugging!")
-            message = 's,-0.02,0.0\r'
+            message = 's,-0.06,0.0\r'
             self._write_serial(message)
         # Once we are unplugged, stop the robot before returning control to handle_velocity_command
         # And we only need permission to stop at this point.
