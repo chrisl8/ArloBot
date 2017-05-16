@@ -102,8 +102,8 @@
             <button type="button" class="btn btn-danger" *ngIf="arlobotSvc.webModel.colorFollowerRunning"
                     (click)="sendSpecificSignalToArlobot('stopColorFollower')">Stop Color Follower
             </button>
-            <button type="button" class="btn"
-                    (click)="sendSpecificSignalToArlobot('arduino')">Lights
+            <button type="button" class="btn" [ngClass]="{'btn-warning': arlobotSvc.webModel.neoPixelsOn}"
+                    (click)="sendSpecificSignalToArlobot('arduino')">Blinky Lights
             </button>
         </accordion-group>
         <accordion-group heading="Sensors" *ngIf="arlobotSvc.webModel.rosParameters">

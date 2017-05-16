@@ -1,12 +1,11 @@
 'use strict';
 const personalData = require('./personalData');
 const webModel = require('./webModel');
+const robotModel = require('./robotModel');
 const webModelFunctions = require('./webModelFunctions');
 const spawn = require('child_process').spawn;
 const ipAddress = require('./ipAddress');
 const masterRelay = require('./MasterRelay');
-const UsbRelay = require('./UsbRelayControl');
-const usbRelay = new UsbRelay();
 
 class Camera {
     /** @namespace personalData.relays.has_fiveVolt */
@@ -61,13 +60,13 @@ class Camera {
 
     findAndSwitchOn() {
         this.dataHolder = '';
-        var delayForUsb = 0;
+        let delayForUsb = 0;
         if (personalData.useMasterPowerRelay && !webModel.masterRelayOn) {
             masterRelay('on');
             delayForUsb = 5;
         }
         if (personalData.relays.has_fiveVolt && !webModel.relays.find(x=> x.name === 'fiveVolt')['relayOn']) {
-            usbRelay.switchRelay(webModel.relays.find(x=> x.name === 'fiveVolt')['number'], 'on');
+            robotModel.usbRelay.switchRelay(webModel.relays.find(x=> x.name === 'fiveVolt')['number'], 'on');
             delayForUsb = 5;
         }
         if (delayForUsb > 0) {

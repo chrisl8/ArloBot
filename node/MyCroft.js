@@ -3,10 +3,6 @@
 const personalData = require('./personalData');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
-const spawn = require('child_process').spawn;
-const masterRelay = require('./MasterRelay');
-const UsbRelay = require('./UsbRelayControl');
-const usbRelay = new UsbRelay();
 const WebSocketClient = require('websocket').client;
 const pm2 = require('pm2');
 const Arduino = require('./Arduino');

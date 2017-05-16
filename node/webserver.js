@@ -27,8 +27,6 @@ const cookieParser = require('cookie-parser');
 const spawn = require('child_process').spawn;
 const bodyParser = require('body-parser');
 const masterRelay = require('./MasterRelay');
-const UsbRelay = require('./UsbRelayControl');
-const usbRelay = new UsbRelay();
 
 const updateMapList = require('./updateMapList');
 updateMapList();
@@ -465,10 +463,10 @@ function start() {
             masterRelay('toggle');
         });
         socket.on('toggleRelay', function (data) {
-            usbRelay.toggle(data);
+            robotModel.usbRelay.toggle(data);
         });
         socket.on('toggleRelayByName', function (data) {
-            usbRelay.toggle(webModel.relays.find(x => x.name === data)['number']);
+            robotModel.usbRelay.toggle(webModel.relays.find(x => x.name === data)['number']);
         });
         socket.on('exit', function () {
             console.log('Shutdown requested from web interface!');

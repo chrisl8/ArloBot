@@ -5,13 +5,12 @@
  */
 
 const webModel = require('./webModel');
+const robotModel = require('./robotModel');
 const webModelFunctions = require('./webModelFunctions');
 const UsbDevice = require('./UsbDevice.js');
 const SerialPort = require("serialport");
 const howManySecondsSince = require('./howManySecondsSince');
 const masterRelay = require('./MasterRelay');
-const UsbRelay = require('./UsbRelayControl');
-const usbRelay = new UsbRelay();
 const personalData = require('./personalData');
 
 // Adjustable contants for the board:
@@ -94,7 +93,7 @@ class Arduino {
             `${this.lightPattern.theaterChase},170,170,170,5,${this.pixel.LOOP_START},${this.pixel.LOOP_END},55`,
             `${this.lightPattern.theaterChaseRainbow},50,${this.pixel.LOOP_START},${this.pixel.LOOP_END},256`,
         ];
-        this.currentCommandArray = this.ledTestCommandArray;
+        this.currentCommandArray = [];
     }
 
     static getPortName() {
@@ -105,7 +104,7 @@ class Arduino {
     }
 
     turnOnRelays() {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             let delay = 0;
             if (personalData.useMasterPowerRelay && !webModel.masterRelayOn) {
                 masterRelay('on');
@@ -114,15 +113,21 @@ class Arduino {
             setTimeout(() => {
                 let delayTwo = 0;
                 if (personalData.relays.has_arduino && !webModel.relays.find(x => x.name === 'arduino')['relayOn']) {
-                    usbRelay.switchRelay(webModel.relays.find(x => x.name === 'arduino')['number'], 'on');
+                    robotModel.usbRelay.switchRelay(webModel.relays.find(x => x.name === 'arduino')['number'], 'on');
                     delayTwo = 2000;
                 }
                 if (personalData.relays.has_fiveVolt && !webModel.relays.find(x => x.name === 'fiveVolt')['relayOn']) {
-                    usbRelay.switchRelay(webModel.relays.find(x => x.name === 'fiveVolt')['number'], 'on');
-                    delayTwo = 2000;
+                    robotModel.usbRelay.switchRelay(webModel.relays.find(x => x.name === 'fiveVolt')['number'], 'on');
+                    delayTwo = 4000;
                 }
                 setTimeout(() => {
-                    resolve();
+                    // TODO: This assumes both relays exist.
+                    // TODO: Rely on results to continue instead of delay and fail.
+                    if (webModel.relays.find(x => x.name === 'arduino')['relayOn'] && webModel.relays.find(x => x.name === 'fiveVolt')['relayOn']) {
+                        resolve();
+                    } else {
+                        reject('Relays did not turn on.');
+                    }
                 }, delayTwo);
             }, delay);
         })
@@ -162,75 +167,83 @@ class Arduino {
         // See Camera.js for example
         let inputStream = '';
         const inputArray = [];
+        this.currentCommandArray = this.ledTestCommandArray;
         if (!this.programIsBusy) {
             webModelFunctions.update('neoPixelsOn', true);
             this.programIsBusy = true;
             this.turnOnRelays()
-                .then(() => Arduino.getPortName()
-                    .then((port) => {
-                        this.currentCommandArrayPoint = 0;
+                .then(() => {
+                    return Arduino.getPortName()
+                })
+                .then((port) => {
+                    this.currentCommandArrayPoint = 0;
 
-                        // var wrapUp = (runFromCommandLine, error) => {
-                        //     if (runFromCommandLine && error) {
-                        //         console.error('Failed to write to port: ' + error);
-                        //         process.exit(1);
-                        //     }
-                        //     this.programIsBusy = false;
-                        // };
+                    // var wrapUp = (runFromCommandLine, error) => {
+                    //     if (runFromCommandLine && error) {
+                    //         console.error('Failed to write to port: ' + error);
+                    //         process.exit(1);
+                    //     }
+                    //     this.programIsBusy = false;
+                    // };
 
-                        this.portObj = new SerialPort(port, {
-                            baudrate: baudrate,
-                            autoOpen: false
-                        });
+                    this.portObj = new SerialPort(port, {
+                        baudrate: baudrate,
+                        autoOpen: false
+                    });
 
-                        this.portObj.on('data', (data) => {
-                            // The "buffer" has to be converted into a string.
-                            // console.log(String(data));
-                            inputStream += String(data);
-                            // Serial Port uses \r\n to separate lines of input.
-                            if (inputStream.indexOf('\r\n') > -1) {
-                                inputArray.push(inputStream.split('\r\n'));
-                                inputStream = '';
-                                let output = inputArray.shift();
-                                if (this.runFromCommandLine) {
-                                    console.log(`<-${output[0]}`);
-                                }
-                                if (output[0] === 'BUSY') {
-                                    this.arduinoBusy = true;
-                                    this.arduinoBusyStartTime = new Date();
-                                }
-                                if (output[0] === 'READY') {
-                                    if (this.repeatTimeout) {
-                                        clearTimeout(this.repeatTimeout);
-                                    }
-                                    this.repeatTimeout = setTimeout(() => {
-                                        this.sendCommandToArduino();
-                                    }, postSendDelay);
-                                    this.arduinoBusy = false;
-                                    this.arduinoReady = true;
-                                }
-                                if (output[0] === 'DONE') {
-                                    if (this.repeatTimeout) {
-                                        clearTimeout(this.repeatTimeout);
-                                    }
-                                    this.repeatTimeout = setTimeout(() => {
-                                        this.sendCommandToArduino();
-                                    }, retrySendDelay);
-                                    this.arduinoBusy = false;
-                                }
+                    this.portObj.on('data', (data) => {
+                        // The "buffer" has to be converted into a string.
+                        // console.log(String(data));
+                        inputStream += String(data);
+                        // Serial Port uses \r\n to separate lines of input.
+                        if (inputStream.indexOf('\r\n') > -1) {
+                            inputArray.push(inputStream.split('\r\n'));
+                            inputStream = '';
+                            let output = inputArray.shift();
+                            if (this.runFromCommandLine) {
+                                console.log(`<-${output[0]}`);
                             }
-                        });
-
-                        this.portObj.open((error) => {
-                            if (error) {
-                                console.log('Arduino Connection Error: ' + error);
-                            } else {
+                            if (output[0] === 'BUSY') {
+                                this.arduinoBusy = true;
+                                this.arduinoBusyStartTime = new Date();
+                            }
+                            if (output[0] === 'READY') {
+                                if (this.repeatTimeout) {
+                                    clearTimeout(this.repeatTimeout);
+                                }
+                                this.repeatTimeout = setTimeout(() => {
+                                    this.sendCommandToArduino();
+                                }, postSendDelay);
+                                this.arduinoBusy = false;
+                                this.arduinoReady = true;
+                            }
+                            if (output[0] === 'DONE') {
+                                if (this.repeatTimeout) {
+                                    clearTimeout(this.repeatTimeout);
+                                }
                                 this.repeatTimeout = setTimeout(() => {
                                     this.sendCommandToArduino();
                                 }, retrySendDelay);
+                                this.arduinoBusy = false;
                             }
-                        });
-                    }));
+                        }
+                    });
+
+                    this.portObj.open((error) => {
+                        if (error) {
+                            console.log('Arduino Connection Error: ' + error);
+                        } else {
+                            this.repeatTimeout = setTimeout(() => {
+                                this.sendCommandToArduino();
+                            }, retrySendDelay);
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.log(`Arduino Error: ${error}`);
+                    webModelFunctions.update('neoPixelsOn', false);
+                    this.programIsBusy = false;
+                });
         }
     }
 
@@ -258,13 +271,15 @@ class Arduino {
         this.currentCommandArray = [
             `${this.lightPattern.fillSolid},0,0,0,${this.pixel.LOOP_END}`
         ];
-        this.waitUntilNotBusy(() => {
-            console.log('not busy, will pause soon');
-            setTimeout(() => {
-                // Give it time to send the new command at least once.
-                this.pause();
-            }, 2000);
-        });
+        setTimeout(() => {
+            // Give it time to send the new command at least once.
+            this.pause();
+            if (this.portObj) {
+                this.portObj.close();
+            }
+            this.programIsBusy = false;
+            webModelFunctions.update('neoPixelsOn', false);
+        }, 5000);
     }
 }
 module.exports = Arduino;

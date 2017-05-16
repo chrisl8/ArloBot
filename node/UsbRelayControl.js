@@ -38,7 +38,7 @@ class UsbRelay {
             this.busy = true;
             const process = spawn(this.script, ['all', 'state']);
             process.stdout.on('data', (data) => {
-                if (data != '') {
+                if (data !== '') {
                     this.dataHolder += data;
                 }
             });
@@ -85,26 +85,40 @@ class UsbRelay {
     }
 
     switchRelay(relayNumber, onOrOff) {
-        this.busy = true;
-        const state = onOrOff.toLowerCase();
-        if (state !== 'on' && state !== 'off') {
-            return;
-        }
-        const process = spawn(this.script, [relayNumber, state]);
+        const delay = 100; // millisenconds
+        const timeout = 20; // loops
+        let triedSoFar = 0;
+        const checkBusyOrSwitch = () => {
+            if (!this.busy) {
+                this.busy = true;
+                const state = onOrOff.toLowerCase();
+                if (state !== 'on' && state !== 'off') {
+                    return;
+                }
+                const process = spawn(this.script, [relayNumber, state]);
 
-        process.stderr.on('data', (data) => {
-            console.log(`UsbRelay output stderr: ${data}`);
-        });
+                process.stderr.on('data', (data) => {
+                    console.log(`UsbRelay output stderr: ${data}`);
+                });
 
-        process.on('close', (code) => {
-            if (code === null || code === 0) {
-                webModelFunctions.scrollingStatusUpdate(`Relay ${relayNumber} ${state}`);
+                process.on('close', (code) => {
+                    if (code === null || code === 0) {
+                        webModelFunctions.scrollingStatusUpdate(`Relay ${relayNumber} ${state}`);
+                    } else {
+                        webModelFunctions.scrollingStatusUpdate(`Relay ${relayNumber} FAILED code: ${code}`);
+                        console.log(`UsbRelay Switch failed with code: ${code}`);
+                    }
+                    this.busy = false;
+                    this.updateAllRelayState();
+                });
             } else {
-                console.log(`UsbRelay Switch failed with code: ${code}`);
+                triedSoFar++;
+                if (triedSoFar < timeout) {
+                    setTimeout(checkBusyOrSwitch, delay);
+                }
             }
-            this.busy = false;
-            this.updateAllRelayState();
-        });
+        };
+        checkBusyOrSwitch();
     }
 
 }

@@ -8,7 +8,7 @@ const speechEngine = require('./speechEngine');
 const checkBattery = require('./checkBattery');
 const masterRelay = require('./MasterRelay');
 const UsbRelay = require('./UsbRelayControl');
-const usbRelay = new UsbRelay();
+robotModel.usbRelay = new UsbRelay();
 const howManySecondsSince = require('./howManySecondsSince');
 const Stochator = require('stochator');
 const fs = require('fs');
@@ -184,7 +184,7 @@ Poll.prototype.tick = function () { // Argument options: tick
     }
     if ((intervalCount % 2) === 1) {
         masterRelay('read');
-        usbRelay.updateAllRelayState();
+        robotModel.usbRelay.updateAllRelayState();
     }
     if (intervalCount === intervalTop) {
         if (!webModel.cameraOn) {
@@ -256,7 +256,7 @@ Poll.prototype.tick = function () { // Argument options: tick
                 console.log("Idle power down.");
                 webModelFunctions.scrollingStatusUpdate("Idle power down.");
                 masterRelay('off');
-                usbRelay.switchRelay('all', 'off');
+                robotModel.usbRelay.switchRelay('all', 'off');
             }
         }
     }
