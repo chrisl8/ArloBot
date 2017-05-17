@@ -29,7 +29,7 @@ propeller board with SimpleIDE!!!
 // IR sensors tend to be less reliable, so make this shorter than the MAX_DISTANCE, which applies to PING sensors.
 #define IR_MAX_DISTANCE 50
 // What is the minimum speed that the speed limiter should set the robot to?
-#define MINIMUM_SPEED 10
+#define MINIMUM_SPEED 20
 // THROTTLE_STOP determines how quickly the speed limit is changed.
 // Make this number bigger to cause the speed to change more slowly.
 #define INCREASE_THROTTLE_RATE 50
@@ -205,7 +205,18 @@ onto your Propeller Activity board!
 */
 
 // Maximum speed in ticks per second. Even if ROS asks us to go faster, we will not.
-#define MAXIMUM_SPEED 200 // 200 is default in arlodrive too, but we may change it.
+#define MAXIMUM_SPEED 220 // Two TPS faster than what we are telling ROS is the maximum speed.
+// Use MotorReponseTesting.c if you want to test/adjust this,
+// And be sure to edit the ROS config files with the maximum linear (m/s) and angular (rad/s) velocity
+
+// Acceleration rate for DBH-10
+// The range is 0 to 32767 with a default of 512
+// according to https://www.parallax.com/sites/default/files/downloads/28231-DHB-10-Arlo-Firmware-Guide-v1.0.pdf
+// ROS DWA doesn't like it when the robot throttles acceleration. So we are ramping it up a bit from the default.
+#define DHB10_ACC 1024
+// Use MotorReponseTesting.c if you want to test/adjust this,
+// And be sure to edit the ROS config files with the maximum linear (m/s^2) and angular (rad/s^2) acceleration
+// Calculator: http://www.smartconversion.com/unit_calculation/Acceleration_calculator.aspx
 
 /* These settings affect the speed at which the "loop" on the robot runs.
 If it runs too fast we overwhelm serial connections and crash things or get garbage.
@@ -214,14 +225,15 @@ Remember though that going faster and "hanging" isn't more responsive.
 */
 #define dhb10OverloadPause 2 // Pause before each read/write to DHB10 to avoid overloading it.
 // 1 seems to work fine. 2 seems perfectly safe without any ill affects. I suggest filing a github issue before increasing this.
-#define mainLoopPause 10 // Pause after each main loop. 10 seems to work fine.
-// The total loop "pause" time is (dhb10OverloadPause * 4 ) + mainLoopPause
-// So you can probalby decrease mainLoopPause if you increase dhb10OverloadPause
-/* Timeout setting. After this period (loops) the robot will stop if it
+
+/* Timeout setting. After this many seconds the robot will stop if it
 has not received a twist command from ROS.
-The loop speed is determined by the above two settings, so it isn't a strict time.
+
+It is often desirable to set this longer when doing direct to serial testing.
+
+However, ROS typically updates the robot frequently, so this should work with ROS.
 */
-#define ROStimeout 10 // 10 = about 1 second if dhb10OverloadPause === 2 && mainLoopPause === 10
+#define ROS_TIMEOUT 5
 
 /* Enable this to turn on extra debugging information,
 for use with the
