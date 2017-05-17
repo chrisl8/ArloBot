@@ -5,38 +5,45 @@ const request = require('request');
 const ipAddress = require('./ipAddress');
 const updateRobotURL = function () {
     let robotIP = false;
-    while (!robotIP) {
-        robotIP = ipAddress.ipAddress();
-    }
 
+    function getIpOrPublish() {
 
-    const robotURL = 'http://' + robotIP + ':' + personalData.webServerPort;
-    if (personalData.cloudServer.exists && webModel.robotURL !== robotURL) {
-        webModelFunctions.update('robotIP', robotIP);
+        if (!robotIP) {
+            robotIP = ipAddress.ipAddress();
+            setTimeout(getIpOrPublish, 30000);
+        } else {
 
-        const serverURL = personalData.cloudServer.service + '://' + personalData.cloudServer.fqdn + ':' + personalData.cloudServer.port + '/updateRobotURL';
+            const robotURL = 'http://' + robotIP + ':' + personalData.webServerPort;
+            if (personalData.cloudServer.exists && webModel.robotURL !== robotURL) {
+                webModelFunctions.update('robotIP', robotIP);
 
-        request.post(
-            serverURL,
-            {
-                json: {
-                    password: personalData.cloudServer.password,
-                    localURL: robotURL
-                }
-            },
-            function (error, response) { // Arguments: error, response, body
-                if (!error && response.statusCode == 200) {
-                    webModelFunctions.update('robotURL', robotURL);
-                    // console.log(body)
-                    // console.log('webModel.robotIP:', webModel.robotIP);
-                    // console.log('webModel.robotURL:', webModel.robotURL);
-                } else {
-                    console.log('Robot URL Update failed. Check Internet connection and personalData settings.');
-                    console.log('Server URL: ' + serverURL);
-                }
+                const serverURL = personalData.cloudServer.service + '://' + personalData.cloudServer.fqdn + ':' + personalData.cloudServer.port + '/updateRobotURL';
+
+                request.post(
+                    serverURL,
+                    {
+                        json: {
+                            password: personalData.cloudServer.password,
+                            localURL: robotURL
+                        }
+                    },
+                    function (error, response) { // Arguments: error, response, body
+                        if (!error && response.statusCode == 200) {
+                            webModelFunctions.update('robotURL', robotURL);
+                            // console.log(body)
+                            // console.log('webModel.robotIP:', webModel.robotIP);
+                            // console.log('webModel.robotURL:', webModel.robotURL);
+                        } else {
+                            console.log('Robot URL Update failed. Check Internet connection and personalData settings.');
+                            console.log('Server URL: ' + serverURL);
+                        }
+                    }
+                );
             }
-        );
+        }
     }
+
+    getIpOrPublish();
 };
 exports.updateRobotURL = updateRobotURL;
 if (require.main === module) {
