@@ -14,7 +14,7 @@
  -->
 
   <arg name="arlobot_model" value="$(optenv ARLOBOT_MODEL default)" />
-  <arg name="urdf_file" default="xacro '$(find arlobot_description)/urdf/common_$(arg arlobot_model).urdf.xacro'" />
+  <arg name="urdf_file" default="xacro --inorder '$(find arlobot_description)/urdf/common_$(arg arlobot_model).urdf.xacro'" />
   <param name="robot_description" command="$(arg urdf_file)" />
 
   <!-- important generally, but specifically utilised by the current app manager -->

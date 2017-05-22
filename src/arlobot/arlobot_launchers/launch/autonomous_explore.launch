@@ -17,7 +17,7 @@ with other launch files included at the end
   Collection of robot-centric definitions and nodes for the turtlebot.
  -->
 
-  <arg name="urdf_file" default="xacro '$(find arlobot_description)/urdf/common.urdf.xacro'" />
+  <arg name="urdf_file" default="xacro --inorder '$(find arlobot_description)/urdf/common.urdf.xacro'" />
   <param name="robot_description" command="$(arg urdf_file)" />
 
   <!-- important generally, but specifically utilised by the current app manager -->
