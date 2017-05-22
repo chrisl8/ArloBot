@@ -34,7 +34,7 @@ fi
 
 # Start roscore separately so that we can set parameters
 # before launching any ROS .launch files.
-/opt/ros/indigo/bin/roscore &
+/opt/ros/${ROS_DISTRO}/bin/roscore &
 
 while ! (rosparam list &> /dev/null)
 do

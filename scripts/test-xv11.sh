@@ -11,7 +11,7 @@ done
 SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 # echo ${SCRIPTDIR} # For debugging
 
-/opt/ros/indigo/bin/roscore &
+/opt/ros/${ROS_DISTRO}/bin/roscore &
 while ! (rosparam list &> /dev/null)
 do
     echo "Waiting for roscore to start . . ."
