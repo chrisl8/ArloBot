@@ -46,10 +46,15 @@ If you put a fresh copy of Lubuntu on your robot's laptop then you can use the q
 ## Quick Install: ##
 There is now a script to install everything. Just run:
 
+For ROS Indigo on Ubuntu/Kubuntu/Lubuntu 14.04 LTS:  
 ```
 bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/master/setup.sh)
 ```
-and you are done! (Remember, you must use Ubuntu 14.04 LTS for ROS Indigo! This package does not work on Jade yet!)
+
+EXPERIMENTAL!!!! - For ROS Kinetic on Ubuntu/Kubuntu/Lubuntu 16.04 LTS:  
+```
+bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/kinetic/setup-kinetic.sh)
+```
 
 Be sure to read the instructions that the script will print at the end about editing the config files in ~/.arlobot/
 
