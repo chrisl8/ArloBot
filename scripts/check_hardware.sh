@@ -34,6 +34,7 @@ if [ $(jq '.useMasterPowerRelay' ${HOME}/.arlobot/personalDataForBehavior.json) 
     echo "Turning on Arlo Power supply . . ."
     ${SCRIPTDIR}/switch_master_relay.sh on
     # Give Linux time to find the devices.
+    echo "Giving it 1 second to come online . . ."
     sleep 1
 fi
 
@@ -54,12 +55,22 @@ if [ $(jq '.relays.has_fiveVolt' ${HOME}/.arlobot/personalDataForBehavior.json) 
     echo "Turning on Five Volt power converter . . ."
     ${SCRIPTDIR}/switch_relay_name.sh fiveVolt on
     # Give Linux time to find the devices.
-    sleep 5 # Experience shows any less than 5 seconds causes some devices to fail.
+    # Experience shows any less than 5 seconds causes some devices to fail.
+    USBDELAYTIME=5
+    while [ ${USBDELAYTIME} -gt 0 ]
+    do
+        echo "Giving USB devices ${USBDELAYTIME} seconds to come online . . ."
+        sleep 1
+        USBDELAYTIME=$((USBDELAYTIME-1))
+    done
 fi
+
+echo "Checking all configured devices to make sure they are available . . ."
 
 # Camera 0
 if [ $(jq '.camera0' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
+    echo "Checking Camera 0 . . ."
     CAMERANAME=$(jq '.camera0name' ${HOME}/.arlobot/personalDataForBehavior.json | tr -d '"')
     VIDEODEVICE=$(${SCRIPTDIR}/find_camera.sh ${CAMERANAME})
     if [ $? -gt 0 ]
@@ -78,6 +89,7 @@ fi
 # Camera 1
 if [ $(jq '.camera1' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
+    echo "Checking Camera 1 . . ."
     CAMERANAME=$(jq '.camera1name' ${HOME}/.arlobot/personalDataForBehavior.json | tr -d '"')
     VIDEODEVICE=$(${SCRIPTDIR}/find_camera.sh ${CAMERANAME})
     if [ $? -gt 0 ]
@@ -93,9 +105,22 @@ if [ $(jq '.camera1' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     fi
 fi
 
+# Joystick
+if [ $(jq '.hasXboxController' ${HOME}/.arlobot/personalDataForBehavior.json) == true  ]
+then
+    echo "Checking Xbox Controller . . ."
+    JOYSTICKDEVICE=$(${SCRIPTDIR}/find_xbox_controller.sh)
+    if [ -z ${JOYSTICKDEVICE} ]
+    then
+        echo "Joystick missing!"
+        wrap_up_on_fail
+    fi
+fi
+
 # Activity Board
 if [ $(jq '.hasActivityBoard' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
+        echo "Checking Activity Board . . ."
     ${SCRIPTDIR}/find_ActivityBoard.sh |grep USB &> /dev/null
     if [ $? -gt 0 ]
         then
@@ -119,6 +144,7 @@ fi
 # XV-11
 if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
+        echo "Checking XV11"
     ${SCRIPTDIR}/find_XVLidar.sh |grep ACM &> /dev/null
     if [ $? -gt 0 ]
         then
@@ -126,4 +152,7 @@ if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
         wrap_up_on_fail
     fi
 fi
+
+echo "Hardware Check SUCCESS! All devices found."
+
 exit 0
