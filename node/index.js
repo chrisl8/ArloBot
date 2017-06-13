@@ -336,6 +336,7 @@ StartROS.prototype.tick = function () { // Argument options: tick
                 // Update last idle time to prevent instant idle timeout!
                 if (!webModel.ROSisRunning) {
                     robotModel.lastMovementTime = Date.now();
+                    webModelFunctions.update('status', 'ROS is Running.');
                 }
                 webModelFunctions.update('ROSisRunning', true);
                 if (robotModel.startROSTime === undefined) {
