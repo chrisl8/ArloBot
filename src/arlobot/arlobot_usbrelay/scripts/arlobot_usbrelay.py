@@ -237,14 +237,15 @@ class UsbRelay(object):
             self.r.sleep() # Sleep long enough to maintain the rate set in __init__
 
     def Stop(self):
-        rospy.loginfo("Shutting off all relays . . .")
-        # At this point ROS is shutting down, so any attempts to check parameters or log may crash.
-        self._Busy = True # We are shutting down, so make everyone else stall and plow ahead:
-        for i in range(1,9): # Walk the relays
-            state = get_relay_state( BitBangDevice(self.relaySerialNumber).port, str(i) )
-            while not state == 0: # Loop if it doesn't shut off.
-                BitBangDevice(self.relaySerialNumber).port &= ~int(relay_data.address[str(i)], 16)
+        if self.relayExists: # This causes errors if it tries to shut off the relay when it does not exist
+            rospy.loginfo("Shutting off all relays . . .")
+            # At this point ROS is shutting down, so any attempts to check parameters or log may crash.
+            self._Busy = True # We are shutting down, so make everyone else stall and plow ahead:
+            for i in range(1,9): # Walk the relays
                 state = get_relay_state( BitBangDevice(self.relaySerialNumber).port, str(i) )
+                while not state == 0: # Loop if it doesn't shut off.
+                    BitBangDevice(self.relaySerialNumber).port &= ~int(relay_data.address[str(i)], 16)
+                    state = get_relay_state( BitBangDevice(self.relaySerialNumber).port, str(i) )
 
 if __name__ == '__main__':
     node = UsbRelay()
