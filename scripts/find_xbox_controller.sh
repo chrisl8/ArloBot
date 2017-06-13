@@ -8,7 +8,7 @@ do
 #udevadm info -a -n $i|grep -m 1 product|grep Propeller > /dev/null
 if [ $CONTROLLER_NUMBER -lt $FIND_NUMBER ]
 then
-udevadm info -a -n $i|egrep -m 1 name|grep XBOX > /dev/null
+udevadm info -a -n $i|egrep -m 1 name|grep "Xbox 360 Wireless Receiver" > /dev/null
 if [ $? -eq 0 ]
 then
 echo $i
