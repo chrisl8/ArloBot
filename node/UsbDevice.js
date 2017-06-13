@@ -26,7 +26,7 @@ class UsbDevice {
                     for (let i = 0; i < infoDump.length; i++) {
                         for (let j = 0; j < infoDump[i].deviceInfo.length; j++) {
                             if (infoDump[i].deviceInfo[j].includes(this.stringLocation)) {
-                                let deviceStringLine = infoDump[i].deviceInfo[j].split('==');
+                                let deviceStringLine = infoDump[i].deviceInfo[j].split('=');
                                 if (deviceStringLine.length > 0) {
                                     let re = /\"/g;
                                     infoDump[i].deviceString = deviceStringLine[1].replace(re, '');
@@ -80,7 +80,7 @@ class UsbDevice {
         const getSingleDeviceInfo = function (device) {
             return new Promise((resolve, reject) => {
                 var outputData = '';
-                const process = spawn('udevadm', ['info', '-a', '-n', `/dev/${device}`]);
+                const process = spawn('udevadm', ['info', '-n', `/dev/${device}`]);
                 process.stdout.on('data', (data) => {
                     outputData += data;
                 });

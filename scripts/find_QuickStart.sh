@@ -10,4 +10,4 @@ done
 SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 # echo ${SCRIPTDIR} # For debugging
 
-node ${SCRIPTDIR}/../node/UsbDevice.js "Propeller QuickStart" product
+node ${SCRIPTDIR}/../node/UsbDevice.js "Propeller_QuickStart" ID_MODEL
