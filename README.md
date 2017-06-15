@@ -53,7 +53,7 @@ There is now a script to install everything. Just run:
 
 For ROS Indigo on Ubuntu/Kubuntu/Lubuntu 14.04 LTS:  
 ```
-bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/master/setup-indigo.sh)
+bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/indigo/setup-indigo.sh)
 ```
 
 Be sure to read the instructions that the script will print at the end about editing the config files in ~/.arlobot/
@@ -79,11 +79,11 @@ attempting to compile the robot code.
 The "workstation" install uses "Jade" version of ROS, so it will work on Ubuntu 15. Just run:
 
 ```
-bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/master/workstation.sh)
+bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/indigo/workstation.sh)
 ```  
 or if you have Ubuntu 16 use the "Kinetic" workstation install:  
 ```
-bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/master/workstation-kinetic.sh)
+bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/indigo/workstation-kinetic.sh)
 ```  
 and your system will be set up to use as a "remote" station.
 To update your code just run the same script again and it will pull down and compile anything new without erasing custom settings.
