@@ -55,3 +55,10 @@ min_vel_x: 0.06
 min_in_place_vel_theta: 0.3
 acc_lim_x: 0.7
 acc_lim_theta: 1.5
+
+
+Here are some good reference sites for ROS Tuning of Navigation:
+http://wiki.ros.org/navigation/Tutorials/Navigation%20Tuning%20Guide
+http://www.zkytony.com/documents/navguide.pdf
+http://wiki.ros.org/rqt_reconfigure
+http://wiki.ros.org/dynamic_reconfigure
