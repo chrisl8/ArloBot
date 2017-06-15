@@ -39,7 +39,7 @@ Ask questions in the [Parallax Forums](http://forums.parallax.com/ "Parallax For
 Once your robot is built, you can use this package.
 
 ## Requirements ##
-Arlobot operates on ROS Indigo which requires Ubuntu 16.04 LTS, or Xbuntu or Lubuntu of the same version. I personally use Lubuntu on my robot's on board computer.
+Arlobot operates on ROS Kinetic which requires Ubuntu 16.04 LTS, or Xbuntu or Lubuntu of the same version. I personally use Lubuntu on my robot's on board computer.
 
 If you put a fresh copy of Lubuntu on your robot's laptop then you can use the quick install script below.
 
