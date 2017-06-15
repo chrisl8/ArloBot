@@ -133,7 +133,7 @@ fi
 cd ~/catkin_ws/src
 if ! [ -d ~/catkin_ws/src/ArloBot ]
     then
-    git clone https://github.com/chrisl8/ArloBot.git
+    git clone -b kinetic https://github.com/chrisl8/ArloBot.git
 else
     cd ~/catkin_ws/src/ArloBot
     git pull
