@@ -1,6 +1,11 @@
 ArloBot Package for ROS
 =======================
 
+#Indigo Branch#
+NOTE: This is the old branch for ROS Indigo on Ubuntu 14.04. Please switch to the kinetic branch unless you have a reason to keep using this older branch.  
+This branch is no longer maintained, so bug fixes or new features will be missing.  
+If you need me to port a fix or feature over from Kinetic to Indigo branch please open an issue.
+
 ## and SO MUCH MORE! ##
 
 1. This package provides a set of ROS packages for using a [Parallax Arlo Platform](http://www.parallax.com/product/arlo-robotic-platform-system "Parallax") robot to run all of the demonstration projects for the [Robot Operating System (ROS)](http://www.ros.org/ "ROS") based [TurtleBot](http://wiki.ros.org/Robots/TurtleBot "TurtleBot")
@@ -48,12 +53,7 @@ There is now a script to install everything. Just run:
 
 For ROS Indigo on Ubuntu/Kubuntu/Lubuntu 14.04 LTS:  
 ```
-bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/master/setup.sh)
-```
-
-EXPERIMENTAL!!!! - For ROS Kinetic on Ubuntu/Kubuntu/Lubuntu 16.04 LTS:  
-```
-bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/kinetic/setup-kinetic.sh)
+bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/master/setup-indigo.sh)
 ```
 
 Be sure to read the instructions that the script will print at the end about editing the config files in ~/.arlobot/
