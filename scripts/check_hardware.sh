@@ -120,7 +120,7 @@ fi
 # Activity Board
 if [ $(jq '.hasActivityBoard' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
-        echo "Checking Activity Board . . ."
+    echo "Checking Activity Board . . ."
     ${SCRIPTDIR}/find_ActivityBoard.sh |grep USB &> /dev/null
     if [ $? -gt 0 ]
         then
@@ -133,13 +133,16 @@ if [ $(jq '.hasActivityBoard' ${HOME}/.arlobot/personalDataForBehavior.json) == 
 fi
 
 # Quick Start Board
-# While it should exist, it does not have to be plugged into the computer for Arlo to operate
-#${SCRIPTDIR}/find_QuickStart.sh |grep USB &> /dev/null
-#if [ $? -gt 0 ]
-#then
-#echo "Quick Start Board missing!"
-#wrap_up_on_fail
-#fi
+if [ $(jq '.hasActivityBoard' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
+    then
+    echo "Checking Quick Start Board . . ."
+    ${SCRIPTDIR}/find_QuickStart.sh |grep USB &> /dev/null
+    if [ $? -gt 0 ]
+        then
+        echo "Quick Start Board missing!"
+        wrap_up_on_fail
+    fi
+fi
 
 # XV-11
 if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]

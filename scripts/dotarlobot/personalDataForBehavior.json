@@ -63,6 +63,8 @@
   "arlobotModel": "default",
   "_hasActivityBoard": "This can only be false for a 'dummy' test system that has no actual hardware.",
   "hasActivityBoard": true,
+  "_hasQuickStartBoard": "My roobt has a SECOND Prpoeller board called  'Quck Start Board' that runs the PING sensors.",
+  "hasQuickStartBoard": false,
   "_speechVolumeLevelDefault": "Default volume level for speech. 0 to 100",
   "speechVolumeLevelDefault": 100,
   "defaultMicrophoneName": "",
