@@ -254,6 +254,24 @@ if ! (id|grep video>/dev/null)
     sudo adduser ${USER} video > /dev/null
 fi
 
+if ! (which simpleide > /dev/null)
+then
+    printf "\n${YELLOW}[Setting up Parallax SimpleIDE for putting code on Activity Board.]${NC}\n"
+    sudo dpkg -i ~/catkin_ws/src/ArloBot/ParallaxLinuxSetupFiles/simple-ide_1-0-1-rc1_amd64.deb
+fi
+
+if ! [ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/libarlodrive/arlodrive.c ]
+then
+    printf "\n${YELLOW}[Setting up Parallax Arlobot libraries.]${NC}\n"
+    cd /tmp
+    unzip ~/catkin_ws/src/ArloBot/ParallaxLinuxSetupFiles/28966-Arlo-with-Activity-Board-2016-05-02a.zip > /dev/null
+    mkdir -p ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/
+    mv 28966-Arlo-with-Activity-Board-2016-05-02a/Arlo-with-Activity-Board-200502a/libarlodrive/ ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/
+    mkdir -p ~/Documents/SimpleIDE/Learn/Examples/Arlo/
+    mv 28966-Arlo-with-Activity-Board-2016-05-02a/Arlo-with-Activity-Board-200502a/* ~/Documents/SimpleIDE/Learn/Examples/Arlo/
+    rm -rf /tmp/28966-Arlo-with-Activity-Board-2016-05-02a
+fi
+
 # We will use ~/.arlobot to store "private" data
 # That is data that doesn't need to be part of
 # the public github repo like user tokens,
