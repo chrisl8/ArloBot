@@ -20,3 +20,5 @@ website/typings/
 website/app/*.js
 website/app/*.js.map
 /mycroft-core
+PropellerCodeForArloBot/ROSInterfaceForArloBotWithDHB10.binary
+PropellerCodeForArloBot/ROSInterfaceForArloBotWithDHB10.elf
