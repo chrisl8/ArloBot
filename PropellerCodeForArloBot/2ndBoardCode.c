@@ -57,29 +57,6 @@ int main()
   // Start the sensor cog(s)
 	cogstart(&pollPingSensors, NULL, pstack, sizeof pstack);
 
-  // Blinken Lights!
-  const int pauseTime = 50;
-  const int startLED = 17; // 16 is used for the pollPingSensors cog to indicate activity.
-  const int endLED = 23;
-  high(startLED);
-  pause(pauseTime);
-  low(startLED);
-  while(1) {
-  pause(5);
-  if(isActive == 1) {
-      for (int led = startLED + 1; led <= endLED; led++) {
-        high(led);
-        pause(pauseTime);
-        low(led);
-      }
-      for (int led = endLED - 1; led >= startLED; led--) {
-        high(led);
-        pause(pauseTime);
-        low(led);
-      }
-    isActive = 0;
-    }
-  }
 }
 
 void pollPingSensors(void *par) {
