@@ -5,7 +5,6 @@
   "description": "Node scripts to control my ArloBot robot behavior",
   "main": "index.js",
   "dependencies": {
-    "behavior3js": "^0.1.0",
     "body-parser": "^1.13.3",
     "chokidar": "^1.1.0",
     "connect-redis": "^3.1.0",

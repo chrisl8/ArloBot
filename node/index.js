@@ -16,8 +16,8 @@ const fs = require('fs');
  * It is an artifact of it being a web library,
  * not written for node.js.
  */
-b3 = {};
-const behavior3js = require('behavior3js');
+//b3 = {};
+const b3 = require('./behavior3-0.2.0');
 const exec = require('child_process').exec;
 const spawn = require('child_process').spawn;
 // Note that tts will convert text to speech,
