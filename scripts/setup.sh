@@ -74,8 +74,7 @@ printf "\n${YELLOW}You will get some errors here. Some are important, some are n
 printf "So far I know the following errors are UNimportant:\n"
 printf "'fatal error: libudev.h: No such file or directory'\n"
 printf "'Skipping failed optional dependency /chokidar/fsevents'\n"
-npm install
-npm update
+yarn
 
 cd ${SCRIPTDIR}/../website
 npm install

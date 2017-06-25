@@ -39,8 +39,18 @@ printf "${RED}[This script will only work on ubuntu xenial(16.04)]${NC}\n"
 exit 1
 esac
 
-printf"{YELLOW}Adding xbox controller repository in case you are using one.${NC}\n"
-sudo apt-add-repository -y ppa:rael-gc/ubuntu-xboxdrv
+if ! [ -e /etc/apt/sources.list.d/rael-gc-ubuntu-ubuntu-xboxdrv-xenial.list ]
+then
+    printf "{YELLOW}Adding xbox controller repository in case you are using one.${NC}\n"
+    sudo apt-add-repository -y ppa:rael-gc/ubuntu-xboxdrv
+fi
+
+if ! [ -e /etc/apt/sources.list.d/yarn.list ]
+then
+    printf "{YELLOW}Adding yarn repository.${NC}\n"
+    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+fi
 
 # I never use this, but if you are having time issues maybe uncomment this.
 #printf "${YELLOW}[Installing chrony and setting the ntpdate]${NC}\n"
@@ -121,8 +131,9 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 #pulseaudio pavucontrol are for setting the default microphone. I use this for mycroft among other things
 #ros-kinetic-pointcloud-to-laserscan for Scanse Sweep
 #ubuntu-xboxdrv is for using an xbox 360 controler with the robot
+#yarn - Using Facebook yarn for node package installation
 
-sudo apt install -y ros-kinetic-rqt-* ros-kinetic-turtlebot ros-kinetic-turtlebot-apps ros-kinetic-turtlebot-interactions ros-kinetic-turtlebot-simulator ros-kinetic-kobuki-ftdi python-ftdi1 python-pip python-serial ros-kinetic-openni-* ros-kinetic-openni2-* ros-kinetic-freenect-* ros-kinetic-vision-opencv ros-kinetic-rtabmap-ros ros-kinetic-scan-tools libopencv-dev python-opencv ros-kinetic-rosbridge-server imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol ros-kinetic-pointcloud-to-laserscan ubuntu-xboxdrv
+sudo apt install -y ros-kinetic-rqt-* ros-kinetic-turtlebot ros-kinetic-turtlebot-apps ros-kinetic-turtlebot-interactions ros-kinetic-turtlebot-simulator ros-kinetic-kobuki-ftdi python-ftdi1 python-pip python-serial ros-kinetic-openni-* ros-kinetic-openni2-* ros-kinetic-freenect-* ros-kinetic-vision-opencv ros-kinetic-rtabmap-ros ros-kinetic-scan-tools libopencv-dev python-opencv ros-kinetic-rosbridge-server imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol ros-kinetic-pointcloud-to-laserscan ubuntu-xboxdrv yarn
 
 # For 8-CH USB Relay board:
 sudo pip install pylibftdi
@@ -260,16 +271,10 @@ then
     sudo dpkg -i ~/catkin_ws/src/ArloBot/ParallaxLinuxSetupFiles/simple-ide_1-0-1-rc1_amd64.deb
 fi
 
-if ! [ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/libarlodrive/arlodrive.c ]
+if ! [ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/Arlo/libarlodrive/arlodrive.c ]
 then
-    printf "\n${YELLOW}[Setting up Parallax Arlobot libraries.]${NC}\n"
-    cd /tmp
-    unzip ~/catkin_ws/src/ArloBot/ParallaxLinuxSetupFiles/28966-Arlo-with-Activity-Board-2016-05-02a.zip > /dev/null
-    mkdir -p ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/
-    mv 28966-Arlo-with-Activity-Board-2016-05-02a/Arlo-with-Activity-Board-200502a/libarlodrive/ ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/
-    mkdir -p ~/Documents/SimpleIDE/Learn/Examples/Arlo/
-    mv 28966-Arlo-with-Activity-Board-2016-05-02a/Arlo-with-Activity-Board-200502a/* ~/Documents/SimpleIDE/Learn/Examples/Arlo/
-    rm -rf /tmp/28966-Arlo-with-Activity-Board-2016-05-02a
+    printf "\n${YELLOW}[You must Update your SimpleIDE Learn Folder using the instructions here!]${NC}\n"
+    print "\n${GREEN}http://learn.parallax.com/tutorials/language/propeller-c/propeller-c-set-simpleide/update-your-learn-folder${NC}\n"
 fi
 
 # We will use ~/.arlobot to store "private" data
