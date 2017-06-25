@@ -1,16 +1,15 @@
 var personalData = require('./personalData');
-var twilio = require('twilio');
 var fs = require('fs');
 
 module.exports = function(message) {
     // Send myself text messages with twilio
-    // https://www.twilio.com/blog/2013/03/introducing-the-twilio-module-for-node-js.html
+    // https://www.twilio.com/docs/quickstart/node/programmable-sms
 
     if (personalData.twilio.account_sid !== "" && personalData.twilio.auth_token !== "") {
-        var client = new twilio.RestClient(personalData.twilio.account_sid, personalData.twilio.auth_token);
+        var client = require('twilio')(personalData.twilio.account_sid, personalData.twilio.auth_token);
         // Pass in parameters to the REST API using an object literal notation. The
         // REST client will handle authentication and response serialzation for you.
-        client.sms.messages.create({
+        client.messages.create({
             to: personalData.twilio.my_phone_number,
             from: personalData.twilio.number,
             body: message
