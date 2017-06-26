@@ -1,0 +1,4 @@
+int16 led
+bool state
+---
+bool state

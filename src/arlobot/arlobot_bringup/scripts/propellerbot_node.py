@@ -35,8 +35,8 @@ from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 from std_msgs.msg import String
 from std_msgs.msg import Bool
-from arlobot_msgs.msg import usbRelayStatus, arloStatus, arloSafety
-from arlobot_msgs.srv import FindRelay, ToggleRelay
+from arlobot_msgs.msg import usbRelayStatus, arloStatus, arloSafety, arloButtons
+from arlobot_msgs.srv import FindRelay, ToggleRelay, ToggleLED
 
 from SerialDataGateway import SerialDataGateway
 from OdomStationaryBroadcaster import OdomStationaryBroadcaster
@@ -73,10 +73,10 @@ class PropellerComm(object):
         self.alternate_heading = self.lastHeading
         self.track_width = rospy.get_param("~driveGeometry/trackWidth", "0")
         self.distance_per_count = rospy.get_param("~driveGeometry/distancePerCount", "0")
-        self.ignore_proximity = rospy.get_param("~ignoreProximity", False);
-        self.ignore_cliff_sensors = rospy.get_param("~ignoreCliffSensors", False);
-        self.ignore_ir_sensors = rospy.get_param("~ignoreIRSensors", False);
-        self.ignore_floor_sensors = rospy.get_param("~ignoreFloorSensors", False);
+        self.ignore_proximity = rospy.get_param("~ignoreProximity", False)
+        self.ignore_cliff_sensors = rospy.get_param("~ignoreCliffSensors", False)
+        self.ignore_ir_sensors = rospy.get_param("~ignoreIRSensors", False)
+        self.ignore_floor_sensors = rospy.get_param("~ignoreFloorSensors", False)
         self.robotParamChanged = False
 
         # Get motor relay numbers for use later in _HandleUSBRelayStatus if USB Relay is in use:
@@ -110,6 +110,7 @@ class PropellerComm(object):
         self._SerialPublisher = rospy.Publisher('serial', String, queue_size=10)
         self._pirPublisher = rospy.Publisher('~pirState', Bool, queue_size=1)  # for publishing PIR status
         self._arlo_status_publisher = rospy.Publisher('arlo_status', arloStatus, queue_size=1)
+        self._buttons_publisher = rospy.Publisher('buttons', arloButtons, queue_size=1)
 
         # IF the Odometry Transform is done with the robot_pose_ekf do not publish it,
         # but we are not using robot_pose_ekf, because it does nothing for us if you don't have a full IMU!
@@ -120,6 +121,11 @@ class PropellerComm(object):
         # self._SonarTransformBroadcaster = tf.TransformBroadcaster()
         self._UltraSonicPublisher = rospy.Publisher("ultrasonic_scan", LaserScan, queue_size=10)
         self._InfraredPublisher = rospy.Publisher("infrared_scan", LaserScan, queue_size=10)
+
+        # Create a service that can be called to send robot to a map based goal
+        # http://wiki.ros.org/ROS/Tutorials/CreatingMsgAndSrv
+        # http://wiki.ros.org/ROS/Tutorials/WritingServiceClient%28python%29
+        toggleLED = rospy.Service('~ToggleLED', ToggleLED, self._toggleLED)
 
         # You can use the ~/catkin_ws/src/ArloBot/scripts/find_ActivityBoard.sh script to find this, and
         # You can set it by running this before starting this:
@@ -155,11 +161,22 @@ class PropellerComm(object):
                 # rospy.loginfo("Propeller: " + line)
                 self._broadcast_arlo_status(line_parts)
                 return
+            if line_parts[0] == 'b':
+                self._broadcast_button_pushes(line_parts[1].strip())
+
+    def _broadcast_button_pushes(self, button):
+        # Test with:
+        # rostopic echo /buttons
+        rospy.loginfo("Button " + button + " was pushed.")
+        arlo_buttons = arloButtons()
+        arlo_buttons.buttonNumber = int(button)
+        arlo_buttons.buttonPressed = True
+        self._buttons_publisher.publish(arlo_buttons)
 
     def _broadcast_arlo_status(self, line_parts):
         arlo_status = arloStatus()
         # Order from ROS Interface for ArloBot.c
-        # dprint(term, "s\t%d\t%d\t%d\t%d\t%d\n", safeToProceed, safeToRecede, Escaping, abd_speedLimit, abdR_speedLimit);
+        # dprint(term, "s\t%d\t%d\t%d\t%d\t%d\n", safeToProceed, safeToRecede, Escaping, abd_speedLimit, abdR_speedLimit)
         if int(line_parts[1]) == 1:
             arlo_status.safeToProceed = True
         else:
@@ -704,6 +721,19 @@ class PropellerComm(object):
         self._SerialPublisher.publish(String(str(self._Counter) + ", out: " + message))
         self._SerialDataGateway.Write(message)
 
+    def _toggleLED (self, LED):
+        # Test with:
+        # rosservice call /arlobot/ToggleLED 0 True
+        if (self._serialAvailable):
+            newLEDState = 0
+            if (LED.state == True):
+                newLEDState = 1
+            message = 'l,%d,%d\r' % (LED.led, newLEDState)
+            self._write_serial(message)
+            return LED.state
+        else:
+            return False
+
     def start(self):
         self._OdomStationaryBroadcaster.Start()
         self.startSerialPort()
@@ -906,22 +936,22 @@ class PropellerComm(object):
                 self.robotParamChanged = True
 
             old_ignore_proximity = self.ignore_proximity
-            self.ignore_proximity = rospy.get_param("~ignoreProximity", False);
+            self.ignore_proximity = rospy.get_param("~ignoreProximity", False)
             if not old_ignore_proximity == self.ignore_proximity:
                 self.robotParamChanged = True
 
             old_ignore_cliff_sensors = self.ignore_cliff_sensors
-            self.ignore_cliff_sensors = rospy.get_param("~ignoreCliffSensors", False);
+            self.ignore_cliff_sensors = rospy.get_param("~ignoreCliffSensors", False)
             if not old_ignore_cliff_sensors == self.ignore_cliff_sensors:
                 self.robotParamChanged = True
 
             old_ignore_ir_sensors = self.ignore_ir_sensors
-            self.ignore_ir_sensors = rospy.get_param("~ignoreIRSensors", False);
+            self.ignore_ir_sensors = rospy.get_param("~ignoreIRSensors", False)
             if not old_ignore_ir_sensors == self.ignore_ir_sensors:
                 self.robotParamChanged = True
 
             old_ignore_floor_sensors = self.ignore_floor_sensors
-            self.ignore_floor_sensors = rospy.get_param("~ignoreFloorSensors", False);
+            self.ignore_floor_sensors = rospy.get_param("~ignoreFloorSensors", False)
             if not old_ignore_floor_sensors == self.ignore_floor_sensors:
                 self.robotParamChanged = True
 

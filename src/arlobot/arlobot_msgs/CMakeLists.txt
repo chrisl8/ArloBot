@@ -51,12 +51,14 @@ add_message_files(
   usbRelayStatus.msg
   arloStatus.msg
   arloSafety.msg
+  arloButtons.msg
 )
 
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
   ToggleRelay.srv
+  ToggleLED.srv
   FindRelay.srv
   UnPlug.srv
   pause_explorer.srv

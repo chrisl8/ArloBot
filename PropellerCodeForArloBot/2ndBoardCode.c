@@ -17,7 +17,7 @@ Example, My robot has a "Thing1", but not a "Thing2"
 and if you do have the thing, adjust the numbers on the other definition as needed.
 By using the #define lines, code for items you do not have is never seen by the compiler and is never even loaded on the Propeller bard, saving memory. */
 
-#include "per_robot_settings_for_propeller_2nd_board.h"
+#include "per_robot_settings_for_propeller_c_code.h"
 /* If SimpleIDE build fails because the above file is missing,
 open up the "Project Manager", then the "Compiler" tab,
 and fix the path to your ~/.arlobot/ folder
@@ -40,14 +40,19 @@ will erase your changes.*/
 #include "fdserial.h" // http://learn.parallax.com/propeller-c-simple-protocols/full-duplex-serial
 // and http://propsideworkspace.googlecode.com/hg-history/daf5de8bf52840e02d5615edaa6d814e59d1b0b0/Learn/Simple%20Libraries/Text%20Devices/libfdserial/html/fdserial_8h.html#ab14338477b0b96e671aed748e20ecf5e
 
-//fdserial *term;
+// Robot push button reader
+// TODO: Put all button functions in an ifdef
+// along with their pin numbers
+static int buttonStatus[4] = {0};
+void pollButtons(void *par);
+static int pollButtonsStack[120]; // If things get weird make this number bigger.
+
 fdserial *propterm;
 
 int mcp3208_IR_cm(int); // Function to get distance in CM from IR sensor using MCP3208
 
 void pollPingSensors(void *par); // Use a cog to fill range variables with ping distances
-static int pstack[128]; // If things get weird make this number bigger!
-int isActive = 0;
+static int pstack[256]; // If things get weird make this number bigger!
 int main()
 {
 
@@ -57,46 +62,71 @@ int main()
   // Start the sensor cog(s)
 	cogstart(&pollPingSensors, NULL, pstack, sizeof pstack);
 
+#ifdef hasButtons
+    // Start the button poling cog
+    cogstart(&pollButtons, NULL, pollButtonsStack, sizeof pollButtonsStack);
+#endif
 }
+
+int checkCharacter() {
+  char receivedChar = fdserial_rxChar(propterm);
+  if (receivedChar == 'i') {
+    return 1;
+  }
+  if (receivedChar == 'l') {
+        for (int i=0; i < NUMBER_OF_LEDS; i++) {
+            receivedChar = fdserial_rxChar(propterm);
+            if (receivedChar == '1') {
+                high(20 + i);
+            } else {
+                low(20 + i);
+            }
+        }
+    }
+    return 0;      
+}  
 
 void pollPingSensors(void *par) {
   // The last IR sensor will be retagged with this position number,
   // in case there are more PINGs than IRs.
-  const int lastIRposition = 7;
-  propterm = fdserial_open(QUICKSTART_RX_PIN, QUICKSTART_TX_PIN, 0, 115200);
-  //term = fdserial_open(31, 30, 0, 115200); // for Debugging
-  // Initialize variables outside of loop
-  // This may or may not improve performance.
-  int ping = 0, ir = 0;
+  const int lastIRposition = 7; // TODO: Put this in user settings
+  propterm = fdserial_open(ACTIVITYBOARD_RX_PIN, ACTIVITYBOARD_TX_PIN, 0, 115200);
+  //propterm = fdserial_open(31, 30, 0, 115200); // for Debugging send data to USB Serial
   char receivedChar;
- while(1) // Repeat indefinitely
-  {
+ while(1) {// Repeat indefinitely
     /* We wait for input from the other side,
        Which lets us not activate the sensors
        if the other end is not working,
        and also lets the other end rate limit the input. */
-    receivedChar = fdserial_rxChar(propterm);
+    
     //char receivedChar = 'i'; // for Debugging - Cause it to always run instead of waiting for a signal
     // Only send data when we get the expected "init" character, avoiding running on random garbage from an open connection
-    if (receivedChar == 'i') {
-      high(16); // LEDs for debugging
-      isActive = 1;
+    if (checkCharacter() == 1) {
       for(int i=0; i < NUMBER_OF_PING_SENSORS; i++ ) {
-        ping = ping_cm(FIRST_PING_SENSOR_PIN + i);
+        int ping = ping_cm(FIRST_PING_SENSOR_PIN + i);
         dprint(propterm, "p,%d,%d.", i, ping);
-        receivedChar = fdserial_rxChar(propterm); // Should get a character after each output for rate limiting
-        //dprint(term, "p,%d,%d\n", i, ping); // For Debugging
+        checkCharacter(); // Should get a character "i" after each output for rate limiting
         if(i < NUMBER_OF_IR_SENSORS) { // If there is also an IR sensor at this number check it too
-          ir = mcp3208_IR_cm(i);
+          int ir = mcp3208_IR_cm(i);
           dprint(propterm, "i,%d,%d.", i, ir);
-          receivedChar = fdserial_rxChar(propterm); // Should get a character after each output for rate limiting
+          checkCharacter(); // Should get a character "i" after each output for rate limiting
         }
       }
-     //dprint(term, "\n"); // For Debugging - add a line break here and pull the above two
+#ifdef hasButtons
+        for (int i = 0; i < 4; i++) {
+            if (buttonStatus[i] == 1) {
+                dprint(propterm, "b,%d.", i);
+                buttonStatus[i] = 0;
+                checkCharacter(); // Should get a character "i" after each output for rate limiting
+            }
+        }
+#endif
+        //fdserial_rxFlush(propterm); // FLush out extra data in case it is there, BEFORE we sned 'l'
+#ifdef hasLEDs
+        dprint(propterm, "l."); // Now tell Activity board to send us the LEDs
+        #endif
     }
-    low(16); // LEDs for debugging
   }
-/* TODO: Be sure to test that the data coming in is REAL TIME! */
 }
 
 int mcp3208_IR_cm(int channel) {
@@ -108,4 +138,15 @@ const float referenceVoltage = 5.0; // MCP3208 reference voltage setting. I use 
   float mcp3208volts = (float)mcp3208reading * referenceVoltage / 4096.0;
   int mcp3208cm = 27.86 * pow(mcp3208volts, -1.15); // https://www.tindie.com/products/upgradeindustries/sharp-10-80cm-infrared-distance-sensor-gp2y0a21yk0f/
   return(mcp3208cm);
+}
+
+void pollButtons(void *par) {
+    while (1) {
+        pause(100);
+        for (int i = 0; i < 4; i++) {
+          if (input(16 + i) == 1) {
+            buttonStatus[i] = 1;
+          }            
+        }
+    }
 }

@@ -5,7 +5,7 @@ d,0.403000,0.00338,0,0,0,0,0,0.0,0.0,0.0
 
 With the above line though, sensors can cause the robot to not move or even move by itself to get away from obstacles,
 So if you want to ignore ALL sensors use this line:
-d,0.403000,0.00338,1,0,0,0,0,0.0,0.0,0.0
+d,0.403000,0.00338,1,1,1,1,0,0.0,0.0,0.0
 
 BE CAREFUL, you can run it into walls now!
 

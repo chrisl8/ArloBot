@@ -126,7 +126,7 @@ static double distancePerCount = 0.0, trackWidth = 0.0;
 
 const char delimiter[2] = ","; // Delimiter character for incoming messages from the ROS Python script
 
-static volatile int broadcastSpeedLeft = 0, broadcastSpeedRight = 0;
+static int broadcastSpeedLeft = 0, broadcastSpeedRight = 0;
 // These are global so we can read and set them from ROS on a restart if we want to.
 static double Heading = 0.0, X = 0.0, Y = 0.0;
 void broadcastOdometry(void *par); // Use a cog to broadcast Odometry to ROS continuously
@@ -136,17 +136,19 @@ static int fstack[256]; // If things get weird make this number bigger!
 
 // Global Storage for PING & IR Sensor Data:
 // int and long are the same in Propeller, but linters don't like using strtol on int
-long pingArray[NUMBER_OF_PING_SENSORS] = {0};
-long irArray[NUMBER_OF_IR_SENSORS] = {0};
+static long pingArray[NUMBER_OF_PING_SENSORS] = {0};
+static long irArray[NUMBER_OF_IR_SENSORS] = {0};
+static long buttonArray[NUMBER_OF_BUTTON_SENSORS] = {0};
+static long ledArray[NUMBER_OF_LEDS] = {1, 1, 1, 0, 1}; // TODO: make this 0 instead after testing.
 #ifdef hasFloorObstacleSensors
-int floorArray[NUMBER_OF_FLOOR_SENSORS] = {0};
+static int floorArray[NUMBER_OF_FLOOR_SENSORS] = {0};
 #endif
 
 #ifdef hasQuickStartBoard
 // For Quickstart Board communication
 fdserial *propterm;
 void pollPropBoard2(void *par); // Use a cog to fill range variables with ping distances
-static int prop2stack[128]; // If things get weird make this number bigger!
+static int prop2stack[256]; // If things get weird make this number bigger!
 #else
 // Local Sensor Polling Cog
 void pollPingSensors(void *par); // Use a cog to fill range variables with ping distances
@@ -163,23 +165,23 @@ int mcp3208_IR_cm(int); // Function to get distance in CM from IR sensor using M
    At some point a ROS node could use that data to detect a serious issue, like the robot being picked up or being stuck.
    As it is though, gmapping, AMCL, etc. work very well off of the Odometry without using the gyro data.
    */
-unsigned char i2cAddr = 0x69;       //I2C Gyro address
+const unsigned char i2cAddr = 0x69;       //I2C Gyro address
 //L3G4200D register addresses & commands.
 //See device data sheet section 7 for more info.
 //unsigned char devId = 0x0f;        //Device ID
-unsigned char ctrl1 = 0x20;        //Control reg1
-unsigned char cfg1 = 0b00011111;   //100 hz, 25 cutoff, power up, axes enabled
+const unsigned char ctrl1 = 0x20;        //Control reg1
+const unsigned char cfg1 = 0b00011111;   //100 hz, 25 cutoff, power up, axes enabled
 //unsigned char ctrl2 = 0x21;
-unsigned char ctrl3 = 0x22;
-unsigned char cfg3 = 0b00001000;    //Enable data poling (I2_DRDY)
-unsigned char ctrl4 = 0x23;
-unsigned char cfg4 = 0b10000000;    //Block until read, big endian
-unsigned char status = 0x27;
-unsigned char xL = 0x28;            //Reg for x low byte - Next 5 bytes xH, yL, yH, zL, xH
+const unsigned char ctrl3 = 0x22;
+const unsigned char cfg3 = 0b00001000;    //Enable data poling (I2_DRDY)
+const unsigned char ctrl4 = 0x23;
+const unsigned char cfg4 = 0b10000000;    //Block until read, big endian
+const unsigned char status = 0x27;
+const unsigned char xL = 0x28;            //Reg for x low byte - Next 5 bytes xH, yL, yH, zL, xH
 //unsigned char reply;                //Single byte reply
-char xyz[6];                        //XYZ dat array
+static char xyz[6];                        //XYZ dat array
 //int gyroXvel, gyroYvel, gyroZvel;                       //Axis variables
-int gyroZvel;
+static int gyroZvel;
 i2c *bus;                           //Declare I2C bus
 // Create a cog for polling the Gyro
 void pollGyro(void *par); // Use a cog to fill range variables with ping distances
@@ -211,14 +213,7 @@ void safetyOverride(void *par); // Use a cog to squelch incoming commands and pe
 // This can use the gyro to detect significant heading errors due to slipping wheels when an obstacle is encountered or high centered
 static int safetyOverrideStack[128]; // If things get weird make this number bigger!
 
-// For DHB-10 Interaction See drive_speed.c for example code
-char dhb10_reply[DHB10_LEN];
-
 int main() {
-
-    // Halt motors as soon as Propeller board starts in case they are moving
-    // This is the only time we will talk to the DHB-10 outside of broadcastOdometry()
-    dhb10_com("GOSPD 0 0\r");
 
     int wasEscaping = 0;
 
@@ -252,14 +247,12 @@ int main() {
     // A Buffer long enough to hold the longest line ROS may send.
     const int bufferLength = 35; // A Buffer long enough to hold the longest line ROS may send.
     char buf[bufferLength];
-    int count = 0, i = 0;
 
-    // Preinitialized loop
     while (robotInitialized == 0) {
         dprint(term, "i\t%d\n", personDetected); // Request Robot distancePerCount and trackWidth NOTE: Python code cannot deal with a line with no divider characters on it.
         pause(10); // Give ROS time to respond, but not too much or we bump into other stuff that may be coming in from ROS.
         if (fdserial_rxReady(term) != 0) { // Non blocking check for data in the input buffer
-            count = 0;
+            int count = 0;
             while (count < bufferLength) {
                 buf[count] = fdserial_rxTime(term, 100); // fdserial_rxTime will time out. Otherwise a spurious character on the line will cause us to get stuck forever
                 if (buf[count] == '\r' || buf[count] == '\n')
@@ -299,7 +292,7 @@ int main() {
         } else {
             #ifdef hasPIR
                 int PIRstate = 0;
-                for (i = 0; i < 5; i++) { // 5 x 200ms pause = 1000 between updates
+                for (int i = 0; i < 5; i++) { // 5 x 200ms pause = 1000 between updates
                     PIRstate = input(PIR_PIN); // Check sensor (1) motion, (0) no motion
                     // Count positive hits and make a call:
                     if (PIRstate == 0) {
@@ -380,7 +373,7 @@ int main() {
         timeoutCounter++;
 
         if (fdserial_rxReady(term) != 0) { // Non blocking check for data in the input buffer
-            count = 0;
+            int count = 0;
             while (count < bufferLength) {
                 buf[count] = readChar(term);
                 if (buf[count] == '\r' || buf[count] == '\n')
@@ -420,6 +413,16 @@ int main() {
                 dprint(term, "GOT D! %d %d %d %d %d\n", ignoreProximity, ignoreCliffSensors, ignoreIRSensors, ignoreFloorSensors, pluggedIn); // For Debugging
                 #endif
                 timeoutCounter = 0;
+            } else if (buf[0] == 'l') {
+                char *token;
+                token = strtok(buf, delimiter);
+                token = strtok(NULL, delimiter);
+                char *unconverted;
+                int ledNumber = strtod(token, &unconverted);
+                token = strtok(NULL, delimiter);
+                int ledState = strtod(token, &unconverted);
+                ledArray[ledNumber] = ledState;
+                timeoutCounter = 0;
             }
         }
 
@@ -431,8 +434,6 @@ int main() {
             timeoutCounter = ROStimeout; // Prevent runaway integer length
         }
 
-
-        //dprint(term, "\nd1:%f\n", CommandedVelocity); // For Debugging
         if (Escaping == 1) {
             newLeftSpeed = escapeLeftSpeed;
             newRightSpeed = escapeRightSpeed;
@@ -496,10 +497,10 @@ int main() {
         }
 
         // DHB10 controller only works in even numbers, so let's make life easy on it and ourselves if we are doing any comparisons.
-            if (newLeftSpeed % 2) {
+            if (newLeftSpeed != 0 && newLeftSpeed % 2) {
                 newLeftSpeed >= 0 ? newLeftSpeed++ : newLeftSpeed--;
             }
-            if (newRightSpeed % 2) {
+            if (newRightSpeed != 0 && newRightSpeed % 2) {
                 newRightSpeed >= 0 ? newRightSpeed++ : newRightSpeed--;
             }
 
@@ -511,6 +512,9 @@ int main() {
 }
 
 void broadcastOdometry(void *par) {
+
+    // For DHB-10 Interaction See drive_speed.c for example code
+    char dhb10_reply[DHB10_LEN];
 
     // ALL Interaction with the DHB-10 happens in here!
     // For DHB-10 Interaction See drive_speed.c for example code
@@ -564,6 +568,7 @@ void broadcastOdometry(void *par) {
 
         // Send resulting speed to wheels IF it is different from last time
         if (newLeftSpeed != oldLeftSpeed || newRightSpeed != oldRightSpeed) {
+//            dprint(term, "d\tGOSPD\t%d\t%d\t%d\t%d\n", oldLeftSpeed, newLeftSpeed, oldRightSpeed, newRightSpeed);  // For Debugging
             sprint(s, "GOSPD %d %d\r", newLeftSpeed, newRightSpeed);
             dhb10_com(s);
             pause(dhb10OverloadPause);
@@ -688,6 +693,14 @@ void broadcastOdometry(void *par) {
             rightMotorPower = adc_volts(RIGHT_MOTOR_ADC_PIN);
             #endif
             dprint(term, "s\t%d\t%d\t%d\t%d\t%d\t%d\t%.2f\t%.2f\t%d\t%d\n", safeToProceed, safeToRecede, Escaping, abd_speedLimit, abdR_speedLimit, minDistanceSensor, leftMotorPower, rightMotorPower, cliff, floorO);
+#ifdef hasButtons
+            for (i = 0; i < NUMBER_OF_BUTTON_SENSORS; i++) {
+                if (buttonArray[i] == 1) {
+                    dprint(term, "b\t%d\n", i);
+                    buttonArray[i] = 0;
+                }
+            }
+#endif
             throttleStatus = 0;
         }
         #ifdef debugModeOn
@@ -724,61 +737,71 @@ void pollPropBoard2(void *par) {
     propterm = fdserial_open(QUICKSTART_RX_PIN, QUICKSTART_TX_PIN, 0, 115200);
     pause(100); // Give the serial connection time to come up. Perhaps this is not required?
     const int bufferLength = 10; // Longer than longest possible received line
-    char buf[bufferLength];
-    int count = 0, i;
-    // Propeller int and long are the same, but linters don't like you to use strtol to assign to int
-    long pingSensorNumber = 0, irSensorNumber = 0;
-    int rateLimit = 10; // This is the incoming rate limiter. Without some limit the entire Propeller will hang.
+    // TODO: Test thsi rateLimit a bit. Make sure PINGs work FAST and LEDs work.
+    const int rateLimit = 50; // This is the incoming rate limiter. Without some limit the entire Propeller will hang.
+    int sendLEDs = 0;
     while (1) {
         pause(rateLimit);
         // Tell the other end we are alive, so it doesn't just spin pointlessly.
         // It also keeps the sensors quiet when this end is in an idle state.
-        dprint(propterm, "i");
-        //Do not put any delay here.
+        if (sendLEDs == 1) {
+            sendLEDs = 0;
+            dprint(propterm, "l");
+            for (int i = 0; i < NUMBER_OF_LEDS; i++) {
+                pause(rateLimit);
+                dprint(propterm, "%d", ledArray[i]);
+            }
+        } else {
+            dprint(propterm, "i");
+        }
+        //Do not put any delay here.f
         if (fdserial_rxReady(propterm) != 0) {
             //high(26); // LEDs for debugging
-            count = 0;
+            int count = 0;
+            char buf[bufferLength];
             while (count < bufferLength) {
                 buf[count] = readChar(propterm);
                 if (buf[count] == '.') // Using . for end of line instead of line break
                     break;
                 count++;
             }
-            // For Debugging - Test for failing lines
-            /* if (buf[0] != 'p' && buf[0] != 'i')
-               dprint(term, "%c\n", buf[0]); */
 
             if (buf[0] == 'p') {
                 char *token;
                 token = strtok(buf, delimiter);
                 token = strtok(NULL, delimiter);
                 char *unconverted;
-                pingSensorNumber = strtol(token, &unconverted, 10);
+                int pingSensorNumber = strtol(token, &unconverted, 10);
                 token = strtok(NULL, delimiter);
                 if (pingSensorNumber < NUMBER_OF_PING_SENSORS) {
                     pingArray[pingSensorNumber] = strtol(token, &unconverted, 10);
-                    // For Debugging:
-                    /* dprint(term, "p%d:%3d ", pingSensorNumber, pingArray[pingSensorNumber]);
-                       if(pingSensorNumber == 9)
-                       dprint(term, "\n"); */
                    }
            } else if (buf[0] == 'i') {
-            char *token;
-            token = strtok(buf, delimiter);
-            token = strtok(NULL, delimiter);
-            char *unconverted;
-            irSensorNumber = strtol(token, &unconverted, 10);
-            token = strtok(NULL, delimiter);
-            if (irSensorNumber < NUMBER_OF_IR_SENSORS) {
-                irArray[irSensorNumber] = strtol(token, &unconverted, 10);
-                    // For Debugging:
-                    //dprint(term, "i%d:%3d ", irSensorNumber, irArray[irSensorNumber]);
+                char *token;
+                token = strtok(buf, delimiter);
+                token = strtok(NULL, delimiter);
+                char *unconverted;
+                int irSensorNumber = strtol(token, &unconverted, 10);
+                token = strtok(NULL, delimiter);
+                if (irSensorNumber < NUMBER_OF_IR_SENSORS) {
+                    irArray[irSensorNumber] = strtol(token, &unconverted, 10);
+                }
+           } else if (buf[0] == 'b') {
+                char *token;
+                token = strtok(buf, delimiter);
+                token = strtok(NULL, delimiter);
+                char *unconverted;
+                int buttonNumber = strtol(token, &unconverted, 10);
+                if (buttonNumber < NUMBER_OF_BUTTON_SENSORS) {
+                    buttonArray[buttonNumber] = 1;
+                }
+           } else if (buf[0] == 'l') {
+                sendLEDs = 1;
             }
-        }
             //low(26); // LEDs for debugging
         }
         #ifdef hasFloorObstacleSensors
-        for (i = 0; i < NUMBER_OF_FLOOR_SENSORS; i++) {
+        for (int i = 0; i < NUMBER_OF_FLOOR_SENSORS; i++) {
             floorArray[i] = input(FIRST_FLOOR_SENSOR_PIN + i);
         }
         #endif
