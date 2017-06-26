@@ -268,7 +268,10 @@ fi
 if ! (which simpleide > /dev/null)
 then
     printf "\n${YELLOW}[Setting up Parallax SimpleIDE for putting code on Activity Board.]${NC}\n"
-    sudo dpkg -i ~/catkin_ws/src/ArloBot/ParallaxLinuxSetupFiles/simple-ide_1-0-1-rc1_amd64.deb
+    cd /tmp
+    wget https://web.archive.org/web/20161005174013/http://downloads.parallax.com/plx/software/side/101rc1/simple-ide_1-0-1-rc1_amd64.deb
+    sudo dpkg -i /tmp/simple-ide_1-0-1-rc1_amd64.deb
+    rm /tmp/simple-ide_1-0-1-rc1_amd64.deb
 fi
 
 if ! [ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/Arlo/libarlodrive/arlodrive.c ]
