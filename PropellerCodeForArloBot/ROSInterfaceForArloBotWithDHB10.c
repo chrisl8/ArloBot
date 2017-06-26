@@ -1,10 +1,3 @@
-// TODO for DHB-10: Go over EACH line and remove unneeded code relating to old way arlodrive worked
-
-// TODO for DHB-10: Run through all of the ROS by Example test scripts to see how good our odemtry is,
-// TODO for DHB-10: and see if we need to adjust any settings, and prove that the new setup is better!
-
-// TODO for DHB-10: Finally, clean up all other "TODO" lines in this code!
-
 /* ATTENTION! ATTENTION! ATTENTION! ATTENTION! ATTENTION! ATTENTION!
 NOTE: This code is for the DHB-10 Motor Controller that comes with the new Parallax Arlo kit.
 You MUST edit the settings in
@@ -23,7 +16,8 @@ Example, My robot has a "Thing1", but not a "Thing2"
 
 /* Just like that, comment out the "has" line for things you do not have,
 and if you do have the thing, adjust the numbers on the other definition as needed.
-By using the #define lines, code for items you do not have is never seen by the compiler and is never even loaded on the Propeller bard, saving memory. */
+By using the #define lines, code for items you do not have is never seen by the compiler and is never even loaded on the
+Propeller board, saving memory and avoiding any errors or crashes caused by unused code. */
 
 #include "per_robot_settings_for_propeller_c_code.h"
 /* If SimpleIDE build fails because the above file is missing,
@@ -113,11 +107,13 @@ I highly suggets you work through the instructions there and run the example pro
 
 // See ~/.arlobot/per_robot_settings_for_propeller_c_code.h to adjust MAXIMUM_SPEED
 static int abd_speedLimit = MAXIMUM_SPEED;
-static int abdR_speedLimit = MAXIMUM_SPEED; // Reverse speed limit to allow robot to reverse fast if it is blocked in front and visa versa
+// Reverse speed limit to allow robot to reverse fast if it is blocked in front and visa versa
+static int abdR_speedLimit = MAXIMUM_SPEED;
 
 fdserial *term;
 
-// Robot description: We will get this from ROS so that it is easier to tweak between runs without reloading the Propeller EEPROM.
+// Robot description:
+// We will get this from ROS so that it is easier to tweak between runs without reloading the Propeller EEPROM.
 // http://learn.parallax.com/activitybot/calculating-angles-rotation
 static double distancePerCount = 0.0, trackWidth = 0.0;
 /* See ~/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml
@@ -138,8 +134,10 @@ static int fstack[256]; // If things get weird make this number bigger!
 // int and long are the same in Propeller, but linters don't like using strtol on int
 static long pingArray[NUMBER_OF_PING_SENSORS] = {0};
 static long irArray[NUMBER_OF_IR_SENSORS] = {0};
+#ifdef hasLEDs
 static long buttonArray[NUMBER_OF_BUTTON_SENSORS] = {0};
-static long ledArray[NUMBER_OF_LEDS] = {1, 1, 1, 0, 1}; // TODO: make this 0 instead after testing.
+#endif
+static long ledArray[NUMBER_OF_LEDS] = {0};
 #ifdef hasFloorObstacleSensors
 static int floorArray[NUMBER_OF_FLOOR_SENSORS] = {0};
 #endif
@@ -330,11 +328,7 @@ int main() {
         n += i2c_out(bus, i2cAddr, ctrl1, 1, &cfg1, 1);
         // Make sure Gyro initialized and stall if it did not.
         if (n != 9) {
-            print("Bytes should be 9, but was %d,", n);
-            while (1); // This should just TELL ROS that there is no gyro available instead of stalling the program,
-            // TODO:
-            // OR have ROS tell us if we HAVE a gyro and only start this if we think we do.
-            // That way the program works with or without a gyro
+            print("Gyro Error: Bytes should be 9, but was %d,", n);
         }
         // Start Gyro polling in another cog
         cogstart(&pollGyro, NULL, gyrostack, sizeof gyrostack);
@@ -409,9 +403,6 @@ int main() {
                 ignoreFloorSensors = (int)(strtod(token, &unconverted));
                 token = strtok(NULL, delimiter);
                 pluggedIn = (int)(strtod(token, &unconverted));
-                #ifdef debugModeOn
-                dprint(term, "GOT D! %d %d %d %d %d\n", ignoreProximity, ignoreCliffSensors, ignoreIRSensors, ignoreFloorSensors, pluggedIn); // For Debugging
-                #endif
                 timeoutCounter = 0;
             } else if (buf[0] == 'l') {
                 char *token;
@@ -441,15 +432,12 @@ int main() {
             wasEscaping = 1;
         } else if (wasEscaping == 1) {
             // Halt robot before continuing normally if we were escaping before now.
-            // TODO: Is this necessary, it may be the cause of some lack of smooth behavior
             newLeftSpeed = 0;
             newRightSpeed = 0;
             clearTwistRequest();
             wasEscaping = 0;
         } else if (CommandedVelocity >= 0 && (cliff == 1 || floorO == 1)) {
             // Cliffs and cats are no joke!
-            // TODO: This seems redundant, if cliff or floor0 are 1, won't safeToProceed be 0?
-            // TODO: Is this to prevent rotating in place in such situations?
             newLeftSpeed = 0;
             newRightSpeed = 0;
             clearTwistRequest();
@@ -486,8 +474,6 @@ int main() {
             newLeftSpeed = (int)expectedLeftSpeed;
             newRightSpeed = (int)expectedRightSpeed;
 
-// TODO: Why doesn't web interface always stop?
-// TODO: Is it as smooth and responsive as we would like?
         } else {
             // Not safe to proceed in the requested direction, but also not escaping, so just be still
             // until somebody tells us to "back out" of the situation.
@@ -641,9 +627,6 @@ void broadcastOdometry(void *par) {
         V = ((speedRight * distancePerCount) + (speedLeft * distancePerCount)) / 2;
         Omega = ((speedRight * distancePerCount) - (speedLeft * distancePerCount)) / trackWidth;
 
-//        dprint(term, "%d\tHEADING\t%s\t%.3f\t%.3f\t%.3f\n", heading, reply, Heading, V, Omega); // For Debugging
-//        dprint(term, "HEADING\t%d\t%.3f\t%.3f\t%.3f\n", heading, Heading, V, Omega); // For Debugging
-
         // Odometry for ROS
         /*
            I sending ALL of the proximity data (IR and PING sensors) to ROS
@@ -737,7 +720,6 @@ void pollPropBoard2(void *par) {
     propterm = fdserial_open(QUICKSTART_RX_PIN, QUICKSTART_TX_PIN, 0, 115200);
     pause(100); // Give the serial connection time to come up. Perhaps this is not required?
     const int bufferLength = 10; // Longer than longest possible received line
-    // TODO: Test thsi rateLimit a bit. Make sure PINGs work FAST and LEDs work.
     const int rateLimit = 50; // This is the incoming rate limiter. Without some limit the entire Propeller will hang.
     int sendLEDs = 0;
     while (1) {
@@ -867,7 +849,6 @@ void pollGyro(void *par) {
         // Discard small variations when robot is not rotating to eliminate stationary drift
         // Maybe this should be ANY time that speedLeft == speedRight? Then straight lines would stay straight, since
         // ActivityBot appears to travel VERY good straight lines, but they seem to wobble in RVIZ at the moment.
-        // TODO: This may be worse. I may want to only discard when "isMoving" is 0
         if (isRotating == 0) {
             if (deltaGyroHeading < 0.01) { // But accept large changes in case the robot is bumped or moved. Adjust as needed
                 deltaGyroHeading = 0.0;
@@ -1107,7 +1088,6 @@ void pollGyro(void *par) {
             /* EXPLANATION minDistance won't be set unless a given sensor is closer than its particular startSlowDownDistance value, so we won't be slowing down if sensor 0 is 40, only if it is under 10 */
             if (minDistance < MAX_DISTANCE) {
                 // Set based on percentage of range
-                // TODO: Is this a good method?
                 newSpeedLimit = (minDistance - haltDistance[minDistanceSensor]) * (MAXIMUM_SPEED / (MAX_DISTANCE - haltDistance[minDistanceSensor]));
                 // Limit maximum and minimum speed.
                 if (newSpeedLimit < MINIMUM_SPEED) {
@@ -1136,7 +1116,6 @@ void pollGyro(void *par) {
             // Same for REVERSE Speed Limit
             if (minRDistance < MAX_DISTANCE) {
                 // Set based on percentage of range
-                // TODO: Is this a good method?
                 newSpeedLimit = (minRDistance - haltDistance[minDistanceSensor]) * (MAXIMUM_SPEED / (MAX_DISTANCE - haltDistance[minDistanceSensor]));
                 // Limit maximum and minimum speed.
                 if (newSpeedLimit < MINIMUM_SPEED) {
@@ -1286,6 +1265,6 @@ void pollGyro(void *par) {
             abd_speedLimit = MAXIMUM_SPEED;
             abdR_speedLimit = MAXIMUM_SPEED;
         }
-        pause(1); // Just throttles this cog a little. TODO: IS this needed?
+        pause(1); // Just throttles this cog a little.
     }
 }

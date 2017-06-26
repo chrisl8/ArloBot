@@ -1,6 +1,7 @@
 /* ATTENTION! ATTENTION! ATTENTION! ATTENTION! ATTENTION! ATTENTION!
+NOTE: This code is for the DHB-10 Motor Controller that comes with the new Parallax Arlo kit.
 You MUST edit the settings in
-~/.arlobot/per_robot_settings_for_propeller_2nd_board.h
+~/.arlobot/per_robot_settings_for_propeller_c_code.h
 based on the physical layout of your robot!
 For each QUESTION:
 UNCOMMENT '#define' lines for any included items,
@@ -15,7 +16,8 @@ Example, My robot has a "Thing1", but not a "Thing2"
 
 /* Just like that, comment out the "has" line for things you do not have,
 and if you do have the thing, adjust the numbers on the other definition as needed.
-By using the #define lines, code for items you do not have is never seen by the compiler and is never even loaded on the Propeller bard, saving memory. */
+By using the #define lines, code for items you do not have is never seen by the compiler and is never even loaded on the
+Propeller board, saving memory and avoiding any errors or crashes caused by unused code. */
 
 #include "per_robot_settings_for_propeller_c_code.h"
 /* If SimpleIDE build fails because the above file is missing,
@@ -26,7 +28,7 @@ and/or copy the above file from the dotfiles folder
 to your ~/.arlobot folder.
 You could also just move the files in the dotfiles folder into
 the folder with this file, but future "git pull" updates
-will erase your changes.*/
+may erase your changes.*/
 
 /* 2nd Propeller Board (QuickStart Board) Code for ArloBot
 
@@ -40,12 +42,11 @@ will erase your changes.*/
 #include "fdserial.h" // http://learn.parallax.com/propeller-c-simple-protocols/full-duplex-serial
 // and http://propsideworkspace.googlecode.com/hg-history/daf5de8bf52840e02d5615edaa6d814e59d1b0b0/Learn/Simple%20Libraries/Text%20Devices/libfdserial/html/fdserial_8h.html#ab14338477b0b96e671aed748e20ecf5e
 
-// Robot push button reader
-// TODO: Put all button functions in an ifdef
-// along with their pin numbers
+#ifdef hasButtons
 static int buttonStatus[4] = {0};
 void pollButtons(void *par);
 static int pollButtonsStack[120]; // If things get weird make this number bigger.
+#endif
 
 fdserial *propterm;
 
@@ -89,7 +90,6 @@ int checkCharacter() {
 void pollPingSensors(void *par) {
   // The last IR sensor will be retagged with this position number,
   // in case there are more PINGs than IRs.
-  const int lastIRposition = 7; // TODO: Put this in user settings
   propterm = fdserial_open(ACTIVITYBOARD_RX_PIN, ACTIVITYBOARD_TX_PIN, 0, 115200);
   //propterm = fdserial_open(31, 30, 0, 115200); // for Debugging send data to USB Serial
   char receivedChar;
@@ -121,7 +121,6 @@ void pollPingSensors(void *par) {
             }
         }
 #endif
-        //fdserial_rxFlush(propterm); // FLush out extra data in case it is there, BEFORE we sned 'l'
 #ifdef hasLEDs
         dprint(propterm, "l."); // Now tell Activity board to send us the LEDs
         #endif
