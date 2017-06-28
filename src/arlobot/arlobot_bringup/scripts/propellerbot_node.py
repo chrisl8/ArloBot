@@ -724,6 +724,8 @@ class PropellerComm(object):
     def _toggleLED (self, LED):
         # Test with:
         # rosservice call /arlobot/ToggleLED 0 True
+        # Or for all 5:
+        # for i in 0 1 2 3 4;do rosservice call /arlobot/ToggleLED $i True;done
         if (self._serialAvailable):
             newLEDState = 0
             if (LED.state == True):
