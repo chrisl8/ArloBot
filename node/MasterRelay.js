@@ -17,18 +17,17 @@ function getPortName() {
 }
 
 function usbRelay(operation, runFromCommandLine) {
+    const wrapUp = function (runFromCommandLine, error) {
+        if (runFromCommandLine && error) {
+            console.error('Failed to write to port: ' + error);
+            process.exit(1);
+        }
+        working = false;
+    };
     if (operation !== 'read' || !working) {
         working = true;
         getPortName()
             .then((port) => {
-
-                const wrapUp = function (runFromCommandLine, error) {
-                    if (runFromCommandLine && error) {
-                        console.error('Failed to write to port: ' + error);
-                        process.exit(1);
-                    }
-                    working = false;
-                };
 
                 if (operation === 'toggle') {
                     if (!webModel.masterRelayOn) {
@@ -69,9 +68,9 @@ function usbRelay(operation, runFromCommandLine) {
                     }
                 );
 
-                portObj.open(function (error) {
+                portObj.open(error => {
                     if (error) {
-                        console.log('Master Relay Error: ' + error);
+                        wrapUp(runFromCommandLine, error);
                     } else {
                         if (operation === 'read') {
                             portObj.write("relay read 0\r", function (err) { // Argument Options: err, result
@@ -89,6 +88,9 @@ function usbRelay(operation, runFromCommandLine) {
                         }
                     }
                 });
+            })
+            .catch(error => {
+                wrapUp(runFromCommandLine, error);
             });
     }
 }
