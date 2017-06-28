@@ -17,7 +17,7 @@ const fs = require('fs');
  * not written for node.js.
  */
 //b3 = {};
-const b3 = require('./behavior3-0.2.0');
+const b3 = require('behavior3js');
 const exec = require('child_process').exec;
 const spawn = require('child_process').spawn;
 // Note that tts will convert text to speech,

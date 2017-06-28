@@ -5,6 +5,7 @@
   "description": "Node scripts to control my ArloBot robot behavior",
   "main": "index.js",
   "dependencies": {
+    "behavior3js": "^0.2.2",
     "body-parser": "^1.13.3",
     "chokidar": "^1.1.0",
     "connect-redis": "^3.1.0",
@@ -18,10 +19,10 @@
     "ps-tree": "^1.0.0",
     "pushover-notifications": "^0.2.2",
     "redis": "^2.6.0-1",
-    "roslib": "git://github.com/RobotWebTools/roslibjs#develop",
+    "roslib": "^0.18.0",
     "say": "^0.11.0",
     "serialport": "^4.0.1",
-    "socket.io": "^1.4.6",
+    "socket.io": "^2.0.3",
     "stochator": "^0.6.2",
     "twilio": "^3.3.0-edge",
     "websocket": "^1.0.23"
