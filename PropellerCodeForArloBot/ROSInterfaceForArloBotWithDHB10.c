@@ -720,7 +720,8 @@ void pollPropBoard2(void *par) {
     propterm = fdserial_open(QUICKSTART_RX_PIN, QUICKSTART_TX_PIN, 0, 115200);
     pause(100); // Give the serial connection time to come up. Perhaps this is not required?
     const int bufferLength = 10; // Longer than longest possible received line
-    const int rateLimit = 50; // This is the incoming rate limiter. Without some limit the entire Propeller will hang.
+    const int rateLimit = 40; // This is the incoming rate limiter. Without some limit the entire Propeller will hang.
+    const int ledRateLimit = 20;
     int sendLEDs = 0;
     while (1) {
         pause(rateLimit);
@@ -730,8 +731,8 @@ void pollPropBoard2(void *par) {
             sendLEDs = 0;
             dprint(propterm, "l");
             for (int i = 0; i < NUMBER_OF_LEDS; i++) {
-                pause(rateLimit);
                 dprint(propterm, "%d", ledArray[i]);
+                pause(ledRateLimit);
             }
         } else {
             dprint(propterm, "i");
