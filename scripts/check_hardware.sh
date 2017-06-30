@@ -106,15 +106,30 @@ if [ $(jq '.camera1' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
 fi
 
 # Joystick
+# Changes for Ubuntu 16.04:
+# xpad driver no longer loads itself at boot. Not sure why not.
+# We no longer get the four "empty" js devices in /dev/input/ for js0 to js4 any time the wireless USB receiver is plugged in
+# Instaed /dev/input/js0 only appears the moment the actual wireless joystick is truned on!
+# NOTE: I tried xboxdrv and it was a nightmare. Unless I had the actual xbox controller powered on when I started it,
+# it would not recognize the controller and any time I power cyclced the controller it changed device locations!
 if [ $(jq '.hasXboxController' ${HOME}/.arlobot/personalDataForBehavior.json) == true  ]
 then
     echo "Checking Xbox Controller . . ."
-    JOYSTICKDEVICE=$(${SCRIPTDIR}/find_xbox_controller.sh)
-    if [ -z ${JOYSTICKDEVICE} ]
-    then
-        echo "Joystick missing!"
-        wrap_up_on_fail
-    fi
+    # 1. Bring up the xpad driver after the USB power is on.
+    # This doesn't hurt anything if it is already on.
+    sudo modprobe xpad
+    # Since we don't get the four "empty" js devices, we just tag this to js0,
+    # since we won't really see it until the controller is turned on,
+    # but I do NOT want to require the controller to be on before starting ROS.
+    # I often think to grab it while ROS is already operating.
+    JOYSTICKDEVICE=/dev/input/js0
+    # So now this code is junk, unless the driver changes its behavior again.
+    #JOYSTICKDEVICE=$(${SCRIPTDIR}/find_xbox_controller.sh)
+    #if [ -z ${JOYSTICKDEVICE} ]
+    #then
+    #    echo "Joystick missing!"
+    #    wrap_up_on_fail
+    #fi
 fi
 
 # Activity Board

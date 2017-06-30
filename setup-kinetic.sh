@@ -39,12 +39,6 @@ printf "${RED}[This script will only work on ubuntu xenial(16.04)]${NC}\n"
 exit 1
 esac
 
-if ! [ -e /etc/apt/sources.list.d/rael-gc-ubuntu-ubuntu-xboxdrv-xenial.list ]
-then
-    printf "{YELLOW}Adding xbox controller repository in case you are using one.${NC}\n"
-    sudo apt-add-repository -y ppa:rael-gc/ubuntu-xboxdrv
-fi
-
 if ! [ -e /etc/apt/sources.list.d/yarn.list ]
 then
     printf "{YELLOW}Adding yarn repository.${NC}\n"
@@ -130,10 +124,9 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 #rtabmap is for 3D mapping
 #pulseaudio pavucontrol are for setting the default microphone. I use this for mycroft among other things
 #ros-kinetic-pointcloud-to-laserscan for Scanse Sweep
-#ubuntu-xboxdrv is for using an xbox 360 controler with the robot
 #yarn - Using Facebook yarn for node package installation
 
-sudo apt install -y ros-kinetic-rqt-* ros-kinetic-turtlebot ros-kinetic-turtlebot-apps ros-kinetic-turtlebot-interactions ros-kinetic-turtlebot-simulator ros-kinetic-kobuki-ftdi python-ftdi1 python-pip python-serial ros-kinetic-openni-* ros-kinetic-openni2-* ros-kinetic-freenect-* ros-kinetic-vision-opencv ros-kinetic-rtabmap-ros ros-kinetic-scan-tools libopencv-dev python-opencv ros-kinetic-rosbridge-server imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol ros-kinetic-pointcloud-to-laserscan ubuntu-xboxdrv yarn
+sudo apt install -y ros-kinetic-rqt-* ros-kinetic-turtlebot ros-kinetic-turtlebot-apps ros-kinetic-turtlebot-interactions ros-kinetic-turtlebot-simulator ros-kinetic-kobuki-ftdi python-ftdi1 python-pip python-serial ros-kinetic-openni-* ros-kinetic-openni2-* ros-kinetic-freenect-* ros-kinetic-vision-opencv ros-kinetic-rtabmap-ros ros-kinetic-scan-tools libopencv-dev python-opencv ros-kinetic-rosbridge-server imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol ros-kinetic-pointcloud-to-laserscan yarn
 
 # For 8-CH USB Relay board:
 sudo pip install pylibftdi
