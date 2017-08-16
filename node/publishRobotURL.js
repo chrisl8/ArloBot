@@ -3,6 +3,8 @@ const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
 const request = require('request');
 const ipAddress = require('./ipAddress');
+const os = require('os');
+const robotHostname = os.hostname();
 const updateRobotURL = function () {
     let robotIP = false;
 
@@ -24,7 +26,9 @@ const updateRobotURL = function () {
                     {
                         json: {
                             password: personalData.cloudServer.password,
-                            localURL: robotURL
+                            localURL: robotURL,
+                            robotIP: robotIP,
+                            robotHostname: robotHostname
                         }
                     },
                     function (error, response) { // Arguments: error, response, body
