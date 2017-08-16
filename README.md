@@ -73,7 +73,20 @@ attempting to compile the robot code.
 ```
 bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/kinetic/workstation-kinetic.sh)
 ```  
-and your system will be set up to use as a "remote" station.
+
+or if you have a newer version of Ubuntu installed you can use ROS Lunar on your workstation (NOT the Robot!):  
+
+```
+bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/kinetic/workstation-lunar.sh)
+```  
+
+and your system will be set up to use as a "remote" station.  
+
+Once you have ROS running with a map loaded (or building) then you can run RVIZ on your worksattion.  
+Look for the RVIZ icon on your desktop or in your Gnome Menu.  
+If that isn't there you can run this script to start RVIZ on your workstation:  
+`~/catkin_ws/src/ArloBot/scripts/view-navigation.sh`  
+
 To update your code just run the same script again and it will pull down and compile anything new without erasing custom settings.
 
 ## Full Arlobot Setup Instructions: ##
