@@ -201,11 +201,26 @@ cd ~/catkin_ws/src/ArloBot
 # If you want to use MyCroft
 if ! [ -d ~/catkin_ws/src/ArloBot/mycroft-core ]
     then
-    git clone https://github.com/MycroftAI/mycroft-core.git
+    git clone -b master https://github.com/MycroftAI/mycroft-core.git
+    cd ~/catkin_ws/src/ArloBot/mycroft-core
+    ./build_host_setup_debian.sh
+    ./dev_setup.sh
+    ./mycroft.sh start
+    printf "\n${YELLO}Giving Mycoroft time to download skills.${NC}\n"
+    sleep 45
+    ./mycroft.sh stop
+    printf "\n${YELLO}Patching TTS to include Arlobot TTS if we want it.{NC}\n"
+    git apply ~/catkin_ws/src/ArloBot/mycroft-things/tts_source_patch.diff
+    cd mycroft/tts/
+    ln -s ${HOME}/catkin_ws/src/ArloBot/mycroft-things/arlobot_tts.py
+    printf "\n${YELLO}Patching Wolfram Alpha skill to elliminate default behavior.{NC}\n"
+    cd /opt/mycroft/skills/skill-wolfram-alpha/
+    git apply ~/catkin_ws/src/ArloBot/mycroft-things/skill-wolfram-alpha_remove_default_behavior.diff
+
     printf "\n${YELLOW}[IF you want to use MyCroft:]${NC}\n"
-    printf "\n${YELLOW}[After setup is done please go to the mycroft-core folder and run build_host_setup_debian.sh and dev_setup.sh to finish MyCroft setup]${NC}\n"
     printf "\n${YELLOW}[Then see https://docs.mycroft.ai/development/cerberus for configuration info.]${NC}\n"
     printf "\n${YELLOW}[See more info at: https://docs.mycroft.ai/installing.and.running/installation/git.clone.install]${NC}\n"
+    printf "\n${YELLOW}[At the least you will have to register MyCroft if you want full functionality, althoug it does work without registering.]${NC}\n"
 else
     cd ~/catkin_ws/src/ArloBot/mycroft-core
     git pull
