@@ -1,0 +1,22 @@
+diff --git a/mycroft/tts/__init__.py b/mycroft/tts/__init__.py
+index ef69cd2..15eda50 100644
+--- a/mycroft/tts/__init__.py
++++ b/mycroft/tts/__init__.py
+@@ -321,6 +321,7 @@ class TTSFactory(object):
+     from mycroft.tts.mary_tts import MaryTTS
+     from mycroft.tts.mimic_tts import Mimic
+     from mycroft.tts.spdsay_tts import SpdSay
++    from mycroft.tts.arlobot_tts import ArlobotTTS
+ 
+     CLASSES = {
+         "mimic": Mimic,
+@@ -328,7 +329,8 @@ class TTSFactory(object):
+         "marytts": MaryTTS,
+         "fatts": FATTS,
+         "espeak": ESpeak,
+-        "spdsay": SpdSay
++        "spdsay": SpdSay,
++        "arlobot": ArlobotTTS
+     }
+ 
+     @staticmethod
