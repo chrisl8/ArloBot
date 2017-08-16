@@ -83,10 +83,6 @@ npm run tsc
 cd ${SCRIPTDIR}/../website/lib
 wget -q -N http://cdn.robotwebtools.org/roslibjs/current/roslib.js -O roslib.js
 
-cd ${SCRIPTDIR}/../server
-npm install
-npm update
-
 cd ${SCRIPTDIR}
 
 # Install required Ubuntu packages
@@ -263,9 +259,6 @@ if [ "${USER}" == chrisl8 ]
     npm-check --skip-unused
     printf "${YELLOW}in /website:${NC}\n"
     cd ${SCRIPTDIR}/../website
-    npm-check --skip-unused
-    printf "${YELLOW}in /server:${NC}\n"
-    cd ${SCRIPTDIR}/../server
     npm-check --skip-unused
     printf "${PURPLE}-------------------------------------------------------${NC}\n"
 fi
