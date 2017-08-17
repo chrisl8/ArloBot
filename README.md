@@ -93,6 +93,10 @@ To update your code just run the same script again and it will pull down and com
 Complete setup and usage instructions are at my blog:
 http://ekpyroticfrood.net/?p=162
 
+## Edit your robot's Description ##
+`roscd arlobot_description/urdf`  
+and then read the Readme.txt file there!
+
 ## Serial Interface and Propeller Code Testing ##
 It is a good idea to first test your serial interface to the propeller board:
 ```
