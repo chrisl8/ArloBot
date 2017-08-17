@@ -58,6 +58,8 @@ chmod 777 ${HOME}/.arlobot/status/doors/ &> /dev/null
 
 rosparam set /arlobot/mapname empty
 
+rosparam set /arlobot/maxPingRangeAccepted $(jq '.maxPingRangeAccepted' ${HOME}/.arlobot/personalDataForBehavior.json)
+
 if [ $(jq '.hasActivityBoard' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
     rosparam set /arlobot/port $(${SCRIPTDIR}/find_ActivityBoard.sh)

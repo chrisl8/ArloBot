@@ -471,7 +471,13 @@ class PropellerComm(object):
         # and real location needs to be added to these values. This may need to be tweaked.
         sensor_offset = 0.217 # Measured, Calculated: 0.22545
         # This will be the max used range, anything beyond this is set to "artificial_far_distance"
-        max_range_accepted = .5
+
+        # Maximum distance accepted from the PING sensors.
+        # Anything longer than this is assumed to be "no obstacle"
+        # If we accept things too far away, we get too much noise.
+        # 0.5 is a good default. Sometimes it is useful to extend it for testing
+        # in RVIZ
+        max_range_accepted = rospy.get_param("/arlobot/maxPingRangeAccepted", 0.5)
 
         # max_range_accepted Testing:
         # TODO: More tweaking here could be done.
