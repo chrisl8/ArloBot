@@ -38,7 +38,11 @@
   "useMasterPowerRelay": false,
   "masterPowerRelayUniqueString": "Numato_Lab_1_Channel_USB_Powered_Relay_Module",
   "masterPowerRelayStringLocation": "ID_MODEL",
-  "useArduinoForBlinkenLights": false,
+  "_useLCD": "Set to true if you have an Adafruit LCD Display on the robot.",
+  "useLCD": false,
+  "LCDString": "Adafruit_Industries",
+  "LCDLocation": "ID_MODEL",
+  "useArduinoForBlinkenLights": true,
   "arduinoUniqueString": "Arduino__www.arduino.cc__0043_8533434373835150C141",
   "arduinoStringLocation": "ID_SERIAL",
   "_useUSBrelay": "Set to true if you have a USB Relay board",
@@ -59,7 +63,7 @@
   "door_list": [],
   "_hasXboxController": "Set to true if you have a USB wireless xBox joystick receiver.",
   "hasXboxController": false,
-  "_arlobotModel": "Use this to use an alternate URD file, otherwase use set to default",
+  "_arlobotModel": "Use this to use an alternate URD file, otherwise use set to default",
   "arlobotModel": "default",
   "_hasActivityBoard": "This can only be false for a 'dummy' test system that has no actual hardware.",
   "hasActivityBoard": true,
@@ -111,8 +115,12 @@
     "_has_rightMotor": "Set if you have the Right Motor attached to a USB Relay",
     "has_rightMotor": false,
     "_rightMotor": "List the number on the USB Relay controller that right Motor is attached to.",
-    "rightMotor": 2
+    "rightMotor": 2,
+    "has_speaker": false,
+    "_speaker": "Relay used to turn on speaker by rapid power cycliing it.",
+    "speaker": 2
   },
+  "maxPingRangeAccepted": 0.5,
   "_hasBeenEdited": "Set to true once you have put your settings in this file to let the program know that you did it.",
   "hasBeenEdited": false
 }
