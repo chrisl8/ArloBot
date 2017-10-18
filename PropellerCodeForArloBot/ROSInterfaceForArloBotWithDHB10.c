@@ -414,6 +414,24 @@ int main() {
                 int ledState = strtod(token, &unconverted);
                 ledArray[ledNumber] = ledState;
                 timeoutCounter = 0;
+            } else if (buf[0] == 'p') { 
+                //Update the X, Y position and heading 
+                char *token; 
+                token = strtok(buf, delimiter); 
+                token = strtok(NULL, delimiter); 
+                char *unconverted;
+                if (token != NULL) {
+                    X = strtod(token, &unconverted); 
+                    token = strtok(NULL, delimiter); 
+                }
+                if (token != NULL) {
+                    Y = strtod(token, &unconverted); 
+                    token = strtok(NULL, delimiter); 
+                }
+                if (token != NULL) {                
+                    Heading = strtod(token, &unconverted); 
+                }                
+                timeoutCounter = 0; 
             }
         }
 
