@@ -414,6 +414,16 @@ int main() {
                 int ledState = strtod(token, &unconverted);
                 ledArray[ledNumber] = ledState;
                 timeoutCounter = 0;
+            } else if (buf[0] == 'a') {
+                //Update the acceleration characteristics: a,<max speed m.s-1>
+                char *token;
+                token = strtok(buf, delimiter);
+                token = strtok(NULL, delimiter);
+                char *unconverted;
+                abd_speedLimit = strtod(token, &unconverted);
+                token = strtok(NULL, delimiter);
+                abdR_speedLimit = strtod(token, &unconverted);
+                timeoutCounter = 0;
             }
         }
 
