@@ -419,12 +419,18 @@ int main() {
                 char *token; 
                 token = strtok(buf, delimiter); 
                 token = strtok(NULL, delimiter); 
-                char *unconverted; 
-                X = strtod(token, &unconverted); 
-                token = strtok(NULL, delimiter); 
-                Y = strtod(token, &unconverted); 
-                token = strtok(NULL, delimiter); 
-                Heading = strtod(token, &unconverted); 
+                char *unconverted;
+                if (token != NULL) {
+                    X = strtod(token, &unconverted); 
+                    token = strtok(NULL, delimiter); 
+                }
+                if (token != NULL) {
+                    Y = strtod(token, &unconverted); 
+                    token = strtok(NULL, delimiter); 
+                }
+                if (token != NULL) {                
+                    Heading = strtod(token, &unconverted); 
+                }                
                 timeoutCounter = 0; 
             }
         }
