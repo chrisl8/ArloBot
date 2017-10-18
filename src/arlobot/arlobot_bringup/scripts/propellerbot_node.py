@@ -111,6 +111,7 @@ class PropellerComm(object):
         self._pirPublisher = rospy.Publisher('~pirState', Bool, queue_size=1)  # for publishing PIR status
         self._arlo_status_publisher = rospy.Publisher('arlo_status', arloStatus, queue_size=1)
         self._buttons_publisher = rospy.Publisher('buttons', arloButtons, queue_size=1)
+        self._ping_publisher = rospy.Publisher('ultrasonic_data', String, queue_size=10);	
 
         # IF the Odometry Transform is done with the robot_pose_ekf do not publish it,
         # but we are not using robot_pose_ekf, because it does nothing for us if you don't have a full IMU!
@@ -535,6 +536,7 @@ class PropellerComm(object):
             sensor_data = json.loads(line_parts[7])
         except:
             return
+        self._ping_publisher.publish(line_parts[7])
         ping = [artificial_far_distance] * 10
         ir = [artificial_far_distance] * len(ping)
 
