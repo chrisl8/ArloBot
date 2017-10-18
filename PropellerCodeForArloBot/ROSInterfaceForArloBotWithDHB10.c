@@ -263,26 +263,46 @@ int main() {
                 token = strtok(buf, delimiter);
                 token = strtok(NULL, delimiter);
                 char *unconverted;
-                trackWidth = strtod(token, &unconverted);
-                token = strtok(NULL, delimiter);
-                distancePerCount = strtod(token, &unconverted);
-                token = strtok(NULL, delimiter);
-                ignoreProximity = (int)(strtod(token, &unconverted));
-                token = strtok(NULL, delimiter);
-                ignoreCliffSensors = (int)(strtod(token, &unconverted));
-                token = strtok(NULL, delimiter);
-                ignoreIRSensors = (int)(strtod(token, &unconverted));
-                token = strtok(NULL, delimiter);
-                ignoreFloorSensors = (int)(strtod(token, &unconverted));
-                token = strtok(NULL, delimiter);
-                pluggedIn = (int)(strtod(token, &unconverted));
-                token = strtok(NULL, delimiter);
-                // Set initial location from ROS, in case we want to recover our last location!
-                X = strtod(token, &unconverted);
-                token = strtok(NULL, delimiter);
-                Y = strtod(token, &unconverted);
-                token = strtok(NULL, delimiter);
-                Heading = strtod(token, &unconverted);
+                if (token != NULL) {
+                    trackWidth = strtod(token, &unconverted);
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    distancePerCount = strtod(token, &unconverted);
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    ignoreProximity = (int)(strtod(token, &unconverted));
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    ignoreCliffSensors = (int)(strtod(token, &unconverted));
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    ignoreIRSensors = (int)(strtod(token, &unconverted));
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    ignoreFloorSensors = (int)(strtod(token, &unconverted));
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    pluggedIn = (int)(strtod(token, &unconverted));
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    // Set initial location from ROS, in case we want to recover our last location!
+                    X = strtod(token, &unconverted);
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    Y = strtod(token, &unconverted);
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    Heading = strtod(token, &unconverted);
+                }
                 gyroHeading = Heading;
                 if (trackWidth > 0.0 && distancePerCount > 0.0)
                     robotInitialized = 1;
@@ -380,9 +400,13 @@ int main() {
                 token = strtok(buf, delimiter);
                 token = strtok(NULL, delimiter);
                 char *unconverted;
-                CommandedVelocity = strtod(token, &unconverted);
-                token = strtok(NULL, delimiter);
-                CommandedAngularVelocity = strtod(token, &unconverted);
+                if (token != NULL) {
+                    CommandedVelocity = strtod(token, &unconverted);
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    CommandedAngularVelocity = strtod(token, &unconverted);
+                }
                 angularVelocityOffset = CommandedAngularVelocity * (trackWidth * 0.5);
                 timeoutCounter = 0;
             } else if (buf[0] == 'd') {
@@ -390,19 +414,33 @@ int main() {
                 token = strtok(buf, delimiter);
                 token = strtok(NULL, delimiter);
                 char *unconverted;
-                trackWidth = strtod(token, &unconverted);
-                token = strtok(NULL, delimiter);
-                distancePerCount = strtod(token, &unconverted);
-                token = strtok(NULL, delimiter);
-                ignoreProximity = (int)(strtod(token, &unconverted));
-                token = strtok(NULL, delimiter);
-                ignoreCliffSensors = (int)(strtod(token, &unconverted));
-                token = strtok(NULL, delimiter);
-                ignoreIRSensors = (int)(strtod(token, &unconverted));
-                token = strtok(NULL, delimiter);
-                ignoreFloorSensors = (int)(strtod(token, &unconverted));
-                token = strtok(NULL, delimiter);
-                pluggedIn = (int)(strtod(token, &unconverted));
+                if (token != NULL) {
+                    trackWidth = strtod(token, &unconverted);
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    distancePerCount = strtod(token, &unconverted);
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    ignoreProximity = (int)(strtod(token, &unconverted));
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    ignoreCliffSensors = (int)(strtod(token, &unconverted));
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    ignoreIRSensors = (int)(strtod(token, &unconverted));
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    ignoreFloorSensors = (int)(strtod(token, &unconverted));
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    pluggedIn = (int)(strtod(token, &unconverted));
+                }
                 timeoutCounter = 0;
             } else if (buf[0] == 'l') {
                 char *token;
