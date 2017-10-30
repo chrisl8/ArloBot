@@ -333,7 +333,7 @@
   <link name="neato_laser">
     <visual>
       <geometry>
-        <box size="0.0 0.0 0.0" />
+        <box size="0.1 0.1 0.1" />
       </geometry>
     </visual>
     <inertial>
