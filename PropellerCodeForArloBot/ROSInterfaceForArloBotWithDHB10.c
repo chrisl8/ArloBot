@@ -578,8 +578,8 @@ void broadcastOdometry(void *par) {
 
     // For Odometry
     int ticksLeft = 0, ticksRight = 0, ticksLeftOld, ticksRightOld;
-    double deltaDistance, deltaX, deltaY, V, Omega;
-    int speedLeft, speedRight, throttleStatus = 0, heading, deltaTicksLeft, deltaTicksRight;
+    double deltaDistance, deltaTheta, deltaX, deltaY, V, Omega;
+    int speedLeft, speedRight, throttleStatus = 0, deltaTicksLeft, deltaTicksRight;
     double leftMotorPower;
     double rightMotorPower;
     int newLeftSpeed = 0, newRightSpeed = 0, oldLeftSpeed = 0, oldRightSpeed = 0;
@@ -659,16 +659,6 @@ void broadcastOdometry(void *par) {
         #endif
         pause(dhb10OverloadPause);
 
-        reply = dhb10_com("HEAD\r");
-        if (*reply == '\r') {
-          heading = 0;
-        } else {
-//          sscan(reply, "%d", &heading);
-            heading = atoi(reply);
-        }
-        // The heading is apparently reversed in relation to what ROS expects,
-        // hence the "-heading"
-        Heading = -heading * PI / 180.0; // Convert to Radians
 
         deltaTicksLeft = ticksLeft - ticksLeftOld;
         deltaTicksRight = ticksRight - ticksRightOld;
@@ -676,6 +666,12 @@ void broadcastOdometry(void *par) {
         deltaX = deltaDistance * cos(Heading);
         deltaY = deltaDistance * sin(Heading);
 
+        deltaTheta = (deltaTicksRight - deltaTicksLeft) * distancePerCount / trackWidth; 
+        Heading += deltaTheta; 
+        if (Heading > PI) 
+            Heading -= 2 * PI; 
+        if (Heading < -PI) 
+            Heading += 2 * PI; 
         X += deltaX;
         Y += deltaY;
 
