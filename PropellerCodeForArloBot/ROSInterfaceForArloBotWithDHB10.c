@@ -263,26 +263,46 @@ int main() {
                 token = strtok(buf, delimiter);
                 token = strtok(NULL, delimiter);
                 char *unconverted;
-                trackWidth = strtod(token, &unconverted);
-                token = strtok(NULL, delimiter);
-                distancePerCount = strtod(token, &unconverted);
-                token = strtok(NULL, delimiter);
-                ignoreProximity = (int)(strtod(token, &unconverted));
-                token = strtok(NULL, delimiter);
-                ignoreCliffSensors = (int)(strtod(token, &unconverted));
-                token = strtok(NULL, delimiter);
-                ignoreIRSensors = (int)(strtod(token, &unconverted));
-                token = strtok(NULL, delimiter);
-                ignoreFloorSensors = (int)(strtod(token, &unconverted));
-                token = strtok(NULL, delimiter);
-                pluggedIn = (int)(strtod(token, &unconverted));
-                token = strtok(NULL, delimiter);
-                // Set initial location from ROS, in case we want to recover our last location!
-                X = strtod(token, &unconverted);
-                token = strtok(NULL, delimiter);
-                Y = strtod(token, &unconverted);
-                token = strtok(NULL, delimiter);
-                Heading = strtod(token, &unconverted);
+                if (token != NULL) {
+                    trackWidth = strtod(token, &unconverted);
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    distancePerCount = strtod(token, &unconverted);
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    ignoreProximity = (int)(strtod(token, &unconverted));
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    ignoreCliffSensors = (int)(strtod(token, &unconverted));
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    ignoreIRSensors = (int)(strtod(token, &unconverted));
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    ignoreFloorSensors = (int)(strtod(token, &unconverted));
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    pluggedIn = (int)(strtod(token, &unconverted));
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    // Set initial location from ROS, in case we want to recover our last location!
+                    X = strtod(token, &unconverted);
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    Y = strtod(token, &unconverted);
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    Heading = strtod(token, &unconverted);
+                }
                 gyroHeading = Heading;
                 if (trackWidth > 0.0 && distancePerCount > 0.0)
                     robotInitialized = 1;
@@ -380,9 +400,13 @@ int main() {
                 token = strtok(buf, delimiter);
                 token = strtok(NULL, delimiter);
                 char *unconverted;
-                CommandedVelocity = strtod(token, &unconverted);
-                token = strtok(NULL, delimiter);
-                CommandedAngularVelocity = strtod(token, &unconverted);
+                if (token != NULL) {
+                    CommandedVelocity = strtod(token, &unconverted);
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    CommandedAngularVelocity = strtod(token, &unconverted);
+                }
                 angularVelocityOffset = CommandedAngularVelocity * (trackWidth * 0.5);
                 timeoutCounter = 0;
             } else if (buf[0] == 'd') {
@@ -390,19 +414,33 @@ int main() {
                 token = strtok(buf, delimiter);
                 token = strtok(NULL, delimiter);
                 char *unconverted;
-                trackWidth = strtod(token, &unconverted);
-                token = strtok(NULL, delimiter);
-                distancePerCount = strtod(token, &unconverted);
-                token = strtok(NULL, delimiter);
-                ignoreProximity = (int)(strtod(token, &unconverted));
-                token = strtok(NULL, delimiter);
-                ignoreCliffSensors = (int)(strtod(token, &unconverted));
-                token = strtok(NULL, delimiter);
-                ignoreIRSensors = (int)(strtod(token, &unconverted));
-                token = strtok(NULL, delimiter);
-                ignoreFloorSensors = (int)(strtod(token, &unconverted));
-                token = strtok(NULL, delimiter);
-                pluggedIn = (int)(strtod(token, &unconverted));
+                if (token != NULL) {
+                    trackWidth = strtod(token, &unconverted);
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    distancePerCount = strtod(token, &unconverted);
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    ignoreProximity = (int)(strtod(token, &unconverted));
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    ignoreCliffSensors = (int)(strtod(token, &unconverted));
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    ignoreIRSensors = (int)(strtod(token, &unconverted));
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    ignoreFloorSensors = (int)(strtod(token, &unconverted));
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    pluggedIn = (int)(strtod(token, &unconverted));
+                }
                 timeoutCounter = 0;
             } else if (buf[0] == 'l') {
                 char *token;
@@ -413,6 +451,24 @@ int main() {
                 token = strtok(NULL, delimiter);
                 int ledState = strtod(token, &unconverted);
                 ledArray[ledNumber] = ledState;
+                timeoutCounter = 0;
+            } else if (buf[0] == 'p') {
+                //Update the X, Y position and heading
+                char *token;
+                token = strtok(buf, delimiter);
+                token = strtok(NULL, delimiter);
+                char *unconverted;
+                if (token != NULL) {
+                    X = strtod(token, &unconverted);
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    Y = strtod(token, &unconverted);
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    Heading = strtod(token, &unconverted);
+                }
                 timeoutCounter = 0;
             } else if (buf[0] == 'a') {
                 //Update the speedLimit and acceleration
@@ -536,8 +592,8 @@ void broadcastOdometry(void *par) {
 
     // For Odometry
     int ticksLeft = 0, ticksRight = 0, ticksLeftOld, ticksRightOld;
-    double deltaDistance, deltaX, deltaY, V, Omega;
-    int speedLeft, speedRight, throttleStatus = 0, heading, deltaTicksLeft, deltaTicksRight;
+    double deltaDistance, deltaTheta, deltaX, deltaY, V, Omega;
+    int speedLeft, speedRight, throttleStatus = 0, deltaTicksLeft, deltaTicksRight;
     double leftMotorPower;
     double rightMotorPower;
     int newLeftSpeed = 0, newRightSpeed = 0, oldLeftSpeed = 0, oldRightSpeed = 0;
@@ -617,16 +673,6 @@ void broadcastOdometry(void *par) {
         #endif
         pause(dhb10OverloadPause);
 
-        reply = dhb10_com("HEAD\r");
-        if (*reply == '\r') {
-          heading = 0;
-        } else {
-//          sscan(reply, "%d", &heading);
-            heading = atoi(reply);
-        }
-        // The heading is apparently reversed in relation to what ROS expects,
-        // hence the "-heading"
-        Heading = -heading * PI / 180.0; // Convert to Radians
 
         deltaTicksLeft = ticksLeft - ticksLeftOld;
         deltaTicksRight = ticksRight - ticksRightOld;
@@ -634,6 +680,12 @@ void broadcastOdometry(void *par) {
         deltaX = deltaDistance * cos(Heading);
         deltaY = deltaDistance * sin(Heading);
 
+        deltaTheta = (deltaTicksRight - deltaTicksLeft) * distancePerCount / trackWidth; 
+        Heading += deltaTheta; 
+        if (Heading > PI) 
+            Heading -= 2 * PI; 
+        if (Heading < -PI) 
+            Heading += 2 * PI; 
         X += deltaX;
         Y += deltaY;
 
