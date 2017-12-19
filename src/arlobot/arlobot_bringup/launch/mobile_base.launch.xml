@@ -8,7 +8,6 @@
   <node pkg="arlobot_bringup" type="propellerbot_node.py" name="arlobot" respawn="true" args="--respawnable">
     <param name="bonus" value="false" />
     <param name="update_rate" value="30.0" />
-    <remap from="cmd_vel" to="mobile_base/commands/velocity" />
     <remap from="arlobot/sensor_state" to="mobile_base/sensors/core" />
     <remap from="imu/data" to="mobile_base/sensors/imu_data" />
     <remap from="imu/raw" to="mobile_base/sensors/imu_data_raw" />
@@ -18,7 +17,9 @@
   <!-- Remember to boradcoast base_link to odom Transform from propellerbot_node when robot_pose_ekf is not used -->
 
   <!-- velocity commands multiplexer -->
-  <node pkg="nodelet" type="nodelet" name="mobile_base_nodelet_manager" args="manager"/>
+  <node pkg="nodelet" type="nodelet" name="mobile_base_nodelet_manager" args="manager">
+    <remap from="mobile_base/commands/velocity" to="cmd_vel"/>
+  </node>
   <node pkg="nodelet" type="nodelet" name="cmd_vel_mux" args="load yocs_cmd_vel_mux/CmdVelMuxNodelet mobile_base_nodelet_manager">
     <param name="yaml_cfg_file" value="$(find arlobot_bringup)/param/mux.yaml"/>
     <remap from="cmd_vel_mux/output" to="mobile_base/commands/velocity"/>
