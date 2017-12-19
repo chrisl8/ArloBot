@@ -1,3 +1,10 @@
+/********************************************************************
+The code is used to calibrate the odometry of the Arlo board.
+The encoders are plugged in the activity board and the DISPERCOUNT, TRACKWIDTH and DIAERROR should be calibrated.
+Fwd() and Turn() functions are used to drive the robot to a certain distance or angle.
+A typical cablibration method can be found in "Borenstein, J., & Feng, L. (1995). UMBmark: A benchmark test for measuring odometry errors in mobile robots. Ann Arbor, 1001, 48109-2110."
+********************************************************************/
+
 #include "simpletools.h"
 #include "arlodrive.h"
 
@@ -105,37 +112,65 @@ void Encoder(void *par)
     int right_A = input(RIGHT_A);
     int right_B = input(RIGHT_B);
     
-    if (last_left_A == 0)
-    {
-      if (left_A == 1)
-      {
-        if (left_B == 0)
-        {
-          left_ticks++;
+    if (last_left_A == 0)  
+    {  
+        if (left_A == 1)  
+        {  
+            if (left_B == 0)  
+            {  
+                left_ticks++;  
+            }            
+            else   
+            {  
+                left_ticks--;  
+            }            
         }          
-        else 
-        {
-          left_ticks--;
+    }   
+    else if (last_left_A == 1) 
+    { 
+        if (left_A == 0)  
+        {  
+            if (left_B == 1)  
+            {  
+                left_ticks++;  
+            }            
+            else   
+            {  
+                left_ticks--;  
+            }            
+        }   
+    }           
+    last_left_A = left_A;  
+      
+    if (last_right_A == 0)  
+    {  
+        if (right_A == 1)  
+        {  
+            if (right_B == 0)  
+            {  
+                right_ticks++;  
+            }            
+            else   
+            {  
+                right_ticks--;  
+            }            
         }          
-      }        
-    } 
-    last_left_A = left_A;
-    
-    if (last_right_A == 0)
-    {
-      if (right_A == 1)
-      {
-        if (right_B == 0)
-        {
-          right_ticks++;
+    }   
+    else if (last_right_A == 1)  
+    {  
+        if (right_A == 0)  
+        {  
+            if (right_B == 1)  
+            {  
+                right_ticks++;  
+            }            
+            else   
+            {  
+                right_ticks--;  
+            }            
         }          
-        else 
-        {
-          right_ticks--;
-        }          
-      }        
-    } 
-    last_right_A = right_A;   
+    }   
+    last_right_A = right_A;    
     
     double deltaDistance, deltaTheta, deltaX, deltaY;
     int deltaTicksLeft, deltaTicksRight;

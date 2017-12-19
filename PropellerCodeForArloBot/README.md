@@ -54,3 +54,11 @@ To perform the calibration:
 11. Wait for both wheels to go through a series of movements.
 12. Both LEDs will shut off.
 13. You are done. Load new code to the Activity Board now.
+```
+
+Calib C Code
+============================
+
+The code is used to calib the odometry of the Arlobot. The encoders are plugged in the activity board and the DISPERCOUNT, TRACKWIDTH and DIAERROR should be calibrated. Fwd() and Turn() functions are used to drive the robot to a certain distance or angle. The calibratated results shoud be copied to ~/.arlobot/arlobot.yaml
+
+A typical cablibration method can be found in "Borenstein, J., & Feng, L. (1995). UMBmark: A benchmark test for measuring odometry errors in mobile robots. Ann Arbor, 1001, 48109-2110."
