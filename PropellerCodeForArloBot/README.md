@@ -35,6 +35,16 @@ I decided to use #define because these settings occur BEFORE the compiler compil
 You will need to have the Parallax ArloBot Libraries in your SimpleIDE workspace in order for this to build. Those libraries are included in this github repository, or you can get them here:
 http://forums.parallax.com/showthread.php/152636-Run-ActivityBot-C-Code-in-the-Arlo!?p=1230592&amp;amp;posted=1#post1230592
 
+## Connecting the encoders
+The encoders are supposed to be connected to the DHB10 motor board.
+However, we have experienced regular crashs of the motor board when encoders are connected to it.
+Therefore, we have made a system that allows encoders to be either connected to the motor board,
+or connected to the Propeller Activity Board WX, like:
+* Encoder left A to pin 3
+* Encoder left B to pin 2
+* Encoder right A to pin 1
+* Encoder right B to pin 0
+
 ## Calibration Required!##
 Before running this code you must "Calibrate" the ArloDrive routines.
 This actually writes a small bit of code into an area of EEPROM that is not erased by future programs that includes tick counts for the motors.
