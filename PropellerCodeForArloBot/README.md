@@ -56,9 +56,11 @@ To perform the calibration:
 13. You are done. Load new code to the Activity Board now.
 ```
 
-Calib C Code
-============================
+### Calib C Code
+The code is used to calibrate the odometry of the Arlobot.
+The encoders must be plugged in the Parallax activity board, and the DISPERCOUNT, TRACKWIDTH and DIAERROR should be calibrated.
+`Fwd()` and `Turn()` functions are used to drive the robot to a certain distance or angle.
+The calibrated results shoud be put into the copy of [../src/arlobot/arlobot_bringup/arlobot.yaml](../src/arlobot/arlobot_bringup/arlobot.yaml), which is under `~/.arlobot/`.
 
-The code is used to calib the odometry of the Arlobot. The encoders are plugged in the activity board and the DISPERCOUNT, TRACKWIDTH and DIAERROR should be calibrated. Fwd() and Turn() functions are used to drive the robot to a certain distance or angle. The calibratated results shoud be copied to ~/.arlobot/arlobot.yaml
-
-A typical cablibration method can be found in "Borenstein, J., & Feng, L. (1995). UMBmark: A benchmark test for measuring odometry errors in mobile robots. Ann Arbor, 1001, 48109-2110."
+A typical cablibration method can be found in
+"[Borenstein, J., & Feng, L. (1995). UMBmark: A benchmark test for measuring odometry errors in mobile robots](http://dx.doi.org/10.1117/12.228968). Ann Arbor, 1001, 48109-2110."
