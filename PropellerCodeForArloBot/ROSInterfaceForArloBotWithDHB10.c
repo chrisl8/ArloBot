@@ -105,6 +105,12 @@ I highly suggets you work through the instructions there and run the example pro
 */
 #include "arlodrive.h"
 
+// Define the encoders pins
+#define LEFT_A 3
+#define LEFT_B 2
+#define RIGHT_A 1
+#define RIGHT_B 0
+
 // See ~/.arlobot/per_robot_settings_for_propeller_c_code.h to adjust MAXIMUM_SPEED
 static int abd_speedLimit = MAXIMUM_SPEED;
 // Reverse speed limit to allow robot to reverse fast if it is blocked in front and visa versa
@@ -210,6 +216,12 @@ void safetyOverride(void *par); // Use a cog to squelch incoming commands and pe
 // This can use the gyro to detect tipping
 // This can use the gyro to detect significant heading errors due to slipping wheels when an obstacle is encountered or high centered
 static int safetyOverrideStack[128]; // If things get weird make this number bigger!
+
+// Add encoders to the propeller board and start a cog to count the ticks
+static volatile long int left_ticks = 0, right_ticks = 0;
+static volatile int last_left_A = 2; last_right_A = 2;
+void encoderCount(void *par);
+static int encoderCountStack[128]; // If things get weird make this number bigger!
 
 int main() {
 
@@ -359,6 +371,9 @@ int main() {
 
     // Start the Odometry broadcast cog
     cogstart(&broadcastOdometry, NULL, fstack, sizeof fstack);
+
+    // Start the encoder cog
+    cogstart(&encoderCount, NULL, encoderCountStack, sizeof encoderCountStack);
 
     // To hold received commands
     double CommandedVelocity = 0.0;
@@ -569,6 +584,8 @@ void broadcastOdometry(void *par) {
     dhb10_com("GOSPD 0 0\r");
     pause(dhb10OverloadPause);
     dhb10_com("RST\r");
+    left_ticks = 0;
+    right_ticks = 0;
     pause(dhb10OverloadPause);
 //    int acc = DHB10_ACC;
 //    int acc = DHB10_MAX_ACC;
@@ -632,12 +649,24 @@ void broadcastOdometry(void *par) {
         ticksLeftOld = ticksLeft;
         ticksRightOld = ticksRight;
 
+        // Add the options to connect encoders to either DHB10 or Propeller board
+        int dhb10_ticksLeft, dhb10_ticksRight;
         reply = dhb10_com("DIST\r");
         if (*reply == '\r') {
-          ticksLeft = 0;
-          ticksRight = 0;
+          //Wrong response
+          dhb10_ticksLeft = 0;
+          dhb10_ticksRight = 0;
         } else {
-          sscan(reply, "%d%d", &ticksLeft, &ticksRight);
+          sscan(reply, "%d%d", &dhb10_ticksLeft, &dhb10_ticksRight);
+        }
+        if (dhb10_ticksLeft != 0 || dhb10_ticksRight != 0) {
+           //Use encoder values from DHB10 motor board
+           ticksLeft = dhb10_ticksLeft;
+           ticksRight = dhb10_ticksRight;
+        } else {
+           //Use encoder values from Propeller board
+           ticksLeft = left_ticks;
+           ticksRight = right_ticks;
         }
         //dprint(term, "d\tDIST\t%d\t%d\n", ticksLeft, ticksRight);  // For Debugging
         pause(dhb10OverloadPause);
@@ -742,6 +771,81 @@ void broadcastOdometry(void *par) {
         dprint(term, "DEBUG: %d %d %d %d %d\n", ignoreProximity, ignoreCliffSensors, ignoreIRSensors, ignoreFloorSensors, pluggedIn);
         #endif
         }
+    }
+}
+
+/**
+ * For when the encoders are connected to the Propeller board
+ * instead of being connected to the motor board.
+ */
+void encoderCount(void *par)
+{
+    while(1)
+    {
+        int left_A = input(LEFT_A);
+        int left_B = input(LEFT_B);
+        int right_A = input(RIGHT_A);
+        int right_B = input(RIGHT_B);
+
+        if (last_left_A == 0)
+        {
+            if (left_A == 1)
+            {
+                if (left_B == 0)
+                {
+                    left_ticks++;
+                }
+                else
+                {
+                    left_ticks--;
+                }
+            }
+        }
+        else if (last_left_A == 1)
+        {
+            if (left_A == 0)
+            {
+                if (left_B == 1)
+                {
+                    left_ticks++;
+                }
+                else
+                {
+                    left_ticks--;
+                }
+            }
+        }
+        last_left_A = left_A;
+
+        if (last_right_A == 0)
+        {
+            if (right_A == 1)
+            {
+                if (right_B == 0)
+                {
+                    right_ticks++;
+                }
+                else
+                {
+                    right_ticks--;
+                }
+            }
+        }
+        else if (last_right_A == 1)
+        {
+            if (right_A == 0)
+            {
+                if (right_B == 1)
+                {
+                    right_ticks++;
+                }
+                else
+                {
+                    right_ticks--;
+                }
+            }
+        }
+        last_right_A = right_A;
     }
 }
 
