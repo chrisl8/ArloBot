@@ -467,24 +467,38 @@ int main() {
                 int ledState = strtod(token, &unconverted);
                 ledArray[ledNumber] = ledState;
                 timeoutCounter = 0;
-            } else if (buf[0] == 'p') { 
-                //Update the X, Y position and heading 
-                char *token; 
-                token = strtok(buf, delimiter); 
-                token = strtok(NULL, delimiter); 
+            } else if (buf[0] == 'p') {
+                //Update the X, Y position and heading
+                char *token;
+                token = strtok(buf, delimiter);
+                token = strtok(NULL, delimiter);
                 char *unconverted;
                 if (token != NULL) {
-                    X = strtod(token, &unconverted); 
-                    token = strtok(NULL, delimiter); 
+                    X = strtod(token, &unconverted);
+                    token = strtok(NULL, delimiter);
                 }
                 if (token != NULL) {
-                    Y = strtod(token, &unconverted); 
-                    token = strtok(NULL, delimiter); 
+                    Y = strtod(token, &unconverted);
+                    token = strtok(NULL, delimiter);
                 }
-                if (token != NULL) {                
-                    Heading = strtod(token, &unconverted); 
-                }                
-                timeoutCounter = 0; 
+                if (token != NULL) {
+                    Heading = strtod(token, &unconverted);
+                }
+                timeoutCounter = 0;
+            } else if (buf[0] == 'a') {
+                //Update the speedLimit and acceleration
+                char *token;
+                token = strtok(buf, delimiter);
+                token = strtok(NULL, delimiter);
+                char *unconverted;
+                if (token != NULL) {
+                    abd_speedLimit = strtod(token, &unconverted);
+                    token = strtok(NULL, delimiter);
+                }
+                if (token != NULL) {
+                    abdR_speedLimit = strtod(token, &unconverted);
+                }
+                timeoutCounter = 0;
             }
         }
 
