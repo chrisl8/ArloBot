@@ -1,24 +1,21 @@
 const personalData = require('./personalData');
-const webModel = require('./webModel');
-const webModelFunctions = require('./webModelFunctions');
-const robotModel = require('./robotModel');
 const fs = require('fs');
 const exec = require('child_process').exec;
 const say = require('say');
 const push = require('pushover-notifications');
 
-module.exports = function(sound) {
+function tts(sound) {
 
     // This will not make any noise if the file
     // ~/.arlobot/status/bequiet
     // exists
-    var beQuietFile = process.env.HOME + '/.arlobot/status/bequiet';
-    fs.open(beQuietFile, 'r', function(err) {
+    const beQuietFile = process.env.HOME + '/.arlobot/status/bequiet';
+    fs.open(beQuietFile, 'r', function (err) {
         if (err) {
             console.log(sound);
 
             // Set volume at max
-            var setVolumeCommand = '/usr/bin/amixer set Master ' + personalData.speechVolumeLevelDefault + '% on';
+            const setVolumeCommand = '/usr/bin/amixer set Master ' + personalData.speechVolumeLevelDefault + '% on';
             exec(setVolumeCommand);
 
             // Turn on external speaker if off and plugged in
@@ -29,7 +26,7 @@ module.exports = function(sound) {
             //         masterRelay('on');
             //     }
             //     const UsbRelay = require('./UsbRelayControl');
-            //     var usbRelay = new UsbRelay();
+            //     const usbRelay = new UsbRelay();
             //     if (webModel.relays.find(x=> x.name === 'fiveVolt') && !webModel.relays.find(x=> x.name === 'fiveVolt')['relayOn']) {
             //         usbRelay.switchRelay(webModel.relays.find(x=> x.name === 'fiveVolt')['number'],'on');
             //     }
@@ -39,7 +36,7 @@ module.exports = function(sound) {
             // or .wav files to play.
             // We rely stricly on the extension to
             // decide what it is!
-            var possibleExtension = sound.slice(-4).toLowerCase();
+            const possibleExtension = sound.slice(-4).toLowerCase();
             if (possibleExtension === '.wav') {
                 exec('/usr/bin/mplayer -quiet ' + sound + ' > /dev/null 2>&1');
             } else {
@@ -58,15 +55,26 @@ module.exports = function(sound) {
     });
     // Send 'sound' to myself via Pushover
     if (personalData.pushover.USER !== "" && sound !== '' && sound !== undefined && sound !== null) {
-        var p = new push({
+        const p = new push({
             user: personalData.pushover.USER,
             token: personalData.pushover.TOKEN
         });
-        var msg = {
+        const msg = {
             message: sound,
             sound: personalData.pushover.sound,
             priority: -1
         };
         p.send(msg); // Silent with no error reporting
     }
-};
+}
+
+module.exports = tts;
+
+if (require.main === module) {
+    if (process.argv.length < 3) {
+        console.log("You must provide text for the message, like this:");
+        console.log(`node tts.js "test message"`);
+        process.exit();
+    }
+    tts(process.argv[2]);
+}

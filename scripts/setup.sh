@@ -40,7 +40,7 @@ if [ -e  ${HOME}/.nvm/nvm.sh ]
     nvm deactivate
 fi
 
-wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
+wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
 export NVM_DIR="${HOME}/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 
@@ -256,7 +256,7 @@ if [ "${USER}" == chrisl8 ]
     npm-check -g
     printf "${YELLOW}Checking for out of date package node modules:${NC}\n"
     printf "${YELLOW}in /node:${NC}\n"
-    npm-check --skip-unused
+    yarn outdated
     printf "${YELLOW}in /website:${NC}\n"
     cd ${SCRIPTDIR}/../website
     npm-check --skip-unused

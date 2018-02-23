@@ -187,7 +187,7 @@ class Arduino {
                     // };
 
                     this.portObj = new SerialPort(port, {
-                        baudrate: baudrate,
+                        baudRate: baudrate,
                         autoOpen: false
                     });
 

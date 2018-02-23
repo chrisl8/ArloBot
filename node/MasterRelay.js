@@ -38,7 +38,7 @@ function usbRelay(operation, runFromCommandLine) {
                 }
 
                 const portObj = new SerialPort(port, {
-                    baudrate: 19200,
+                    baudRate: 19200,
                     autoOpen: false
                 });
 
