@@ -330,7 +330,8 @@ function start() {
         socket.on('tts', function (data) {
             // TODO: This just says text. Might also want to have a "talk to robot" option that will use myCroft.injectText instead.
             if (personalData.useMyCroft) {
-                myCroft.sayText(data);
+                //myCroft.sayText(data);
+                myCroft.injectText(data);
             } else {
                 tts(data);
             }
