@@ -124,9 +124,11 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 #rtabmap is for 3D mapping
 #pulseaudio pavucontrol are for setting the default microphone. I use this for mycroft among other things
 #ros-kinetic-pointcloud-to-laserscan for Scanse Sweep
+#ros-kinetic-geodesy for hector compile
+#libceres-dev for hector compile
 #yarn - Using Facebook yarn for node package installation
 
-sudo apt install -y ros-kinetic-rqt-* ros-kinetic-turtlebot ros-kinetic-turtlebot-apps ros-kinetic-turtlebot-interactions ros-kinetic-turtlebot-simulator ros-kinetic-kobuki-ftdi python-ftdi1 python-pip python-serial ros-kinetic-openni-* ros-kinetic-openni2-* ros-kinetic-freenect-* ros-kinetic-vision-opencv ros-kinetic-rtabmap-ros ros-kinetic-scan-tools libopencv-dev python-opencv ros-kinetic-rosbridge-server imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol ros-kinetic-pointcloud-to-laserscan yarn
+sudo apt install -y ros-kinetic-rqt-* ros-kinetic-turtlebot ros-kinetic-turtlebot-apps ros-kinetic-turtlebot-interactions ros-kinetic-turtlebot-simulator ros-kinetic-kobuki-ftdi python-ftdi1 python-pip python-serial ros-kinetic-openni-* ros-kinetic-openni2-* ros-kinetic-freenect-* ros-kinetic-vision-opencv ros-kinetic-rtabmap-ros ros-kinetic-scan-tools libopencv-dev python-opencv ros-kinetic-rosbridge-server imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol ros-kinetic-pointcloud-to-laserscan ros-kinetic-geodesy libceres-dev yarn
 
 # For 8-CH USB Relay board:
 sudo pip install pylibftdi
@@ -233,7 +235,6 @@ if [ ! -L /opt/mycroft/skills/mycroft-smalltalk-skill ]; then
     cd /opt/mycroft/skills/
     ln -s ${HOME}/catkin_ws/src/ArloBot/mycroft-smalltalk-skill
 fi
-cd ~/catkin_ws/src
 printf "\n${YELLOW}[(Re)Building ROS Source files.]${NC}\n"
 cd ~/catkin_ws
 catkin_make
