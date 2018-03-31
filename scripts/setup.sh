@@ -51,7 +51,11 @@ nvm install ${node_version}
 nvm alias stable ${node_version}
 nvm alias default ${node_version}
 
+printf "\n${YELLOW}[Updating npm]${NC}\n"
+npm update -g npm
+
 printf "\n${YELLOW}[Grabbing dependencies for node packages]${NC}\n"
+printf "\n${YELLOW}You will get some errors here, that is normal. As long as things work, it is OK.$NC\n"
 cd
 if ! (which forever > /dev/null)
     then
@@ -59,29 +63,19 @@ if ! (which forever > /dev/null)
 fi
 if ! (which log.io-harvester > /dev/null)
     then
-    npm install -g log.io
-fi
-if ! (which npm-check > /dev/null)
-    then
-    npm install -g npm-check
+    npm install -g https://github.com/pruge/Log.io
 fi
 if ! (which pm2 > /dev/null)
     then
     npm install -g pm2
 fi
 cd ${SCRIPTDIR}/../node
-printf "\n${YELLOW}You will get some errors here. Some are important, some are not.$NC\n"
-printf "So far I know the following errors are UNimportant:\n"
-printf "'fatal error: libudev.h: No such file or directory'\n"
-printf "'Skipping failed optional dependency /chokidar/fsevents'\n"
-yarn
+printf "\n${YELLOW}You will get some errors here, that is normal. As long as things work, it is OK.$NC\n"
+npm install
 
 cd ${SCRIPTDIR}/../website
 npm install
-npm update
-npm run tsc
-cd ${SCRIPTDIR}/../website/lib
-wget -q -N http://cdn.robotwebtools.org/roslibjs/current/roslib.js -O roslib.js
+npm run build
 
 cd ${SCRIPTDIR}
 
@@ -115,18 +109,6 @@ fi
 
 printf "\n${YELLOW}[Enable non-root use of Bluetooth 4.0.]${NC}\n"
 sudo setcap cap_net_raw+eip $(eval readlink -f `which node`)
-
-if [ ! -d  ${SCRIPTDIR}/../website/old-site/lcars/ ]
-    then
-    printf "\n${YELLOW}[Cloning in lcars CSS Framework]${NC}\n"
-    cd ${SCRIPTDIR}/../website/old-site/
-    pwd
-    git clone https://github.com/Garrett-/lcars.git
-else
-    printf "\n${YELLOW}[Updating lcars CSS Framework repo]${NC}\n"
-    cd ${SCRIPTDIR}/../website/old-site/lcars
-    git pull
-fi
 
 if ! [ -f ${HOME}/Desktop/arlobot.desktop ]
     then
@@ -232,12 +214,12 @@ if [ "${USER}" == chrisl8 ]
         printf "${GREEN}(This is NOT required for Arlobot, just a personal thing.)${NC}\n"
     fi
     # For use with the paid text to speech engine I use
-    if ! (which aoss > /dev/null)
-        then
-        printf "\n${YELLOW}[Adding aoss for Text To Speech.]${NC}\n"
-        sudo apt install -y alsa-oss
-        printf "\n${GREEN}Don't for get to insatll Cepstral Voice!${NC}\n"
-    fi
+    #if ! (which aoss > /dev/null)
+    #    then
+    #    printf "\n${YELLOW}[Adding aoss for Text To Speech.]${NC}\n"
+    #    sudo apt install -y alsa-oss
+    #    printf "\n${GREEN}Don't for get to insatll Cepstral Voice!${NC}\n"
+    #fi
 
     # Special notices for the developer himself to keep his stuff up to date!
     cd ${SCRIPTDIR}/../node
@@ -251,14 +233,14 @@ if [ "${USER}" == chrisl8 ]
     printf "\n${YELLOW}You are using this version of node:${NC} "
     node --version
     printf "${YELLOW}and this is the current stable version of node:${NC} "
-    wget -qO- https://nodejs.org/en/download/current/|grep "Latest Current Version:"|sed "s/<\/p>//g"|sed "s/<p class=\"color-lightgray\">//"
+    wget -qO- https://nodejs.org/en/download/|grep "Latest LTS Version:"|sed "s/<\/p>//g"|sed "s/<p class=\"color-lightgray\">//"
     printf "\n${YELLOW}Checking for out of date global node modules:${NC}\n"
-    npm-check -g
+    npm outdated -g
     printf "${YELLOW}Checking for out of date package node modules:${NC}\n"
     printf "${YELLOW}in /node:${NC}\n"
-    yarn outdated
+    npm outdated
     printf "${YELLOW}in /website:${NC}\n"
     cd ${SCRIPTDIR}/../website
-    npm-check --skip-unused
+    npm outdated
     printf "${PURPLE}-------------------------------------------------------${NC}\n"
 fi

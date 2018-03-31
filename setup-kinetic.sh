@@ -39,13 +39,6 @@ printf "${RED}[This script will only work on ubuntu xenial(16.04)]${NC}\n"
 exit 1
 esac
 
-if ! [ -e /etc/apt/sources.list.d/yarn.list ]
-then
-    printf "{YELLOW}Adding yarn repository.${NC}\n"
-    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-    echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-fi
-
 # I never use this, but if you are having time issues maybe uncomment this.
 #printf "${YELLOW}[Installing chrony and setting the ntpdate]${NC}\n"
 #sudo apt-get install -y chrony
@@ -124,16 +117,18 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 #rtabmap is for 3D mapping
 #pulseaudio pavucontrol are for setting the default microphone. I use this for mycroft among other things
 #ros-kinetic-pointcloud-to-laserscan for Scanse Sweep
-#ros-kinetic-geodesy for hector compile
-#libceres-dev for hector compile
-#yarn - Using Facebook yarn for node package installation
+#ros-kinetic-geodesy for hector compile, might not need it if I stop using hector_explore
+#libceres-dev for hector compile, might not need it if I stop using hector_explore
 
-sudo apt install -y ros-kinetic-rqt-* ros-kinetic-turtlebot ros-kinetic-turtlebot-apps ros-kinetic-turtlebot-interactions ros-kinetic-turtlebot-simulator ros-kinetic-kobuki-ftdi python-ftdi1 python-pip python-serial ros-kinetic-openni-* ros-kinetic-openni2-* ros-kinetic-freenect-* ros-kinetic-vision-opencv ros-kinetic-rtabmap-ros ros-kinetic-scan-tools libopencv-dev python-opencv ros-kinetic-rosbridge-server imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol ros-kinetic-pointcloud-to-laserscan ros-kinetic-geodesy libceres-dev yarn
+sudo apt install -y ros-kinetic-rqt-* ros-kinetic-turtlebot ros-kinetic-turtlebot-apps ros-kinetic-turtlebot-interactions ros-kinetic-turtlebot-simulator ros-kinetic-kobuki-ftdi python-ftdi1 python-pip python-serial ros-kinetic-openni-* ros-kinetic-openni2-* ros-kinetic-freenect-* ros-kinetic-vision-opencv ros-kinetic-rtabmap-ros ros-kinetic-scan-tools ros-kinetic-explore-lite libopencv-dev python-opencv ros-kinetic-rosbridge-server imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol ros-kinetic-pointcloud-to-laserscan
+
+# Update pip?
+pip install --upgrade pip
 
 # For 8-CH USB Relay board:
-sudo pip install pylibftdi
+sudo -H pip install pylibftdi
 # As of 4/27/2016 Rosbridge required me to install twisted via pip otherwise it failed.
-sudo pip install twisted
+sudo -H pip install twisted
 
 if ! [ -d ~/catkin_ws/src ]
     then
@@ -147,23 +142,17 @@ if ! [ -d ~/catkin_ws/src ]
     rospack profile
 fi
 
+# TODO: Replace ALL hector junk with:
+# TODO: http://wiki.ros.org/explore_lite
 printf "\n${YELLOW}[Cloning or Updating git repositories]${NC}\n"
-cd ~/catkin_ws/src
-if ! [ -d ~/catkin_ws/src/hector_slam ]
-    then
-    git clone https://github.com/tu-darmstadt-ros-pkg/hector_slam.git
-else
-    cd ~/catkin_ws/src/hector_slam
-    git pull
-fi
-cd ~/catkin_ws/src
-if ! [ -d ~/catkin_ws/src/hector_navigation ]
-    then
-    git clone https://github.com/tu-darmstadt-ros-pkg/hector_navigation.git
-else
-    cd ~/catkin_ws/src/hector_navigation
-    git pull
-fi
+#cd ~/catkin_ws/src
+#if ! [ -d ~/catkin_ws/src/hector_slam ]
+#    then
+#    git clone https://github.com/tu-darmstadt-ros-pkg/hector_slam.git
+#else
+#    cd ~/catkin_ws/src/hector_slam
+#    git pull
+#fi
 cd ~/catkin_ws/src
 if ! [ -d ~/catkin_ws/src/ArloBot ]
     then
@@ -172,13 +161,22 @@ else
     cd ~/catkin_ws/src/ArloBot
     git pull
 fi
-cd ~/catkin_ws/src
+#cd ~/catkin_ws/src
 # If you have an XV-11 "Neato" Scanner
-if ! [ -d ~/catkin_ws/src/xv_11_laser_driver ]
+#if ! [ -d ~/catkin_ws/src/xv_11_laser_driver ]
+#    then
+#    git clone https://github.com/chrisl8/xv_11_laser_driver.git
+#else
+#    cd ~/catkin_ws/src/xv_11_laser_driver
+#    git pull
+#fi
+cd ~/catkin_ws/src
+# If you have a Scanse Sweep Scanner
+if ! [ -d ~/catkin_ws/src/sweep-ros ]
     then
-    git clone https://github.com/chrisl8/xv_11_laser_driver.git
+    git clone https://github.com/scanse/sweep-ros.git
 else
-    cd ~/catkin_ws/src/xv_11_laser_driver
+    cd ~/catkin_ws/src/sweep-ros
     git pull
 fi
 cd ~/catkin_ws/src
@@ -200,41 +198,52 @@ else
     git pull
 fi
 cd ~/catkin_ws/src/ArloBot
-# If you want to use MyCroft
 if ! [ -d ~/catkin_ws/src/ArloBot/mycroft-core ]
-    then
-    git clone -b master https://github.com/MycroftAI/mycroft-core.git
-    cd ~/catkin_ws/src/ArloBot/mycroft-core
-    ./build_host_setup_debian.sh
-    ./dev_setup.sh
-    ./mycroft.sh start
-    printf "\n${YELLO}Giving Mycoroft time to download skills.${NC}\n"
-    sleep 45
-    ./mycroft.sh stop
-    printf "\n${YELLO}Patching TTS to include Arlobot TTS if we want it.{NC}\n"
-    git apply ~/catkin_ws/src/ArloBot/mycroft-things/tts_source_patch.diff
-    cd mycroft/tts/
-    ln -s ${HOME}/catkin_ws/src/ArloBot/mycroft-things/arlobot_tts.py
-    printf "\n${YELLO}Patching Wolfram Alpha skill to elliminate default behavior.{NC}\n"
-    cd /opt/mycroft/skills/skill-wolfram-alpha/
-    git apply ~/catkin_ws/src/ArloBot/mycroft-things/skill-wolfram-alpha_remove_default_behavior.diff
+then
+    printf "\n${YELLOW}Do you want to install MyCroft on the Robot?${NC}\n"
+    read -n 1 -s -r -p "Press 'y' if this is OK" RESPONSE_TO_MYCROFT_QUERY
+    echo ""
 
-    printf "\n${YELLOW}[IF you want to use MyCroft:]${NC}\n"
-    printf "\n${YELLOW}[Then see https://docs.mycroft.ai/development/cerberus for configuration info.]${NC}\n"
-    printf "\n${YELLOW}[See more info at: https://docs.mycroft.ai/installing.and.running/installation/git.clone.install]${NC}\n"
-    printf "\n${YELLOW}[At the least you will have to register MyCroft if you want full functionality, althoug it does work without registering.]${NC}\n"
+    if [ "${RESPONSE_TO_MYCROFT_QUERY}" == "y" ]
+    then
+        git clone -b master https://github.com/MycroftAI/mycroft-core.git
+        cd ~/catkin_ws/src/ArloBot/mycroft-core
+        ./dev_setup.sh
+        ./start-mycroft.sh all
+        printf "\n${YELLOW}Giving Mycoroft time to download skills.${NC}\n"
+        #sleep 60
+        #./stop-mycroft.sh
+        #cd mycroft/tts/
+        #ln -s ${HOME}/catkin_ws/src/ArloBot/mycroft-things/arlobot_tts.py
+
+        printf "\n${YELLOW}[IF you want to use MyCroft:]${NC}\n"
+        printf "\n${YELLOW}[Then see https://docs.mycroft.ai/development/cerberus for configuration info.]${NC}\n"
+        printf "\n${YELLOW}[See more info at: https://docs.mycroft.ai/installing.and.running/installation/git.clone.install]${NC}\n"
+        printf "\n${YELLOW}[At the least you will have to register MyCroft if you want full functionality, althoug it does work without registering.]${NC}\n"
+    fi
 else
     cd ~/catkin_ws/src/ArloBot/mycroft-core
+    ./stop-mycroft.sh
     git pull
+    ./start-mycroft.sh all
 fi
-if [ ! -L /opt/mycroft/skills/mycroft-arlobot-skill ]; then
-    cd /opt/mycroft/skills/
-    ln -s ${HOME}/catkin_ws/src/ArloBot/mycroft-arlobot-skill
+    #cd ~/catkin_ws/src/ArloBot/mycroft-core
+    #printf "\n${YELLO}Patching MyCroft TTS to include Arlobot TTS if we want it.{NC}\n"
+    # git diff __init__.py > ~/catkin_ws/src/ArloBot/mycroft-things/tts_source_patch.diff
+    #git apply ~/catkin_ws/src/ArloBot/mycroft-things/tts_source_patch.diff
+
+if [ -d /opt/mycroft/skills ]
+then
+    if ! [ -L /opt/mycroft/skills/arlobot-robot-skill ]; then
+        cd /opt/mycroft/skills/
+        ln -s ${HOME}/catkin_ws/src/ArloBot/mycroft-arlobot-skill arlobot-robot-skill
+    fi
+    if ! [ -L /opt/mycroft/skills/arlobot-smalltalk-skill ]; then
+        cd /opt/mycroft/skills/
+        ln -s ${HOME}/catkin_ws/src/ArloBot/mycroft-smalltalk-skill arlobot-smalltalk-skill
+    fi
 fi
-if [ ! -L /opt/mycroft/skills/mycroft-smalltalk-skill ]; then
-    cd /opt/mycroft/skills/
-    ln -s ${HOME}/catkin_ws/src/ArloBot/mycroft-smalltalk-skill
-fi
+
 printf "\n${YELLOW}[(Re)Building ROS Source files.]${NC}\n"
 cd ~/catkin_ws
 catkin_make
