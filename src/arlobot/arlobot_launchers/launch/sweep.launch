@@ -1,0 +1,13 @@
+<launch>
+  <group ns="scanse_sweep">
+    <arg name="serial_port" value="$(optenv SCANSE_SWEEP_SERIAL_PORT)"/>
+    <node name="sweep_node"	pkg="sweep_ros"  type="sweep_node" output="screen">
+      <param name="serial_port"         type="string" value="$(arg serial_port)"/>
+      <param name="serial_baudrate"     type="int"    value="115200"/>
+      <param name="frame_id"            type="string" value="scanse_sweep"/>
+      <param name="rotation_speed"	  type="int" value="4"/>
+      <!-- TODO: I think I can add a sample rate now too: -->
+      <!-- https://github.com/scanse/sweep-ros/commit/602250c386504932891315b4e835f801872c6ca6#diff-15ff132547d202d4f610348144d64214 -->
+    </node>
+  </group>
+</launch>

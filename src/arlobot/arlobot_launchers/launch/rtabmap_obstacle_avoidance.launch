@@ -1,0 +1,46 @@
+<launch>
+  <!-- SLAM -->
+  <group ns="rtabmap">
+    <node name="rtabmap" pkg="rtabmap_ros" type="rtabmap" output="screen" args="--delete_db_on_start">
+
+          <!-- If we are using Gmapping or SLAM, then don't fight with it by publishing our own transform -->
+          <!-- http://official-rtab-map-forum.67519.x6.nabble.com/RGB-D-Odometry-ignores-quot-publish-tf-quot-flag-td915.html -->
+          <param name="publish_tf" type="bool" value="false"/>
+          <param name="Rtabmap/publish_tf" type="bool" value="false"/>
+
+          <param name="frame_id" type="string" value="base_footprint"/>
+
+          <param name="subscribe_depth" type="bool" value="true"/>
+          <param name="subscribe_scan" type="bool" value="true"/>
+
+          <remap from="odom" to="/odom"/>
+          <remap from="scan" to="/scan"/>
+
+          <!-- Make sure that you have rgb_processing set to true in the 3dsensor launcher -->
+          <!-- /home/chrisl8/catkin_ws/src/ArloBot/src/arlobot_apps/arlobot_navigation/launch/3dsensor_only.launch -->
+          <!-- <arg name="rgb_processing"                  value="true"/> -->
+          <remap from="rgb/image" to="/camera/rgb/image_rect_color"/>
+          <!-- If the above is not available, you can use the raw, but I think the rect is better -->
+          <!-- <remap from="rgb/image" to="/camera/rgb/image_raw"/> -->
+          <remap from="depth/image" to="/camera/depth_registered/image_raw"/>
+          <remap from="rgb/camera_info" to="/camera/rgb/camera_info"/>
+
+          <param name="queue_size" type="int" value="10"/>
+
+          <!-- RTAB-Map's parameters -->
+          <param name="RGBD/ProximityBySpace"     type="string" value="false"/>
+          <param name="RGBD/AngularUpdate"        type="string" value="0.01"/>
+          <param name="RGBD/LinearUpdate"         type="string" value="0.01"/>
+          <param name="RGBD/OptimizeFromGraphEnd" type="string" value="false"/>
+          <param name="Optimizer/Slam2D"          type="string" value="true"/>
+          <param name="Reg/Strategy"              type="string" value="1"/> <!-- 1=ICP -->
+          <param name="Reg/Force3DoF"             type="string" value="true"/>
+          <param name="Vis/MaxDepth"              type="string" value="4.0"/>
+          <param name="Vis/MinInliers"            type="string" value="5"/>
+          <param name="Vis/InlierDistance"        type="string" value="0.05"/>
+          <param name="Rtabmap/TimeThr"           type="string" value="700"/>
+          <param name="Mem/RehearsalSimilarity"   type="string" value="0.45"/>
+          <param name="Icp/CorrespondenceRatio"   type="string" value="0.5"/>
+    </node>
+  </group>
+</launch>

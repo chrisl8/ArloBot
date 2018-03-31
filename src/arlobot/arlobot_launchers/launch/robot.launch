@@ -6,4 +6,14 @@
     <group if="$(arg loadJoystick)">
         <include file="$(find turtlebot_teleop)/launch/xbox360_teleop.launch" />
     </group>
+
+    <!-- Go ahead and bring up the 3D sensor now, so we can see it in RVIZ, and rtabmap can use it. -->
+    <include file="$(find arlobot_navigation)/launch/3dsensor_only.launch" />
+
+    <arg name="loadScanseSweep" value="$(optenv HAS_SCANSE_SWEEP false)" />
+    <group if="$(arg loadScanseSweep)">
+        <include file="$(find arlobot_launchers)/launch/sweep.launch" />
+        <!-- TODO: rtabmap should not be tied to sweep -->
+        <include file="$(find arlobot_launchers)/launch/rtabmap_obstacle_avoidance.launch" />
+    </group>
 </launch>

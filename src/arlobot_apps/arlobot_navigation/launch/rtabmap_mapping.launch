@@ -1,5 +1,7 @@
-
 <launch>
+  <!-- You must start the 3D sensor before you start this -->
+  <!-- roslaunch arlobot_navigation 3dsensor_only.launch -->
+
   <!--
        This is a copy of
        /opt/ros/indigo/share/rtabmap_ros/launch/demo/demo_turtlebot_mapping.launch

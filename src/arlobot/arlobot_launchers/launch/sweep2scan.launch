@@ -1,0 +1,43 @@
+<!-- This file is NOT used by Arlobot. I am just using the PointCloud2 output for obstacle avoidance -->
+<!-- and map following, but NOT map creation. -->
+<!-- However, if you want to try making a map with the Scanse as a fake "laser" use this as an example. -->
+<launch>
+  <group ns="scanse_sweep">
+    <arg name="serial_port" value="$(optenv SCANSE_SWEEP_SERIAL_PORT)"/>
+    <!-- run sweep_node node -->
+    <node name="sweep_node"          pkg="sweep_ros"  type="sweep_node" output="screen">
+            <param name="serial_port"         type="string" value="$(arg serial_port)"/>
+            <param name="serial_baudrate"     type="int"    value="115200"/>
+            <param name="frame_id"            type="string" value="scanse_sweep"/>
+            <param name="rotation_speed"      type="int" value="1"/>
+    </node>
+
+    <!-- run pointcloud_to_laserscan node -->
+    <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
+
+        <remap from="cloud_in" to="pc2"/>
+        <rosparam>
+            target_frame: scanse_sweep # Leave disabled to output scan in pointcloud frame
+            transform_tolerance: 0.001
+            min_height: -1.0
+            max_height: 1.0
+
+            angle_min: -3.14 # -M_PI/2
+            angle_max: 3.14 # M_PI/2
+            angle_increment: 0.001 # M_PI/360.0
+            scan_time: 0.1
+            range_min: 0.0
+            range_max: 40.0
+            use_inf: true
+
+            # Concurrency level, affects number of pointclouds queued for processing and number of threads used
+            # 0 : Detect number of cores
+            # 1 : Single threaded
+            # 2->inf : Parallelism level
+            concurrency_level: 1
+        </rosparam>
+
+    </node>
+  </group>
+</launch>
+

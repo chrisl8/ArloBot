@@ -25,13 +25,20 @@ obstacle_layer:
   z_resolution: 0.2
   z_voxels: 2
   publish_voxel_map: false
-  observation_sources: scan ultrasonic rtab # Not using IR, though the data is there.
+  observation_sources: scan ultrasonic scanse_sweep rtabmap_ground rtabmap_obstacles # Not using IR, though the data is there.
   scan:
     data_type: LaserScan
     topic: scan
     marking: true
     clearing: true
     min_obstacle_height: 0.25
+    max_obstacle_height: 0.45
+  scanse_sweep:
+    data_type: PointCloud2
+    topic: scanse_sweep/pc2
+    marking: true
+    clearing: true
+    min_obstacle_height: 0.01
     max_obstacle_height: 0.45
   ultrasonic:
     data_type: LaserScan
@@ -40,6 +47,20 @@ obstacle_layer:
     clearing: true
     min_obstacle_height: 0.0
     max_obstacle_height: 0.15
+  rtabmap_obstacles:
+    data_type: PointCloud2
+    topic: rtabmap/cloud_obstacles
+    marking: true
+    clearing: false
+    min_obstacle_height: 0.0
+    max_obstacle_height: 0.45
+  rtabmap_ground:
+    data_type: PointCloud2
+    topic: rtabmap/cloud_ground
+    marking: false
+    clearing: true
+    min_obstacle_height: 0.0
+    max_obstacle_height: 0.45
 
 #cost_scaling_factor and inflation_radius were now moved to the inflation_layer ns
 # See http://www.zkytony.com/documents/navguide.pdf for ideas

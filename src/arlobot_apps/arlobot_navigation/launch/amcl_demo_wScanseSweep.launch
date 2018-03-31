@@ -2,8 +2,6 @@
   <!-- You must start the 3D sensor before you start this -->
   <!-- roslaunch arlobot_navigation 3dsensor_only.launch -->
 
-  <include file="$(find arlobot_bringup)/launch/xv11_remap_for_dual_use.launch" />
-
   <!-- Map server -->
   <arg name="map_file" default="$(find turtlebot_navigation)/maps/willow-2010-02-18-0.10.yaml"/>
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
@@ -17,6 +15,6 @@
     <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
   </include>
 
-  <include file="$(find arlobot_navigation)/launch/includes/move_base_wXV11.launch.xml"/>
+  <include file="$(find arlobot_navigation)/launch/includes/move_base_wScanseSweep.launch.xml"/>
 
 </launch>

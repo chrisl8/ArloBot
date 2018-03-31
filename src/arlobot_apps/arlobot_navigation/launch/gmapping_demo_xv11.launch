@@ -1,8 +1,7 @@
 <launch>
-  <!-- https://github.com/ros-planning/navigation/issues/206 -->
-  <rosparam command="delete" ns="move_base" />
   <include file="$(find arlobot_bringup)/launch/xv11_remap_for_dual_use.launch" />
   <!-- <node name="laser_filter" pkg="arlobot_navigation" type="laser_filter.py" /> -->
+
   <include file="$(find arlobot_navigation)/launch/includes/gmapping_xv11.launch.xml"/>
 
   <include file="$(find arlobot_navigation)/launch/includes/move_base_wXV11.launch.xml"/>

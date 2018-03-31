@@ -1,0 +1,8 @@
+<!-- This is a copy of:
+ROS ArloBot should already be running.
+-->
+<launch>
+  <include file="$(find arlobot_navigation)/launch/amcl_demo_wScanseSweep.launch">
+    <arg name="map_file" value="$(arg map_file)"/>
+  </include>
+</launch>

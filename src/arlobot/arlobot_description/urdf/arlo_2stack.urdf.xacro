@@ -322,29 +322,54 @@
     </link>
 
   <!-- XV11 Neato Laser scanner. Hopefully it is exactly in the center. :) -->
-  <joint name="neato_laser_joint" type="fixed">
-    <!-- Minor adjustments based on ligning up XV11 output with 3D Sensor output -->
-    <!-- So if the 3D sensor is misallgined the XV11 is off by the same amount -->
-    <origin xyz="0.015 -0.02 0.11875" rpy="-0.025 0 0" />
-    <parent link="base_link" />
-    <child link="neato_laser" />
-  </joint>
+  <!--   <joint name="neato_laser_joint" type="fixed"> -->
+       <!-- Minor adjustments based on lining up XV11 output with 3D Sensor output -->
+       <!-- So if the 3D sensor is misaligned the XV11 is off by the same amount -->
+  <!--     <origin xyz="0.015 -0.02 0.11875" rpy="-0.025 0 0" /> -->
+  <!--     <parent link="base_link" /> -->
+  <!--     <child link="neato_laser" /> -->
+  <!--   </joint> -->
 
-  <link name="neato_laser">
-    <visual>
-      <geometry>
-        <box size="0.0 0.0 0.0" />
-      </geometry>
-    </visual>
-    <inertial>
-      <mass value="0.001" />
-      <origin xyz="0 0 0" />
-      <inertia ixx="0.0001" ixy="0.0" ixz="0.0"
-        iyy="0.0001" iyz="0.0"
-        izz="0.0001" />
-    </inertial>
-  </link>
-  </xacro:macro>
+  <!--   <link name="neato_laser"> -->
+  <!--     <visual> -->
+  <!--       <geometry> -->
+  <!--         <box size="0.0 0.0 0.0" /> -->
+  <!--       </geometry> -->
+  <!--     </visual> -->
+  <!--     <inertial> -->
+  <!--       <mass value="0.001" /> -->
+  <!--       <origin xyz="0 0 0" /> -->
+  <!--       <inertia ixx="0.0001" ixy="0.0" ixz="0.0" -->
+  <!--         iyy="0.0001" iyz="0.0" -->
+  <!--         izz="0.0001" /> -->
+  <!--     </inertial> -->
+  <!--   </link> -->
+
+  <!-- Scanse Sweep Sensor on top of robot -->
+     <joint name="scanse_sweep_joint" type="fixed">
+        Minor adjustments based on lining up Scanse Sweep output with 3D Sensor output
+        So if the 3D sensor is misaligned the Scanse Sweep is off by the same amount
+       <origin xyz="0.15 0.0 0.269107" rpy="0 0 3.13" />
+       <parent link="base_link" />
+       <child link="scanse_sweep" />
+     </joint>
+
+     <link name="scanse_sweep">
+       <visual>
+         <geometry>
+           <box size="0.0 0.0 0.0" />
+         </geometry>
+       </visual>
+       <inertial>
+         <mass value="0.001" />
+         <origin xyz="0 0 0" />
+         <inertia ixx="0.0001" ixy="0.0" ixz="0.0"
+           iyy="0.0001" iyz="0.0"
+           izz="0.0001" />
+       </inertial>
+     </link>
+
+     </xacro:macro>
 
   <xacro:macro name="turtlebot_standoff_5in" params="parent number x_loc y_loc z_loc">
     <joint name="standoff_5in_${number}_joint" type="fixed">
