@@ -53,6 +53,11 @@ class SmallTalkSkill(MycroftSkill):
         self.register_intent(good_morning_intent,
                              self.handle_good_morning_intent)
 
+        do_you_have_my_glasses = IntentBuilder("GlassesIntent"). \
+            require("GlassesKeyword").build()
+        self.register_intent(do_you_have_my_glasses,
+                             self.handle_do_you_have_my_glasses)
+
         self.emitter.on('fallback_failure', self.handle_fallback)
 
     # def handle_thank_you_intent(self, message):
@@ -66,6 +71,9 @@ class SmallTalkSkill(MycroftSkill):
 
     def handle_good_morning_intent(self, message):
         self.speak_dialog("good.morning")
+
+    def handle_do_you_have_my_glasses(self, message):
+        self.speak_dialog("glasses")
 
     def handle_fallback(self, message):
         utt = message.data.get('utterance')
