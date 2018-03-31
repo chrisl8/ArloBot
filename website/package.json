@@ -1,43 +1,21 @@
 {
-  "name": "websockettest",
-  "version": "1.0.0",
-  "scripts": {
-    "start": "tsc && concurrently \"npm run tsc:w\" \"npm run lite\" ",
-    "lite": "lite-server",
-    "postinstall": "typings install",
-    "tsc": "tsc",
-    "tsc:w": "tsc -w",
-    "typings": "typings"
-  },
-  "license": "ISC",
+  "name": "react-website",
+  "version": "0.1.0",
+  "private": true,
   "dependencies": {
-    "@angular/common": "~2.3.0",
-    "@angular/compiler": "~2.3.0",
-    "@angular/core": "~2.3.0",
-    "@angular/forms": "~2.3.0",
-    "@angular/http": "~2.3.0",
-    "@angular/platform-browser": "~2.3.0",
-    "@angular/platform-browser-dynamic": "~2.3.0",
-    "@angular/router": "~3.3.0",
-    "@angular/upgrade": "~2.3.0",
-    "angular-in-memory-web-api": "~0.2.1",
-    "bootstrap": "^3.3.7",
-    "core-js": "^2.5.3",
-    "ng2-bootstrap": "^1.1.16-7",
-    "reflect-metadata": "^0.1.12",
-    "rxjs": "5.0.0-rc.4",
-    "socket.io-client": "^1.7.2",
-    "systemjs": "0.19.40",
-    "zone.js": "^0.7.3"
+    "bootstrap": "^4.0.0",
+    "nipplejs": "^0.6.8",
+    "react": "^16.3.0",
+    "react-dom": "^16.3.0",
+    "react-scripts": "^1.1.1",
+    "reactstrap": "^5.0.0",
+    "roslib": "^0.20.0",
+    "socket.io-client": "^2.1.0"
   },
-  "devDependencies": {
-    "concurrently": "^3.5.1",
-    "lite-server": "^2.2.2",
-    "typescript": "~2.0.10",
-    "typings": "^1.3.2"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/chrisl8/ArloBot.git"
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
   }
 }
