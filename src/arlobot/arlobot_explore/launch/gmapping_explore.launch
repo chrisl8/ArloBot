@@ -1,7 +1,5 @@
 <launch>
   <!-- This is a version of gmapping for autonomous exploration -->
-  <!-- https://github.com/ros-planning/navigation/issues/206 -->
-  <rosparam command="delete" ns="move_base" />
   <include file="$(find turtlebot_bringup)/launch/3dsensor.launch">
     <arg name="rgb_processing" value="false" />
     <arg name="depth_registration" value="false" />
@@ -12,7 +10,8 @@
     <arg name="scan_topic" value="/scan" />
   </include>
 
-  <include file="$(find arlobot_explore)/launch/includes/gmapping.launch.xml"/>
+  <include file="$(find turtlebot_navigation)/launch/includes/gmapping/gmapping.launch.xml"/>
+  <param name="slam_gmapping/delta" value="0.01"/>
 
   <include file="$(find arlobot_explore)/launch/includes/move_base.launch.xml"/>
 
