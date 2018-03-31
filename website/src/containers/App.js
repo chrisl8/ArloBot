@@ -17,7 +17,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    // this.socket = openSocket(`http://${window.location.hostname}:8080`);
+    // this.socket = openSocket(`http://${window.location.hostname}:8080`); // For testing
     this.socket = openSocket();
 
     this.socket.on('startup', (data) => {

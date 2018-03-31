@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Status from './Status';
+import Status from '../components/Status';
 import Telemetry from './Telemetry';
 import Relays from './Relays';
 import Behavior from './Behavior';
@@ -8,7 +8,7 @@ import StartupShutdown from './StartupShutdown';
 import RobotServiceLog from './RobotServiceLog';
 import Navigation from './Navigation';
 import RemoteControl from './RemoteControl';
-import Video from './Video';
+import Video from '../components/Video';
 
 class AccordionGroup extends Component {
   constructor(props) {

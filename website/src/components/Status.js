@@ -2,6 +2,7 @@ import React from 'react';
 import { Collapse, Card, CardBody, CardHeader, CardTitle } from 'reactstrap';
 import boolToYesNo from '../utils/boolToYesNo';
 import boolToOnOff from '../utils/boolToOnOff';
+import './Status.css';
 
 const Status = (props) => {
   let laptopBatteryClass = 'btn btn-success';
