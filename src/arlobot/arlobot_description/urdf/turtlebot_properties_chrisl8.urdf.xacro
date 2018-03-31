@@ -22,10 +22,20 @@
      Note: REP needs to be updated with the information below 
      (currently in development and awaiting feedback)
    -->
-	<xacro:property name="cam_px" value="0.19" />
-<!--	<xacro:property name="cam_py" value="-0.0125" /> Y varies for different configurations. get sets in sensors_urdf -->
+   <!-- This is how far forward or backward on the robot the camera is set. -->
+	<!-- Test this by setting the robot's axles exactly 1 meter from a wall, start up RVIZ with the robot at 0,0,0 on the grid, -->
+	<!-- and see if the wall lines up with the first 1 meter grid line from the robot. -->
+	<xacro:property name="cam_px" value="0.125" />
+<!--	<xacro:property name="cam_py" value="-0.0125" /> Y varies for different configurations. This is set in sensors_urdf -->
+    <!-- This is the height of the camera. It isn't as essential as most settings, because we are using a "2D" map. -->
+    <!-- However, setting it accurately can help with some use cases. -->
 	<xacro:property name="cam_pz" value="0.17" />
+	<!-- This is the tilt across the horizontal when looking straight at the camera. Probably important, but hard to see if it is. -->
 	<xacro:property name="cam_or" value="0" />
+	<!-- This is the tilt causing the camera to look "up" or "down". -->
 	<xacro:property name="cam_op" value="0" />
-	<xacro:property name="cam_oy" value="0" />
+	<!-- This is the rotation of the camera -->
+	<!-- Test this by setting the robot's axles exactly 1 meter from a wall, start up RVIZ with the robot at 0,0,0 on the grid, -->
+	<!-- and see if the wall lines up straight with the grid line. -->
+	<xacro:property name="cam_oy" value="-0.005" />
 </robot>
