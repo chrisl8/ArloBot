@@ -4,7 +4,6 @@ const personalData = require('./personalData');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
 const WebSocketClient = require('websocket').client;
-const pm2 = require('pm2');
 const Arduino = require('./Arduino');
 const arduino = new Arduino(true);
 
@@ -16,30 +15,41 @@ let connection; // Hold connection data.
 const client = new WebSocketClient();
 
 // Use this list to exclude message types from logging to the console.
-// You can also turn off all logging if you aren't debugging.
+const ignoreMessageTypes = ['enclosure.mouth.viseme', 'enclosure.eyes.blink', 'enclosure.mouth.reset', 'enclosure.mouth.display', 'enclosure.mouth.events.activate'];
 // These types might be useful for other things too someday?
 // TODO: Set up lights on robot to blink when the mouth or eyes of mycroft are supposed to move?
-const ignoreMessageTypes = ['enclosure.mouth.viseme', 'enclosure.eyes.blink'];
 
 const init = function () {
 
+    const connect = () => {
+        client.connect('ws://localhost:8181/core', '');
+    };
+
     client.on('connectFailed', (error) => {
         console.log('Mycroft Connect Error: ' + error.toString());
+        setTimeout(() => {
+            console.log('Retrying MyCroft connection...');
+            connect();
+        }, 10000);
     });
 
     client.on('connect', (newConnection) => {
         connection = newConnection;
-        console.log('WebSocket Client Connected');
+        console.log('MyCroft found and Connected');
         connection.on('error', function (error) {
             console.log("Connection Error: " + error.toString());
         });
-        connection.on('close', function () {
-            console.log('echo-protocol Connection Closed');
+        connection.on('close', () => {
+            console.log('MyCroft connection closed.');
+            setTimeout(() => {
+                console.log('Retrying MyCroft connection...');
+                connect();
+            }, 10000);
         });
-        connection.on('message', function (message) {
+        connection.on('message', (message) => {
             if (message.type === 'utf8') {
                 let messageObject = JSON.parse(message.utf8Data);
-                if (ignoreMessageTypes.indexOf(messageObject.type) === -1) {
+                if (webModel.debugging && ignoreMessageTypes.indexOf(messageObject.type) === -1) {
                     // Use this console logging to debug and replicate Mycroft messages.
                     // Turn them off to reduce logging.
                     console.log(`MyCroft ${messageObject.type}: ${message.utf8Data}`);
@@ -49,12 +59,14 @@ const init = function () {
                     arduino.currentCommandArray = [
                         `${arduino.lightPattern.fillSolid},0,255,0,${arduino.pixel.LOOP_END}`
                     ];
+                } else if (messageObject.type === 'speak') {
+                    webModelFunctions.update('myCroftSaid', messageObject.data.utterance);
                 }
             }
         });
     });
 
-    client.connect('ws://localhost:8181/core', '');
+    connect();
 
 };
 
@@ -82,22 +94,28 @@ const injectText = function (text) {
             context: null
         }));
     } else {
-        console.log('No MyCroft connection found.');
+        console.log('MyCroft not found.');
     }
 };
 
 
 const sayText = function (text) {
     if (connection && connection.connected) {
-        // MyCroft Activity: '{"data": {"expect_response": false, "utterance": "this is some text to"}, "type": "speak", "context": null}'
-        connection.sendUTF(JSON.stringify({
-            data: {
-                expect_response: false,
-                utterance: text
-            },
-            type: "speak",
-            context: null
-        }));
+        if (!webModel.beQuiet) {
+            // MyCroft Activity: '{"data": {"expect_response": false, "utterance": "this is some text to"}, "type": "speak", "context": null}'
+            connection.sendUTF(JSON.stringify({
+                data: {
+                    expect_response: false,
+                    utterance: text
+                },
+                type: "speak",
+                context: null
+            }));
+        } else {
+            // TODO: This is a bit of a hack. There should be some way to set the MyCroft to mute, no?
+            webModelFunctions.update('myCroftSaid', 'I cannot reply, because I was asked to be quiet.');
+            console.log(text);
+        }
     } else {
         console.log('No MyCroft connection found.');
     }
