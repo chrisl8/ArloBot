@@ -19,26 +19,10 @@ done
 SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 # echo ${SCRIPTDIR} # For debugging
 
-if ! (${SCRIPTDIR}/ros_prep.sh)
-then
-    echo "ROS Prep Failed, EXITING!"
-    exit 1
-fi
+source ${SCRIPTDIR}/ros_prep.sh
+
 echo "Use kill_ros.sh to close."
 
-# This allows the robot.launch file to only load the joystick
-# node if the joystick is present.
-# I found that loading the joystick node on test systems with no joystick
-# USB controller caused crashes in ROS.
-# Rightly this should be a ROS parameter, but there is no facility within
-# roslaunch to use params in if statements.
-# Also, this should be in ros_prep.sh, but then the variable will not pass up
-# to here unless I 'source' it, but ros_prep.sh is not written or tested
-# to be sourced.
-if [ $(jq '.hasXboxController' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
-    then
-    export HAS_XBOX_JOYSTICK=true
-fi
 export ARLOBOT_MODEL=$(jq '.arlobotModel' ${HOME}/.arlobot/personalDataForBehavior.json | tr -d '"')
 
 # 'unbuffer' is required for running this from the node based 'behavior'
