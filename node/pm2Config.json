@@ -5,40 +5,8 @@
       "script": "index.js",
       "max_memory_restart": "1G",
       "merge_logs": true,
-      "exec_interpreter": "node"
-    },
-    {
-      "name": "Mycroft Service",
-      "script": "start.sh",
-      "cwd": "../mycroft-core/",
-      "args": [
-        "service"
-      ],
-      "exec_interpreter": "bash",
-      "exec_mode": "fork_mode",
-      "max_memory_restart": "100M"
-    },
-    {
-      "name": "Mycroft Skills",
-      "script": "start.sh",
-      "cwd": "../mycroft-core/",
-      "args": [
-        "skills"
-      ],
-      "exec_interpreter": "bash",
-      "exec_mode": "fork_mode",
-      "max_memory_restart": "100M"
-    },
-    {
-      "name": "Mycroft Voice",
-      "script": "start.sh",
-      "cwd": "../mycroft-core/",
-      "args": [
-        "voice"
-      ],
-      "exec_interpreter": "bash",
-      "exec_mode": "fork_mode",
-      "max_memory_restart": "100M"
+      "exec_interpreter": "node",
+      "log_date_format" : "YYYY-MM-DD HH:mm Z"
     }
   ]
 }
