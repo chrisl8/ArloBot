@@ -1,7 +1,3 @@
-const personalData = require('./personalData');
-const webModel = require('./webModel');
-const webModelFunctions = require('./webModelFunctions');
-const robotModel = require('./robotModel');
 const spawn = require('child_process').spawn;
 const fs = require('fs');
 
@@ -21,14 +17,14 @@ class UsbDevice {
                     return this.getInfoFromDeviceList(deviceList);
                 })
                 .then((infoDump) => {
-                    var foundDevice = false;
-                    var deviceName;
+                    let foundDevice = false;
+                    let deviceName;
                     for (let i = 0; i < infoDump.length; i++) {
                         for (let j = 0; j < infoDump[i].deviceInfo.length; j++) {
                             if (infoDump[i].deviceInfo[j].includes(this.stringLocation)) {
                                 let deviceStringLine = infoDump[i].deviceInfo[j].split('=');
                                 if (deviceStringLine.length > 0) {
-                                    let re = /\"/g;
+                                    let re = /"/g;
                                     infoDump[i].deviceString = deviceStringLine[1].replace(re, '');
                                 }
                                 break;
@@ -56,7 +52,7 @@ class UsbDevice {
 
     getLinuxUsbDeviceList() {
         return new Promise((resolve, reject) => {
-            // all /dev/ttyUSB* and /dev/tyACM* filenames
+            // all /dev/ttyUSB* and /dev/ttyACM* file names
             fs.readdir('/dev/', (err, list) => {
                 if (err) {
                     reject(err);
@@ -79,7 +75,7 @@ class UsbDevice {
     getInfoFromDeviceList(deviceList) {
         const getSingleDeviceInfo = function (device) {
             return new Promise((resolve, reject) => {
-                var outputData = '';
+                let outputData = '';
                 const process = spawn('udevadm', ['info', '-n', `/dev/${device}`]);
                 process.stdout.on('data', (data) => {
                     outputData += data;
@@ -100,7 +96,7 @@ class UsbDevice {
                 })
             })
         };
-        var allResults = deviceList.map((device) => {
+        const allResults = deviceList.map((device) => {
             return getSingleDeviceInfo(device).then((deviceInfo) => {
                 return deviceInfo;
             });
@@ -108,6 +104,7 @@ class UsbDevice {
         return Promise.all(allResults);
     }
 }
+
 module.exports = UsbDevice;
 if (require.main === module) {
     // Run the function if this is called directly instead of required.
@@ -118,7 +115,7 @@ if (require.main === module) {
         console.log("node UsbDevice.js \"Numato Lab 1 Channel USB Powered Relay Module\" product");
         process.exit();
     }
-    var usbDevice = new UsbDevice(process.argv[2], process.argv[3]);
+    const usbDevice = new UsbDevice(process.argv[2], process.argv[3]);
     usbDevice.findDeviceName()
         .then((deviceName) => {
             console.log(`${deviceName}`);

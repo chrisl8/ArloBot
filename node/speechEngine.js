@@ -1,30 +1,26 @@
-var robotModel = require('./robotModel');
-var webModel = require('./webModel');
-var webModelFunctions = require('./webModelFunctions');
-// TODO: Observe is DEAD, so this all has to change,
-// Until then this entire module is dead.
-//var O = require('observed');
-//var webModelWatcher = O(webModel);
-//var robotModelWatcher = O(robotModel);
-var tts = require('./tts');
-var howManySecondsSince = require('./howManySecondsSince');
+const personalData = require('./personalData');
+const webModel = require('./webModel');
+const webModelFunctions = require('./webModelFunctions');
+const robotModel = require('./robotModel');
+const tts = require('./tts');
+const howManySecondsSince = require('./howManySecondsSince');
 // fs.watch sees like 5 updates instead of one,
 // chokidar is smarter,
 // although it is still possible to hit the file when it is empty,
 // thus the timeout and the
 // fancy error checking in the on('change' callback
-var chokidar = require('chokidar');
+const chokidar = require('chokidar');
 // For random selection of items
-var Stochator = require('stochator');
-var fs = require('fs');
-var speechModel = JSON.parse(fs.readFileSync('./speechModel.json', 'utf8'));
-var speechInMemoryObject = {};
-var eventModel = JSON.parse(fs.readFileSync('./eventResponses.json', 'utf8'));
-var eventInMemoryObject = {};
-var lastSpoke = new Date();
+const Stochator = require('stochator');
+const fs = require('fs');
+let speechModel = JSON.parse(fs.readFileSync('./speechModel.json', 'utf8'));
+const speechInMemoryObject = {};
+let eventModel = JSON.parse(fs.readFileSync('./eventResponses.json', 'utf8'));
+const eventInMemoryObject = {};
+let lastSpoke = new Date();
 
 function buildInMemoryObject(model, memoryModel) {
-    for (var item in model) {
+    for (let item in model) {
         if (model.hasOwnProperty(item)) {
             //console.log(item);
             // If this is the first round,
@@ -41,10 +37,11 @@ function buildInMemoryObject(model, memoryModel) {
     }
 
 }
+
 buildInMemoryObject(speechModel, speechInMemoryObject);
 
 function buildInMemoryEventObject(model, memoryModel) {
-    for (var item in model) {
+    for (let item in model) {
         if (model.hasOwnProperty(item)) {
             //console.log(item);
             // If this is the first round,
@@ -53,23 +50,26 @@ function buildInMemoryEventObject(model, memoryModel) {
             if (!memoryModel.hasOwnProperty(item)) {
                 memoryModel[item] = {};
             }
-            for (var innerItem in model[item]) {
+            for (let innerItem in model[item]) {
                 if (innerItem !== 'repeatInterval' && innerItem !== 'delay') {
+                    // noinspection JSUnfilteredForInLoop
                     memoryModel[item][innerItem] = {
                         lastSaid: null
                     };
                     // Always reinitialize the random chooser in case any bits of it were changed
+                    // noinspection JSUnfilteredForInLoop
                     memoryModel[item][innerItem].biasedTextChooser = undefined;
                 }
             }
         }
     }
 }
+
 buildInMemoryEventObject(eventModel, eventInMemoryObject);
 
 // Watch the speechModel.json file for changes,
 // So that we can dynamically add speech without restarting the robot.
-chokidar.watch('./speechModel.json').on('change', function (event, path) {
+chokidar.watch('./speechModel.json').on('change', () => {
     setTimeout(function () {
         fs.readFile('./speechModel.json', 'utf8', function (err, data) {
             if (err) {
@@ -86,7 +86,7 @@ chokidar.watch('./speechModel.json').on('change', function (event, path) {
     }, 1000);
 });
 
-chokidar.watch('./eventResponses.json').on('change', function (event, path) {
+chokidar.watch('./eventResponses.json').on('change', () => {
     setTimeout(function () {
         fs.readFile('./eventResponses.json', 'utf8', function (err, data) {
             if (err) {
@@ -106,13 +106,13 @@ chokidar.watch('./eventResponses.json').on('change', function (event, path) {
 // Create an in memory random picker for each speech model entry.
 function initializeBiasedTextChooser(model, memoryModel, item) {
     'use strict';
-    var values = [],
+    const values = [],
         weights = [];
     // Repeat items based on "instance" variable.
-    for (var text in model[item].thingsToSay) {
+    for (let text in model[item].thingsToSay) {
         // "repeat" is a setting, not an item to say.
-        if (text !== 'repeat') {
-            for (var i = 0; i < model[item].thingsToSay[text].instance; i++) {
+        if (text !== 'repeat' && model[item].thingsToSay.hasOwnProperty(text)) {
+            for (let i = 0; i < model[item].thingsToSay[text].instance; i++) {
                 values.push(model[item].thingsToSay[text].text);
                 weights.push(model[item].thingsToSay[text].weight);
             }
@@ -133,8 +133,8 @@ function getSomethingToSay(model, memoryModel, item) {
     if (memoryModel[item].biasedTextChooser === undefined) {
         initializeBiasedTextChooser(model, memoryModel, item);
     }
-    var returnValue = memoryModel[item].biasedTextChooser.next();
-    var count = 0;
+    let returnValue = memoryModel[item].biasedTextChooser.next();
+    let count = 0;
     while (returnValue === undefined && count < 10) {
         count++; // to prevent an infinite loop due to some failure
         initializeBiasedTextChooser(model, memoryModel, item);
@@ -148,7 +148,7 @@ function getSomethingToSay(model, memoryModel, item) {
 // This function can either be called by the "poll",
 // or just be set up in a setInterval loop
 function talkToMe() {
-    for (var speechItem in speechModel) {
+    for (let speechItem in speechModel) {
         if (speechModel.hasOwnProperty(speechItem)) {
             // Check if we should say this
             try {
@@ -158,7 +158,8 @@ function talkToMe() {
                         // and if we've already said it too recently we should say something else or skip it.
                         if (howManySecondsSince(speechInMemoryObject[speechItem].lastSaid) >= speechModel[speechItem].repeatInterval) {
                             //TODO: Do we need a "blank" entry, so that sometimes it says nothing, but still counts?
-                            tts(getSomethingToSay(speechModel, speechInMemoryObject, speechItem));
+                            const textToSay = getSomethingToSay(speechModel, speechInMemoryObject, speechItem);
+                            tts(textToSay);
                             lastSpoke = new Date();
                             speechInMemoryObject[speechItem].lastSaid = new Date();
                             break; // Now that we said something we are done, start over on the next loop.
@@ -184,7 +185,8 @@ function talkAboutEvents(key, value) {
         if (eventModel[key] && howManySecondsSince(lastSpoke) >= eventModel[key].delay) {
             // and if we've already said it too recently we should say something else or skip it.
             if (eventInMemoryObject[key][value] && howManySecondsSince(eventInMemoryObject[key][value].lastSaid) >= eventModel[key].repeatInterval) {
-                tts(getSomethingToSay(eventModel[key], eventInMemoryObject[key], value));
+                const textToSay = getSomethingToSay(eventModel[key], eventInMemoryObject[key], value);
+                tts(textToSay);
                 lastSpoke = new Date();
                 eventInMemoryObject[key][value].lastSaid = new Date();
             }
@@ -192,23 +194,16 @@ function talkAboutEvents(key, value) {
     }
 }
 
-// TODO: Observe is DEAD, so this all has to change,
-// Until then this entire module is dead.
-// TODO: Implement or improve some sort of setter/getter on webModel and robotModel
-// that can be used to "ping" things like this.
 webModelFunctions.emitter.on('change', function (key, value) {
     talkAboutEvents(key, value)
 });
 webModelFunctions.emitter.on('changeRobotModel', function (key, value) {
     talkAboutEvents(key, value)
 });
-//webModelWatcher.on('change', talkAboutEvents);
-//robotModelWatcher.on('change', talkAboutEvents);
 
-// TODO: We need to track waypoint arrivals.
+// TODO: Track waypoint arrivals.
 
-// TODO: For testing watchers:
-
+// For testing watchers:
 //setInterval(function() {
 //    if (webModel.pluggedIn === false) {
 //        webModel.pluggedIn = true;
@@ -225,8 +220,4 @@ webModelFunctions.emitter.on('changeRobotModel', function (key, value) {
 //    }
 //}, 2500);
 
-// TODO: Is this a good time?
-// TODO: or should it be in the index.js Behavior tree poll?
-setInterval(function () {
-    talkToMe();
-}, 1000);
+module.exports = talkToMe;
