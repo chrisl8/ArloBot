@@ -19,6 +19,10 @@ echo "set your browser to http://${HOSTNAME}:28778/ to watch logs"
 echo "NOTE: This does not add new logs in real time,"
 echo "so if new nodes start up you will have to restart this."
 
+# Fix default server config that requires SSL
+cp ${SCRIPTDIR}/dotarlobot/web_server.conf ${HOME}/.log.io/web_server.conf
+cp ${SCRIPTDIR}/dotarlobot/log_server.conf ${HOME}/.log.io/log_server.conf
+
 confFile=${HOME}/.log.io/harvester.conf
 echo "exports.config = {" > ${confFile}
 echo "  nodeName: \"application_server\"," >> ${confFile}
