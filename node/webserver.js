@@ -6,16 +6,15 @@ const Camera = require('./Camera');
 const camera = new Camera('Camera', personalData.camera0name);
 const Arduino = require('./Arduino');
 const arduino = new Arduino(true);
-const myCroft = require('./MyCroft');
 const robotModel = require('./robotModel');
 const LaunchScript = require('./LaunchScript');
 const tts = require('./tts');
+const myCroft = require('./MyCroft');
 
 const WayPoints = require('./WayPoints.js');
 const wayPointEditor = new WayPoints();
 
 const rosInterface = require('./rosInterface');
-const fs = require('fs');
 
 const express = require('express');
 const session = require('express-session');
@@ -149,12 +148,14 @@ app.use(function (req, res, next) {
 });
 
 // All web content is housed in the website folder
-app.use(express.static(__dirname + '/../website'));
+app.use(express.static(__dirname + '/../website/build'));
 
 const handleSemaphoreFiles = require('./handleSemaphoreFiles');
 handleSemaphoreFiles.readSemaphoreFiles();
 
 const saveMap = function (newMapName) {
+    // TODO: Positive feedback that map is saved.
+    // TODO: If the map exists, maybe warn?
     const mapDir = process.env.HOME + '/.arlobot/rosmaps/';
     let serverMapProcess = new LaunchScript({
         name: 'SaveMap',
@@ -275,7 +276,7 @@ const stopColorFollower = function () {
     return process;
 };
 
-function start() {
+async function start() {
     /** @namespace personalData.webServerPort */
     const webServer = app.listen(personalData.webServerPort);
     const io = require("socket.io").listen(webServer);
@@ -303,6 +304,10 @@ function start() {
             }
         });
 
+        socket.on('makeMap', () => {
+           webModelFunctions.update('makeMap', true);
+        });
+
         socket.on('clearMap', function () {
             if (!webModel.ROSisRunning) {
                 webModelFunctions.update('autoExplore', false);
@@ -328,12 +333,17 @@ function start() {
             setTimeout(wayPointEditor.updateWayPointList, 5000);
         });
         socket.on('tts', function (data) {
-            // TODO: This just says text. Might also want to have a "talk to robot" option that will use myCroft.injectText instead.
+            tts(data);
+        });
+        socket.on('ask', function (data) {
             if (personalData.useMyCroft) {
-                //myCroft.sayText(data);
+              if (webModel.beQuiet) {
+                webModelFunctions.update('myCroftSaid', 'I cannot reply, because I was asked to be quiet.');
+              } else {
                 myCroft.injectText(data);
+              }
             } else {
-                tts(data);
+                tts(`I have no idea what you are talking about.`);
             }
         });
         socket.on('startROS', function () {
@@ -449,10 +459,22 @@ function start() {
             }
         });
         socket.on('startColorFollower', function () {
-            startColorFollower();
+            if (!personalData.demoWebSite) {
+                startColorFollower();
+            } else {
+                webModelFunctions.scrollingStatusUpdate('Color Follower has started.');
+                webModelFunctions.behaviorStatusUpdate('Color Follower started.');
+                webModelFunctions.update('colorFollowerRunning', true);
+            }
         });
         socket.on('stopColorFollower', function () {
-            stopColorFollower();
+            if (!personalData.demoWebSite) {
+                stopColorFollower();
+            } else {
+                webModelFunctions.scrollingStatusUpdate('Color Follower has stopped.');
+                webModelFunctions.behaviorStatusUpdate('Color Follower stopped.');
+                webModelFunctions.update('colorFollowerRunning', false);
+            }
         });
         socket.on('toggleDebug', function () {
             webModelFunctions.toggle('debugging');
@@ -475,11 +497,18 @@ function start() {
             webModelFunctions.update('shutdownRequested', true);
         });
         socket.on('arduino', function () {
-            if (webModel.neoPixelsOn) {
-                arduino.lightsOut();
+            if (!personalData.demoWebSite) {
+                if (webModel.neoPixelsOn) {
+                    arduino.lightsOut();
+                } else {
+                    arduino.init();
+                }
             } else {
-                arduino.init();
+                webModelFunctions.update('neoPixelsOn', !webModel.neoPixelsOn);
             }
+        });
+        socket.on('scrollingStatusUpdate', data => {
+            webModelFunctions.scrollingStatusUpdate(data);
         });
         // socket.on('toggleMycroft', function () {
         //     myCroft.start();
