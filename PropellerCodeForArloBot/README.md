@@ -64,3 +64,44 @@ To perform the calibration:
 11. Wait for both wheels to go through a series of movements.
 12. Both LEDs will shut off.
 13. You are done. Load new code to the Activity Board now.
+```
+
+### Calib C Code
+The code is used to calibrate the odometry of the Arlobot.
+The encoders must be plugged in the Parallax activity board, and the `DISPERCOUNT`, `TRACKWIDTH` and `DIAERROR` should be calibrated.
+`Fwd()` and `Turn()` functions are used to drive the robot to a certain distance or angle.
+
+The calibrated results shoud be put into the copy of [../src/arlobot/arlobot_bringup/arlobot.yaml](../src/arlobot/arlobot_bringup/arlobot.yaml), which is under `~/.arlobot/`:
+In the `driveGeometry:` line, use the calculated value `TRACKWIDTH` for `trackWidth`,
+and the measured value `DISPERCOUNT` for `distancePerCount` (see below).
+
+### Odometry Calibration
+A typical calibration method can be found in
+"[Borenstein, J., & Feng, L. (1995). UMBmark: A benchmark test for measuring odometry errors in mobile robots](http://dx.doi.org/10.1117/12.228968). Ann Arbor, 1001, 48109-2110."
+
+To be more specific, the systematic error can mainly be classified into three categories: unequal wheel diameters `Ed`,
+uncertainty about the wheelbase `Eb`, and uncertainty about the wheel diameter `Es`.
+The errors can be calibrated by `DIAERROR`, `TRACKWIDTH`, and `DISPERCOUNT`, respectively.
+
+`Es` can be measured by just an ordinary tape measure, with an iterative dichotomy. For instance, the `DISPERCOUNT` should be larger if the robot travels less than programmed.
+
+`Ed` and `Eb` can be calibrated together by the method called University of Michigan Benchmark (UMBmark),
+ which requires a square path of length L to be performed by the robot both clockwise and counter-clockwise.
+ The final position of the robot relative to the starting position x_cw, y_cw, x_ccw, y_ccw can be measured.
+
+![Clockwise](https://github.com/DTU-R3/ArloBot/blob/feature/calib/PropellerCodeForArloBot/images/clockwise.png)
+
+![Counter-clockwise](https://github.com/DTU-R3/ArloBot/blob/feature/calib/PropellerCodeForArloBot/images/counter-clockwise.png)
+
+The following equations can be performed:
+
+```
+alpha = (x_cw + x_ccw) / (-4L) * (180 / pi)
+beta = (x_cw - x_ccw) / (-4L) * (180 / pi)
+R = (L / 2) / (sin(beta) / 2)
+Eb = 90 / (90 - alpha)
+TRACKWIDTH = Eb * TRACKWIDTH
+DIAERROR = (R + TRACKWIDTH / 2) / (R - TRACKWIDTH / 2)
+```
+
+The method can be repeated a few times to increase precision.
