@@ -7,6 +7,7 @@
   <xacro:property name="M_SCALE" value="0.001"/>
   <xacro:property name="asus_xtion_pro_cam_py" value="0.0205"/>
   <xacro:property name="asus_xtion_pro_depth_rel_rgb_py" value="0.0270" />
+  <!-- Camera left/right offset. Camera is actually off center in the unit, so -0.0220 makes it physically centered. -->
   <xacro:property name="asus_xtion_pro_cam_rel_rgb_py"   value="-0.0220" />
 
   <!-- Parameterised in part by the values in turtlebot_properties.urdf.xacro -->
@@ -71,33 +72,5 @@
     <!-- RGBD sensor for simulation, same as Kinect -->
     <turtlebot_sim_3dsensor/>
 
-
-    <!-- Asus mount -->
-    <joint name="mount_asus_xtion_pro_joint" type="fixed">
-      <origin xyz="-0.1024 0.0 0.272" rpy="0 0 0"/>
-      <parent link="${parent}"/>
-      <child link="mount_asus_xtion_pro_link"/>
-    </joint>  
-    <link name="mount_asus_xtion_pro_link">
-      <visual>
-        <origin xyz="0 0 0" rpy="${-M_PI/2} 0 0"/>
-        <geometry>
-          <mesh filename="package://arlobot_description/meshes/sensors/xtion_pro_stack.dae"/>
-        </geometry>
-      </visual>  
-      <collision>
-        <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
-        <geometry>
-        <box size="0.0330 0.2760 0.0120"/>
-      </geometry>
-      </collision>
-      <inertial>
-        <mass value="0.170" />
-        <origin xyz="0 0 0" />
-        <inertia ixx="0.001152600" ixy="0.0" ixz="0.0"
-                 iyy="0.000148934" iyz="0.0"
-                 izz="0.001154654" />
-      </inertial>
-    </link>
   </xacro:macro>
 </robot>
