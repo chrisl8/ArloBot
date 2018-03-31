@@ -32,6 +32,12 @@ wrap_up_on_fail () {
 if [ $(jq '.useMasterPowerRelay' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
     echo "Turning on Arlo Power supply . . ."
+    # Turn it off if it is already one
+    if [ "$(${SCRIPTDIR}/switch_master_relay.sh read)" == "on" ]
+        then
+        ${SCRIPTDIR}/switch_master_relay.sh off
+        sleep 2
+    fi
     ${SCRIPTDIR}/switch_master_relay.sh on
     # Give Linux time to find the devices.
     echo "Giving it 1 second to come online . . ."
