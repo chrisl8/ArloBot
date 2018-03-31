@@ -1,4 +1,3 @@
-'use strict';
 const personalData = require('./personalData');
 const webModel = require('./webModel');
 const robotModel = require('./robotModel');
@@ -19,10 +18,14 @@ class Camera {
     }
 
     toggle() {
-        if (!webModel.cameraOn) {
-            this.findAndSwitchOn();
+        if (!personalData.demoWebSite) {
+            if (!webModel.cameraOn) {
+                this.findAndSwitchOn();
+            } else {
+                Camera.switchOff();
+            }
         } else {
-            Camera.switchOff();
+            webModelFunctions.update('cameraOn', !webModel.cameraOn);
         }
     }
 

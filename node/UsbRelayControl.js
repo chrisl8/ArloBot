@@ -2,9 +2,7 @@
 const personalData = require('./personalData');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
-const robotModel = require('./robotModel');
 const spawn = require('child_process').spawn;
-const ipAddress = require('./ipAddress');
 
 /*
  To get the state of all relays:
@@ -34,7 +32,7 @@ class UsbRelay {
     }
 
     updateAllRelayState() {
-        if (personalData.useUSBrelay && !this.busy) {
+        if (!personalData.demoWebSite && personalData.useUSBrelay && !this.busy) {
             this.busy = true;
             const process = spawn(this.script, ['all', 'state']);
             process.stdout.on('data', (data) => {
@@ -58,9 +56,9 @@ class UsbRelay {
                     }
                     // WARNING: Relays are 1 indexed, not 0!
                     for (let i = 0; i < relayStatusArray.length; i++) {
-                        let relayNumber = i + 1;
-                        let relayState = relayStatusArray[i];
-                        let relayName = UsbRelay.findRelayName(relayNumber);
+                        const relayNumber = i + 1;
+                        const relayState = relayStatusArray[i];
+                        const relayName = UsbRelay.findRelayName(relayNumber);
                         webModelFunctions.publishRelayState(relayNumber, relayState, relayName);
                     }
                     this.dataHolder = '';
@@ -70,6 +68,17 @@ class UsbRelay {
                 }
                 this.busy = false;
             });
+        } else if (personalData.demoWebSite) {
+            const demoRelayCount = 10;
+            if (webModel.relays.length < demoRelayCount) {
+                // Generate some "fake" relays for the web demo.
+                for (let i = 0; i < demoRelayCount; i++) {
+                    // WARNING: Relays are 1 indexed, not 0!
+                    const relayNumber = i + 1;
+                    const relayName = UsbRelay.findRelayName(relayNumber);
+                    webModelFunctions.publishRelayState(relayNumber, 'OFF', relayName);
+                }
+            }
         }
     }
 
@@ -85,43 +94,53 @@ class UsbRelay {
     }
 
     switchRelay(relayNumber, onOrOff) {
-        const delay = 100; // millisenconds
-        const timeout = 20; // loops
-        let triedSoFar = 0;
-        const checkBusyOrSwitch = () => {
-            if (!this.busy) {
-                this.busy = true;
-                const state = onOrOff.toLowerCase();
-                if (state !== 'on' && state !== 'off') {
-                    return;
-                }
-                const process = spawn(this.script, [relayNumber, state]);
-
-                process.stderr.on('data', (data) => {
-                    console.log(`UsbRelay output stderr: ${data}`);
-                });
-
-                process.on('close', (code) => {
-                    if (code === null || code === 0) {
-                        webModelFunctions.scrollingStatusUpdate(`Relay ${relayNumber} ${state}`);
-                    } else {
-                        webModelFunctions.scrollingStatusUpdate(`Relay ${relayNumber} FAILED code: ${code}`);
-                        console.log(`UsbRelay Switch failed with code: ${code}`);
+        if (!personalData.demoWebSite) {
+            const delay = 100; // millisenconds
+            const timeout = 20; // loops
+            let triedSoFar = 0;
+            const checkBusyOrSwitch = () => {
+                if (!this.busy) {
+                    this.busy = true;
+                    const state = onOrOff.toLowerCase();
+                    if (state !== 'on' && state !== 'off') {
+                        return;
                     }
-                    this.busy = false;
-                    this.updateAllRelayState();
-                });
-            } else {
-                triedSoFar++;
-                if (triedSoFar < timeout) {
-                    setTimeout(checkBusyOrSwitch, delay);
+                    const process = spawn(this.script, [relayNumber, state]);
+
+                    process.stderr.on('data', (data) => {
+                        console.log(`UsbRelay output stderr: ${data}`);
+                    });
+
+                    process.on('close', (code) => {
+                        if (code === null || code === 0) {
+                            webModelFunctions.scrollingStatusUpdate(`Relay ${relayNumber} ${state}`);
+                        } else {
+                            webModelFunctions.scrollingStatusUpdate(`Relay ${relayNumber} FAILED code: ${code}`);
+                            console.log(`UsbRelay Switch failed with code: ${code}`);
+                        }
+                        this.busy = false;
+                        this.updateAllRelayState();
+                    });
+                } else {
+                    triedSoFar++;
+                    if (triedSoFar < timeout) {
+                        setTimeout(checkBusyOrSwitch, delay);
+                    }
                 }
+            };
+            checkBusyOrSwitch();
+        } else {
+            const relayName = UsbRelay.findRelayName(relayNumber);
+            let relayState = 'OFF';
+            if (onOrOff.toLowerCase() === 'on') {
+                relayState = 'ON'
             }
-        };
-        checkBusyOrSwitch();
+            webModelFunctions.publishRelayState(relayNumber, relayState, relayName);
+        }
     }
 
 }
+
 module.exports = UsbRelay;
 
 if (require.main === module) {

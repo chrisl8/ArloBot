@@ -139,11 +139,16 @@ function pollParams() {
 }
 
 function setParam(paramLabel, value) {
-    if (rosParameters.hasOwnProperty(paramLabel)) {
-        if (rosParameters[paramLabel].param) {
-            rosParameters[paramLabel].param.set(value);
+    if (!personalData.demoWebSite) {
+        if (rosParameters.hasOwnProperty(paramLabel)) {
+            if (rosParameters[paramLabel].param) {
+                rosParameters[paramLabel].param.set(value);
+            }
         }
     }
+    // Fake update for web interface to see until polling picks it up.
+    // This also covers the case if this is a demo site.
+    webModelFunctions.updateRosParameter(paramLabel, value);
 }
 
 function closeDeadROSConnection() {
