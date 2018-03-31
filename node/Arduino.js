@@ -229,6 +229,13 @@ class Arduino {
                         }
                     });
 
+                    this.portObj.on('close', () => {
+                        this.pause();
+                        this.portObj = null;
+                        this.programIsBusy = false;
+                        webModelFunctions.update('neoPixelsOn', false);
+                    })
+
                     this.portObj.open((error) => {
                         if (error) {
                             console.log('Arduino Connection Error: ' + error);
@@ -275,7 +282,7 @@ class Arduino {
             // Give it time to send the new command at least once.
             this.pause();
             if (this.portObj) {
-                this.portObj.close();
+              this.portObj.close();
             }
             this.programIsBusy = false;
             webModelFunctions.update('neoPixelsOn', false);
