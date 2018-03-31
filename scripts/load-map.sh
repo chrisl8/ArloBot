@@ -21,9 +21,9 @@ fi
 pgrep -f robot.launch > /dev/null
 if [ $? -eq 0 ]
 then
-    if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true  ]
+    if [ $(jq '.hasScanseSweep' ${HOME}/.arlobot/personalDataForBehavior.json) == true  ]
     then
-        roslaunch arlobot_launchers load_map_xv11.launch map_file:=${MAPFILE}
+        roslaunch arlobot_launchers load_map_wScanseSweep.launch map_file:=${MAPFILE}
     else
         roslaunch arlobot_launchers load_map.launch map_file:=${MAPFILE}
     fi
