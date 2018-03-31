@@ -63,6 +63,8 @@
   "door_list": [],
   "_hasXboxController": "Set to true if you have a USB wireless xBox joystick receiver.",
   "hasXboxController": false,
+  "_hasScanseSweep": "Set to true if you have a Scanse Sweep installed on the robot.",
+  "hasScanseSweep": false,
   "_arlobotModel": "Use this to use an alternate URD file, otherwise use set to default",
   "arlobotModel": "default",
   "_hasActivityBoard": "This can only be false for a 'dummy' test system that has no actual hardware.",
@@ -77,7 +79,7 @@
   "speech_engine": "~/catkin_ws/src/ArloBot/scripts/tts.sh",
   "use_external_speaker": false,
   "script_location": "~/catkin_ws/src/ArloBot/scripts",
-  "web_folder": "~/catkin_ws/src/ArloBot/website",
+  "web_folder": "~/catkin_ws/src/ArloBot/website/build",
   "webServerPort": 8080,
   "webSiteSettings": {
     "requirePassword": false,
