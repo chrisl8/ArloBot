@@ -47,3 +47,6 @@ ignoreCliffSensors: False
 # while still utilizing the PING sensors
 # NOTE this will not ignore the IR Cliff Sensors. Use ignoreCliffSensors to do that.
 ignoreIRSensors: False
+# Use this to tell the Activity Board to ignore JUST the Floor sensors,
+# while still utilizing the PING sensors
+ignoreFloorSensors: False
