@@ -46,7 +46,7 @@
   <run_depend>actionlib</run_depend>
   <run_depend>move_base_msgs</run_depend>
   <run_depend>rospy</run_depend>
-  <run_depend>hector_exploration_node</run_depend>
+  <!--<run_depend>hector_exploration_node</run_depend>-->
 
 
   <!-- The export tag contains other, unspecified, tags -->
