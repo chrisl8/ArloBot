@@ -25,10 +25,11 @@ then
     ${HOME}/catkin_ws/src/ArloBot/scripts/switch_master_relay.sh off
 fi
 
-cd ${HOME}/catkin_ws/src/ArloBot/node/
 if [ $(jq '.useMyCroft' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
-    ${HOME}/.nvm/versions/node/$(nvm current)/bin/pm2 start ${HOME}/catkin_ws/src/ArloBot/node/pm2Config.json
-    else
-    ${HOME}/.nvm/versions/node/$(nvm current)/bin/pm2 start ${HOME}/catkin_ws/src/ArloBot/node/pm2Config.json --only Robot
+    cd ${HOME}/catkin_ws/src/ArloBot/mycroft-core
+    ./start-mycroft.sh all
 fi
+
+cd ${HOME}/catkin_ws/src/ArloBot/node/
+${HOME}/.nvm/versions/node/$(nvm current)/bin/pm2 start ${HOME}/catkin_ws/src/ArloBot/node/pm2Config.json
