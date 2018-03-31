@@ -1,58 +1,55 @@
 const personalData = require('./personalData');
-const fs = require('fs');
+const webModel = require('./webModel');
+const webModelFunctions = require('./webModelFunctions');
+const handleSemaphoreFiles = require('./handleSemaphoreFiles');
 const exec = require('child_process').exec;
 const say = require('say');
 const push = require('pushover-notifications');
+const myCroft = require('./MyCroft');
 
-function tts(sound) {
+async function tts(sound) {
+    // It is fine to call this without 'await', since most of the time you don't want to wait for it to speak before
+    // moving on with your programing.
 
-    // This will not make any noise if the file
-    // ~/.arlobot/status/bequiet
-    // exists
-    const beQuietFile = process.env.HOME + '/.arlobot/status/bequiet';
-    fs.open(beQuietFile, 'r', function (err) {
-        if (err) {
-            console.log(sound);
+    if (!webModel.semaphoreFilesRead) {
+        // This will not make any noise if the file
+        // ~/.arlobot/status/bequiet
+        // exists
+        await handleSemaphoreFiles.readSemaphoreFiles();
+    }
 
-            // Set volume at max
-            const setVolumeCommand = '/usr/bin/amixer set Master ' + personalData.speechVolumeLevelDefault + '% on';
-            exec(setVolumeCommand);
-
-            // Turn on external speaker if off and plugged in
-            //   At least this will help keep it charged. ;)
-            // if (personalData.use_external_speaker && personalData.useMasterPowerRelay && personalData.relays.has_fiveVolt && webModel.pluggedIn && webModel.relays.find(x=> x.name === 'fiveVolt') && !webModel.relays.find(x=> x.name === 'fiveVolt')['relayOn'] && !robotModel.master.isAsleep) {
-            //     if (!webModel.masterRelayOn) {
-            //         const masterRelay = require('./MasterRelay');
-            //         masterRelay('on');
-            //     }
-            //     const UsbRelay = require('./UsbRelayControl');
-            //     const usbRelay = new UsbRelay();
-            //     if (webModel.relays.find(x=> x.name === 'fiveVolt') && !webModel.relays.find(x=> x.name === 'fiveVolt')['relayOn']) {
-            //         usbRelay.switchRelay(webModel.relays.find(x=> x.name === 'fiveVolt')['number'],'on');
-            //     }
-            // }
-
-            // This script can accept text to speak,
-            // or .wav files to play.
-            // We rely stricly on the extension to
-            // decide what it is!
-            const possibleExtension = sound.slice(-4).toLowerCase();
-            if (possibleExtension === '.wav') {
-                exec('/usr/bin/mplayer -quiet ' + sound + ' > /dev/null 2>&1');
-            } else {
-                if (personalData.speechProgram === 'nodeSay') {
-                    // https://github.com/marak/say.js/
-                    // no callback, fire and forget
-                    say.speak(sound);
-                } else if (personalData.speechProgram) {
-                    exec(`${personalData.speechProgram} "${sound}"`);
-                }
-            }
-        } else {
-            // Log to console and web if we are force to be quiet
-            console.log(sound);
+    if (webModel.beQuiet) {
+        if (personalData.useMyCroft) {
+            webModelFunctions.update('myCroftSaid', 'I cannot reply, because I was asked to be quiet.');
         }
-    });
+        // Log to console
+        console.log(sound);
+    } else {
+
+        // Set volume at max
+        const setVolumeCommand = '/usr/bin/amixer set Master ' + personalData.speechVolumeLevelDefault + '% on';
+        // We don't wait for this, so the first speech may be quiet, but this isn't worth waiting for.
+        exec(setVolumeCommand);
+
+        // This script can accept text to speak,
+        // or .wav files to play.
+        // We rely strictly on the extension to
+        // decide what it is!
+        const possibleExtension = sound.slice(-4).toLowerCase();
+        if (possibleExtension === '.wav') {
+            exec('/usr/bin/mplayer -quiet ' + sound + ' > /dev/null 2>&1');
+        } else {
+            if (personalData.useMyCroft) {
+                myCroft.sayText(sound);
+            } else if (personalData.speechProgram === 'nodeSay') {
+                // https://github.com/marak/say.js/
+                // no callback, fire and forget
+                say.speak(sound);
+            } else if (personalData.speechProgram) {
+                exec(`${personalData.speechProgram} "${sound}"`);
+            }
+        }
+    }
     // Send 'sound' to myself via Pushover
     if (personalData.pushover.USER !== "" && sound !== '' && sound !== undefined && sound !== null) {
         const p = new push({
@@ -76,5 +73,10 @@ if (require.main === module) {
         console.log(`node tts.js "test message"`);
         process.exit();
     }
-    tts(process.argv[2]);
+    try {
+        tts(process.argv[2]);
+    } catch (e) {
+        console.error('TTS Error:');
+        console.error(e);
+    }
 }
