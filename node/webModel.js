@@ -7,6 +7,7 @@
 module.exports = {
     robotName: 'ArloBot', // This will be overridden by personalData in index.js,
     myCroftIsRunning: false,
+    myCroftSaid: '',
     lastUpdateTime: 0,
     videoSource: 'xscreen.png',
     masterRelayOn: false,
@@ -14,13 +15,17 @@ module.exports = {
     cameraOn: false,
     ROSstart: false,
     ROSisRunning: false,
+    killRosHasRun: false,
     pluggedIn: true, // Assume the most restrictive setting.
     autoExplore: false,
     pauseExplore: false,
+    makeMap: false,
+    makeMapRunning: false,
     idleTimeout: true,
     beQuiet: false,
     haltRobot: false,
     doorsOpen: true, // Track if any doors are open that pose a danger to Daleks
+    semaphoreFilesRead: false,
     laptopFullyCharged: 'unknown',
     laptopBatteryPercentage: '???%',
     logStreamerRunning: false,
@@ -64,8 +69,8 @@ module.exports = {
         {rosName: 'gyroHeading', fancyName: 'Gyro Heading', status: '', btnClass: '', alertOn: false, alertBtnClass: 'btn-danger'},
         {rosName: 'leftMotorPower', fancyName: 'Left Motor Power', status: '', btnClass: '', alertOn: false, alertBtnClass: 'btn-danger'},
         {rosName: 'rightMotorPower', fancyName: 'Right Motor Power', status: '', btnClass: '', alertOn: false, alertBtnClass: 'btn-danger'},
-        {rosName: 'laptopBatteryPercent', fancyName: 'Laptop Battery Percent', status: '', btnClass: '', alertOn: false, alertBtnClass: 'btn-danger'},
-        {rosName: 'robotBatteryLevel', fancyName: 'Robot Battery Level', status: '', btnClass: '', alertOn: '<', alertValue: 12, alertBtnClass: 'btn-danger'},
+        {rosName: 'laptopBatteryPercent', fancyName: 'Laptop Battery %', status: '', btnClass: '', alertOn: false, alertBtnClass: 'btn-danger'},
+        {rosName: 'robotBatteryLevel', fancyName: 'Robot Battery Volts', status: '', btnClass: '', alertOn: '<', alertValue: 12, alertBtnClass: 'btn-danger'},
         {rosName: 'robotBatteryLow', fancyName: 'Robot Battery Low', status: '', btnClass: '', alertOn: true, alertBtnClass: 'btn-danger'}
     ],
     unplugYourself: false, // Indicates that robot should unplug itself.
