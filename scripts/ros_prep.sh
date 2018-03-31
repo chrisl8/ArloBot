@@ -74,8 +74,15 @@ if [ $(jq '.use_xv11' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     rosparam set /xv11/port $(${SCRIPTDIR}/find_XVLidar.sh)
 fi
 
+if [ $(jq '.hasScanseSweep' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
+    then
+    export HAS_SCANSE_SWEEP=true
+    export SCANSE_SWEEP_SERIAL_PORT=$(${SCRIPTDIR}/find_ScanseSweep.sh)
+fi
+
 if [ $(jq '.hasXboxController' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
+    export HAS_XBOX_JOYSTICK=true
     rosparam set /joystick/dev $(${SCRIPTDIR}/find_xbox_controller.sh)
 fi
 
@@ -98,4 +105,3 @@ then
     done
     chmod ugo+rw ${HOME}/.arlobot/status/doors/*
 fi
-exit 0
