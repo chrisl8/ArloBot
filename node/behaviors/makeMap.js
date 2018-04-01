@@ -28,7 +28,7 @@ async function makeMap() {
                 return true;
             }
         } else {
-            webModelFunctions.update('status', 'Explore process is starting...');
+            webModelFunctions.update('status', 'Make Map is starting...');
             return false;
         }
     } else {
