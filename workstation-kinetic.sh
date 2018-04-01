@@ -181,7 +181,7 @@ if ! [ -f ${HOME}/Desktop/listen2robot.desktop ]
         then
         echo "Exec=gnome-terminal --command \"${HOME}/catkin_ws/src/ArloBot/scripts/listenToArlobot.sh\"" >> ${HOME}/Desktop/listen2robot.desktop
     fi
-    echo "Icon=${HOME}/catkin_ws/src/ArloBot/website/old-site/icons/mstile-70x70.png" >> ${HOME}/Desktop/listen2robot.desktop
+    echo "Icon=${HOME}/catkin_ws/src/ArloBot/icon-70x70.png" >> ${HOME}/Desktop/listen2robot.desktop
     echo "Type=Application" >> ${HOME}/Desktop/listen2robot.desktop
     echo "Path=${HOME}/catkin_ws/src/ArloBot/scripts/" >> ${HOME}/Desktop/listen2robot.desktop
     echo "Terminal=false" >> ${HOME}/Desktop/listen2robot.desktop
@@ -203,7 +203,7 @@ if ! [ -f ${HOME}/Desktop/RVIZ.desktop ]
         then
         echo "Exec=gnome-terminal --command \"bash -ci ${HOME}/catkin_ws/src/ArloBot/scripts/view-navigation.sh\"" >> ${HOME}/Desktop/RVIZ.desktop
     fi
-    echo "Icon=${HOME}/catkin_ws/src/ArloBot/website/old-site/icons/mstile-70x70.png" >> ${HOME}/Desktop/RVIZ.desktop
+    echo "Icon=${HOME}/catkin_ws/src/ArloBot/icon-70x70.png" >> ${HOME}/Desktop/RVIZ.desktop
     echo "Type=Application" >> ${HOME}/Desktop/RVIZ.desktop
     echo "Path=${HOME}/catkin_ws/src/ArloBot/scripts/" >> ${HOME}/Desktop/RVIZ.desktop
     echo "Terminal=false" >> ${HOME}/Desktop/RVIZ.desktop

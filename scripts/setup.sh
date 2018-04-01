@@ -125,7 +125,7 @@ if ! [ -f ${HOME}/Desktop/arlobot.desktop ]
         then
         echo "Exec=gnome-terminal --command \"${HOME}/catkin_ws/src/ArloBot/scripts/arlobotXwindows.sh\"" >> ${HOME}/Desktop/arlobot.desktop
     fi
-    echo "Icon=${HOME}/catkin_ws/src/ArloBot/website/old-site/icons/mstile-70x70.png" >> ${HOME}/Desktop/arlobot.desktop
+    echo "Icon=${HOME}/catkin_ws/src/ArloBot/icon-70x70.png" >> ${HOME}/Desktop/arlobot.desktop
     echo "Type=Application" >> ${HOME}/Desktop/arlobot.desktop
     echo "Path=${HOME}/catkin_ws/src/ArloBot/scripts/" >> ${HOME}/Desktop/arlobot.desktop
     echo "Terminal=false" >> ${HOME}/Desktop/arlobot.desktop
