@@ -34,5 +34,6 @@ module.exports = {
     'no-console': 'off', // As a node.js app, we clearly need console.
     'no-prototype-builtins': 'off', // This seems like overkill
     'prefer-destructuring': 'off',
+    'no-plusplus': 'off',
   },
 };
