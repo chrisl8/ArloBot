@@ -9,57 +9,105 @@ const handleSemaphoreFiles = require('./handleSemaphoreFiles');
 // but anything we could want to poll or push to the robot,
 // via an Internet accesible web server will arrive here.
 
-function RemoteMessageHandler() {
-}
+class RemoteMessageHandler {
+  static parseMessageFromTwilio(message) {
+    if (message.data) {
+      const smsData = JSON.parse(message.data);
+      if (
+        smsData &&
+        smsData.smsText &&
+        smsData.smsFrom &&
+        smsData.smsFrom === personalData.twilio.my_phone_number
+      ) {
+        const smsText = smsData.smsText;
+        const smsTextArray = smsText.split(' ');
+        const smsTextArrayLowerCase = smsTextArray.map((value) =>
+          value.toLowerCase(),
+        );
+        console.log(`SMS Message was: ${smsText}`);
+        return {
+          smsText,
+          smsTextArray,
+          smsTextArrayLowerCase,
+        };
+      }
+    }
+    return undefined;
+  }
 
-RemoteMessageHandler.prototype.handleMessage = function (message) {
+  handleMessage(message) {
     /* Sample response:
      Handler got:
      Robot-0 { event: 'newMessage',
      Robot-0   data: '{"smsText":"Test","smsTo":"+13162851661","smsFrom":"+13162087309"}' }
      */
-
+    const parsedTextMessage = RemoteMessageHandler.parseMessageFromTwilio(
+      message,
+    );
     // Here we make use of some common input:
-    if (message.data) {
-        const smsData = JSON.parse(message.data);
-        if (smsData && smsData.smsText && smsData.smsFrom && smsData.smsFrom === personalData.twilio.my_phone_number) {
-            const smsText = smsData.smsText;
-            const smsTextArray = smsText.split(' ');
-            const smsTextArrayLowerCase = smsTextArray.map(function(value) {
-                return value.toLowerCase();
-            });
-            console.log(`SMS Message was: ${smsText}`);
-
-            // These actions only apply to real time messages, not stored messages.
-            if (message.event === 'newMessage') {
-                if (smsTextArray[0].toLowerCase() === 'say') {
-                    const textToSay = smsText.substr(smsText.indexOf(" ") + 1);
-                    tts(textToSay);
-                } else if (smsTextArray[0].toLowerCase() === 'goodnight' || (smsTextArray[0].toLocaleLowerCase() === 'good' && smsTextArray[1].toLowerCase() === 'night')) {
-                    tts('Good night master.');
-                    robotModel.master.isAsleep = true;
-                } else if (smsTextArray[0].toLowerCase() === 'goodmorning' || (smsTextArray[0].toLocaleLowerCase() === 'good' && smsTextArray[1].toLowerCase() === 'morning')) {
-                    tts('Top of the morning to you master!');
-                    robotModel.master.isAsleep = false;
-                } else if (smsTextArrayLowerCase.indexOf('quiet') > -1) {
-                    tts('Shutting up now.');
-                    handleSemaphoreFiles.setSemaphoreFiles('beQuiet');
-                } else if (smsTextArrayLowerCase.indexOf('talk') > -1) {
-                    handleSemaphoreFiles.setSemaphoreFiles('talk');
-                    setTimeout(function() {
-                        tts('Thank you, I am brimming with profound things to share!');
-                    }, 1000);
-                }
-            }
-
+    switch (message.event) {
+      case 'newMessage':
+        if (parsedTextMessage) {
+          if (parsedTextMessage.smsTextArray[0].toLowerCase() === 'say') {
+            const textToSay = parsedTextMessage.smsText.substr(
+              parsedTextMessage.smsText.indexOf(' ') + 1,
+            );
+            tts(textToSay);
+          } else if (
+            parsedTextMessage.smsTextArray[0].toLowerCase() === 'goodnight' ||
+            (parsedTextMessage.smsTextArray[0].toLocaleLowerCase() === 'good' &&
+              parsedTextMessage.smsTextArray[1].toLowerCase() === 'night')
+          ) {
+            tts('Good night master.');
+            robotModel.master.isAsleep = true;
+          } else if (
+            parsedTextMessage.smsTextArray[0].toLowerCase() === 'goodmorning' ||
+            (parsedTextMessage.smsTextArray[0].toLocaleLowerCase() === 'good' &&
+              parsedTextMessage.smsTextArray[1].toLowerCase() === 'morning')
+          ) {
+            tts('Top of the morning to you master!');
+            robotModel.master.isAsleep = false;
+          } else if (
+            parsedTextMessage.smsTextArrayLowerCase.indexOf('quiet') > -1
+          ) {
+            tts('Shutting up now.');
+            handleSemaphoreFiles.setSemaphoreFiles('beQuiet');
+          } else if (
+            parsedTextMessage.smsTextArrayLowerCase.indexOf('talk') > -1
+          ) {
+            handleSemaphoreFiles.setSemaphoreFiles('talk');
+            setTimeout(() => {
+              tts('Thank you, I am brimming with profound things to share!');
+            }, 1000);
+          }
         }
+        break;
+      case 'oldMessage':
+        console.log('Old text message:');
+        console.log(parsedTextMessage.smsText);
+        break;
+      case 'connect':
+        console.log('Remote web server connected!');
+        break;
+      case 'welcome':
+        console.log("Remote web server says, 'Welcome!'");
+        break;
+      case 'disconnect':
+        console.log('Remote web server disconnected.');
+        break;
+      default:
+        console.log('Unknown result from remote web server:');
+        console.log(message);
     }
+  }
+}
 
-};
 module.exports = RemoteMessageHandler;
 if (require.main === module) {
-    const SocketServerSubscriber = require('./SocketServerSubscriber');
-    var remoteMessageHandler = new RemoteMessageHandler();
-    var socketServerSubscriber = new SocketServerSubscriber(remoteMessageHandler.handleMessage);
-    socketServerSubscriber.start();
+  const SocketServerSubscriber = require('./SocketServerSubscriber');
+  const remoteMessageHandler = new RemoteMessageHandler();
+  const socketServerSubscriber = new SocketServerSubscriber(
+    remoteMessageHandler.handleMessage,
+  );
+  socketServerSubscriber.start();
 }
