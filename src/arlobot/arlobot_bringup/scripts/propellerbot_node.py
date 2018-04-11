@@ -297,14 +297,18 @@ class PropellerComm(object):
             rospy.logwarn("Short line from Propeller board: " + str(parts_count))
             return
 
-        x = float(line_parts[1])
-        y = float(line_parts[2])
-        # 3 is odom based heading and 4 is gyro based
-        theta = float(line_parts[3])  # On ArloBot odometry derived heading works best.
-        alternate_theta = float(line_parts[4])
+        try:
+            x = float(line_parts[1])
+            y = float(line_parts[2])
+            # 3 is odom based heading and 4 is gyro based
+            theta = float(line_parts[3])  # On ArloBot odometry derived heading works best.
+            alternate_theta = float(line_parts[4])
 
-        vx = float(line_parts[5])
-        omega = float(line_parts[6])
+            vx = float(line_parts[5])
+            omega = float(line_parts[6])
+        except:
+            rospy.logwarn("Bad Propeller odometry floats")
+            return
 
         quaternion = Quaternion()
         quaternion.x = 0.0
@@ -534,7 +538,11 @@ class PropellerComm(object):
 
         try:
             sensor_data = json.loads(line_parts[7])
+            if 'p3' not in sensor_data:
+                rospy.logwarn("Incomplete Propeller JSON for PING sensors")
+                return
         except:
+            rospy.logwarn("Bad Propeller JSON for PING sensors")
             return
         self._ping_publisher.publish(line_parts[7])
         ping = [artificial_far_distance] * 10
