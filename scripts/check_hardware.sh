@@ -151,17 +151,18 @@ if [ $(jq '.hasActivityBoard' ${HOME}/.arlobot/personalDataForBehavior.json) == 
         echo "and set 'hasActivityBoard' to false"
         wrap_up_on_fail
     fi
-fi
 
-# Quick Start Board
-if [ $(jq '.hasActivityBoard' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
-    then
-    echo "Checking Quick Start Board . . ."
-    ${SCRIPTDIR}/find_QuickStart.sh |grep USB &> /dev/null
-    if [ $? -gt 0 ]
+    # Quick Start Board
+    # Assumption is that Quick Start Board will only be present with Activity Board. 
+    if [ $(jq '.hasQuickStartBoard' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
         then
-        echo "Quick Start Board missing!"
-        wrap_up_on_fail
+        echo "Checking Quick Start Board . . ."
+        ${SCRIPTDIR}/find_QuickStart.sh |grep USB &> /dev/null
+        if [ $? -gt 0 ]
+            then
+            echo "Quick Start Board missing!"
+            wrap_up_on_fail
+        fi
     fi
 fi
 
