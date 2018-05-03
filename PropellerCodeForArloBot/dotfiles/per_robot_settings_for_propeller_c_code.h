@@ -47,6 +47,7 @@ propeller board with SimpleIDE!!!
 
 // Settings for PING and IR (Infrared) sensors connected DIRECTLY to the Activity Board:
 // SETTING: Which pin on the Activity Board is the first PING sensor connected to?
+// Also used by the 2nd Quickstart board in my code.
 #define FIRST_PING_SENSOR_PIN 5
 
 // QUESTION: Are you using an MCP3208 chip to read poll analog sensors from the Activity Board?
@@ -202,6 +203,13 @@ If you don't want to do this, just comment this setting out:
 //#define hasFloorObstacleSensors
 #define FIRST_FLOOR_SENSOR_PIN 7
 #define NUMBER_OF_FLOOR_SENSORS 4
+
+// Quickstart Board Settings
+// I have a SECOND Propeller chip on a Quickstart board that polls the PING and IR sensors, so this is settings for that.
+// Which pin on the QuickStart Board is the RX pin connected out to the Activity board?
+#define ACTIVITYBOARD_RX_PIN 0
+// Which pin on the QuickStart Board is the TX pin connected in from the Activity board?
+#define ACTIVITYBOARD_TX_PIN 1
 
 // Buttons:
 // QUESTION: Do you have button sensors on the robot?
