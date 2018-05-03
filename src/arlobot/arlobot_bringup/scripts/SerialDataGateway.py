@@ -51,21 +51,13 @@ class SerialDataGateway(object):
             raise
 
     def _Listen(self):
-        stringIO = StringIO()
         while self._KeepRunning:
             try:
-                data = self._Serial.read()
+                data = self._Serial.readline().strip()
             except:
                 rospy.loginfo("SERIAL PORT Listen Error")
                 raise
-            if data == '\r':
-                pass
-            if data == '\n':
-                self.ReceivedLineHandler(stringIO.getvalue())
-                stringIO.close()
-                stringIO = StringIO()
-            else:
-                stringIO.write(data)
+            self.ReceivedLineHandler(data)
 
     def Write(self, data):
         #AttributeError: 'SerialDataGateway' object has no attribute '_Serial'
