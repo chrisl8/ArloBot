@@ -181,6 +181,10 @@ If you don't want to do this, just comment this setting out:
 // If these get flipped just flip the wires, or the numbers.
 #define LEFT_MOTOR_ADC_PIN 0
 #define RIGHT_MOTOR_ADC_PIN 1
+// Value for reported left and right motor ADC voltage when hasMotorPowerMonitorCircuit is not defined.
+// A value less than 1 will prevent the robot from moving under ROS control in propellerbot_node.py unless that file is modified.   
+// In propellerbot_node.py, the ratio 15/4.69 is used to convert the right motor ADC voltage to measured and reported robot battery voltage. 
+#define DEFAULT_MOTOR_ADC_VOLTAGE (12.0 *(4.69/15.0))
 
 // CLIFF SENSORS:
 // QUESTION: Do you have IR "cliff" sensors mounted to the front of the robot?
@@ -198,6 +202,16 @@ If you don't want to do this, just comment this setting out:
 //#define hasFloorObstacleSensors
 #define FIRST_FLOOR_SENSOR_PIN 7
 #define NUMBER_OF_FLOOR_SENSORS 4
+
+// Buttons:
+// QUESTION: Do you have button sensors on the robot?
+// #define hasButtons
+#define NUMBER_OF_BUTTON_SENSORS 0
+
+// LEDs:
+// QUESTION: Do you have LEDs on the robot?
+// #define hasLEDs
+#define NUMBER_OF_LEDS 0
 
 /* END OF QUESTION SECTION!
 That is all, you are ready to attempt to build this code and load it

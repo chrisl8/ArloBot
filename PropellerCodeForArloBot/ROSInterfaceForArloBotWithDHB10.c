@@ -140,10 +140,12 @@ static int fstack[256]; // If things get weird make this number bigger!
 // int and long are the same in Propeller, but linters don't like using strtol on int
 static long pingArray[NUMBER_OF_PING_SENSORS] = {0};
 static long irArray[NUMBER_OF_IR_SENSORS] = {0};
-#ifdef hasLEDs
+#ifdef hasButtons
 static long buttonArray[NUMBER_OF_BUTTON_SENSORS] = {0};
 #endif
+#ifdef hasLEDs
 static long ledArray[NUMBER_OF_LEDS] = {0};
+#endif
 #ifdef hasFloorObstacleSensors
 static int floorArray[NUMBER_OF_FLOOR_SENSORS] = {0};
 #endif
@@ -219,7 +221,7 @@ static int safetyOverrideStack[128]; // If things get weird make this number big
 
 // Add encoders to the propeller board and start a cog to count the ticks
 static volatile long int left_ticks = 0, right_ticks = 0;
-static volatile int last_left_A = 2; last_right_A = 2;
+static volatile int last_left_A = 2, last_right_A = 2;
 void encoderCount(void *par);
 static int encoderCountStack[128]; // If things get weird make this number bigger!
 
@@ -465,7 +467,9 @@ int main() {
                 int ledNumber = strtod(token, &unconverted);
                 token = strtok(NULL, delimiter);
                 int ledState = strtod(token, &unconverted);
+#ifdef hasLEDs
                 ledArray[ledNumber] = ledState;
+#endif
                 timeoutCounter = 0;
             } else if (buf[0] == 'p') {
                 //Update the X, Y position and heading
@@ -611,8 +615,8 @@ void broadcastOdometry(void *par) {
     int ticksLeft = 0, ticksRight = 0, ticksLeftOld, ticksRightOld;
     double deltaDistance, deltaTheta, deltaX, deltaY, V, Omega;
     int speedLeft, speedRight, throttleStatus = 0, deltaTicksLeft, deltaTicksRight;
-    double leftMotorPower;
-    double rightMotorPower;
+    double leftMotorPower = DEFAULT_MOTOR_ADC_VOLTAGE;
+    double rightMotorPower = DEFAULT_MOTOR_ADC_VOLTAGE;
     int newLeftSpeed = 0, newRightSpeed = 0, oldLeftSpeed = 0, oldRightSpeed = 0;
 
     int dt = CLKFREQ / 10;
@@ -1043,7 +1047,7 @@ void pollGyro(void *par) {
    1. Make sure output sensor readings to ROS are near real time.
    2. Make sure "escape" operations are fast and accurate.
    */
-    void safetyOverride(void *par) {
+void safetyOverride(void *par) {
 
    void setEscapeSpeeds(int left, int right) {
        escapeLeftSpeed = left;
