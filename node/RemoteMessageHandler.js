@@ -1,6 +1,4 @@
 const personalData = require('./personalData');
-const webModel = require('./webModel');
-const webModelFunctions = require('./webModelFunctions');
 const robotModel = require('./robotModel');
 const tts = require('./tts');
 const handleSemaphoreFiles = require('./handleSemaphoreFiles');
@@ -104,6 +102,7 @@ class RemoteMessageHandler {
 
 module.exports = RemoteMessageHandler;
 if (require.main === module) {
+  // eslint-disable-next-line global-require
   const SocketServerSubscriber = require('./SocketServerSubscriber');
   const remoteMessageHandler = new RemoteMessageHandler();
   const socketServerSubscriber = new SocketServerSubscriber(
