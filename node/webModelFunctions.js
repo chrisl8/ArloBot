@@ -9,6 +9,7 @@ const robotModel = require('./robotModel');
 const EventEmitter = require('events');
 // util is required for the inheritance
 const util = require('util');
+const LCD = require('./LCD');
 
 function WebModelEmitter() {
     webModel.lastUpdateTime = Date.now();
@@ -33,6 +34,11 @@ const behaviorStatusUpdate = function (value) {
     if (webModel.behaviorStatus != value) {
     webModel.behaviorStatus = value;
     emitter.emit('change');
+      LCD({
+        operation: 'text',
+        input: value,
+        row: 'bottom',
+      });
 }
 };
 exports.behaviorStatusUpdate = behaviorStatusUpdate;
@@ -41,6 +47,13 @@ const update = function (key, value) {
     if (webModel[key] != value) {
     webModel[key] = value;
     emitter.emit('change', key, value);
+    if (key === 'status') {
+        LCD({
+          operation: 'text',
+          input: value,
+          row: 'top',
+        });
+    }
 }
 };
 exports.update = update;
