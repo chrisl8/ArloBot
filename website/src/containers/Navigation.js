@@ -143,33 +143,38 @@ class Navigation extends Component {
                   <div>
                     <h3>Send Robot to a Destination:</h3>
                     <ul>{waypointList}</ul>
-
-                    <form
-                      id="saveNewWaypointForm"
-                      name="saveNewWaypointForm"
-                      style={{ lineHeight: '29px' }}
-                      onSubmit={this.setNewWaypointName}
-                    >
-                      <input
-                        type="text"
-                        id="saveNewWaypoint"
-                        placeholder="Enter name for current location . . ."
-                        value={this.state.newWaypointName}
-                        onChange={this.handleNewWaypointNameChange}
-                      />
-                      <input
-                        type="submit"
-                        value="Save Current Location"
-                        className="btn btn-primary"
-                      />
-                    </form>
-                    <p>
-                      If you create a destination waypoint called
-                      &quot;initial&quot; that location will be set as the
-                      current robot location whenever the map is loaded.
-                    </p>
                   </div>
                 )}
+
+              {this.props.mapName !== '' && (
+                <div>
+                  <form
+                    id="saveNewWaypointForm"
+                    name="saveNewWaypointForm"
+                    style={{ lineHeight: '29px' }}
+                    onSubmit={this.setNewWaypointName}
+                  >
+                    <input
+                      type="text"
+                      id="saveNewWaypoint"
+                      placeholder="Enter name for current location . . ."
+                      value={this.state.newWaypointName}
+                      onChange={this.handleNewWaypointNameChange}
+                    />
+                    <input
+                      type="submit"
+                      value="Save Current Location"
+                      className="btn btn-primary"
+                    />
+                  </form>
+                  <p>
+                    If you create a destination waypoint called
+                    &quot;initial&quot; that location will be set as the current
+                    robot location whenever the map is loaded.
+                  </p>
+                </div>
+              )}
+
               {!this.props.makeMapRunning &&
                 this.props.mapName === '' && (
                   <p>
