@@ -51,7 +51,7 @@ async function tts(sound) {
         }
     }
     // Send 'sound' to myself via Pushover
-    if (personalData.pushover.USER !== "" && sound !== '' && sound !== undefined && sound !== null) {
+    if (personalData.pushover.USER !== "" && sound !== '' && sound !== undefined && sound !== null && webModel.pushoverOn) {
         const p = new push({
             user: personalData.pushover.USER,
             token: personalData.pushover.TOKEN
