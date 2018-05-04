@@ -90,7 +90,6 @@
   "launchBrowser": true,
   "useQRcodes": false,
   "qrCameraName": "C615",
-  "useBlueToothBeacon": false,
   "_batteryConsideredFullAt": "Percentage at which laptop battery is considered full. Some never get to 100%",
   "batteryConsideredFullAt": 95,
   "relays": {

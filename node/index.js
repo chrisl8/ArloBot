@@ -22,10 +22,6 @@ const webserver = require('./webserver');
 const os = require('os');
 const killROS = require('./killROS');
 
-if (personalData.useBlueToothBeacon) {
-  // eslint-disable-next-line no-unused-vars,global-require
-  const bluetoothBeaconScanner = require('./BluetoothBeaconScanner');
-}
 const SocketServerSubscriber = require('./SocketServerSubscriber');
 const RemoteMessageHandler = require('./RemoteMessageHandler');
 

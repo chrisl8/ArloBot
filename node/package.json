@@ -9,7 +9,6 @@
     "chokidar": "^2.0.3",
     "connect-redis": "^3.3.3",
     "cookie-parser": "^1.4.3",
-    "eddystone-beacon-scanner": "^3.0.0",
     "express": "^4.13.3",
     "express-session": "^1.13.0",
     "jsonwebtoken": "^8.2.1",
