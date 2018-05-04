@@ -183,8 +183,8 @@ If you don't want to do this, just comment this setting out:
 #define LEFT_MOTOR_ADC_PIN 0
 #define RIGHT_MOTOR_ADC_PIN 1
 // Value for reported left and right motor ADC voltage when hasMotorPowerMonitorCircuit is not defined.
-// A value less than 1 will prevent the robot from moving under ROS control in propellerbot_node.py unless that file is modified.   
-// In propellerbot_node.py, the ratio 15/4.69 is used to convert the right motor ADC voltage to measured and reported robot battery voltage. 
+// A value less than 1 will prevent the robot from moving under ROS control in propellerbot_node.py unless that file is modified.
+// In propellerbot_node.py, the ratio 15/4.69 is used to convert the right motor ADC voltage to measured and reported robot battery voltage.
 #define DEFAULT_MOTOR_ADC_VOLTAGE (12.0 *(4.69/15.0))
 
 // CLIFF SENSORS:
@@ -216,8 +216,8 @@ If you don't want to do this, just comment this setting out:
 // #define hasButtons
 #define NUMBER_OF_BUTTON_SENSORS 0
 
-// LEDs:
-// QUESTION: Do you have LEDs on the robot?
+// I have LEDs hooked up to my quickstart board, well, LEDs on the buttons
+// Be sure to add/update these in he 2nd_board.h file too!
 // #define hasLEDs
 #define NUMBER_OF_LEDS 0
 
