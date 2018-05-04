@@ -151,6 +151,9 @@ async function main() {
   if (personalData.use_xv11) {
     loadMapCommand =
       'unbuffer roslaunch arlobot_launchers load_map_xv11.launch map_file:=';
+  } else if (personalData.hasScanseSweep) {
+    loadMapCommand =
+      'unbuffer roslaunch arlobot_launchers load_map_wScanseSweep.launch map_file:=';
   } else {
     loadMapCommand =
       'unbuffer roslaunch arlobot_launchers load_map.launch map_file:=';
