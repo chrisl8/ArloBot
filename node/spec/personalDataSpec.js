@@ -1,10 +1,12 @@
-var fs = require('fs');
-var personalDataFile = process.env.HOME + '/.arlobot/personalDataForBehavior.json';
-var personalData = JSON.parse(fs.readFileSync(personalDataFile, 'utf8'));
+const fs = require('fs');
 
-describe('Personal data file tests', function() {
+const personalDataFile = `${
+  process.env.HOME
+}/.arlobot/personalDataForBehavior.json`;
+const personalData = JSON.parse(fs.readFileSync(personalDataFile, 'utf8'));
 
-    it('should have been edited with user settings', function() {
-        expect(personalData.hasBeenEdited).toBe(true);
-    });
+describe('Personal data file tests', () => {
+  it('should have been edited with user settings', () => {
+    expect(personalData.hasBeenEdited).toBe(true);
+  });
 });

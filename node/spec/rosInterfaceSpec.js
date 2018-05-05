@@ -1,8 +1,7 @@
-describe("rosInterface", function() {
-    var rosInterface = require('../rosInterface');
+describe('rosInterface', () => {
+  const rosInterface = require('../rosInterface');
 
-    it("should be able to start ", function() {
-        rosInterface.start();
-    });
-
+  it('should be able to start ', () => {
+    rosInterface.start();
+  });
 });

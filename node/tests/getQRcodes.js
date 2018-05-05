@@ -1,10 +1,13 @@
-var webModel = require('../webModel');
-var getQRcodes = require('../getQRcodes');
-var updateMapList = require('../updateMapList');
+const webModel = require('../webModel');
+const getQRcodes = require('../getQRcodes');
+const updateMapList = require('../updateMapList');
+
 console.log('Be patient, using timers for testing . . . ');
 updateMapList();
-setTimeout(function(){
+setTimeout(() => {
+  console.log(webModel);
+  getQRcodes();
+  setTimeout(() => {
     console.log(webModel);
-    getQRcodes();
-    setTimeout(function(){console.log(webModel);}, 3000);
+  }, 3000);
 }, 3000);

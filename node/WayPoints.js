@@ -1,14 +1,16 @@
 const getCurrentPosition = require('./getCurrentPosition');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
-const personalDataFolder = process.env.HOME + '/.arlobot/';
+
+const personalDataFolder = `${process.env.HOME}/.arlobot/`;
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
 
 class WayPoints {
-
   getWayPoint(name, callback) {
-    const waypointFolder = personalDataFolder + 'waypoints/' + webModel.mapName + '/';
+    const waypointFolder = `${personalDataFolder}waypoints/${
+      webModel.mapName
+    }/`;
     const wayPointFile = waypointFolder + name;
     fs.readFile(wayPointFile, 'utf8', (err, data) => {
       if (err) {
@@ -17,10 +19,12 @@ class WayPoints {
         callback(data);
       }
     });
-  };
+  }
 
   async createWayPoint(name) {
-    webModelFunctions.scrollingStatusUpdate(`Creating a waypoint with name ${name}`);
+    webModelFunctions.scrollingStatusUpdate(
+      `Creating a waypoint with name ${name}`,
+    );
     const position = await getCurrentPosition();
     if (position) {
       this.saveWayPoint(position, name);
@@ -28,40 +32,50 @@ class WayPoints {
       console.error('Error setting waypoint.');
       webModelFunctions.scrollingStatusUpdate(`Error setting waypoint ${name}`);
     }
-  };
+  }
 
   saveWayPoint(position, name) {
-    const waypointFolder = personalDataFolder + 'waypoints/' + webModel.mapName + '/';
+    const waypointFolder = `${personalDataFolder}waypoints/${
+      webModel.mapName
+    }/`;
     const wayPointFile = waypointFolder + name;
-    mkdirp(waypointFolder, 0o777, function (err) {
+    mkdirp(waypointFolder, 0o777, (err) => {
       if (err) {
-        console.error("{\"STATUS\": \"ERROR\" }");
-        console.error("Could not create " + waypointFolder);
+        console.error('{"STATUS": "ERROR" }');
+        console.error(`Could not create ${waypointFolder}`);
       } else {
-        fs.writeFile(wayPointFile, position, (err) => {
-          if (err) {
-            webModelFunctions.scrollingStatusUpdate(`ERROR writing waypoint ${name} to disk`);
+        fs.writeFile(wayPointFile, position, (e) => {
+          if (e) {
+            webModelFunctions.scrollingStatusUpdate(
+              `ERROR writing waypoint ${name} to disk`,
+            );
             console.error(`ERROR writing waypoint ${name} to disk:`);
-            console.error(err);
+            console.error(e);
           }
-          webModelFunctions.scrollingStatusUpdate(`Waypoint ${name} has been written to disk`);
+          webModelFunctions.scrollingStatusUpdate(
+            `Waypoint ${name} has been written to disk`,
+          );
         });
       }
     });
-  };
+  }
 
   updateWayPointList() {
-    const waypointFolder = personalDataFolder + 'waypoints/' + webModel.mapName + '/';
+    const waypointFolder = `${personalDataFolder}waypoints/${
+      webModel.mapName
+    }/`;
     fs.readdir(waypointFolder, (err, list) => {
       if (err) {
-        webModelFunctions.scrollingStatusUpdate('Error updating waypoint list.');
+        webModelFunctions.scrollingStatusUpdate(
+          'Error updating waypoint list.',
+        );
         console.error('Error updating waypoint list:');
         console.error(err);
       } else {
         webModel.wayPoints = list;
       }
     });
-  };
+  }
 }
 
 module.exports = WayPoints;

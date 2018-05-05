@@ -1,10 +1,12 @@
-//var webModel = require('./webModel');
+// var webModel = require('./webModel');
 const spawn = require('child_process').spawn;
 
 function runGetPositionScript() {
   return new Promise((resolve, reject) => {
     let rawData;
-    const process = spawn('unbuffer', ['../scripts/getPositionHelperScript.sh']);
+    const process = spawn('unbuffer', [
+      '../scripts/getPositionHelperScript.sh',
+    ]);
     process.stdout.on('data', (data) => {
       if (data.indexOf('Translation') !== -1) {
         rawData = data.toString();
@@ -53,33 +55,36 @@ async function getCurrentPosition() {
     return false;
   }
   positionData.split('\n').forEach((element) => {
-      if (element.indexOf('Translation') > -1) {
-        //console.log(element);
-        const reducedElement = element.replace(/\[|\]|,/g, '');
-        const splitEelement = reducedElement.split(' ');
-        goalTargetPose.position.x = splitEelement[2];
-        goalTargetPose.position.y = splitEelement[3];
-        goalTargetPose.position.z = splitEelement[4];
-      } else if (element.indexOf('Quaternion') > -1) {
-        //console.log(element);
-        const reducedElement = element.replace(/\[|\]|,/g, '');
-        const splitEelement = reducedElement.split(' ');
-        goalTargetPose.orientation.x = splitEelement[4];
-        goalTargetPose.orientation.y = splitEelement[5];
-        goalTargetPose.orientation.z = splitEelement[6];
-        goalTargetPose.orientation.w = splitEelement[7];
-      }
-    },
-  );
+    if (element.indexOf('Translation') > -1) {
+      // console.log(element);
+      const reducedElement = element.replace(/\[|\]|,/g, '');
+      const splitEelement = reducedElement.split(' ');
+      goalTargetPose.position.x = splitEelement[2];
+      goalTargetPose.position.y = splitEelement[3];
+      goalTargetPose.position.z = splitEelement[4];
+    } else if (element.indexOf('Quaternion') > -1) {
+      // console.log(element);
+      const reducedElement = element.replace(/\[|\]|,/g, '');
+      const splitEelement = reducedElement.split(' ');
+      goalTargetPose.orientation.x = splitEelement[4];
+      goalTargetPose.orientation.y = splitEelement[5];
+      goalTargetPose.orientation.z = splitEelement[6];
+      goalTargetPose.orientation.w = splitEelement[7];
+    }
+  });
 
-  const currentPosition = 'pose: { position: { x: ' + goalTargetPose.position.x + ', y: ' + goalTargetPose.position.y + ', z: ' + goalTargetPose.position.z + ' }, orientation: { x: ' + goalTargetPose.orientation.x + ', y: ' + goalTargetPose.orientation.y + ', z: ' + goalTargetPose.orientation.z + ', w: ' + goalTargetPose.orientation.w + '} }';
+  const currentPosition = `pose: { position: { x: ${
+    goalTargetPose.position.x
+  }, y: ${goalTargetPose.position.y}, z: ${
+    goalTargetPose.position.z
+  } }, orientation: { x: ${goalTargetPose.orientation.x}, y: ${
+    goalTargetPose.orientation.y
+  }, z: ${goalTargetPose.orientation.z}, w: ${goalTargetPose.orientation.w}} }`;
 
   // callback(currentPosition, wayPointName);
 
   return currentPosition;
-
 }
-
 
 module.exports = getCurrentPosition;
 

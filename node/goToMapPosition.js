@@ -1,24 +1,27 @@
-var spawn = require('child_process').spawn;
+const spawn = require('child_process').spawn;
 
-const goToMapPosition = function(position) {
-    var process = spawn('unbuffer', ['../scripts/gotoMapPositionHelperScript.sh', position]);
-    process.stdout.setEncoding('utf8');
-    process.stdout.on('data', function(data) {
-        console.log(data);
-    });
-    process.on('close', function(code) {
-        console.log(`Done: ${code}`);
-    });
-    this.process.stderr.setEncoding('utf8');
-    this.process.stderr.on('data', function(data) {
-        console.log(data);
-    });
-    this.process.on('error', function(err) {
-        console.log(self.name + ' error:' + err);
-    });
+const goToMapPosition = (position) => {
+  const process = spawn('unbuffer', [
+    '../scripts/gotoMapPositionHelperScript.sh',
+    position,
+  ]);
+  process.stdout.setEncoding('utf8');
+  process.stdout.on('data', (data) => {
+    console.log(data);
+  });
+  process.on('close', (code) => {
+    console.log(`Done: ${code}`);
+  });
+  this.process.stderr.setEncoding('utf8');
+  this.process.stderr.on('data', (data) => {
+    console.log(data);
+  });
+  this.process.on('error', (err) => {
+    console.log(`goToMapPosition error:${err}`);
+  });
 };
 module.exports = goToMapPosition;
 
 if (require.main === module) {
-    goToMapPosition(process.argv[2]);
+  goToMapPosition(process.argv[2]);
 }
