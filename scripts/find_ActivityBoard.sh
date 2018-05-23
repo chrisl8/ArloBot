@@ -11,3 +11,7 @@ SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 # echo ${SCRIPTDIR} # For debugging
 
 node ${SCRIPTDIR}/../node/UsbDevice.js "Propeller_Activity_Brd" ID_MODEL
+if [ $? -ne 0 ]; then
+  echo "Could not find 'Propeller_Activity_Brd', trying 'Propeller_Activity_Board'."
+  node ${SCRIPTDIR}/../node/UsbDevice.js "Propeller_Activity_Board" ID_MODEL
+fi
