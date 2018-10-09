@@ -586,7 +586,7 @@ class PropellerComm(object):
         # The radius of the base plate is 22.545 cm
         # = 28 degree difference (http://ostermiller.org/calc/triangle.html)
 
-        sensor_seperation = 28
+        sensor_separation = 28
 
         # Spread code: NO LONGER USED
         # TODO: This could make sense to return to if used properly,
@@ -616,13 +616,13 @@ class PropellerComm(object):
         #     PINGranges[x] = ping[5] # Rear Sensor
         #     IRranges[x] = ir[5] # Rear Sensor
         #
-        # for x in range((360 - sensor_seperation * 2) - sensor_spread / 2,
-        #                (360 - sensor_seperation * 2) + sensor_spread / 2):
+        # for x in range((360 - sensor_separation * 2) - sensor_spread / 2,
+        #                (360 - sensor_separation * 2) + sensor_spread / 2):
         #     PINGranges[x] = ping[4]
         #     IRranges[x] = ir[4]
         #
-        # for x in range((360 - sensor_seperation) - sensor_spread / 2,
-        #                (360 - sensor_seperation) + sensor_spread / 2):
+        # for x in range((360 - sensor_separation) - sensor_spread / 2,
+        #                (360 - sensor_separation) + sensor_spread / 2):
         #     PINGranges[x] = ping[3]
         #     IRranges[x] = ir[3]
         #
@@ -634,40 +634,40 @@ class PropellerComm(object):
         #     PINGranges[x] = ping[2]
         #     IRranges[x] = ir[2]
         #
-        # for x in range(sensor_seperation - sensor_spread / 2, sensor_seperation + sensor_spread / 2):
+        # for x in range(sensor_separation - sensor_spread / 2, sensor_separation + sensor_spread / 2):
         #     PINGranges[x] = ping[1]
         #     IRranges[x] = ir[1]
         #
-        # for x in range((sensor_seperation * 2) - sensor_spread / 2, (sensor_seperation * 2) + sensor_spread / 2):
+        # for x in range((sensor_separation * 2) - sensor_spread / 2, (sensor_separation * 2) + sensor_spread / 2):
         #     PINGranges[x] = ping[0]
         #     IRranges[x] = ir[0]
 
         # Single Point code:
         #for x in range(180 - sensor_spread / 2, 180 + sensor_spread / 2):
-        ping_ranges[180 + sensor_seperation * 2] = ping[5]
-        ir_ranges[180 + sensor_seperation * 2] = ir[5]
+        ping_ranges[180 + sensor_separation * 2] = ping[5]
+        ir_ranges[180 + sensor_separation * 2] = ir[5]
 
-        ping_ranges[180 + sensor_seperation] = ping[6]
-        ir_ranges[180 + sensor_seperation] = ir[6]
+        ping_ranges[180 + sensor_separation] = ping[6]
+        ir_ranges[180 + sensor_separation] = ir[6]
 
         ping_ranges[180] = ping[7]  # Rear Sensor
         ir_ranges[180] = ir[7]  # Rear Sensor
 
-        ping_ranges[180 - sensor_seperation] = ping[8]
-        ir_ranges[180 - sensor_seperation] = ir[8]
+        ping_ranges[180 - sensor_separation] = ping[8]
+        ir_ranges[180 - sensor_separation] = ir[8]
 
-        ping_ranges[180 - sensor_seperation * 2] = ping[9]
-        ir_ranges[180 - sensor_seperation * 2] = ir[9]
+        ping_ranges[180 - sensor_separation * 2] = ping[9]
+        ir_ranges[180 - sensor_separation * 2] = ir[9]
 
-        # for x in range((360 - sensor_seperation * 2) - sensor_spread / 2,
-        #                (360 - sensor_seperation * 2) + sensor_spread / 2):
-        ping_ranges[360 - sensor_seperation * 2] = ping[4]
-        ir_ranges[360 - sensor_seperation * 2] = ir[4]
+        # for x in range((360 - sensor_separation * 2) - sensor_spread / 2,
+        #                (360 - sensor_separation * 2) + sensor_spread / 2):
+        ping_ranges[360 - sensor_separation * 2] = ping[4]
+        ir_ranges[360 - sensor_separation * 2] = ir[4]
 
-        # for x in range((360 - sensor_seperation) - sensor_spread / 2,
-        #                (360 - sensor_seperation) + sensor_spread / 2):
-        ping_ranges[360 - sensor_seperation] = ping[3]
-        ir_ranges[360 - sensor_seperation] = ir[3]
+        # for x in range((360 - sensor_separation) - sensor_spread / 2,
+        #                (360 - sensor_separation) + sensor_spread / 2):
+        ping_ranges[360 - sensor_separation] = ping[3]
+        ir_ranges[360 - sensor_separation] = ir[3]
 
         #for x in range(360 - sensor_spread / 2, 360):
         #PINGranges[x] = ping[2]
@@ -677,13 +677,13 @@ class PropellerComm(object):
         ping_ranges[0] = ping[2]
         ir_ranges[0] = ir[2]
 
-        #for x in range(sensor_seperation - sensor_spread / 2, sensor_seperation + sensor_spread / 2):
-        ping_ranges[sensor_seperation] = ping[1]
-        ir_ranges[sensor_seperation] = ir[1]
+        #for x in range(sensor_separation - sensor_spread / 2, sensor_separation + sensor_spread / 2):
+        ping_ranges[sensor_separation] = ping[1]
+        ir_ranges[sensor_separation] = ir[1]
 
-        #for x in range((sensor_seperation * 2) - sensor_spread / 2, (sensor_seperation * 2) + sensor_spread / 2):
-        ping_ranges[sensor_seperation * 2] = ping[0]
-        ir_ranges[sensor_seperation * 2] = ir[0]
+        #for x in range((sensor_separation * 2) - sensor_spread / 2, (sensor_separation * 2) + sensor_spread / 2):
+        ping_ranges[sensor_separation * 2] = ping[0]
+        ir_ranges[sensor_separation * 2] = ir[0]
 
         # LaserScan: http://docs.ros.org/api/sensor_msgs/html/msg/LaserScan.html
         ultrasonic_scan = LaserScan()
