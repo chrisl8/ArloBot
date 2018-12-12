@@ -6,7 +6,7 @@ const ipAddress = require('./ipAddress');
 const os = require('os');
 
 const robotHostname = os.hostname();
-const updateRobotURL = function() {
+const updateRobotURL = () => {
   let robotIP = false;
 
   function getIpOrPublish() {
@@ -15,9 +15,11 @@ const updateRobotURL = function() {
       setTimeout(getIpOrPublish, 30000);
     } else {
       const robotURL = `http://${robotIP}:${personalData.webServerPort}`;
+      /** @namespace personalData.cloudServer */
       if (personalData.cloudServer.exists && webModel.robotURL !== robotURL) {
         webModelFunctions.update('robotIP', robotIP);
 
+        /** @namespace personalData.cloudServer.fqdn */
         const serverURL = `${personalData.cloudServer.service}://${
           personalData.cloudServer.fqdn
         }:${personalData.cloudServer.port}/updateRobotURL`;
@@ -34,7 +36,7 @@ const updateRobotURL = function() {
           },
           (error, response) => {
             // Arguments: error, response, body
-            if (!error && response.statusCode == 200) {
+            if (!error && response.statusCode === 200) {
               webModelFunctions.update('robotURL', robotURL);
               // console.log(body)
               // console.log('webModel.robotIP:', webModel.robotIP);

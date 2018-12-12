@@ -183,7 +183,7 @@ class Arduino {
           ) {
             resolve();
           } else {
-            reject('Relays did not turn on.');
+            reject(new Error('Relays did not turn on.'));
           }
         }, delayTwo);
       }, delay);
@@ -315,8 +315,8 @@ class Arduino {
             }
           });
         })
-        .catch((error) => {
-          console.log(`Arduino Error: ${error}`);
+        .catch((e) => {
+          console.log(`Arduino Error: ${e.message}`);
           webModelFunctions.update('neoPixelsOn', false);
           this.programIsBusy = false;
         });
@@ -362,7 +362,6 @@ class Arduino {
 module.exports = Arduino;
 if (require.main === module) {
   // Run the function if this is called directly instead of required as a module.
-  const Arduino = require('./Arduino');
   const arduino = new Arduino(true);
   arduino.init();
   // Test sending custom pattern lists:

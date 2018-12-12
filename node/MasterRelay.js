@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 // Numato Lab - http://numato.com
 // https://github.com/numato/samplecode/blob/master/RelayAndGPIOModules/USBRelayAndGPIOModules/node.js/usbrelay/UsbRelay.js
 const process = require('process');
@@ -20,7 +21,7 @@ function getPortName() {
 }
 
 function usbRelay(operation, runFromCommandLine) {
-  const wrapUp = function(wrapUpRunFromCommandLine, error) {
+  const wrapUp = (wrapUpRunFromCommandLine, error) => {
     if (wrapUpRunFromCommandLine && error) {
       console.error(`Failed to write to port: ${error}`);
       process.exit(1);

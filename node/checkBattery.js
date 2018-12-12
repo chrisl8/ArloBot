@@ -25,7 +25,7 @@ glob(batteryLevelFileWildcard, (er, fileName) => {
   }
 });
 
-const checkBattery = function(logIt) {
+const checkBattery = (logIt) => {
   if (batteryLevelFile) {
     fs.readFile(batteryLevelFile, 'utf8', (err, data) => {
       if (err) {
@@ -38,8 +38,10 @@ const checkBattery = function(logIt) {
               .split('\n')
               .find((result) => result.indexOf('POWER_SUPPLY_CAPACITY') > -1)
               .split('=')[1],
+            10,
           ),
         );
+        /** @namespace personalData.batteryConsideredFullAt */
         if (
           webModel.laptopBatteryPercentage >=
           personalData.batteryConsideredFullAt

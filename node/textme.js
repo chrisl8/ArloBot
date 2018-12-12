@@ -1,6 +1,6 @@
 const personalData = require('./personalData');
 
-function textMe(message, debug) {
+function textMe(text, debug) {
   // Send myself text messages with twilio
   // https://www.twilio.com/docs/quickstart/node/programmable-sms
 
@@ -8,6 +8,7 @@ function textMe(message, debug) {
     personalData.twilio.account_sid !== '' &&
     personalData.twilio.auth_token !== ''
   ) {
+    // eslint-disable-next-line global-require
     const client = require('twilio')(
       personalData.twilio.account_sid,
       personalData.twilio.auth_token,
@@ -18,7 +19,7 @@ function textMe(message, debug) {
       {
         to: personalData.twilio.my_phone_number,
         from: personalData.twilio.number,
-        body: message,
+        body: text,
       },
       (error, message) => {
         // The HTTP request to Twilio will run asynchronously. This callback

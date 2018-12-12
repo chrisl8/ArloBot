@@ -146,25 +146,10 @@ app.use((req, res, next) => {
     !personalData.webSiteSettings.requirePassword
   ) {
     next();
+  } else if (req.session.userName && req.session.authorized === true) {
+    next();
   } else {
-    // if (req.cookies.access_token) { // Use a token.
-    //     console.log("Acces Token :  ", req.cookies.access_token);
-    //     // Set a junk string for the tokenSecret if you want to test how it operates on failure.
-    //     jwt.verify(req.cookies.access_token, personalData.webSiteSettings.tokenSecret, function (err, decoded) {
-    //         if (err) {
-    //             res.redirect('/basicLogin.html');
-    //         } else {
-    //             console.log(decoded);
-    //             next();
-    //         }
-    //     });
-    // } else { // Or else a session?
-    if (req.session.userName && req.session.authorized === true) {
-      next();
-    } else {
-      res.redirect('/basicLogin.html');
-    }
-    // }
+    res.redirect('/basicLogin.html');
   }
 });
 
@@ -264,7 +249,7 @@ const startColorFollower = function() {
     console.log('colorFollower:', data);
   });
   colorFollowerProcess.on('error', (err) => {
-    // console.log(err);
+    console.error(err);
   });
   colorFollowerProcess.on('exit', (code) => {
     // Will catch multiple exit codes I think:

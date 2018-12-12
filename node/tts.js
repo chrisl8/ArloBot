@@ -4,7 +4,7 @@ const webModelFunctions = require('./webModelFunctions');
 const handleSemaphoreFiles = require('./handleSemaphoreFiles');
 const exec = require('child_process').exec;
 const say = require('say');
-const push = require('pushover-notifications');
+const Push = require('pushover-notifications');
 const myCroft = require('./MyCroft');
 
 async function tts(sound) {
@@ -60,7 +60,7 @@ async function tts(sound) {
     sound !== null &&
     webModel.pushoverOn
   ) {
-    const p = new push({
+    const p = new Push({
       user: personalData.pushover.USER,
       token: personalData.pushover.TOKEN,
     });

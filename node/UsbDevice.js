@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const spawn = require('child_process').spawn;
 const fs = require('fs');
 
@@ -41,7 +42,7 @@ class UsbDevice {
           if (foundDevice) {
             resolve(deviceName);
           } else {
-            reject('Not found.');
+            reject(new Error('Not found.'));
           }
         })
         .catch((error) => {
@@ -73,7 +74,8 @@ class UsbDevice {
   }
 
   getInfoFromDeviceList(deviceList) {
-    const getSingleDeviceInfo = function(device) {
+    // eslint-disable-next-line arrow-body-style
+    const getSingleDeviceInfo = (device) => {
       return new Promise((resolve, reject) => {
         let outputData = '';
         const process = spawn('udevadm', ['info', '-n', `/dev/${device}`]);

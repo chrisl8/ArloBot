@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq,no-param-reassign */
 // These are functions intended to manipulate the
 // webModel object.
 // The reason they are here instead of being included in the webModel itself,
@@ -23,14 +24,14 @@ util.inherits(WebModelEmitter, EventEmitter);
 const emitter = new WebModelEmitter();
 exports.emitter = emitter;
 
-const scrollingStatusUpdate = function(value) {
+const scrollingStatusUpdate = (value) => {
   webModel.lastUpdateTime = Date.now();
   webModel.scrollingStatus = `${value}<br/>${webModel.scrollingStatus}`;
   emitter.emit('change');
 };
 exports.scrollingStatusUpdate = scrollingStatusUpdate;
 
-const behaviorStatusUpdate = function(value) {
+const behaviorStatusUpdate = (value) => {
   if (webModel.behaviorStatus != value) {
     webModel.behaviorStatus = value;
     emitter.emit('change');
@@ -43,7 +44,7 @@ const behaviorStatusUpdate = function(value) {
 };
 exports.behaviorStatusUpdate = behaviorStatusUpdate;
 
-const update = function(key, value) {
+const update = (key, value) => {
   if (webModel[key] != value) {
     webModel[key] = value;
     emitter.emit('change', key, value);
@@ -58,7 +59,7 @@ const update = function(key, value) {
 };
 exports.update = update;
 
-const updateRobotModel = function(key, value) {
+const updateRobotModel = (key, value) => {
   if (webModel[key] != value) {
     webModel[key] = value;
     emitter.emit('changeRobotModel', key, value);
@@ -66,7 +67,7 @@ const updateRobotModel = function(key, value) {
 };
 exports.updateRobotModel = updateRobotModel;
 
-const toggle = function(key) {
+const toggle = (key) => {
   if (webModel[key] === true) {
     webModel[key] = false;
     emitter.emit('change', key, false);
@@ -78,7 +79,7 @@ const toggle = function(key) {
 exports.toggle = toggle;
 
 // Nested objects are tricky.
-const updateRosParameter = function(key, value) {
+const updateRosParameter = (key, value) => {
   if (webModel.rosParameters[key] != value) {
     webModel.rosParameters[key] = value;
     emitter.emit('change', key, value);
@@ -86,7 +87,7 @@ const updateRosParameter = function(key, value) {
 };
 exports.updateRosParameter = updateRosParameter;
 
-const updateRosTopicItem = function(key, value) {
+const updateRosTopicItem = (key, value) => {
   if (key === 'robotBatteryLevel') {
     value = value.toFixed(1);
   } else if (key === 'Heading' || key === 'gyroHeading') {
@@ -133,7 +134,7 @@ const updateRosTopicItem = function(key, value) {
 };
 exports.updateRosTopicItem = updateRosTopicItem;
 
-const updateWayPointNavigator = function(key, value) {
+const updateWayPointNavigator = (key, value) => {
   if (webModel.wayPointNavigator[key] != value) {
     webModel.wayPointNavigator[key] = value;
     emitter.emit('changeRobotModel', key, value);
@@ -141,7 +142,7 @@ const updateWayPointNavigator = function(key, value) {
 };
 exports.updateWayPointNavigator = updateWayPointNavigator;
 
-const updateRobotMasterStatus = function(key, value) {
+const updateRobotMasterStatus = (key, value) => {
   if (robotModel.master[key] != value) {
     robotModel.master[key] = value;
     emitter.emit('change', key, value);
@@ -149,7 +150,7 @@ const updateRobotMasterStatus = function(key, value) {
 };
 exports.updateRobotMasterStatus = updateRobotMasterStatus;
 
-const publishRelayState = function(relayNumber, relayState, relayName) {
+const publishRelayState = (relayNumber, relayState, relayName) => {
   if (relayName === undefined) {
     relayName = 'empty';
   }

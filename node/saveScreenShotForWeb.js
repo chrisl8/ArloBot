@@ -3,10 +3,11 @@ const fs = require('fs');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
 const personalData = require('./personalData');
+const path = require('path');
 
 function resolvePath(str) {
-  const path = require('path');
   if (str.substr(0, 2) === '~/') {
+    // eslint-disable-next-line no-param-reassign
     str =
       (process.env.HOME ||
         process.env.HOMEPATH ||
@@ -16,7 +17,7 @@ function resolvePath(str) {
   return path.resolve(str);
 }
 
-const saveScreenShotForWeb = function() {
+const saveScreenShotForWeb = () => {
   if (!personalData.demoWebSite) {
     const oldFileName = resolvePath(
       `${personalData.web_folder}/xscreenOld.png`,

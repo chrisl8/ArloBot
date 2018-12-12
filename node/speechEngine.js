@@ -1,7 +1,9 @@
-const personalData = require('./personalData');
+/* eslint-disable no-param-reassign */
+// robotModel *IS* used, don't remove it!
+// eslint-disable-next-line no-unused-vars
+const robotModel = require('./robotModel');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
-const robotModel = require('./robotModel');
 const tts = require('./tts');
 const howManySecondsSince = require('./howManySecondsSince');
 // fs.watch sees like 5 updates instead of one,
@@ -79,7 +81,7 @@ chokidar.watch('./speechModel.json').on('change', () => {
           speechModel = JSON.parse(data);
           buildInMemoryObject(speechModel, speechInMemoryObject);
         } catch (e) {
-          return console.error(e);
+          console.error(e);
         }
       }
     });
@@ -96,7 +98,7 @@ chokidar.watch('./eventResponses.json').on('change', () => {
           eventModel = JSON.parse(data);
           buildInMemoryEventObject(eventModel, eventInMemoryObject);
         } catch (e) {
-          return console.error(e);
+          console.error(e);
         }
       }
     });
@@ -105,8 +107,8 @@ chokidar.watch('./eventResponses.json').on('change', () => {
 
 // Create an in memory random picker for each speech model entry.
 function initializeBiasedTextChooser(model, memoryModel, item) {
-  const values = [],
-    weights = [];
+  const values = [];
+  const weights = [];
   // Repeat items based on "instance" variable.
   for (const text in model[item].thingsToSay) {
     // "repeat" is a setting, not an item to say.
@@ -150,6 +152,7 @@ function talkToMe() {
     if (speechModel.hasOwnProperty(speechItem)) {
       // Check if we should say this
       try {
+        // eslint-disable-next-line no-eval
         if (eval(speechModel[speechItem].Test)) {
           // Check the delay to for this item, this sets how much delay must be between this item and ANY previous speech
           if (howManySecondsSince(lastSpoke) >= speechModel[speechItem].delay) {

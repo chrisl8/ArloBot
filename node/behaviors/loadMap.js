@@ -117,6 +117,7 @@ async function loadMap() {
     .ROScommand + process.env.HOME}/.arlobot/rosmaps/${webModel.mapName}.yaml`;
   webModelFunctions.scrollingStatusUpdate(robotModel.loadMapProcess.ROScommand);
 
+  /** @namespace personalData.demoWebSite */
   if (personalData.demoWebSite) {
     robotModel.loadMapProcess.started = true;
     robotModel.loadMapProcess.startupComplete = true;

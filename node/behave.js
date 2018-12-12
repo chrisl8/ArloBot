@@ -55,11 +55,9 @@ async function loop() {
       if (!await makeMap()) {
         return;
       }
-    } else {
+    } else if (!await loadMap()) {
       // TODO: Only call if there is a map name, and make another behavior for "Where am I?"
-      if (!await loadMap()) {
-        return;
-      }
+      return;
     }
 
     if (
@@ -95,11 +93,13 @@ async function loop() {
 async function behave() {
   while (!webModel.shutdownRequested) {
     try {
+      // eslint-disable-next-line no-await-in-loop
       await loop();
     } catch (e) {
       console.error('Behavior Loop Error:');
       console.error(e);
     }
+    // eslint-disable-next-line no-await-in-loop
     await wait(1);
   }
   // This allows the script to kill itself.

@@ -12,9 +12,8 @@ let pauseExplore; // Empty global for actual topic
 
 // Copied from arloweb.js
 /** @namespace personalData.rosLibDelay */
-let connectedToROS = false; // Track my opinion of the connection
 let ros; // Empty global for actual connection.
-let longDelay = personalData.rosLibDelay * 1000;
+const longDelay = personalData.rosLibDelay * 1000;
 
 // Define a list of ROS Parameters to monitor
 // NOTE: Add an instance to webModel if you want this sent to the web app!
@@ -220,10 +219,12 @@ function talkToROS() {
 
   // Enumerate parameters to watch
   for (const prop in rosParameters) {
-    rosParameters[prop].param = new ROSLIB.Param({
-      ros,
-      name: rosParameters[prop].path,
-    });
+    if (rosParameters.hasOwnProperty(prop)) {
+      rosParameters[prop].param = new ROSLIB.Param({
+        ros,
+        name: rosParameters[prop].path,
+      });
+    }
   }
   // and poll them.
   pollParams();
@@ -247,7 +248,6 @@ function setParam(paramLabel, value) {
 // and change any references to web objects with console.log (i.e. setActionField)
 function pollROS() {
   // console.log('ROSLIB pollROS run');
-  connectedToROS = false;
 
   ros = new ROSLIB.Ros({
     url: 'ws://localhost:9090',
@@ -278,7 +278,6 @@ function pollROS() {
   ros.on('close', () => {
     // console.log('Connection to websocket server closed.');
     webModelFunctions.scrollingStatusUpdate('ROSLIB Websocket closed');
-    connectedToROS = false;
     // updateConnectedButton();
     setTimeout(pollROS, longDelay);
   });

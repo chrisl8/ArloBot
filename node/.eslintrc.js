@@ -35,5 +35,6 @@ module.exports = {
     'no-prototype-builtins': 'off', // This seems like overkill
     'prefer-destructuring': 'off',
     'no-plusplus': 'off',
+    'no-restricted-syntax': 'off',
   },
 };

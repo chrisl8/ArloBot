@@ -17,6 +17,7 @@ async function handleUsbHubPower() {
   // even when plugged in. Maybe my batteries are old, but it seems best to NOT do that.
   // Hence, idle power off, even when plugged in.
   // NOTE2: The idle timeout for while ROS is running is handled in polling right now.
+  /** @namespace personalData.idleTimeoutInMinutes */
   if (
     webModel.idleTimeout &&
     personalData.idleTimeoutInMinutes > 0 &&
@@ -39,6 +40,7 @@ async function handleUsbHubPower() {
         await wait(1); // The usbRelay calls just made by polling can clobber this if we don't wait.
         masterRelay('off');
       }
+      /** @namespace personalData.useUSBrelay */
       if (personalData.useUSBrelay) {
         await wait(1); // The usbRelay calls just made by polling can clobber this if we don't wait.
         robotModel.usbRelay.switchRelay('all', 'off');
