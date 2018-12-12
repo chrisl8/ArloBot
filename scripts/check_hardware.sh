@@ -31,17 +31,17 @@ wrap_up_on_fail () {
 # Turn on Arlo Power supply if "Master Relay" exists
 if [ $(jq '.useMasterPowerRelay' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
-    echo "Turning on Arlo Power supply . . ."
-    # Turn it off if it is already one
+    # Check if it is already on
     if [ "$(${SCRIPTDIR}/switch_master_relay.sh read)" == "on" ]
         then
-        ${SCRIPTDIR}/switch_master_relay.sh off
-        sleep 2
+        echo "Arlo Power supply already on."
+    else
+        echo "Turning on Arlo Power supply . . ."
+        ${SCRIPTDIR}/switch_master_relay.sh on
+        # Give Linux time to find the devices.
+        echo "Giving it 1 second to come online . . ."
+        sleep 1
     fi
-    ${SCRIPTDIR}/switch_master_relay.sh on
-    # Give Linux time to find the devices.
-    echo "Giving it 1 second to come online . . ."
-    sleep 1
 fi
 
 # USB Relay Controller
@@ -58,17 +58,23 @@ fi
 # Turn on five volt power supply if it exists
 if [ $(jq '.relays.has_fiveVolt' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
-    echo "Turning on Five Volt power converter . . ."
-    ${SCRIPTDIR}/switch_relay_name.sh fiveVolt on
-    # Give Linux time to find the devices.
-    # Experience shows any less than 5 seconds causes some devices to fail.
-    USBDELAYTIME=5
-    while [ ${USBDELAYTIME} -gt 0 ]
-    do
-        echo "Giving USB devices ${USBDELAYTIME} seconds to come online . . ."
-        sleep 1
-        USBDELAYTIME=$((USBDELAYTIME-1))
-    done
+    # Check if it is already on
+    if [ "$(${SCRIPTDIR}/switch_relay_name.sh fiveVolt state)" == "ON" ]
+        then
+        echo "Five Volt power converter already on."
+    else
+        echo "Turning on Five Volt power converter . . ."
+        ${SCRIPTDIR}/switch_relay_name.sh fiveVolt on
+        # Give Linux time to find the devices.
+        # Experience shows any less than 5 seconds causes some devices to fail.
+        USBDELAYTIME=5
+        while [ ${USBDELAYTIME} -gt 0 ]
+        do
+            echo "Giving USB devices ${USBDELAYTIME} seconds to come online . . ."
+            sleep 1
+            USBDELAYTIME=$((USBDELAYTIME-1))
+        done
+    fi
 fi
 
 echo "Checking all configured devices to make sure they are available . . ."
