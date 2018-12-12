@@ -40,7 +40,7 @@ if [ -e  ${HOME}/.nvm/nvm.sh ]
     nvm deactivate
 fi
 
-wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
+wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
 export NVM_DIR="${HOME}/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 
@@ -71,10 +71,10 @@ if ! (which pm2 > /dev/null)
 fi
 cd ${SCRIPTDIR}/../node
 printf "\n${YELLOW}You will get some errors here, that is normal. As long as things work, it is OK.$NC\n"
-npm install
+npm ci
 
 cd ${SCRIPTDIR}/../website
-npm install
+npm ci
 npm run build
 
 cd ${SCRIPTDIR}
