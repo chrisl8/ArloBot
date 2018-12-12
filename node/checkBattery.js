@@ -76,7 +76,7 @@ module.exports = checkBattery;
 
 if (require.main === module) {
   // Run the function if this is called directly instead of required.
-  // It takes a few millisceonds for glob to get the batter file name.
+  // It takes a few milliseconds for glob to get the battery file name.
   // To save processing time this is stored and reused.
   // In normal operation a "miss" early on doesn't matter, but if we run it from
   // the terminal, missing the first and only run is catastrophic, thus the timeout.

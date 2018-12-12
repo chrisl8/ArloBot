@@ -13,7 +13,7 @@ const howManySecondsSince = require('./howManySecondsSince');
 const masterRelay = require('./MasterRelay');
 const personalData = require('./personalData');
 
-// Adjustable contants for the board:
+// Adjustable constants for the board:
 const baudrate = 115200;
 const retrySendDelay = 15;
 const postSendDelay = 250;

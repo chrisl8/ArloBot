@@ -98,7 +98,7 @@ class UsbRelay {
 
   switchRelay(relayNumber, onOrOff) {
     if (!personalData.demoWebSite) {
-      const delay = 100; // millisenconds
+      const delay = 100; // milliseconds
       const timeout = 20; // loops
       let triedSoFar = 0;
       const checkBusyOrSwitch = () => {

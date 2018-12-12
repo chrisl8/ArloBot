@@ -1,5 +1,5 @@
 /*
- * This is the "behavior" of the rebot.
+ * This is the "behavior" of the robot.
  * It should just be a very simple flow of function calls.
  *
  * This was once a fancy "Behavior" system using a library,

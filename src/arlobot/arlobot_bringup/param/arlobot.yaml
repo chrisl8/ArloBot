@@ -29,7 +29,7 @@ usbRelayInstalled: False
 # I use 6 and 2 based on the wiring location and that those two do not cycle when the laptop boots
 usbLeftMotorRelay: "6"
 usbRightMotorRelay: "2"
-# Lables for Left and Right motors. These are set in arlobot_usbrelay/param/usbrelay.yaml
+# Labels for Left and Right motors. These are set in arlobot_usbrelay/param/usbrelay.yaml
 usbLeftMotorRelayLabel: "LeftMotor"
 usbRightMotorRelayLabel: "RightMotor"
 # WARNING: BY DEFAULT YOUR ROBOT WILL TRY TO MOVE EVEN WHEN IT IS PLUGGED IN!!!!
