@@ -2,10 +2,10 @@
 // Numato Lab - http://numato.com
 // https://github.com/numato/samplecode/blob/master/RelayAndGPIOModules/USBRelayAndGPIOModules/node.js/usbrelay/UsbRelay.js
 const process = require('process');
+const SerialPort = require('serialport');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
 const UsbDevice = require('./UsbDevice.js');
-const SerialPort = require('serialport');
 const personalData = require('./personalData');
 
 let working = false; // Prevent multiple instances from running at once in the same program
@@ -36,13 +36,15 @@ function usbRelay(operation, runFromCommandLine) {
           console.log('Master Relay Port:', port);
         }
         if (webModel.debugging) {
-          console.log('Master Relay opeartion:', operation);
+          console.log('Master Relay operation:', operation);
         }
 
         if (operation === 'toggle') {
           if (!webModel.masterRelayOn) {
+            // noinspection AssignmentToFunctionParameterJS
             operation = 'on';
           } else {
+            // noinspection AssignmentToFunctionParameterJS
             operation = 'off';
           }
         }

@@ -32,5 +32,15 @@ module.exports = {
     'jsx-a11y/click-events-have-key-events': 0,
     'jsx-a11y/label-has-for': 0,
     'class-methods-use-this': 0,
+    'no-prototype-builtins': 'off', // This seems like overkill
+    // I don't really know what the next one even means
+    'react/destructuring-assignment': [
+      1,
+      'never',
+      { ignoreClassFields: false },
+    ],
+    'no-restricted-syntax': 'off',
+    'react/no-access-state-in-setstate': 'off',
+    'react/no-did-update-set-state': 'off',
   },
 };
