@@ -50,14 +50,14 @@ class PropellerComm(object):
     def __init__(self):
         rospy.init_node('arlobot')
 
-        self.r = rospy.Rate(1) # 1hz refresh rate
+        self.r = rospy.Rate(1)  # 1hz refresh rate
         self._Counter = 0  # For Propeller code's _HandleReceivedLine and _write_serial
         self._motorsOn = False  # Set to 1 if the motors are on, used with USB Relay Control board
         self._safeToGo = False  # Use arlobot_safety to set this
         self._SafeToOperate = False  # Use arlobot_safety to set this
-        self._acPower = True # Track AC power status internally
-        self._unPlugging = False # Used for when arlobot_safety tells us to "UnPlug"!
-        self._wasUnplugging = False # Track previous unplugging status for motor control
+        self._acPower = True  # Track AC power status internally
+        self._unPlugging = False  # Used for when arlobot_safety tells us to "UnPlug"!
+        self._wasUnplugging = False  # Track previous unplugging status for motor control
         self._SwitchingMotors = False  # Prevent overlapping calls to _switch_motors
         self._serialAvailable = False
         self._serialTimeout = 0
@@ -93,8 +93,9 @@ class PropellerComm(object):
                 self.leftMotorRelay = find_relay(self.usbLeftMotorRelayLabel)
                 self.rightMotorRelay = find_relay(self.usbRightMotorRelayLabel)
                 if self.leftMotorRelay.foundRelay and self.leftMotorRelay.foundRelay:
-                    rospy.loginfo("Left = " + str(self.leftMotorRelay.relayNumber) + " & Right = " + str(
-                        self.rightMotorRelay.relayNumber))
+                    rospy.loginfo(
+                        "Left = " + str(self.leftMotorRelay.relayNumber) + " & Right = " + str(
+                            self.rightMotorRelay.relayNumber))
                 else:
                     self.relayExists = False
             except rospy.ServiceException as e:
@@ -103,15 +104,18 @@ class PropellerComm(object):
                              self._handle_usb_relay_status)  # Safety Shutdown
 
         # Subscriptions
-        rospy.Subscriber("cmd_vel", Twist, self._handle_velocity_command)  # Is this line or the below bad redundancy?
-        rospy.Subscriber("arlobot_safety/safetyStatus", arloSafety, self._safety_shutdown)  # Safety Shutdown
+        rospy.Subscriber("cmd_vel", Twist,
+                         self._handle_velocity_command)  # Is this line or the below bad redundancy?
+        rospy.Subscriber("arlobot_safety/safetyStatus", arloSafety,
+                         self._safety_shutdown)  # Safety Shutdown
 
         # Publishers
         self._SerialPublisher = rospy.Publisher('serial', String, queue_size=10)
-        self._pirPublisher = rospy.Publisher('~pirState', Bool, queue_size=1)  # for publishing PIR status
+        self._pirPublisher = rospy.Publisher('~pirState', Bool,
+                                             queue_size=1)  # for publishing PIR status
         self._arlo_status_publisher = rospy.Publisher('arlo_status', arloStatus, queue_size=1)
         self._buttons_publisher = rospy.Publisher('buttons', arloButtons, queue_size=1)
-        self._ping_publisher = rospy.Publisher('ultrasonic_data', String, queue_size=10);	
+        self._ping_publisher = rospy.Publisher('ultrasonic_data', String, queue_size=10);
 
         # IF the Odometry Transform is done with the robot_pose_ekf do not publish it,
         # but we are not using robot_pose_ekf, because it does nothing for us if you don't have a full IMU!
@@ -136,7 +140,8 @@ class PropellerComm(object):
 
         rospy.loginfo("Starting with serial port: " + port + ", baud rate: " + str(baud_rate))
         self._SerialDataGateway = SerialDataGateway(port, baud_rate, self._handle_received_line)
-        self._OdomStationaryBroadcaster = OdomStationaryBroadcaster(self._broadcast_static_odometry_info)
+        self._OdomStationaryBroadcaster = OdomStationaryBroadcaster(
+            self._broadcast_static_odometry_info)
 
     def _handle_received_line(self, line):  # This is Propeller specific
         """
@@ -426,12 +431,12 @@ class PropellerComm(object):
         # I just don't know how to create and fill an array with "Radians"
         # since they are not rational numbers, but multiples of PI, thus the degrees.
         num_readings = 360  # How about 1 per degree?
-        #num_reeading_multiple = 2 # We have to track this so we know where to put the readings!
-        #num_readings = 360 * num_reeading_multiple
+        # num_reeading_multiple = 2 # We have to track this so we know where to put the readings!
+        # num_readings = 360 * num_reeading_multiple
         laser_frequency = 100  # I'm not sure how to decide what to use here.
         # This is the fake distance to set all empty slots, and slots we consider "out of range"
         artificial_far_distance = 10
-        #ranges = [1] * num_readings # Fill array with fake "1" readings for testing
+        # ranges = [1] * num_readings # Fill array with fake "1" readings for testing
         # Fill array with artificial_far_distance (not 0) and then overlap with real readings
         ping_ranges = [artificial_far_distance] * num_readings
         # If we use 0, then it won't clear the obstacles when we rotate away,
@@ -474,7 +479,7 @@ class PropellerComm(object):
         # TODO: Use both IR and PING sensors?
         # The offset between the pretend sensor location in the URDF
         # and real location needs to be added to these values. This may need to be tweaked.
-        sensor_offset = 0.217 # Measured, Calculated: 0.22545
+        sensor_offset = 0.217  # Measured, Calculated: 0.22545
         # This will be the max used range, anything beyond this is set to "artificial_far_distance"
 
         # Maximum distance accepted from the PING sensors.
@@ -551,34 +556,40 @@ class PropellerComm(object):
         # Convert cm to meters and add offset
         for i in range(0, len(ping)):
             # ping[0] = (int(line_parts[7]) / 100.0) + sensor_offset
-            ping[i] = (sensor_data.get('p' + str(i), artificial_far_distance * 100) / 100.0) + sensor_offset
+            ping[i] = (sensor_data.get('p' + str(i),
+                                       artificial_far_distance * 100) / 100.0) + sensor_offset
             # Set to "out of range" for distances over "max_range_accepted" to clear long range obstacles
             # and use this for near range only.
             if ping[i] > max_range_accepted:
                 # Be sure "ultrasonic_scan.range_max" is set higher than this or
                 # costmap will ignore these and not clear the cost map!
                 ping[i] = artificial_far_distance
-            ir[i] = (sensor_data.get('i' + str(i), artificial_far_distance * 100) / 100.0) + sensor_offset  # Convert cm to meters and add offset
+            ir[i] = (sensor_data.get('i' + str(i),
+                                     artificial_far_distance * 100) / 100.0) + sensor_offset  # Convert cm to meters and add offset
 
         # Overwrite main sensors with upper deck sensors if they exist and are closer,
         # TODO: This code is very manual. It won't break if you don't have these sensors, but
         # the positions are hard coded. :(
 
         if sensor_data.get('p' + str(10)):
-            upperSensor = (sensor_data.get('p' + str(10), artificial_far_distance * 100) / 100.0) + sensor_offset
+            upperSensor = (sensor_data.get('p' + str(10),
+                                           artificial_far_distance * 100) / 100.0) + sensor_offset
             if upperSensor < max_range_accepted and upperSensor < ping[1]:
                 ping[1] = upperSensor
         if sensor_data.get('p' + str(11)):
-            upperSensor = (sensor_data.get('p' + str(11), artificial_far_distance * 100) / 100.0) + sensor_offset
-            if upperSensor < max_range_accepted and  upperSensor < ping[2]:
+            upperSensor = (sensor_data.get('p' + str(11),
+                                           artificial_far_distance * 100) / 100.0) + sensor_offset
+            if upperSensor < max_range_accepted and upperSensor < ping[2]:
                 ping[2] = upperSensor
         if sensor_data.get('p' + str(12)):
-            upperSensor = (sensor_data.get('p' + str(12), artificial_far_distance * 100) / 100.0) + sensor_offset
-            if  upperSensor < max_range_accepted and upperSensor < ping[3]:
+            upperSensor = (sensor_data.get('p' + str(12),
+                                           artificial_far_distance * 100) / 100.0) + sensor_offset
+            if upperSensor < max_range_accepted and upperSensor < ping[3]:
                 ping[3] = upperSensor
         if sensor_data.get('p' + str(13)):
-            upperSensor = (sensor_data.get('p' + str(13), artificial_far_distance * 100) / 100.0) + sensor_offset
-            if  upperSensor < max_range_accepted and upperSensor < ping[7]:
+            upperSensor = (sensor_data.get('p' + str(13),
+                                           artificial_far_distance * 100) / 100.0) + sensor_offset
+            if upperSensor < max_range_accepted and upperSensor < ping[7]:
                 ping[7] = upperSensor
         # TODO: Duduplicate the above code.
 
@@ -643,7 +654,7 @@ class PropellerComm(object):
         #     IRranges[x] = ir[0]
 
         # Single Point code:
-        #for x in range(180 - sensor_spread / 2, 180 + sensor_spread / 2):
+        # for x in range(180 - sensor_spread / 2, 180 + sensor_spread / 2):
         ping_ranges[180 + sensor_separation * 2] = ping[5]
         ir_ranges[180 + sensor_separation * 2] = ir[5]
 
@@ -669,19 +680,19 @@ class PropellerComm(object):
         ping_ranges[360 - sensor_separation] = ping[3]
         ir_ranges[360 - sensor_separation] = ir[3]
 
-        #for x in range(360 - sensor_spread / 2, 360):
-        #PINGranges[x] = ping[2]
-        #IRranges[x] = ir[2]
+        # for x in range(360 - sensor_spread / 2, 360):
+        # PINGranges[x] = ping[2]
+        # IRranges[x] = ir[2]
         # Crosses center line
-        #for x in range(0, sensor_spread /2):
+        # for x in range(0, sensor_spread /2):
         ping_ranges[0] = ping[2]
         ir_ranges[0] = ir[2]
 
-        #for x in range(sensor_separation - sensor_spread / 2, sensor_separation + sensor_spread / 2):
+        # for x in range(sensor_separation - sensor_spread / 2, sensor_separation + sensor_spread / 2):
         ping_ranges[sensor_separation] = ping[1]
         ir_ranges[sensor_separation] = ir[1]
 
-        #for x in range((sensor_separation * 2) - sensor_spread / 2, (sensor_separation * 2) + sensor_spread / 2):
+        # for x in range((sensor_separation * 2) - sensor_spread / 2, (sensor_separation * 2) + sensor_spread / 2):
         ping_ranges[sensor_separation * 2] = ping[0]
         ir_ranges[sensor_separation * 2] = ir[0]
 
@@ -693,17 +704,17 @@ class PropellerComm(object):
         ultrasonic_scan.header.frame_id = "ping_sensor_array"
         infrared_scan.header.frame_id = "ir_sensor_array"
         # For example:
-        #scan.angle_min = -45 * M_PI / 180; // -45 degree
-        #scan.angle_max = 45 * M_PI / 180;   // 45 degree
+        # scan.angle_min = -45 * M_PI / 180; // -45 degree
+        # scan.angle_max = 45 * M_PI / 180;   // 45 degree
         # if you want to receive a full 360 degrees scan,
         # you should try setting min_angle to -pi/2 and max_angle to 3/2 * pi.
         # Radians: http://en.wikipedia.org/wiki/Radian#Advantages_of_measuring_in_radians
         ultrasonic_scan.angle_min = 0
         infrared_scan.angle_min = 0
-        #ultrasonic_scan.angle_max = 2 * 3.14159 # Full circle # Letting it use default, which I think is the same.
-        #infrared_scan.angle_max = 2 * 3.14159 # Full circle # Letting it use default, which I think is the same.
-        #ultrasonic_scan.scan_time = 3 # I think this is only really applied for 3D scanning
-        #infrared_scan.scan_time = 3 # I think this is only really applied for 3D scanning
+        # ultrasonic_scan.angle_max = 2 * 3.14159 # Full circle # Letting it use default, which I think is the same.
+        # infrared_scan.angle_max = 2 * 3.14159 # Full circle # Letting it use default, which I think is the same.
+        # ultrasonic_scan.scan_time = 3 # I think this is only really applied for 3D scanning
+        # infrared_scan.scan_time = 3 # I think this is only really applied for 3D scanning
         # Make sure the part you divide by num_readings is the same as your angle_max!
         # Might even make sense to use a variable here?
         ultrasonic_scan.angle_increment = (2 * 3.14) / num_readings
@@ -737,7 +748,7 @@ class PropellerComm(object):
         self._SerialPublisher.publish(String(str(self._Counter) + ", out: " + message))
         self._SerialDataGateway.Write(message)
 
-    def _toggleLED (self, LED):
+    def _toggleLED(self, LED):
         # Test with:
         # rosservice call /arlobot/ToggleLED 0 True
         # Or for all 5:
@@ -778,7 +789,6 @@ class PropellerComm(object):
                 raise SystemExit(0)
         rospy.loginfo("Serial Data Gateway started.")
         self._serialAvailable = True
-
 
     def stop(self):
         """
@@ -842,7 +852,10 @@ class PropellerComm(object):
             else:
                 ac_power = 0
             # WARNING! If you change this check the buffer length in the Propeller C code!
-            message = 'd,%f,%f,%d,%d,%d,%d,%d,%f,%f,%f\r' % (self.track_width, self.distance_per_count, ignore_proximity, ignore_cliff_sensors, ignore_ir_sensors, ignore_floor_sensors, ac_power, self.lastX, self.lastY, self.lastHeading)
+            message = 'd,%f,%f,%d,%d,%d,%d,%d,%f,%f,%f\r' % (
+                self.track_width, self.distance_per_count, ignore_proximity, ignore_cliff_sensors,
+                ignore_ir_sensors, ignore_floor_sensors, ac_power, self.lastX, self.lastY,
+                self.lastHeading)
             rospy.logdebug("Sending drive geometry params message: " + message)
             self._write_serial(message)
         else:
@@ -936,7 +949,7 @@ class PropellerComm(object):
                 self._serialTimeout += 1
             else:
                 self._serialTimeout = 0
-            #rospy.loginfo("Serial Timeout = " + str(self._serialTimeout))
+            # rospy.loginfo("Serial Timeout = " + str(self._serialTimeout))
             if self._serialTimeout > 19:
                 rospy.loginfo("Watchdog Timeout Reset initiated")
                 self._reset_serial_connection()
@@ -995,7 +1008,10 @@ class PropellerComm(object):
                 else:
                     ac_power = 0
                 # WARNING! If you change this check the buffer length in the Propeller C code!
-                message = 'd,%f,%f,%d,%d,%d,%d,%d\r' % (self.track_width, self.distance_per_count, ignore_proximity, ignore_cliff_sensors, ignore_ir_sensors, ignore_floor_sensors, ac_power)
+                message = 'd,%f,%f,%d,%d,%d,%d,%d\r' % (
+                    self.track_width, self.distance_per_count, ignore_proximity,
+                    ignore_cliff_sensors,
+                    ignore_ir_sensors, ignore_floor_sensors, ac_power)
                 self._write_serial(message)
                 self.robotParamChanged = False
 
@@ -1032,22 +1048,22 @@ class PropellerComm(object):
             self._wasUnplugging = False
             self._write_serial(message)
 
-    # Considlate "clear to go" requirements here.
+    # Consolidate "clear to go" requirements here.
     def _clear_to_go(self, forWhat):
         return_value = False
         # Required for all operations
         if self._serialAvailable and \
-           self._SafeToOperate and \
-           self._safeToGo and \
-           self._motorsOn and \
-           self._leftMotorPower and \
-           self._rightMotorPower:
-               return_value = True
+                self._SafeToOperate and \
+                self._safeToGo and \
+                self._motorsOn and \
+                self._leftMotorPower and \
+                self._rightMotorPower:
+            return_value = True
         # Negations by use case
         if forWhat == "forUnplugging":
             # Unpugging should only happen if AC is connected
             if not self._acPower:
-               return_value = False
+                return_value = False
         if forWhat == "forGeneralUse":
             # The handle_velocity_command should only operate if the robot is unplugged,
             # and the unplugging function of the Watchdog process is not in control
@@ -1068,6 +1084,7 @@ class PropellerComm(object):
                 return_value = False
         return return_value
 
+
 if __name__ == '__main__':
     propellercomm = PropellerComm()
     rospy.on_shutdown(propellercomm.stop)
@@ -1075,7 +1092,7 @@ if __name__ == '__main__':
         propellercomm.start()
         rospy.loginfo("Propellerbot_node has started.")
         propellercomm.watchDog()
-        #rospy.spin()
+        # rospy.spin()
 
     except rospy.ROSInterruptException:
         propellercomm.stop()
