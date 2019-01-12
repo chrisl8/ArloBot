@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "per_robot_settings_for_propeller_c_code.h": "c",
+        "fdserial.h": "c",
+        "receiveserialdata.h": "c",
+        "pollpropboard2.h": "c",
+        "pollpingsensors.h": "c",
+        "mcp3208_ir_cm.h": "c",
+        "arlodrive.h": "c",
+        "encodercount.h": "c",
+        "broadcastodometryandrunmotors.h": "c"
+    }
+}
