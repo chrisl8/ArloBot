@@ -4,12 +4,12 @@
 // The reason they are here instead of being included in the webModel itself,
 // is to keep the webModel clean for distribution to the web clients.
 
-const webModel = require('./webModel');
-const robotModel = require('./robotModel');
 // https://nodejs.org/docs/latest/api/events.html#emitter.on
 const EventEmitter = require('events');
-// util is required for the inheritance
 const util = require('util');
+const webModel = require('./webModel');
+const robotModel = require('./robotModel');
+// util is required for the inheritance
 const LCD = require('./LCD');
 
 function WebModelEmitter() {

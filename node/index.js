@@ -1,3 +1,4 @@
+const os = require('os');
 const personalData = require('./personalData');
 // We *DO* need webModel, don't remove it.
 // eslint-disable-next-line no-unused-vars
@@ -20,7 +21,6 @@ const tts = require('./tts');
 const LaunchScript = require('./LaunchScript');
 const rosInterface = require('./rosInterface');
 const webserver = require('./webserver');
-const os = require('os');
 const killROS = require('./killROS');
 
 const SocketServerSubscriber = require('./SocketServerSubscriber');

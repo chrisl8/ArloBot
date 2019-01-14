@@ -3,6 +3,7 @@
  * Certainly some things here could be broken out into their own behavior files.
  * These are just things to do on every loop.
  */
+const spawn = require('child_process').spawn;
 const webModel = require('../webModel');
 const webModelFunctions = require('../webModelFunctions');
 const personalData = require('../personalData');
@@ -10,7 +11,6 @@ const robotModel = require('../robotModel');
 const speechEngine = require('../speechEngine');
 const checkBattery = require('../checkBattery');
 const masterRelay = require('../MasterRelay');
-const spawn = require('child_process').spawn;
 const handleSemaphoreFiles = require('../handleSemaphoreFiles');
 const getQRcodes = require('../getQRcodes');
 const saveScreenShotForWeb = require('../saveScreenShotForWeb');

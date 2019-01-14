@@ -6,7 +6,6 @@
 // but then the robot won't be good for much at that point anyway.
 // I'm just pointing out that this doesn't actively monitor anything,
 // it is called in a polling loop by index.js
-const webModelFunctions = require('./webModelFunctions');
 const fs = require('fs');
 const { promisify } = require('util');
 
@@ -15,6 +14,7 @@ const chmod = promisify(fs.chmod);
 const readFile = promisify(fs.readFile);
 const readdir = promisify(fs.readdir);
 const mkdirp = require('mkdirp');
+const webModelFunctions = require('./webModelFunctions');
 
 const personalDataFolder = `${process.env.HOME}/.arlobot/`;
 const statusFolder = `${personalDataFolder}status/`;
