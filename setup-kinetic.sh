@@ -123,7 +123,8 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 sudo apt install -y ros-kinetic-rqt-* ros-kinetic-turtlebot ros-kinetic-turtlebot-apps ros-kinetic-turtlebot-interactions ros-kinetic-turtlebot-simulator ros-kinetic-kobuki-ftdi python-ftdi1 python-pip python-serial ros-kinetic-openni-* ros-kinetic-openni2-* ros-kinetic-freenect-* ros-kinetic-vision-opencv ros-kinetic-rtabmap-ros ros-kinetic-scan-tools ros-kinetic-explore-lite libopencv-dev python-opencv ros-kinetic-rosbridge-server imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol ros-kinetic-pointcloud-to-laserscan
 
 # Update pip?
-pip install --upgrade pip
+sudo -H pip install --upgrade pip
+sudo chown -R $USER /home/$USER/.cache/
 
 # For 8-CH USB Relay board:
 sudo -H pip install pylibftdi
@@ -225,6 +226,7 @@ else
     cd ~/catkin_ws/src/ArloBot/mycroft-core
     ./stop-mycroft.sh
     git pull
+    ./dev_setup.sh
     ./start-mycroft.sh all
 fi
     #cd ~/catkin_ws/src/ArloBot/mycroft-core
