@@ -83,7 +83,9 @@ fi
 if [ $(jq '.hasXboxController' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
     then
     export HAS_XBOX_JOYSTICK=true
-    rosparam set /joystick/dev $(${SCRIPTDIR}/find_xbox_controller.sh)
+    if [ $(${SCRIPTDIR}/find_xbox_controller.sh) ]; then
+        rosparam set /joystick/dev $(${SCRIPTDIR}/find_xbox_controller.sh)
+    fi
 fi
 
 if [ $(jq '.camera0' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]
