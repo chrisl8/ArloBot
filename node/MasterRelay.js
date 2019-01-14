@@ -69,6 +69,14 @@ function usbRelay(operation, runFromCommandLine) {
             if (output[1] === 'on') {
               result = true;
             }
+            if (webModel.masterRelayOn !== result) {
+              // Helps us see what is going on,
+              // and resets the idle timer if somebody flips the relay on/off
+              // via an external script.
+              webModelFunctions.scrollingStatusUpdate(
+                `Master Relay ${output[1]}`,
+              );
+            }
             webModelFunctions.update('masterRelayOn', result);
           } else {
             usbRelay('read');
