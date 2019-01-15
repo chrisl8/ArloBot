@@ -229,6 +229,22 @@ class PropellerSerialTest(object):
         time.sleep(0.1)
         self._stallForInit = False
 
+        # NOTE You MUST also send Settings data after an INIT!
+        # You CAN set the variable flagging to send settings, but what if
+        # it sends ONE and the Propeller misses it?
+        # The most sure fire way is to invalidate the config data we have,
+        # forcing it to send until it is reset.
+        self._config["trackWidth"] = 0
+        self._config["distancePerCount"] = 0
+        # Set to opposites to  of self._settings
+        # to ensure _settingsUpdateRequired stays true
+        # until we get the data from the board.
+        self._config["ignoreProximity"] = 1 - self._settings["ignoreProximity"]
+        self._config["ignoreCliffSensors"] = 1 - self._settings["ignoreCliffSensors"]
+        self._config["ignoreIRSensors"] = 1 - self._settings["ignoreIRSensors"]
+        self._config["ignoreFloorSensors"] = 1 - self._settings["ignoreFloorSensors"]
+        self._config["pluggedIn"] = 1 - self._settings["pluggedIn"]
+
     def TestSendSettingsFunction(self):
         """
         The Settings function is similar to the Init function, except that it excludes resetting
@@ -1349,35 +1365,18 @@ class PropellerSerialTest(object):
 
         # NOTE: Test functions below perform operations that should not normally be carried out directly, like calculating checksums and building data packets
 
-        # TODO:
-        # Questions:
-        # What is the EFFECTIVE bps for data without the start/end/checksum/encoding bits?
-        # Build a similar test for old style, asking:
-        # 1. What is the RAW bps, without CPU time for checksum, encoding, etc.
-        # 2. What is the EFFECTIVE bps for the data in text format with text markers?
-        # Test "writes per second" of sending just twist (speed) message vs. sending ALL data in every packet.
-        # i.e. Is there any speed gains from sending partial data most runs and full data only sometimes?
-
         """
         TODO:
-        1b. Would be fun if it could update Propeller code!
         3. Guides user through test routines:
-        4. Allows user to send all commands that ROS would.
-        5. Including allowing you to "drive" the robot with "move" commands, to prove the interface is working.
         
         Still needs:
         Better formatting so we can see the data more clearly.
         Color code "good"/"bad" things like a Escaping, etc.
          - Using True/False may be more clear than 1/0
-        Send ALL signals like:
-        Ignore things,
-        Plugged in,
-        movement,
-        other?
         Help screen to show what the options are.
         
         Build in tests for odometry,
-        It could even have "burn in" tests to make shapes like squares and cirlces,
+        It could even have "burn in" tests to make shapes like squares and circles,
         for X count and then we could see the results.
         Make the squares back and forth too,
         lines,
@@ -1393,7 +1392,7 @@ if __name__ == "__main__":
         )
         print(str(sys.argv[0]) + " /dev/ttyUSB0")
         print(
-            "You can use the find_ActivityBoard.sh script to find it, or better yet, do not call this directly. Instead run PropellerSerialTest.sh from the parent folder."
+            "You can use the find_ActivityBoard.sh script to find it, or better yet, do not call this directly. Instead run PropellerSerialTest.sh from the scripts folder."
         )
         sys.exit(1)
     PropellerSerialTest(sys.argv[1])
