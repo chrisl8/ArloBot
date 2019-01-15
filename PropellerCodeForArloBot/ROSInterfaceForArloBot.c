@@ -419,9 +419,17 @@ int main() {
       }
     } else {
       // Calculate the new speed and set it
+
+      // Stop if we have not received in input in too long.
+      // ROS works by continually sending move commands
+      // Without this it is easy to get a runaway robot,
+      // or a drifting robot that was left with a final very minute command
+      // instead of 0
       if (timeoutCounter > ROStimeout) {
         clearTwistRequest(&CommandedVelocity, &angularVelocityOffset);
-        timeoutCounter = ROStimeout; // Prevent runaway integer length
+        timeoutCounter = 0;
+      } else {
+        timeoutCounter++;
       }
 
       if (Escaping) {
