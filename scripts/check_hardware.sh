@@ -7,6 +7,8 @@ USB_DELAY_TIME=3
 RETRY_COUNT=2
 # How many retries to give if the relay was just turned on
 RETRY_COUNT_RELAY_JUST_ON=10
+# How long to delay between attempts
+DELAY_BETWEEN_ATTEMPTS=2
 
 # This script checks that all required hardware is present
 # Grab and save the path to this script
@@ -36,6 +38,8 @@ wrap_up_on_fail () {
     exit 1
 }
 
+# Initially true, in case it doesn't exist, it won't block 5 volt relay from being seen as on
+MASTER_RELAY_ALREADY_ON=true
 # Turn on Arlo Power supply if "Master Relay" exists
 if [[ $(jq '.useMasterPowerRelay' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]]
     then
@@ -44,6 +48,7 @@ if [[ $(jq '.useMasterPowerRelay' ${HOME}/.arlobot/personalDataForBehavior.json)
         then
         echo "Arlo Power supply already on."
     else
+        MASTER_RELAY_ALREADY_ON=false
         echo "Turning on Arlo Power supply . . ."
         ${SCRIPT_DIR}/switch_master_relay.sh on
         # Give Linux time to find the devices.
@@ -67,7 +72,9 @@ fi
 if [[ $(jq '.relays.has_fiveVolt' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]]
     then
     # Check if it is already on
-    if [[ "$(${SCRIPT_DIR}/switch_relay_name.sh fiveVolt state)" == "ON" ]]
+    # NOTE This only matters if master relay was already on
+    # Otherwise we still need the delay and checks as if it was first turning on.
+    if [[ ${MASTER_RELAY_ALREADY_ON} == "true" && "$(${SCRIPT_DIR}/switch_relay_name.sh fiveVolt state)" == "ON" ]]
         then
         echo "Five Volt power converter already on."
     else
@@ -75,11 +82,8 @@ if [[ $(jq '.relays.has_fiveVolt' ${HOME}/.arlobot/personalDataForBehavior.json)
         ${SCRIPT_DIR}/switch_relay_name.sh fiveVolt on
 
         # Give Linux time for the devices to come one line.
-        while [[ ${USB_DELAY_TIME} -gt 0 ]]; do
-            echo "Giving USB devices ${USB_DELAY_TIME} seconds to come online . . ."
-            sleep 1
-            USB_DELAY_TIME=$((USB_DELAY_TIME-1))
-        done
+        echo "Giving USB devices ${USB_DELAY_TIME} seconds to come online . . ."
+        sleep ${USB_DELAY_TIME}
 
         # Try more times if we just turned on the power
         RETRY_COUNT=${RETRY_COUNT_RELAY_JUST_ON}
@@ -207,8 +211,8 @@ check_hardware() {
 
 check_hardware
 while [[ ${CHECK_GOOD} = "false" && ATTEMPT_COUNT -lt RETRY_COUNT ]]; do
-    echo "Giving devices more time to come online..."
-    sleep 1
+    echo "Giving devices ${DELAY_BETWEEN_ATTEMPTS} more seconds to come online..."
+    sleep ${DELAY_BETWEEN_ATTEMPTS}
     check_hardware
 done
 
