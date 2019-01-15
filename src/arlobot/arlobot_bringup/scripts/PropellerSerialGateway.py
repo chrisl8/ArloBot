@@ -22,6 +22,7 @@ Inspired by similar code created by Dr. Rainer Hessmer
 on November 20, 2010
 """
 
+from __future__ import print_function
 import threading
 import serial
 import time
@@ -34,11 +35,11 @@ def _OnLineReceived(line):
     which is only done for testing purposes.
     It just echos whatever comes in to the screen.
     """
-    print line
+    print(line)
 
 
 def _printOutputFunction(data):
-    print data
+    print(data)
 
 
 # noinspection PyBroadException
@@ -47,8 +48,14 @@ class PropellerSerialGateway(object):
     Helper class for receiving lines from a serial port
     """
 
-    def __init__(self, port="/dev/ttyUSB0", baudrate=115200, lineHandler=_OnLineReceived,
-                 printOutputFunction=_printOutputFunction, logPrefix="SERIAL PORT "):
+    def __init__(
+        self,
+        port="/dev/ttyUSB0",
+        baudrate=115200,
+        lineHandler=_OnLineReceived,
+        printOutputFunction=_printOutputFunction,
+        logPrefix="SERIAL PORT ",
+    ):
         """
         Initializes the receiver class.
         port: The serial port to listen to.
@@ -86,15 +93,23 @@ class PropellerSerialGateway(object):
         try:
             # sys.tracebacklimit = 0
             self._Serial = serial.Serial(
-                port=self._Port, baudrate=self._Baudrate, timeout=0, write_timeout=0)
-            self._printOutputFunction(self._LogPrefix + str(self._Port) +
-                                      " connected at " + str(self._Baudrate))
+                port=self._Port, baudrate=self._Baudrate, timeout=0, write_timeout=0
+            )
+            self._printOutputFunction(
+                self._LogPrefix
+                + str(self._Port)
+                + " connected at "
+                + str(self._Baudrate)
+            )
             self._ConnectedToSerialDevice = True
         except:
             self._printOutputFunction(
-                self._LogPrefix + "Unable to connect to " + str(self._Port) + ", will retry...")
-            rospy.loginfo("Unable to connect to " +
-                          str(self._Port) + ", will retry...")
+                self._LogPrefix
+                + "Unable to connect to "
+                + str(self._Port)
+                + ", will retry..."
+            )
+            rospy.loginfo("Unable to connect to " + str(self._Port) + ", will retry...")
 
     def Stop(self):
         # Stop the Watchdog
@@ -113,7 +128,7 @@ class PropellerSerialGateway(object):
             rospy.loginfo(self._LogPrefix + "Stop Error")
 
     def _Listen(self):
-        data = ''  # Initialize.
+        data = ""  # Initialize.
         try:
             data = self._Serial.read(1)
             # If there is no data on the line it will return ''
@@ -121,7 +136,7 @@ class PropellerSerialGateway(object):
             self._printOutputFunction(self._LogPrefix + "Listen Error")
             rospy.loginfo(self._LogPrefix + "Listen Error")
             self._Disconnect()
-        if data == '':
+        if data == "":
             # Pause to avoid hogging the CPU
             time.sleep(0.1)
             # NOTE: You can easily see in top/htop how the CPU usage goes up
@@ -158,7 +173,7 @@ class PropellerSerialGateway(object):
             rospy.loginfo(self._LogPrefix + "Not Open Yet")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     dataReceiver = PropellerSerialGateway()
     dataReceiver.Start()
 
