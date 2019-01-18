@@ -8,7 +8,6 @@ matrix:
     - language: node_js
       node_js: "lts/*"
       before_install:
-        mkdir ~/.arlobot
-        cp scripts/dotarlobot/personalDataForBehavior.json ~/.arlobot/
-        cd node
-      before_script:
+        - mkdir ~/.arlobot
+        - cp scripts/dotarlobot/personalDataForBehavior.json ~/.arlobot/
+        - cd node
