@@ -11,6 +11,6 @@ matrix:
       before_install:
         - mkdir ~/.arlobot
         - cp scripts/dotarlobot/personalDataForBehavior.json ~/.arlobot/
-        - mkdir ~/catkin_ws/src
+        - mkdir -p ~/catkin_ws/src
         - ln -s ${TRAVIS_BUILD_DIR} ~/catkin_ws/src/ArloBot
         - cd node
