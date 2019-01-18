@@ -30,7 +30,7 @@
     "jasmine": "^3.3.1"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node_modules/jasmine/bin/jasmine.js"
   },
   "author": "ChrisL8",
   "license": "ISC",

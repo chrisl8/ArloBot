@@ -7,5 +7,5 @@ matrix:
 
     - language: node_js
       node_js: "lts/*"
-      before_script:
+      before_install:
         cd node
