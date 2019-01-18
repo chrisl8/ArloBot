@@ -2,5 +2,10 @@ matrix:
   include:
     - language: python
       python: 2.7
+      before_script:
+        - cd src
 
     - language: node_js
+      node_js: "lts/*"
+      before_script:
+        cd node
