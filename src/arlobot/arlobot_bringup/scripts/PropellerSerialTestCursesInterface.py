@@ -87,6 +87,7 @@ class Screen(object):
         ]
         self._positionOverrideData = ""
         self._scrollingOutputWindow = ""
+        self._stayAtEnd = True
         self._max_lines = ""
 
     def init_curses(self):
@@ -136,22 +137,28 @@ class Screen(object):
                     )
             elif ch == curses.KEY_UP:
                 self.scroll(self.UP)
+                self._stayAtEnd = False
             elif ch == curses.KEY_DOWN:
                 self.scroll(self.DOWN)
+                self._stayAtEnd = False
             elif ch == curses.KEY_PPAGE:
                 self.paging(self.UP)
+                self._stayAtEnd = False
             elif ch == curses.KEY_NPAGE:
                 self.paging(self.DOWN)
+                self._stayAtEnd = False
             elif ch == curses.KEY_HOME:
                 self.current = 0
                 self.top = 0
                 self.current_page = 1
+                self._stayAtEnd = False
             elif ch == curses.KEY_END:
                 if len(self.items) > self._max_lines():
                     self.top = len(self.items) - self._max_lines()
                     self.current = self._max_lines() - 1
                 else:
                     self.current = len(self.items) - 1
+                self._stayAtEnd = True
             elif self._updatingSettings:
                 if ch == ord("w"):
                     self.sendCommandsToSerialTester("settings_trackWidthDown")
@@ -528,6 +535,15 @@ class Screen(object):
             self._scrollingOutputWindow = self.window.subwin(self.headerHeight, 0)
 
         if self._scrollingOutputWindow.getmaxyx()[0] > 2:
+
+            if self._stayAtEnd:
+                # If user has pressed END follow the last line
+                if len(self.items) > self._max_lines():
+                    self.top = len(self.items) - self._max_lines()
+                    self.current = self._max_lines() - 1
+                else:
+                    self.current = len(self.items) - 1
+
             # Scrolling Output Window
             for idx, item in enumerate(
                 self.items[self.top : self.top + self._max_lines()]
@@ -552,7 +568,9 @@ class Screen(object):
 
             self._scrollingOutputWindow.border()
 
-            self.window.addstr(self.headerHeight, 2, "Up/Down PgUp/PgDn Home/End")
+            self.window.addstr(
+                self.headerHeight, 2, "Up/Down PgUp/PgDn Home/End(follow)"
+            )
 
             windowFooter = (
                 "Line: "
