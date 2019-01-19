@@ -3,11 +3,8 @@ matrix:
   include:
     - language: generic
       name: "Setup Script"
-      befor_script:
-        - pwd
-        - ls
       script:
-        - setup-kinetic.sh
+        - ./setup-kinetic.sh
 
     - language: node_js
       name: "Node Scripts"
