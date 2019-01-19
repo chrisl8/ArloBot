@@ -201,41 +201,43 @@ else
     git pull
 fi
 cd ~/catkin_ws/src/ArloBot
-if ! [ -d ~/catkin_ws/src/ArloBot/mycroft-core ]
-then
-    printf "\n${YELLOW}Do you want to install MyCroft on the Robot?${NC}\n"
-    if ! [[ ${TRAVIS} == "true" ]];then
+if ! [[ ${TRAVIS} == "true" ]];then
+    if ! [[ -d ~/catkin_ws/src/ArloBot/mycroft-core ]]; then
+        printf "\n${YELLOW}Do you want to install MyCroft on the Robot?${NC}\n"
         read -n 1 -s -r -p "Press 'y' if this is OK" RESPONSE_TO_MYCROFT_QUERY
-    fi
-    echo ""
+        echo ""
 
-    if [[ "${RESPONSE_TO_MYCROFT_QUERY}" == "y" || ${TRAVIS} == "true" ]]; then
-        git clone -b master https://github.com/MycroftAI/mycroft-core.git
+        if [[ "${RESPONSE_TO_MYCROFT_QUERY}" == "y" ]]; then
+            git clone -b master https://github.com/MycroftAI/mycroft-core.git
+            cd ~/catkin_ws/src/ArloBot/mycroft-core
+            ./dev_setup.sh
+            ./start-mycroft.sh all
+            printf "\n${YELLOW}Giving Mycoroft time to download skills.${NC}\n"
+            #sleep 60
+            #./stop-mycroft.sh
+            #cd mycroft/tts/
+            #ln -s ${HOME}/catkin_ws/src/ArloBot/mycroft-things/arlobot_tts.py
+
+            printf "\n${YELLOW}[IF you want to use MyCroft:]${NC}\n"
+            printf "\n${YELLOW}[Then see https://docs.mycroft.ai/development/cerberus for configuration info.]${NC}\n"
+            printf "\n${YELLOW}[See more info at: https://docs.mycroft.ai/installing.and.running/installation/git.clone.install]${NC}\n"
+            printf "\n${YELLOW}[At the least you will have to register MyCroft if you want full functionality, althoug it does work without registering.]${NC}\n"
+        fi
+    else
         cd ~/catkin_ws/src/ArloBot/mycroft-core
+        ./stop-mycroft.sh
+        git pull
         ./dev_setup.sh
         ./start-mycroft.sh all
-        printf "\n${YELLOW}Giving Mycoroft time to download skills.${NC}\n"
-        #sleep 60
-        #./stop-mycroft.sh
-        #cd mycroft/tts/
-        #ln -s ${HOME}/catkin_ws/src/ArloBot/mycroft-things/arlobot_tts.py
-
-        printf "\n${YELLOW}[IF you want to use MyCroft:]${NC}\n"
-        printf "\n${YELLOW}[Then see https://docs.mycroft.ai/development/cerberus for configuration info.]${NC}\n"
-        printf "\n${YELLOW}[See more info at: https://docs.mycroft.ai/installing.and.running/installation/git.clone.install]${NC}\n"
-        printf "\n${YELLOW}[At the least you will have to register MyCroft if you want full functionality, althoug it does work without registering.]${NC}\n"
     fi
-else
-    cd ~/catkin_ws/src/ArloBot/mycroft-core
-    ./stop-mycroft.sh
-    git pull
-    ./dev_setup.sh
-    ./start-mycroft.sh all
-fi
     #cd ~/catkin_ws/src/ArloBot/mycroft-core
     #printf "\n${YELLO}Patching MyCroft TTS to include Arlobot TTS if we want it.{NC}\n"
     # git diff __init__.py > ~/catkin_ws/src/ArloBot/mycroft-things/tts_source_patch.diff
     #git apply ~/catkin_ws/src/ArloBot/mycroft-things/tts_source_patch.diff
+else
+    printf"\n${GREEN}Skipping Mycroft entirely for Travis CI Testing${NC}\n"
+    # TODO: Could maybe test this, but ./dev_setup.sh asks interactive questions!
+fi
 
 if [ -d /opt/mycroft/skills ]
 then
