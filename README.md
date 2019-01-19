@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/chrisl8/ArloBot.png)](https://travis-ci.com/chrisl8/ArloBot)
+
 ArloBot Package for ROS
 =======================
 

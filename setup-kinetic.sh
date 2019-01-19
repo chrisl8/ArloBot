@@ -39,11 +39,6 @@ printf "${RED}[This script will only work on ubuntu xenial(16.04)]${NC}\n"
 exit 1
 esac
 
-if [[ ${TRAVIS} == "true" ]];then
-    printf "\n${GREEN}TRAVIS CI Testing short circuit.${NC}\n"
-    exit 0
-fi
-
 # I never use this, but if you are having time issues maybe uncomment this.
 #printf "${YELLOW}[Installing chrony and setting the ntpdate]${NC}\n"
 #sudo apt-get install -y chrony
@@ -160,6 +155,7 @@ printf "\n${YELLOW}[Cloning or Updating git repositories]${NC}\n"
 #    git pull
 #fi
 cd ~/catkin_ws/src
+
 if ! [ -d ~/catkin_ws/src/ArloBot ]
     then
     git clone -b kinetic https://github.com/chrisl8/ArloBot.git
@@ -167,6 +163,11 @@ else
     cd ~/catkin_ws/src/ArloBot
     git pull
 fi
+if [[ ${TRAVIS} == "true" ]];then
+    printf "\n${GREEN}TRAVIS CI Testing short circuit.${NC}\n"
+    exit 0
+fi
+
 #cd ~/catkin_ws/src
 # If you have an XV-11 "Neato" Scanner
 #if ! [ -d ~/catkin_ws/src/xv_11_laser_driver ]
