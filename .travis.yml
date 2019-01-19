@@ -9,8 +9,8 @@ matrix:
     - language: node_js
       node_js: "lts/*"
       before_install:
-        - mkdir ~/.arlobot
+        - mkdir -p ~/.arlobot/rosmaps ~/catkin_ws/src
+        - touch ~/.arlobot/rosmaps/dummymap.pgm ~/.arlobot/rosmaps/dummymap.yaml
         - cp scripts/dotarlobot/personalDataForBehavior.json ~/.arlobot/
-        - mkdir -p ~/catkin_ws/src
         - ln -s ${TRAVIS_BUILD_DIR} ~/catkin_ws/src/ArloBot
         - cd node
