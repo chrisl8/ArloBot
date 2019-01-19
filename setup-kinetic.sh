@@ -39,6 +39,11 @@ printf "${RED}[This script will only work on ubuntu xenial(16.04)]${NC}\n"
 exit 1
 esac
 
+if [[ ${TRAVIS} == "true" ]];then
+    printf "\n${GREEN}TRAVIS CI Testing short circuit.${NC}\n"
+    exit 0
+fi
+
 # I never use this, but if you are having time issues maybe uncomment this.
 #printf "${YELLOW}[Installing chrony and setting the ntpdate]${NC}\n"
 #sudo apt-get install -y chrony
