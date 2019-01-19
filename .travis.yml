@@ -2,10 +2,15 @@ dist: xenial
 matrix:
   include:
     - language: generic
+      name: "Setup Script"
+      befor_script:
+        - pwd
+        - ls
       script:
         - setup-kinetic.sh
 
     - language: node_js
+      name: "Node Scripts"
       node_js: "lts/*"
       cache:
         directories:
@@ -18,6 +23,7 @@ matrix:
         - cd node
 
     - language: node_js
+      name: "React Website"
       node_js: "lts/*"
       cache:
         directories:
