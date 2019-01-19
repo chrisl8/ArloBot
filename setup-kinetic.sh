@@ -163,10 +163,6 @@ else
     cd ~/catkin_ws/src/ArloBot
     git pull
 fi
-if [[ ${TRAVIS} == "true" ]];then
-    printf "\n${GREEN}TRAVIS CI Testing short circuit.${NC}\n"
-    exit 0
-fi
 
 #cd ~/catkin_ws/src
 # If you have an XV-11 "Neato" Scanner
@@ -208,11 +204,12 @@ cd ~/catkin_ws/src/ArloBot
 if ! [ -d ~/catkin_ws/src/ArloBot/mycroft-core ]
 then
     printf "\n${YELLOW}Do you want to install MyCroft on the Robot?${NC}\n"
-    read -n 1 -s -r -p "Press 'y' if this is OK" RESPONSE_TO_MYCROFT_QUERY
+    if ! [[ ${TRAVIS} == "true" ]];then
+        read -n 1 -s -r -p "Press 'y' if this is OK" RESPONSE_TO_MYCROFT_QUERY
+    fi
     echo ""
 
-    if [ "${RESPONSE_TO_MYCROFT_QUERY}" == "y" ]
-    then
+    if [[ "${RESPONSE_TO_MYCROFT_QUERY}" == "y" || ${TRAVIS} == "true" ]]; then
         git clone -b master https://github.com/MycroftAI/mycroft-core.git
         cd ~/catkin_ws/src/ArloBot/mycroft-core
         ./dev_setup.sh
