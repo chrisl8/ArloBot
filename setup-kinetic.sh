@@ -5,6 +5,10 @@
 # Run this straight off of github like this:
 # bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/master/setup.sh)
 
+if ! [[ ${TRAVIS} == "true" ]];then
+    set -e
+fi
+
 BLACK='\033[0;30m'
 BLUE='\033[0;34m'
 GREEN='\033[0;32m'
@@ -120,7 +124,7 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 #ros-kinetic-geodesy for hector compile, might not need it if I stop using hector_explore
 #libceres-dev for hector compile, might not need it if I stop using hector_explore
 
-sudo apt install -y ros-kinetic-rqt-* ros-kinetic-turtlebot ros-kinetic-turtlebot-apps ros-kinetic-turtlebot-interactions ros-kinetic-turtlebot-simulator ros-kinetic-kobuki-ftdi python-ftdi1 python-pip python-serial ros-kinetic-openni-* ros-kinetic-openni2-* ros-kinetic-freenect-* ros-kinetic-vision-opencv ros-kinetic-rtabmap-ros ros-kinetic-scan-tools ros-kinetic-explore-lite libopencv-dev python-opencv ros-kinetic-rosbridge-server imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol ros-kinetic-pointcloud-to-laserscan
+sudo apt install -y ros-kinetic-rqt-* ros-kinetic-turtlebot ros-kinetic-turtlebot-apps ros-kinetic-turtlebot-interactions ros-kinetic-turtlebot-simulator ros-kinetic-kobuki-ftdi python-ftdi1 python-pip python-serial ros-kinetic-openni-* ros-kinetic-openni2-* ros-kinetic-freenect-* ros-kinetic-vision-opencv ros-kinetic-rtabmap-ros ros-kinetic-scan-tools ros-kinetic-explore-lite libopencv-dev python-opencv ros-kinetic-rosbridge-server imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol ros-kinetic-pointcloud-to-laserscan ros-*-librealsense
 
 # Update pip?
 sudo -H pip install --upgrade pip
