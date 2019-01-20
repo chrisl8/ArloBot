@@ -1,7 +1,7 @@
 dist: xenial
 matrix:
   include:
-    - language: minimal
+    - language: generic
       name: "Setup Script"
       script:
         - ./setup-kinetic.sh
@@ -18,6 +18,14 @@ matrix:
         - cp scripts/dotarlobot/personalDataForBehavior.json ~/.arlobot/
         - ln -s ${TRAVIS_BUILD_DIR} ~/catkin_ws/src/ArloBot
         - cd node
+
+    - language: node_js
+      name: "Node Code Coverage"
+      install:
+        - npm install -g codecov
+      script:
+        - istanbul cover ./node_modules/jasmine/bin/jasmine.js
+        - codecov
 
     - language: node_js
       name: "React Website"
