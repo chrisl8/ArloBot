@@ -55,9 +55,7 @@ if ! [ -e /etc/apt/sources.list.d/ros-latest.list ]
     # That is why there is a separate section for extra packages that I need for Arlo.
     sudo sh -c "echo \"deb http://packages.ros.org/ros/ubuntu ${version} main\" > /etc/apt/sources.list.d/ros-latest.list"
     printf "${BLUE}[Checking the ROS keys]${NC}\n"
-    roskey=`apt-key list | grep -i "ROS builder"`
-    if [ -z "$roskey" ]
-        then
+    if ! apt-key list | grep -i "ROS builder"; then
         printf "${BLUE}[Adding the ROS keys]${NC}\n"
         sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
         printf "${BLUE}^^ He says it is 'OK'.${NC}\n"
