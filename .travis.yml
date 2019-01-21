@@ -7,7 +7,7 @@ matrix:
         apt:
           update: true
           packages:
-            - dkms linux-headers-4.4.0-141 linux-headers-4.4.0-141-generic linux-headers-generic
+            - dkms linux-headers-4.4.0-141 linux-headers-4.4.0-141-generic linux-headers-generic ros-*-librealsense
       script:
         - ./setup-kinetic.sh
 
