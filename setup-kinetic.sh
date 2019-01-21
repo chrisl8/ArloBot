@@ -322,7 +322,7 @@ fi
 if ! [ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/Arlo/libarlodrive/arlodrive.c ]
 then
     printf "\n${YELLOW}[You must Update your SimpleIDE Learn Folder using the instructions here!]${NC}\n"
-    print "\n${GREEN}http://learn.parallax.com/tutorials/language/propeller-c/propeller-c-set-simpleide/update-your-learn-folder${NC}\n"
+    printf "\n${GREEN}http://learn.parallax.com/tutorials/language/propeller-c/propeller-c-set-simpleide/update-your-learn-folder${NC}\n"
 fi
 
 # We will use ~/.arlobot to store "private" data
