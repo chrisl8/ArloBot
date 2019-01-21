@@ -4,6 +4,7 @@ matrix:
     - language: generic
       name: "Setup Script"
       before_install:
+        - sudo apt update
         - sudo apt install dkms
       script:
         - ./setup-kinetic.sh
@@ -29,7 +30,7 @@ matrix:
       install:
         - npm install -g istanbul codecov
       script:
-        - node ci
+        - npm ci
         - istanbul cover ./node_modules/jasmine/bin/jasmine.js
         - codecov
 
