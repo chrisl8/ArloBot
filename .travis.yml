@@ -5,10 +5,9 @@ matrix:
       name: "Setup Script"
       addons:
         apt:
+          update: true
           packages:
             - dkms linux-headers-4.4.0-141 linux-headers-4.4.0-141-generic linux-headers-generic
-      before_install:
-        - modprobe uvcvideo
       script:
         - ./setup-kinetic.sh
 
