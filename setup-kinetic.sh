@@ -181,8 +181,20 @@ fi
 #    cd ~/catkin_ws/src/xv_11_laser_driver
 #    git pull
 #fi
-cd ~/catkin_ws/src
+
 # If you have a Scanse Sweep Scanner
+if ! [[ -f /usr/local/lib/cmake/sweep/SweepConfig.cmake ]]; then
+    cd
+    git clone https://github.com/scanse/sweep-sdk.git
+    cd ${HOME}/sweep-sdk/libsweep
+    mkdir build
+    cd build
+    cmake .. -DCMAKE_BUILD_TYPE=Release
+    cmake --build .
+    sudo cmake --build . --target install
+    sudo ldconfig
+fi
+cd ~/catkin_ws/src
 if ! [ -d ~/catkin_ws/src/sweep-ros ]
     then
     git clone https://github.com/scanse/sweep-ros.git
