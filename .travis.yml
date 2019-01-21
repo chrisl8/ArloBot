@@ -3,14 +3,6 @@ matrix:
   include:
     - language: generic
       name: "Setup Script"
-      addons:
-        apt:
-          update: true
-          packages:
-            - dkms linux-headers-4.4.0-141 linux-headers-4.4.0-141-generic linux-headers-generic
-      before_install:
-        - wget -O enable_kernel_sources.sh https://raw.githubusercontent.com/IntelRealSense/librealsense/rosdebian/scripts/enable_kernel_sources.sh
-        - bash ./enable_kernel_sources.sh
       script:
         - ./setup-kinetic.sh
 
