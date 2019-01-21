@@ -5,7 +5,8 @@ matrix:
       name: "Setup Script"
       before_install:
         - sudo apt update
-        - sudo apt install dkms
+        - sudo apt install dkms linux-headers-4.4.0-141 linux-headers-4.4.0-141-generic linux-headers-generic
+        - modprobe uvcvideo
       script:
         - ./setup-kinetic.sh
 
@@ -26,6 +27,10 @@ matrix:
       name: "Node Code Coverage"
       node_js: "lts/*"
       before_install:
+        - mkdir -p ~/.arlobot/rosmaps ~/catkin_ws/src
+        - touch ~/.arlobot/rosmaps/dummymap.pgm ~/.arlobot/rosmaps/dummymap.yaml
+        - cp scripts/dotarlobot/personalDataForBehavior.json ~/.arlobot/
+        - ln -s ${TRAVIS_BUILD_DIR} ~/catkin_ws/src/ArloBot
         - cd node
       install:
         - npm install -g istanbul codecov
