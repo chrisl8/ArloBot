@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.com/chrisl8/ArloBot.png)](https://travis-ci.com/chrisl8/ArloBot)
+[![codecov](https://codecov.io/gh/chrisl8/ArloBot/branch/new-serial-interface/graph/badge.svg)](https://codecov.io/gh/chrisl8/ArloBot)
+
 ArloBot Package for ROS
 =======================
 

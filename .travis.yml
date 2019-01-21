@@ -1,0 +1,48 @@
+dist: xenial
+matrix:
+  include:
+    - language: minimal
+      name: "Setup Script"
+      script:
+        - ./setup-kinetic.sh
+
+    - language: node_js
+      name: "Node Scripts"
+      node_js: "lts/*"
+      cache:
+        directories:
+          - node_modules
+      before_install:
+        - mkdir -p ~/.arlobot/rosmaps ~/catkin_ws/src
+        - touch ~/.arlobot/rosmaps/dummymap.pgm ~/.arlobot/rosmaps/dummymap.yaml
+        - cp scripts/dotarlobot/personalDataForBehavior.json ~/.arlobot/
+        - ln -s ${TRAVIS_BUILD_DIR} ~/catkin_ws/src/ArloBot
+        - cd node
+
+    - language: node_js
+      name: "Node Code Coverage"
+      node_js: "lts/*"
+      before_install:
+        - mkdir -p ~/.arlobot/rosmaps ~/catkin_ws/src
+        - touch ~/.arlobot/rosmaps/dummymap.pgm ~/.arlobot/rosmaps/dummymap.yaml
+        - cp scripts/dotarlobot/personalDataForBehavior.json ~/.arlobot/
+        - ln -s ${TRAVIS_BUILD_DIR} ~/catkin_ws/src/ArloBot
+        - cd node
+      install:
+        - npm install -g istanbul codecov
+      script:
+        - npm ci
+        - istanbul cover ./node_modules/jasmine/bin/jasmine.js
+        - codecov
+
+    - language: node_js
+      name: "React Website"
+      node_js: "lts/*"
+      cache:
+        directories:
+          - node_modules
+      script:
+        - npm test
+        - npm run build
+      before_install:
+        - cd website

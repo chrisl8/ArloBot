@@ -1,0 +1,12 @@
+{
+  "plugins": ["jasmine"],
+  "extends": ["eslint:recommended", "plugin:jasmine/recommended"],
+  "rules": {
+    "quotes": [ 2, "single"],
+    "strict": [2, "global"],
+    "semi": ["error", "always"]
+  },
+  "env": {
+    "jasmine": true
+  }
+}
