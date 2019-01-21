@@ -5,6 +5,10 @@
 # Run this straight off of github like this:
 # bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/master/setup.sh)
 
+if [[ ${TRAVIS} == "true" ]];then
+    set -e
+fi
+
 BLACK='\033[0;30m'
 BLUE='\033[0;34m'
 GREEN='\033[0;32m'
@@ -17,8 +21,8 @@ DARKGRAY='\033[1;30m'
 LIGHTBLUE='\033[1;34m'
 LIGHTGREEN='\033[1;32m'
 LIGHTCYAN='\033[1;36m'
-LIGHTRED='\033[1;31m'
-LIGHTPURPLE='\033[1;35m'
+LIGHT_RED='\033[1;31m'
+LIGHT_PURPLE='\033[1;35m'
 YELLOW='\033[1;33m'
 WHITE='\033[1;37m'
 NC='\033[0m' # NoColor
@@ -44,16 +48,14 @@ esac
 #sudo apt-get install -y chrony
 #sudo ntpdate ntp.ubuntu.com
 
-if ! [ -e /etc/apt/sources.list.d/ros-latest.list ]
+if ! [[ -e /etc/apt/sources.list.d/ros-latest.list ]]
     then
     printf "${YELLOW}[Adding the ROS repository]${NC}\n"
     # This should follow the official ROS install instructions closely.
     # That is why there is a separate section for extra packages that I need for Arlo.
     sudo sh -c "echo \"deb http://packages.ros.org/ros/ubuntu ${version} main\" > /etc/apt/sources.list.d/ros-latest.list"
     printf "${BLUE}[Checking the ROS keys]${NC}\n"
-    roskey=`apt-key list | grep -i "ROS builder"`
-    if [ -z "$roskey" ]
-        then
+    if ! apt-key list | grep -i "ROS builder"; then
         printf "${BLUE}[Adding the ROS keys]${NC}\n"
         sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
         printf "${BLUE}^^ He says it is 'OK'.${NC}\n"
@@ -72,7 +74,7 @@ if ! (dpkg -s ros-kinetic-desktop-full|grep "Status: install ok installed" &> /d
     sudo apt install -y ros-kinetic-desktop-full
     printf "${YELLOW}[ROS installed!]${NC}\n"
     printf "\n${YELLOW}[rosdep init and python-rosinstall]${NC}\n"
-    if ! [ -e /etc/ros/rosdep/sources.list.d/20-default.list ]
+    if ! [[ -e /etc/ros/rosdep/sources.list.d/20-default.list ]]
         then
         sudo sh -c "rosdep init"
     fi
@@ -120,18 +122,24 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 #ros-kinetic-geodesy for hector compile, might not need it if I stop using hector_explore
 #libceres-dev for hector compile, might not need it if I stop using hector_explore
 
-sudo apt install -y ros-kinetic-rqt-* ros-kinetic-turtlebot ros-kinetic-turtlebot-apps ros-kinetic-turtlebot-interactions ros-kinetic-turtlebot-simulator ros-kinetic-kobuki-ftdi python-ftdi1 python-pip python-serial ros-kinetic-openni-* ros-kinetic-openni2-* ros-kinetic-freenect-* ros-kinetic-vision-opencv ros-kinetic-rtabmap-ros ros-kinetic-scan-tools ros-kinetic-explore-lite libopencv-dev python-opencv ros-kinetic-rosbridge-server imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol ros-kinetic-pointcloud-to-laserscan
+sudo apt install -y ros-kinetic-rqt-* ros-kinetic-kobuki-ftdi python-ftdi1 python-pip python-serial ros-kinetic-openni-* ros-kinetic-openni2-* ros-kinetic-freenect-* ros-kinetic-vision-opencv ros-kinetic-rtabmap-ros ros-kinetic-scan-tools ros-kinetic-explore-lite libopencv-dev python-opencv ros-kinetic-rosbridge-server imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol ros-kinetic-pointcloud-to-laserscan
+
+if ! [[ ${TRAVIS} == "true" ]];then
+    sudo apt install -y ros-kinetic-turtlebot-apps ros-kinetic-turtlebot-interactions ros-kinetic-turtlebot-simulator
+else
+    printf "\n${GREEN}Skipping turtlebot bits forTravis CI Testing, because librealsense fails due to uvcvideo in Travis CI environment${NC}\n"
+fi
 
 # Update pip?
 sudo -H pip install --upgrade pip
-sudo chown -R $USER /home/$USER/.cache/
+sudo chown -R ${USER} /home/${USER}/.cache/
 
 # For 8-CH USB Relay board:
 sudo -H pip install pylibftdi
 # As of 4/27/2016 Rosbridge required me to install twisted via pip otherwise it failed.
 sudo -H pip install twisted
 
-if ! [ -d ~/catkin_ws/src ]
+if ! [[ -d ~/catkin_ws/src ]]
     then
     printf "\n${YELLOW}[Creating the catkin workspace and testing with catkin_make]${NC}\n"
     mkdir -p ~/catkin_ws/src
@@ -147,7 +155,7 @@ fi
 # TODO: http://wiki.ros.org/explore_lite
 printf "\n${YELLOW}[Cloning or Updating git repositories]${NC}\n"
 #cd ~/catkin_ws/src
-#if ! [ -d ~/catkin_ws/src/hector_slam ]
+#if ! [[ -d ~/catkin_ws/src/hector_slam ]]
 #    then
 #    git clone https://github.com/tu-darmstadt-ros-pkg/hector_slam.git
 #else
@@ -155,25 +163,39 @@ printf "\n${YELLOW}[Cloning or Updating git repositories]${NC}\n"
 #    git pull
 #fi
 cd ~/catkin_ws/src
-if ! [ -d ~/catkin_ws/src/ArloBot ]
+
+if ! [[ -d ~/catkin_ws/src/ArloBot ]]
     then
     git clone -b kinetic https://github.com/chrisl8/ArloBot.git
 else
     cd ~/catkin_ws/src/ArloBot
     git pull
 fi
+
 #cd ~/catkin_ws/src
 # If you have an XV-11 "Neato" Scanner
-#if ! [ -d ~/catkin_ws/src/xv_11_laser_driver ]
+#if ! [[ -d ~/catkin_ws/src/xv_11_laser_driver ]]
 #    then
 #    git clone https://github.com/chrisl8/xv_11_laser_driver.git
 #else
 #    cd ~/catkin_ws/src/xv_11_laser_driver
 #    git pull
 #fi
-cd ~/catkin_ws/src
+
 # If you have a Scanse Sweep Scanner
-if ! [ -d ~/catkin_ws/src/sweep-ros ]
+if ! [[ -f /usr/local/lib/cmake/sweep/SweepConfig.cmake ]]; then
+    cd
+    git clone https://github.com/scanse/sweep-sdk.git
+    cd ${HOME}/sweep-sdk/libsweep
+    mkdir build
+    cd build
+    cmake .. -DCMAKE_BUILD_TYPE=Release
+    cmake --build .
+    sudo cmake --build . --target install
+    sudo ldconfig
+fi
+cd ~/catkin_ws/src
+if ! [[ -d ~/catkin_ws/src/sweep-ros ]]
     then
     git clone https://github.com/scanse/sweep-ros.git
 else
@@ -182,7 +204,7 @@ else
 fi
 cd ~/catkin_ws/src
 # If you have the excellent ROS by Example book now is a good time to clone the code for following along in the book:
-if ! [ -d ~/catkin_ws/src/rbx1 ]
+if ! [[ -d ~/catkin_ws/src/rbx1 ]]
     then
     git clone -b indigo-devel https://github.com/pirobot/rbx1.git
 else
@@ -191,7 +213,7 @@ else
 fi
 cd ~/catkin_ws/src
 # If you want to use the USB Camera code from the ROS by Example book:
-if ! [ -d ~/catkin_ws/src/usb_cam ]
+if ! [[ -d ~/catkin_ws/src/usb_cam ]]
     then
     git clone https://github.com/bosch-ros-pkg/usb_cam.git
 else
@@ -199,48 +221,51 @@ else
     git pull
 fi
 cd ~/catkin_ws/src/ArloBot
-if ! [ -d ~/catkin_ws/src/ArloBot/mycroft-core ]
-then
-    printf "\n${YELLOW}Do you want to install MyCroft on the Robot?${NC}\n"
-    read -n 1 -s -r -p "Press 'y' if this is OK" RESPONSE_TO_MYCROFT_QUERY
-    echo ""
+if ! [[ ${TRAVIS} == "true" ]];then
+    if ! [[ -d ~/catkin_ws/src/ArloBot/mycroft-core ]]; then
+        printf "\n${YELLOW}Do you want to install MyCroft on the Robot?${NC}\n"
+        read -n 1 -s -r -p "Press 'y' if this is OK" RESPONSE_TO_MYCROFT_QUERY
+        echo ""
 
-    if [ "${RESPONSE_TO_MYCROFT_QUERY}" == "y" ]
-    then
-        git clone -b master https://github.com/MycroftAI/mycroft-core.git
+        if [[ "${RESPONSE_TO_MYCROFT_QUERY}" == "y" ]]; then
+            git clone -b master https://github.com/MycroftAI/mycroft-core.git
+            cd ~/catkin_ws/src/ArloBot/mycroft-core
+            ./dev_setup.sh
+            ./start-mycroft.sh all
+            printf "\n${YELLOW}Giving Mycoroft time to download skills.${NC}\n"
+            #sleep 60
+            #./stop-mycroft.sh
+            #cd mycroft/tts/
+            #ln -s ${HOME}/catkin_ws/src/ArloBot/mycroft-things/arlobot_tts.py
+
+            printf "\n${YELLOW}[IF you want to use MyCroft:]${NC}\n"
+            printf "\n${YELLOW}[Then see https://docs.mycroft.ai/development/cerberus for configuration info.]${NC}\n"
+            printf "\n${YELLOW}[See more info at: https://docs.mycroft.ai/installing.and.running/installation/git.clone.install]${NC}\n"
+            printf "\n${YELLOW}[At the least you will have to register MyCroft if you want full functionality, althoug it does work without registering.]${NC}\n"
+        fi
+    else
         cd ~/catkin_ws/src/ArloBot/mycroft-core
+        ./stop-mycroft.sh
+        git pull
         ./dev_setup.sh
         ./start-mycroft.sh all
-        printf "\n${YELLOW}Giving Mycoroft time to download skills.${NC}\n"
-        #sleep 60
-        #./stop-mycroft.sh
-        #cd mycroft/tts/
-        #ln -s ${HOME}/catkin_ws/src/ArloBot/mycroft-things/arlobot_tts.py
-
-        printf "\n${YELLOW}[IF you want to use MyCroft:]${NC}\n"
-        printf "\n${YELLOW}[Then see https://docs.mycroft.ai/development/cerberus for configuration info.]${NC}\n"
-        printf "\n${YELLOW}[See more info at: https://docs.mycroft.ai/installing.and.running/installation/git.clone.install]${NC}\n"
-        printf "\n${YELLOW}[At the least you will have to register MyCroft if you want full functionality, althoug it does work without registering.]${NC}\n"
     fi
-else
-    cd ~/catkin_ws/src/ArloBot/mycroft-core
-    ./stop-mycroft.sh
-    git pull
-    ./dev_setup.sh
-    ./start-mycroft.sh all
-fi
     #cd ~/catkin_ws/src/ArloBot/mycroft-core
     #printf "\n${YELLO}Patching MyCroft TTS to include Arlobot TTS if we want it.{NC}\n"
     # git diff __init__.py > ~/catkin_ws/src/ArloBot/mycroft-things/tts_source_patch.diff
     #git apply ~/catkin_ws/src/ArloBot/mycroft-things/tts_source_patch.diff
+else
+    printf "\n${GREEN}Skipping Mycroft entirely for Travis CI Testing${NC}\n"
+    # TODO: Could maybe test this, but ./dev_setup.sh asks interactive questions!
+fi
 
-if [ -d /opt/mycroft/skills ]
+if [[ -d /opt/mycroft/skills ]]
 then
-    if ! [ -L /opt/mycroft/skills/arlobot-robot-skill ]; then
+    if ! [[ -L /opt/mycroft/skills/arlobot-robot-skill ]]; then
         cd /opt/mycroft/skills/
         ln -s ${HOME}/catkin_ws/src/ArloBot/mycroft-arlobot-skill arlobot-robot-skill
     fi
-    if ! [ -L /opt/mycroft/skills/arlobot-smalltalk-skill ]; then
+    if ! [[ -L /opt/mycroft/skills/arlobot-smalltalk-skill ]]; then
         cd /opt/mycroft/skills/
         ln -s ${HOME}/catkin_ws/src/ArloBot/mycroft-smalltalk-skill arlobot-smalltalk-skill
     fi
@@ -294,24 +319,24 @@ then
     rm /tmp/simple-ide_1-0-1-rc1_amd64.deb
 fi
 
-if ! [ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/Arlo/libarlodrive/arlodrive.c ]
+if ! [[ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/Arlo/libarlodrive/arlodrive.c ]]
 then
     printf "\n${YELLOW}[You must Update your SimpleIDE Learn Folder using the instructions here!]${NC}\n"
-    print "\n${GREEN}http://learn.parallax.com/tutorials/language/propeller-c/propeller-c-set-simpleide/update-your-learn-folder${NC}\n"
+    printf "\n${GREEN}http://learn.parallax.com/tutorials/language/propeller-c/propeller-c-set-simpleide/update-your-learn-folder${NC}\n"
 fi
 
 # We will use ~/.arlobot to store "private" data
 # That is data that doesn't need to be part of
 # the public github repo like user tokens,
 # sounds, and room maps and per robot settings
-if ! [ -d ${HOME}/.arlobot ]
+if ! [[ -d ${HOME}/.arlobot ]]
     then
     mkdir ${HOME}/.arlobot
 fi
 
 ARLOHOME=${HOME}/.arlobot
 
-if [ -e ${ARLOHOME}/arlobot.yaml ]
+if [[ -e ${ARLOHOME}/arlobot.yaml ]]
     then
     if ! (diff ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/arlobot.yaml > /dev/null)
         then
@@ -327,12 +352,12 @@ else
     printf "\n"
     cp ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/
     printf "${GREEN}A brand new ${RED}~/.arlobot/arlobot.yaml${GREEN} file has been created,${NC}\n"
-    printf "${LIGHTPURPLE}Please edit this file to customize according to your robot!${NC}\n"
+    printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
 fi
 
 for i in `ls ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/`
 do
-    if [ -e  ${ARLOHOME}/${i} ]
+    if [[ -e  ${ARLOHOME}/${i} ]]
         then
         if ! (diff ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLOHOME}/${i} > /dev/null)
             then
@@ -347,7 +372,7 @@ do
         printf "\n"
         cp ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLOHOME}/
         printf "${GREEN}A brand new ${RED}${ARLOHOME}/${i}${GREEN} file has been created,${NC}\n"
-        printf "${LIGHTPURPLE}Please edit this file to customize according to your robot!${NC}\n"
+        printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
     fi
 done
 

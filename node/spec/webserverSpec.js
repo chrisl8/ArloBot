@@ -1,12 +1,11 @@
-const webModel = require('../webModel');
 const fs = require('fs');
+const io = require('socket.io/node_modules/socket.io-client');
+const webModel = require('../webModel');
 
 const personalDataFile = `${
   process.env.HOME
 }/.arlobot/personalDataForBehavior.json`;
 const personalData = JSON.parse(fs.readFileSync(personalDataFile, 'utf8'));
-let io = require('socket.io/node_modules/socket.io-client'),
-  assert = require('assert');
 
 const personalDataFolder = `${process.env.HOME}/.arlobot/`;
 const statusFolder = `${personalDataFolder}status/`;
@@ -41,22 +40,25 @@ describe('Suite of unit tests for webserver', () => {
 
   beforeEach((done) => {
     // Setup
-    socket = io.connect(`http://localhost:${personalData.webServerPort}`, {
-      'reconnection delay': 0,
-      'reopen delay': 0,
-      'force new connection': true,
-    });
+    socket = io.connect(
+      `http://localhost:${personalData.webServerPort}`,
+      {
+        'reconnection delay': 0,
+        'reopen delay': 0,
+        'force new connection': true,
+      },
+    );
     socket.on('connect', () => {
       // console.log('worked...');
       done();
     });
-    socket.on('event', (data) => {
+    socket.on('event', () => {
       // console.log(data);
     });
-    socket.on('startup', (data) => {
+    socket.on('startup', () => {
       // console.log('"startup" received over socket.');
     });
-    socket.on('webModel', (data) => {
+    socket.on('webModel', () => {
       // console.log('"webModel" received over socket.');
     });
     socket.on('disconnect', () => {

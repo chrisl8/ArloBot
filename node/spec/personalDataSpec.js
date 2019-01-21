@@ -6,7 +6,9 @@ const personalDataFile = `${
 const personalData = JSON.parse(fs.readFileSync(personalDataFile, 'utf8'));
 
 describe('Personal data file tests', () => {
-  it('should have been edited with user settings', () => {
-    expect(personalData.hasBeenEdited).toBe(true);
+  it('should not have been edited with user settings yet', () => {
+    expect(personalData.hasBeenEdited).toBe(false);
   });
 });
+
+// TODO: Update the file and then check again?
