@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Using PEP 8: http://wiki.ros.org/PyStyleGuide
+# Using Black: https://github.com/ambv/black
 # pylint: disable=line-too-long
 # Software License Agreement (BSD License)
 #
@@ -9,36 +9,26 @@
 # Derived from \opt\ros\hydro\lib\create_node\turtlebot_node.py
 # This is based on turtlebot_node adapted to run on a Propeller Activity Board based ArloBot
 #
-# When upgrading to new versions of ROS,
-# or when attempting to integrate new TurtleBot functions,
-# please look at and compare turtlebot_node.py to the new version
-# to see what you may need to add/improve/replace
-# to make things work.
-#
 # Special thanks to arduino.py by Dr. Rainer Hessmer
 # https://code.google.com/p/drh-robotics-ros/
-# Much of my code below is based on or copied from his work.
 #
-# NOTE: This script REQUIRES parameters to be loaded from param/encoders.yaml!
+# NOTE: This script requires parameters to be loaded from param/arlobot.yaml!
 
+from __future__ import print_function
 import rospy
 import tf
 from math import sin, cos
 import time
-import json
-import subprocess
-import os
 
 from geometry_msgs.msg import Quaternion
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
-from std_msgs.msg import String
-from std_msgs.msg import Bool
 from arlobot_msgs.msg import usbRelayStatus, arloStatus, arloSafety, arloButtons
 from arlobot_msgs.srv import FindRelay, ToggleRelay, ToggleLED
 
-from SerialDataGateway import SerialDataGateway
+from PropellerSerialInterface import PropellerSerialInterface
+from PropellerSerialDataPacketTypes import PropellerSerialDataPacketTypes
 from OdomStationaryBroadcaster import OdomStationaryBroadcaster
 
 
@@ -48,16 +38,18 @@ class PropellerComm(object):
     """
 
     def __init__(self):
-        rospy.init_node('arlobot')
+        rospy.init_node("arlobot")
 
         self.r = rospy.Rate(1)  # 1hz refresh rate
-        self._Counter = 0  # For Propeller code's _HandleReceivedLine and _write_serial
-        self._motorsOn = False  # Set to 1 if the motors are on, used with USB Relay Control board
+        self._motorsOn = (
+            False
+        )  # Set to True if the motors are on, used with USB Relay Control board
         self._safeToGo = False  # Use arlobot_safety to set this
         self._SafeToOperate = False  # Use arlobot_safety to set this
-        self._acPower = True  # Track AC power status internally
         self._unPlugging = False  # Used for when arlobot_safety tells us to "UnPlug"!
-        self._wasUnplugging = False  # Track previous unplugging status for motor control
+        self._wasUnplugging = (
+            False
+        )  # Track previous unplugging status for motor control
         self._SwitchingMotors = False  # Prevent overlapping calls to _switch_motors
         self._serialAvailable = False
         self._serialTimeout = 0
@@ -65,72 +57,113 @@ class PropellerComm(object):
         self._rightMotorPower = False
         self._laptop_battery_percent = 100
         # Store last x, y and heading for reuse when we reset
-        # I took off off the ~, because that was causing these to reset to default on every restart
+        # I took off the ~, because that was causing these to reset to default on every restart
         # even if roscore was still up.
         self.lastX = rospy.get_param("lastX", 0.0)
         self.lastY = rospy.get_param("lastY", 0.0)
         self.lastHeading = rospy.get_param("lastHeading", 0.0)
         self.alternate_heading = self.lastHeading
-        self.track_width = rospy.get_param("~driveGeometry/trackWidth", "0")
-        self.distance_per_count = rospy.get_param("~driveGeometry/distancePerCount", "0")
-        self.ignore_proximity = rospy.get_param("~ignoreProximity", False)
-        self.ignore_cliff_sensors = rospy.get_param("~ignoreCliffSensors", False)
-        self.ignore_ir_sensors = rospy.get_param("~ignoreIRSensors", False)
-        self.ignore_floor_sensors = rospy.get_param("~ignoreFloorSensors", False)
-        self.robotParamChanged = False
 
         # Get motor relay numbers for use later in _HandleUSBRelayStatus if USB Relay is in use:
         self.relayExists = rospy.get_param("~usbRelayInstalled", False)
         if self.relayExists:
             # I think it is better to get these once than on every run of _HandleUSBRelayStatus
             self.usbLeftMotorRelayLabel = rospy.get_param("~usbLeftMotorRelayLabel", "")
-            self.usbRightMotorRelayLabel = rospy.get_param("~usbRightMotorRelayLabel", "")
+            self.usbRightMotorRelayLabel = rospy.get_param(
+                "~usbRightMotorRelayLabel", ""
+            )
             rospy.loginfo("Waiting for USB Relay find_relay service to start . . .")
-            rospy.wait_for_service('/arlobot_usbrelay/find_relay')
+            rospy.wait_for_service("/arlobot_usbrelay/find_relay")
             rospy.loginfo("USB Relay find_relay service started.")
             try:
-                find_relay = rospy.ServiceProxy('/arlobot_usbrelay/find_relay', FindRelay)
+                find_relay = rospy.ServiceProxy(
+                    "/arlobot_usbrelay/find_relay", FindRelay
+                )
                 self.leftMotorRelay = find_relay(self.usbLeftMotorRelayLabel)
                 self.rightMotorRelay = find_relay(self.usbRightMotorRelayLabel)
                 if self.leftMotorRelay.foundRelay and self.leftMotorRelay.foundRelay:
                     rospy.loginfo(
-                        "Left = " + str(self.leftMotorRelay.relayNumber) + " & Right = " + str(
-                            self.rightMotorRelay.relayNumber))
+                        "Left = "
+                        + str(self.leftMotorRelay.relayNumber)
+                        + " & Right = "
+                        + str(self.rightMotorRelay.relayNumber)
+                    )
                 else:
                     self.relayExists = False
             except rospy.ServiceException as e:
                 rospy.loginfo("Service call failed: %s" % e)
-            rospy.Subscriber("arlobot_usbrelay/usbRelayStatus", usbRelayStatus,
-                             self._handle_usb_relay_status)  # Safety Shutdown
+            rospy.Subscriber(
+                "arlobot_usbrelay/usbRelayStatus",
+                usbRelayStatus,
+                self._handle_usb_relay_status,
+            )  # Safety Shutdown
+
+        # Store the data from ROS
+        self._settings_from_ros = {
+            "trackWidth": 0.0,
+            "distancePerCount": 0.0,
+            "ignoreProximity": False,
+            "ignoreCliffSensors": False,
+            "ignoreIRSensors": False,
+            "ignoreFloorSensors": False,
+            "pluggedIn": True,
+        }
+
+        self._updateSettingsFromROS()
+
+        # Store the incoming data from the Propeller board
+        self._config_from_propeller = {
+            "trackWidth": 0,
+            "distancePerCount": 0,
+            # Set to opposites to  of self._settings
+            # to ensure _settingsUpdateRequired stays true
+            # until we get the data from the board.
+            "ignoreProximity": not self._settings_from_ros["ignoreProximity"],
+            "ignoreCliffSensors": not self._settings_from_ros["ignoreCliffSensors"],
+            "ignoreIRSensors": not self._settings_from_ros["ignoreIRSensors"],
+            "ignoreFloorSensors": not self._settings_from_ros["ignoreFloorSensors"],
+            "pluggedIn": not self._settings_from_ros["pluggedIn"],
+        }
+
+        self._ledInputData_from_propeller = []
 
         # Subscriptions
-        rospy.Subscriber("cmd_vel", Twist,
-                         self._handle_velocity_command)  # Is this line or the below bad redundancy?
-        rospy.Subscriber("arlobot_safety/safetyStatus", arloSafety,
-                         self._safety_shutdown)  # Safety Shutdown
+        rospy.Subscriber(
+            "cmd_vel", Twist, self._handle_velocity_command
+        )  # Is this line or the below bad redundancy?
+        rospy.Subscriber(
+            "arlobot_safety/safetyStatus", arloSafety, self._safety_shutdown
+        )  # Safety Shutdown
 
         # Publishers
-        self._SerialPublisher = rospy.Publisher('serial', String, queue_size=10)
-        self._pirPublisher = rospy.Publisher('~pirState', Bool,
-                                             queue_size=1)  # for publishing PIR status
-        self._arlo_status_publisher = rospy.Publisher('arlo_status', arloStatus, queue_size=1)
-        self._buttons_publisher = rospy.Publisher('buttons', arloButtons, queue_size=1)
-        self._ping_publisher = rospy.Publisher('ultrasonic_data', String, queue_size=10);
+        # for publishing PIR status
+        # self._pirPublisher = rospy.Publisher("~pirState", Bool, queue_size=1)
+        self._arlo_status_publisher = rospy.Publisher(
+            "arlo_status", arloStatus, queue_size=1
+        )
+        self._buttons_publisher = rospy.Publisher("buttons", arloButtons, queue_size=1)
 
         # IF the Odometry Transform is done with the robot_pose_ekf do not publish it,
         # but we are not using robot_pose_ekf, because it does nothing for us if you don't have a full IMU!
-        self._OdometryTransformBroadcaster = tf.TransformBroadcaster()  # REMOVE this line if you use robot_pose_ekf
+        # REMOVE this line if you use robot_pose_ekf
+        self._OdometryTransformBroadcaster = tf.TransformBroadcaster()
+
         self._OdometryPublisher = rospy.Publisher("odom", Odometry, queue_size=10)
 
         # We don't need to broadcast a transform, as it is static and contained within the URDF files
         # self._SonarTransformBroadcaster = tf.TransformBroadcaster()
-        self._UltraSonicPublisher = rospy.Publisher("ultrasonic_scan", LaserScan, queue_size=10)
-        self._InfraredPublisher = rospy.Publisher("infrared_scan", LaserScan, queue_size=10)
+        self._UltraSonicPublisher = rospy.Publisher(
+            "ultrasonic_scan", LaserScan, queue_size=10
+        )
+        self._InfraredPublisher = rospy.Publisher(
+            "infrared_scan", LaserScan, queue_size=10
+        )
 
         # Create a service that can be called to send robot to a map based goal
         # http://wiki.ros.org/ROS/Tutorials/CreatingMsgAndSrv
         # http://wiki.ros.org/ROS/Tutorials/WritingServiceClient%28python%29
-        toggleLED = rospy.Service('~ToggleLED', ToggleLED, self._toggleLED)
+
+        rospy.Service("~ToggleLED", ToggleLED, self._toggleLED)
 
         # You can use the ~/catkin_ws/src/ArloBot/scripts/find_ActivityBoard.sh script to find this, and
         # You can set it by running this before starting this:
@@ -138,99 +171,58 @@ class PropellerComm(object):
         port = rospy.get_param("~port", "/dev/ttyUSB0")
         baud_rate = int(rospy.get_param("~baudRate", 115200))
 
-        rospy.loginfo("Starting with serial port: " + port + ", baud rate: " + str(baud_rate))
-        self._SerialDataGateway = SerialDataGateway(port, baud_rate, self._handle_received_line)
+        rospy.loginfo(
+            "Starting with serial port: " + port + ", baud rate: " + str(baud_rate)
+        )
+
+        self.serialInterface = PropellerSerialInterface(
+            self._propellerReadyResponseFunction,
+            self._propellerOdomDataHandler,
+            self._propellerConfigDataHandler,
+            self.TestDataResponseFunction,
+            self.displaySerialErrors,
+            port,
+            baud_rate,
+        )
+        self.dataTypes = PropellerSerialDataPacketTypes()
+
         self._OdomStationaryBroadcaster = OdomStationaryBroadcaster(
-            self._broadcast_static_odometry_info)
+            self._broadcast_static_odometry_info
+        )
 
-    def _handle_received_line(self, line):  # This is Propeller specific
-        """
-        This will run every time a line is received over the serial port (USB)
-        from the Propeller board and will send the data to the correct function.
-        """
-        self._Counter += 1
-        self._serialTimeout = 0
-        # rospy.logdebug(str(self._Counter) + " " + line)
-        # if self._Counter % 50 == 0:
-        self._SerialPublisher.publish(String(str(self._Counter) + ", in:  " + line))
+    def displaySerialErrors(self, data):
+        data = str(data)
+        if "error" in data.lower():
+            rospy.logwarn(data)
+        elif "Serial Write Delay:" in data:
+            rospy.logdebug(data)
+        elif "Good Packet Delay:" in data:
+            rospy.logdebug(data)
+        else:
+            rospy.loginfo(data)
 
-        if len(line) > 0:
-            line_parts = line.split('\t')
-            # We should broadcast the odometry no matter what. Even if the motors are off, or location is useful!
-            if line_parts[0] == 'o':
-                self._broadcast_odometry_info(line_parts)
-                return
-            if line_parts[0] == 'i':
-                self._initialize_drive_geometry(line_parts)
-                return
-            if line_parts[0] == 's':  # Arlo Status info, such as sensors.
-                # rospy.loginfo("Propeller: " + line)
-                self._broadcast_arlo_status(line_parts)
-                return
-            if line_parts[0] == 'b':
-                self._broadcast_button_pushes(line_parts[1].strip())
+    def TestDataResponseFunction(self, data):
+        rospy.loginfo("Test Packet Received: " + str(data))
 
-    def _broadcast_button_pushes(self, button):
-        # Test with:
-        # rostopic echo /buttons
-        rospy.loginfo("Button " + button + " was pushed.")
-        arlo_buttons = arloButtons()
-        arlo_buttons.buttonNumber = int(button)
-        arlo_buttons.buttonPressed = True
-        self._buttons_publisher.publish(arlo_buttons)
-
-    def _broadcast_arlo_status(self, line_parts):
-        arlo_status = arloStatus()
-        # Order from ROS Interface for ArloBot.c
-        # dprint(term, "s\t%d\t%d\t%d\t%d\t%d\n", safeToProceed, safeToRecede, Escaping, abd_speedLimit, abdR_speedLimit)
-        if int(line_parts[1]) == 1:
-            arlo_status.safeToProceed = True
-        else:
-            arlo_status.safeToProceed = False
-        if int(line_parts[2]) == 1:
-            arlo_status.safeToRecede = True
-        else:
-            arlo_status.safeToRecede = False
-        if int(line_parts[3]) == 1:
-            arlo_status.Escaping = True
-        else:
-            arlo_status.Escaping = False
-        arlo_status.abd_speedLimit = int(line_parts[4])
-        arlo_status.abdR_speedLimit = int(line_parts[5])
-        arlo_status.Heading = self.lastHeading
-        arlo_status.gyroHeading = self.alternate_heading
-        arlo_status.minDistanceSensor = int(line_parts[6])
-        left_motor_voltage = (15 / 4.69) * float(line_parts[7])
-        right_motor_voltage = (15 / 4.69) * float(line_parts[8])
-        arlo_status.robotBatteryLevel = 12.0
-        if left_motor_voltage < 1:
-            arlo_status.leftMotorPower = False
-        else:
-            arlo_status.leftMotorPower = True
-            arlo_status.robotBatteryLevel = left_motor_voltage
-        self._leftMotorPower = arlo_status.leftMotorPower
-        if right_motor_voltage < 1:
-            arlo_status.rightMotorPower = False
-        else:
-            arlo_status.rightMotorPower = True
-            arlo_status.robotBatteryLevel = right_motor_voltage
-        self._rightMotorPower = arlo_status.rightMotorPower
-        # 11.6 volts is the cutoff for an SLA battery.
-        if arlo_status.robotBatteryLevel < 12:
-            arlo_status.robotBatteryLow = True
-        else:
-            arlo_status.robotBatteryLow = False
-        arlo_status.laptopBatteryPercent = self._laptop_battery_percent
-        arlo_status.acPower = self._acPower
-        if int(line_parts[9]) == 1:
-            arlo_status.cliff = True
-        else:
-            arlo_status.cliff = False
-        if int(line_parts[10]) == 1:
-            arlo_status.floorObstacle = True
-        else:
-            arlo_status.floorObstacle = False
-        self._arlo_status_publisher.publish(arlo_status)
+    def _updateSettingsFromROS(self):
+        self._settings_from_ros["trackWidth"] = rospy.get_param(
+            "~driveGeometry/trackWidth", "0"
+        )
+        self._settings_from_ros["distancePerCount"] = rospy.get_param(
+            "~driveGeometry/distancePerCount", "0"
+        )
+        self._settings_from_ros["ignoreProximity"] = rospy.get_param(
+            "~ignoreProximity", False
+        )
+        self._settings_from_ros["ignoreCliffSensors"] = rospy.get_param(
+            "~ignoreCliffSensors", False
+        )
+        self._settings_from_ros["ignoreIRSensors"] = rospy.get_param(
+            "~ignoreIRSensors", False
+        )
+        self._settings_from_ros["ignoreFloorSensors"] = rospy.get_param(
+            "~ignoreFloorSensors", False
+        )
 
     def _handle_usb_relay_status(self, status):
         """
@@ -242,78 +234,57 @@ class PropellerComm(object):
             # print (status.relayOn[self.leftMotorRelay.relayNumber])
             # print (status.relayOn[self.leftMotorRelay.relayNumber])
             # Zero indexed arrays!
-            if (status.relayOn[self.leftMotorRelay.relayNumber - 1] and
-                    status.relayOn[self.rightMotorRelay.relayNumber - 1]):
+            if (
+                status.relayOn[self.leftMotorRelay.relayNumber - 1]
+                and status.relayOn[self.rightMotorRelay.relayNumber - 1]
+            ):
                 self._motorsOn = True
             else:
                 self._motorsOn = False
 
     def _safety_shutdown(self, status):
         """
-        Shut down the motors if the SafeToOperate topic goes false.
+        Prevent sending twist commands if the SafeToOperate topic goes false.
         Set unPlugging variable to allow for safe unplug operation.
         """
         self._unPlugging = status.unPlugging
         self._SafeToOperate = status.safeToOperate
         self._safeToGo = status.safeToGo
 
-        old_ac_power = self._acPower
-        self._acPower = status.acPower
-        if not old_ac_power == self._acPower:
-            self.robotParamChanged = True
+        self._settings_from_ros["pluggedIn"] = status.acPower
 
         self._laptop_battery_percent = status.laptopBatteryPercent
-        if not self._SafeToOperate:
-            if self._motorsOn:
-                rospy.loginfo("Safety Shutdown initiated")
-                self._reset_serial_connection()
 
-    def _reset_serial_connection(self):
-        if self._motorsOn:
-            self._switch_motors(False)
-            # Wait for the motors to shut off
-            while self._motorsOn:
-                time.sleep(1)
-        # Reset the propeller board, otherwise there are problems
-        # if you bring up the motors again while it has been operating
-        self._serialAvailable = False
-        rospy.loginfo("Serial Data Gateway stopping . . .")
-        try:
-            self._SerialDataGateway.Stop()
-        except AttributeError:
-            rospy.loginfo("Attempt to start nonexistent Serial device.")
-        rospy.loginfo("Serial Data Gateway stopped.")
-        rospy.loginfo("5 second pause to let Activity Board settle after serial port reset . . .")
-        time.sleep(5)  # Give it time to settle.
-        self.startSerialPort()
-
-    def _broadcast_odometry_info(self, line_parts):
+    def _propellerOdomDataHandler(self, data):
         """
         Broadcast all data from propeller monitored sensors on the appropriate topics.
         """
+
+        self._serialTimeout = 0
+
         # If we got this far, we can assume that the Propeller board is initialized and the motors should be on.
         # The _switch_motors() function will deal with the _SafeToOparete issue
         if not self._motorsOn:
             self._switch_motors(True)
-        parts_count = len(line_parts)
 
-        # rospy.logwarn(partsCount)
-        if parts_count != 8:  # Just discard short/long lines, increment this as lines get longer
-            rospy.logwarn("Short line from Propeller board: " + str(parts_count))
+        # Check for short lines, though this should never happen, as the serial receiver checks this.
+        if (
+            len(data) < 17
+        ):  # Just discard short/long lines, increment this as lines get longer
+            rospy.logwarn("Short odometry line from Propeller board: " + str(len(data)))
             return
 
-        try:
-            x = float(line_parts[1])
-            y = float(line_parts[2])
-            # 3 is odom based heading and 4 is gyro based
-            theta = float(line_parts[3])  # On ArloBot odometry derived heading works best.
-            alternate_theta = float(line_parts[4])
+        # Get odometry and publish it
+        x = data[0]
+        y = data[1]
+        # Odometry based heading
+        theta = data[2]
+        # Gyro based heading
+        alternate_theta = data[3]
+        # On ArloBot odometry derived heading works best.
 
-            vx = float(line_parts[5])
-            omega = float(line_parts[6])
-        except:
-            rospy.logwarn("Bad Propeller odometry floats")
-            return
+        vx = data[4]
+        omega = data[5]
 
         quaternion = Quaternion()
         quaternion.x = 0.0
@@ -336,7 +307,7 @@ class PropellerComm(object):
             (quaternion.x, quaternion.y, quaternion.z, quaternion.w),
             ros_now,
             "base_footprint",
-            "odom"
+            "odom",
         )
 
         # next, we will publish the odometry message over ROS
@@ -377,6 +348,47 @@ class PropellerComm(object):
         #                          0, 0, 0, 0, 0, 1e3]
 
         self._OdometryPublisher.publish(odometry)
+
+        # Get and publish other telemetry data
+        arlo_status = arloStatus()
+        # Order from ROS Interface for ArloBot.c
+        left_motor_voltage = (15 / 4.69) * data[6]
+        right_motor_voltage = (15 / 4.69) * data[7]
+        arlo_status.robotBatteryLevel = 12.0
+        if left_motor_voltage < 1:
+            arlo_status.leftMotorPower = False
+        else:
+            arlo_status.leftMotorPower = True
+            arlo_status.robotBatteryLevel = left_motor_voltage
+        self._leftMotorPower = arlo_status.leftMotorPower
+        if right_motor_voltage < 1:
+            arlo_status.rightMotorPower = False
+        else:
+            arlo_status.rightMotorPower = True
+            arlo_status.robotBatteryLevel = right_motor_voltage
+        self._rightMotorPower = arlo_status.rightMotorPower
+        # 11.6 volts is the cutoff for an SLA battery.
+        if arlo_status.robotBatteryLevel < 12:
+            arlo_status.robotBatteryLow = True
+        else:
+            arlo_status.robotBatteryLow = False
+
+        arlo_status.abd_speedLimit = data[8]
+        arlo_status.abdR_speedLimit = data[9]
+        arlo_status.Heading = self.lastHeading
+        arlo_status.gyroHeading = self.alternate_heading
+        arlo_status.minDistanceSensor = data[10]
+        arlo_status.safeToProceed = True if data[11] == 1 else False
+        arlo_status.safeToRecede = True if data[12] == 1 else False
+        arlo_status.Escaping = True if data[13] == 1 else False
+        arlo_status.cliff = True if data[14] == 1 else False
+        arlo_status.floorObstacle = True if data[15] == 1 else False
+
+        arlo_status.laptopBatteryPercent = self._laptop_battery_percent
+        arlo_status.acPower = self._settings_from_ros["pluggedIn"]
+        self._arlo_status_publisher.publish(arlo_status)
+
+        # Get and publish sensor data
 
         # Joint State for Turtlebot stack
         # Note without this transform publisher the wheels will
@@ -426,7 +438,7 @@ class PropellerComm(object):
         # Some help:
         # http://goo.gl/ZU9XrJ
 
-        # TODO: I'm doing this all in degrees and then converting to Radians later.
+        # I'm doing this all in degrees and then converting to Radians later.
         # Is there any way to do this in Radians?
         # I just don't know how to create and fill an array with "Radians"
         # since they are not rational numbers, but multiples of PI, thus the degrees.
@@ -492,7 +504,7 @@ class PropellerComm(object):
         # max_range_accepted Testing:
         # TODO: More tweaking here could be done.
         # I think it is a trade-off, so there is no end to the adjustment that could be done.
-        # I did a lot of testing with gmappingn while building a map.
+        # I did a lot of testing with gmappinng while building a map.
         # Obviously this would be slightly different from using a map we do not update.
         # It seems there are so many variables here that testing is difficult.
         # We could find one number works great in one situation but is hopeless in another.
@@ -541,57 +553,64 @@ class PropellerComm(object):
         # It is here for seeing in RVIZ, and the Propeller board uses it for emergency stopping,
         # but costmap isn't watching it at the moment. I think it is too erratic for that.
 
-        try:
-            sensor_data = json.loads(line_parts[7])
-            if 'p3' not in sensor_data:
-                rospy.logwarn("Incomplete Propeller JSON for PING sensors")
-                return
-        except:
-            rospy.logwarn("Bad Propeller JSON for PING sensors")
-            return
-        self._ping_publisher.publish(line_parts[7])
+        # Fill sensory arrays with sensor data
+        start = 23
+        end = start + self.serialInterface.pingCount
+        telemetry_pingData = data[start:end]
+        start = end
+        end = start + self.serialInterface.irCount
+        telemetry_irData = data[start:end]
+        start = end
+        end = start + self.serialInterface.floorSensorCount
+        telemetry_floorSensorData = data[start:end]
+        start = end
+        end = start + self.serialInterface.buttonCount
+        telemetry_buttonInputData = data[start:end]
+        start = end
+        end = start + self.serialInterface.ledCount
+        self._ledInputData_from_propeller = data[start:end]
+
         ping = [artificial_far_distance] * 10
         ir = [artificial_far_distance] * len(ping)
 
         # Convert cm to meters and add offset
         for i in range(0, len(ping)):
             # ping[0] = (int(line_parts[7]) / 100.0) + sensor_offset
-            ping[i] = (sensor_data.get('p' + str(i),
-                                       artificial_far_distance * 100) / 100.0) + sensor_offset
+            if len(telemetry_pingData) > i:
+                ping[i] = telemetry_pingData[i] / 100.0 + sensor_offset
+            else:
+                ping[i] = artificial_far_distance
             # Set to "out of range" for distances over "max_range_accepted" to clear long range obstacles
             # and use this for near range only.
             if ping[i] > max_range_accepted:
                 # Be sure "ultrasonic_scan.range_max" is set higher than this or
                 # costmap will ignore these and not clear the cost map!
                 ping[i] = artificial_far_distance
-            ir[i] = (sensor_data.get('i' + str(i),
-                                     artificial_far_distance * 100) / 100.0) + sensor_offset  # Convert cm to meters and add offset
+            if len(telemetry_irData) > i:
+                ir[i] = telemetry_irData[i] / 100.0 + sensor_offset
+            else:
+                ir[i] = artificial_far_distance
 
         # Overwrite main sensors with upper deck sensors if they exist and are closer,
         # TODO: This code is very manual. It won't break if you don't have these sensors, but
         # the positions are hard coded. :(
 
-        if sensor_data.get('p' + str(10)):
-            upperSensor = (sensor_data.get('p' + str(10),
-                                           artificial_far_distance * 100) / 100.0) + sensor_offset
+        if len(telemetry_pingData) > 10:
+            upperSensor = telemetry_pingData[10] / 100.0 + sensor_offset
             if upperSensor < max_range_accepted and upperSensor < ping[1]:
                 ping[1] = upperSensor
-        if sensor_data.get('p' + str(11)):
-            upperSensor = (sensor_data.get('p' + str(11),
-                                           artificial_far_distance * 100) / 100.0) + sensor_offset
+        if len(telemetry_pingData) > 11:
+            upperSensor = telemetry_pingData[11] / 100.0 + sensor_offset
             if upperSensor < max_range_accepted and upperSensor < ping[2]:
                 ping[2] = upperSensor
-        if sensor_data.get('p' + str(12)):
-            upperSensor = (sensor_data.get('p' + str(12),
-                                           artificial_far_distance * 100) / 100.0) + sensor_offset
+        if len(telemetry_pingData) > 12:
+            upperSensor = telemetry_pingData[12] / 100.0 + sensor_offset
             if upperSensor < max_range_accepted and upperSensor < ping[3]:
                 ping[3] = upperSensor
-        if sensor_data.get('p' + str(13)):
-            upperSensor = (sensor_data.get('p' + str(13),
-                                           artificial_far_distance * 100) / 100.0) + sensor_offset
+        if len(telemetry_pingData) > 13:
+            upperSensor = telemetry_pingData[13] / 100.0 + sensor_offset
             if upperSensor < max_range_accepted and upperSensor < ping[7]:
                 ping[7] = upperSensor
-        # TODO: Duduplicate the above code.
 
         # The sensors are 11cm from center to center at the front of the base plate.
         # The radius of the base plate is 22.545 cm
@@ -599,61 +618,8 @@ class PropellerComm(object):
 
         sensor_separation = 28
 
-        # Spread code: NO LONGER USED
-        # TODO: This could make sense to return to if used properly,
-        # allowing obstacles to "fill" the space and smoothly move "around"
-        # the robot as it rotates and objects move across the view of the PING
-        # sensors, instead of "jumping" from one point to the next.
-        # # "sensor_spread" is how wide we expand the sensor "point" in the fake laser scan.
-        # # For the purpose of obstacle avoidance, I think this can actually be a single point,
-        # # Since the costmap inflates these anyway.
-        #
-        # #One issue I am having is it seems that the "ray trace" to the maximum distance
-        # #may not line up with near hits, so that the global cost map is not being cleared!
-        # #Switching from a "spread" to a single point may fix this?
-        # #Since the costmap inflates obstacles anyway, we shouldn't need the spread should we?
-        #
-        # #sensor_spread = 10 # This is how wide of an arc (in degrees) to paint for each "hit"
-        # #sensor_spread = 2 # Testing. I think it has to be even numbers?
-        #
-        # #NOTE:
-        # #This assumes that things get bigger as they are further away. This is true of the PING's area,
-        # #and while it may or may not be true of the object the PING sees, we have no way of knowing if
-        # #the object fills the ping's entire field of view or only a small part of it, a "hit" is a "hit".
-        # #However for the IR sensor, the objects are points, that are the same size regardless of distance,
-        # #so we are clearly inflating them here.
-        #
-        # for x in range(180 - sensor_spread / 2, 180 + sensor_spread / 2):
-        #     PINGranges[x] = ping[5] # Rear Sensor
-        #     IRranges[x] = ir[5] # Rear Sensor
-        #
-        # for x in range((360 - sensor_separation * 2) - sensor_spread / 2,
-        #                (360 - sensor_separation * 2) + sensor_spread / 2):
-        #     PINGranges[x] = ping[4]
-        #     IRranges[x] = ir[4]
-        #
-        # for x in range((360 - sensor_separation) - sensor_spread / 2,
-        #                (360 - sensor_separation) + sensor_spread / 2):
-        #     PINGranges[x] = ping[3]
-        #     IRranges[x] = ir[3]
-        #
-        # for x in range(360 - sensor_spread / 2, 360):
-        #     PINGranges[x] = ping[2]
-        #     IRranges[x] = ir[2]
-        # # Crosses center line
-        # for x in range(0, sensor_spread /2):
-        #     PINGranges[x] = ping[2]
-        #     IRranges[x] = ir[2]
-        #
-        # for x in range(sensor_separation - sensor_spread / 2, sensor_separation + sensor_spread / 2):
-        #     PINGranges[x] = ping[1]
-        #     IRranges[x] = ir[1]
-        #
-        # for x in range((sensor_separation * 2) - sensor_spread / 2, (sensor_separation * 2) + sensor_spread / 2):
-        #     PINGranges[x] = ping[0]
-        #     IRranges[x] = ir[0]
+        # Fake Laser data from pings so that Mapping code  can use it as obstacles
 
-        # Single Point code:
         # for x in range(180 - sensor_spread / 2, 180 + sensor_spread / 2):
         ping_ranges[180 + sensor_separation * 2] = ping[5]
         ir_ranges[180 + sensor_separation * 2] = ir[5]
@@ -744,24 +710,14 @@ class PropellerComm(object):
         self._UltraSonicPublisher.publish(ultrasonic_scan)
         self._InfraredPublisher.publish(infrared_scan)
 
-    def _write_serial(self, message):
-        self._SerialPublisher.publish(String(str(self._Counter) + ", out: " + message))
-        self._SerialDataGateway.Write(message)
-
-    def _toggleLED(self, LED):
-        # Test with:
-        # rosservice call /arlobot/ToggleLED 0 True
-        # Or for all 5:
-        # for i in 0 1 2 3 4;do rosservice call /arlobot/ToggleLED $i True;done
-        if (self._serialAvailable):
-            newLEDState = 0
-            if (LED.state == True):
-                newLEDState = 1
-            message = 'l,%d,%d\r' % (LED.led, newLEDState)
-            self._write_serial(message)
-            return LED.state
-        else:
-            return False
+        # Publish button pushes
+        for entry in telemetry_buttonInputData:
+            if entry == 1:
+                rospy.loginfo("Button " + str(entry) + " was pushed.")
+                arlo_buttons = arloButtons()
+                arlo_buttons.buttonNumber = entry
+                arlo_buttons.buttonPressed = True
+                self._buttons_publisher.publish(arlo_buttons)
 
     def start(self):
         self._OdomStationaryBroadcaster.Start()
@@ -769,25 +725,8 @@ class PropellerComm(object):
         self._serialTimeout = 0
 
     def startSerialPort(self):
-        rospy.loginfo("Serial Data Gateway starting . . .")
-        try:
-            self._SerialDataGateway.Start()
-        except:
-            rospy.loginfo("ARLO SERIAL PORT Start Error")
-            # reset_usb_script = os.path.expanduser("~/arlobot/scripts/callRestUSB.sh")
-            if os.path.isfile(reset_usb_script):
-                rospy.loginfo("RESETING USB PORTS")
-                rospy.loginfo(reset_usb_script)
-                devnull = open(os.devnull, 'w')
-                subprocess.call(["/bin/bash", reset_usb_script], stdout=devnull, stderr=devnull)
-                # The reset should have shut off the motors,
-                # and allowing the stop method to try turning off the motors after the
-                # USB port reset will make the arlobot_usbrelay node hang
-                self._motorsOn = False
-                # At this point we have to restart the node.
-                # The respawn atribute in the launch file should handle this.
-                raise SystemExit(0)
-        rospy.loginfo("Serial Data Gateway started.")
+        self.serialInterface.Start()
+        rospy.loginfo("Serial Data Gateway started by propellerbot_node.")
         self._serialAvailable = True
 
     def stop(self):
@@ -798,71 +737,114 @@ class PropellerComm(object):
         rospy.loginfo("Stopping")
         self._SafeToOperate = False  # Prevent threads fighting
         # Save last position in parameter server in case we come up again without restarting roscore!
-        rospy.set_param('lastX', self.lastX)
-        rospy.set_param('lastY', self.lastY)
-        rospy.set_param('lastHeading', self.lastHeading)
-        time.sleep(5)  # Give the motors time to shut off
+        rospy.set_param("lastX", self.lastX)
+        rospy.set_param("lastY", self.lastY)
+        rospy.set_param("lastHeading", self.lastHeading)
+        if self.relayExists:
+            time.sleep(5)  # Give the motors time to shut off
         self._serialAvailable = False
-        rospy.loginfo("_SerialDataGateway stopping . . .")
-        try:
-            self._SerialDataGateway.Stop()
-        except AttributeError:
-            rospy.loginfo("Attempt to start nonexistent Serial device.")
-        rospy.loginfo("_SerialDataGateway stopped.")
+        rospy.loginfo("Serial Interface stopping . . .")
+        self.serialInterface.Stop()
+        rospy.loginfo("Serial Interface stopped.")
         self._OdomStationaryBroadcaster.Stop()
 
     def _handle_velocity_command(self, twist_command):  # This is Propeller specific
         """ Handle movement requests. """
         # NOTE: turtlebot_node has a lot of code under its cmd_vel function
         # to deal with maximum and minimum speeds,
-        # which are dealt with in ArloBot on the Activity Board itself in the Propeller code.
+        # which are dealt with in ArloBot on the Propeller Board itself in the c code.
         if self._clear_to_go("forGeneralUse"):
-            v = twist_command.linear.x  # m/s
-            omega = twist_command.angular.z  # rad/s
-            # rospy.logdebug("Handling twist command: " + str(v) + "," + str(omega))
-            message = 's,%.3f,%.3f\r' % (v, omega)
-            self._write_serial(message)
+            moveData = self.dataTypes.MoveDataPacket(
+                twist_command.linear.x, twist_command.angular.z
+            )
+            self.serialInterface.SendToPropellerOverSerial("move", moveData)
         elif self._clear_to_go("to_stop"):
-            # WARNING! If you change this check the buffer length in the Propeller C code!
-            message = 's,0.0,0.0\r'  # Tell it to be still if it is not safe to operate
-            # rospy.logdebug("Sending speed command message: " + message)
-            self._write_serial(message)
+            moveData = self.dataTypes.MoveDataPacket(0.0, 0.0)
+            self.serialInterface.SendToPropellerOverSerial("move", moveData)
 
-    def _initialize_drive_geometry(self, line_parts):
-        """ Send parameters from YAML file to Propeller board. """
-        if self._SafeToOperate:
-            if (self.ignore_proximity):
-                ignore_proximity = 1
-            else:
-                ignore_proximity = 0
-            if (self.ignore_cliff_sensors):
-                ignore_cliff_sensors = 1
-            else:
-                ignore_cliff_sensors = 0
-            if (self.ignore_ir_sensors):
-                ignore_ir_sensors = 1
-            else:
-                ignore_ir_sensors = 0
-            if (self.ignore_floor_sensors):
-                ignore_floor_sensors = 1
-            else:
-                ignore_floor_sensors = 0
-            if (self._acPower):
-                ac_power = 1
-            else:
-                ac_power = 0
-            # WARNING! If you change this check the buffer length in the Propeller C code!
-            message = 'd,%f,%f,%d,%d,%d,%d,%d,%f,%f,%f\r' % (
-                self.track_width, self.distance_per_count, ignore_proximity, ignore_cliff_sensors,
-                ignore_ir_sensors, ignore_floor_sensors, ac_power, self.lastX, self.lastY,
-                self.lastHeading)
-            rospy.logdebug("Sending drive geometry params message: " + message)
-            self._write_serial(message)
+    def _toggleLED(self, LED):
+        # Test with:
+        # rosservice call /arlobot/ToggleLED 0 True
+        # Or for all 5:
+        # for i in 0 1 2 3 4;do rosservice call /arlobot/ToggleLED $i True;done
+        if self._serialAvailable:
+            ledData = self.dataTypes.LEDDataPacket(LED.led, 1 if LED.state else 0)
+            self.serialInterface.SendToPropellerOverSerial("led", ledData)
+            return LED.state
         else:
-            if int(line_parts[1]) == 1:
-                self._pirPublisher.publish(True)
-            else:
-                self._pirPublisher.publish(False)
+            return False
+        # TODO: This should actually update the local state, and another function should notice the difference and send the command, like we do with the settings.
+
+    # TODO: Implement all functions that can be sent to/from Propeller,
+    # TODO: Including Test
+    # TODO: and put these together in the code here.
+    # TODO: Test all Propeller data types
+
+    def _propellerReadyResponseFunction(self, data):
+        # When the Propeller Board first boots it will send a 'ready' message
+        # until it gets init data.
+        rospy.logdebug(data)
+        self._serialTimeout = 0
+        rospy.logdebug("Initialising Propeller Board.")
+        initData = self.dataTypes.InitDataPacket(
+            self.lastX, self.lastY, self.lastHeading
+        )
+        self.serialInterface.SendToPropellerOverSerial("init", initData, False)
+
+        # NOTE You MUST also send Settings data after an INIT!
+        # You CAN set the variable flagging to send settings, but what if
+        # it sends ONE and the Propeller misses it?
+        # The most sure fire way is to invalidate the config data we have,
+        # forcing it to send until it is reset.
+        self._config_from_propeller["trackWidth"] = 0
+        self._config_from_propeller["distancePerCount"] = 0
+        # Set to opposites to  of self._settings_from_ros
+        # to ensure we keep sending the settings
+        # until we get the data from the board.
+        self._config_from_propeller["ignoreProximity"] = not self._settings_from_ros[
+            "ignoreProximity"
+        ]
+        self._config_from_propeller["ignoreCliffSensors"] = not self._settings_from_ros[
+            "ignoreCliffSensors"
+        ]
+        self._config_from_propeller["ignoreIRSensors"] = not self._settings_from_ros[
+            "ignoreIRSensors"
+        ]
+        self._config_from_propeller["ignoreFloorSensors"] = not self._settings_from_ros[
+            "ignoreFloorSensors"
+        ]
+        self._config_from_propeller["pluggedIn"] = not self._settings_from_ros[
+            "pluggedIn"
+        ]
+
+        # TODO: These are no longer in service. Consider reimplementing somehow:
+        # self._pirPublisher.publish(True)
+        # self._pirPublisher.publish(False)
+
+    def _propellerConfigDataHandler(self, data):
+        if len(data) > 6:  # Ignore short packets
+            # Round these to the same precision as the input was given at
+            # Round these to the same precision as the input was given at
+            self._config_from_propeller["trackWidth"] = round(
+                data[0], len(str(self._settings_from_ros["trackWidth"]).split(".")[1])
+            )
+            self._config_from_propeller["distancePerCount"] = round(
+                data[1],
+                len(str(self._settings_from_ros["distancePerCount"]).split(".")[1]),
+            )
+            self._config_from_propeller["ignoreProximity"] = (
+                True if data[2] == 1 else False
+            )
+            self._config_from_propeller["ignoreCliffSensors"] = (
+                True if data[3] == 1 else False
+            )
+            self._config_from_propeller["ignoreIRSensors"] = (
+                True if data[4] == 1 else False
+            )
+            self._config_from_propeller["ignoreFloorSensors"] = (
+                True if data[5] == 1 else False
+            )
+            self._config_from_propeller["pluggedIn"] = True if data[6] == 1 else False
 
     def _broadcast_static_odometry_info(self):
         """
@@ -870,12 +852,22 @@ class PropellerComm(object):
         so that ROS can continue to track status
         Otherwise things like gmapping will fail when we loose our transform and publishing topics
         """
-        if not self._motorsOn:  # Use motor status to decide when to broadcast static odometry:
+        # TODO: I think that this should operate any time odometry isn't broadcasting often enough.
+        # TODO: Formerly the serial timeout watcher (watchdog) would shut off the motors, and then
+        # TODO: This would start, but now I think this should just be purely based on the odometry
+        # TODO: output frequency. Basically set an odom timeout and watch it in watchdog,
+        # TODO: instead of the serial timeout.
+
+        # TODO: TL;DR: Use the old serial timeout code as a gude to build a new odom timeout code
+        if (
+            not self._motorsOn
+        ):  # Use motor status to decide when to broadcast static odometry:
             x = self.lastX
             y = self.lastY
             theta = self.lastHeading
-            vx = 0  # If the motors are off we will assume the robot is still.
-            omega = 0  # If the motors are off we will assume the robot is still.
+            # If the Propeller Board is not updating the odometry we will assume the robot is still.
+            vx = 0
+            omega = 0
 
             quaternion = Quaternion()
             quaternion.x = 0.0
@@ -898,7 +890,7 @@ class PropellerComm(object):
                 (quaternion.x, quaternion.y, quaternion.z, quaternion.w),
                 ros_now,
                 "base_footprint",
-                "odom"
+                "odom",
             )
 
             # next, we will publish the odometry message over ROS
@@ -927,13 +919,20 @@ class PropellerComm(object):
                 # then we can just pass state to arlobot_usbrelay
                 if not self._SafeToOperate:
                     state = False
-                rospy.wait_for_service('/arlobot_usbrelay/toggle_relay')
+                rospy.wait_for_service("/arlobot_usbrelay/toggle_relay")
                 rospy.loginfo("Switching motors.")
                 try:
-                    toggle_relay = rospy.ServiceProxy('/arlobot_usbrelay/toggle_relay', ToggleRelay)
+                    toggle_relay = rospy.ServiceProxy(
+                        "/arlobot_usbrelay/toggle_relay", ToggleRelay
+                    )
                     left_relay_result = toggle_relay(self.usbLeftMotorRelayLabel, state)
-                    right_relay_result = toggle_relay(self.usbRightMotorRelayLabel, state)
-                    if left_relay_result.toggleSuccess and right_relay_result.toggleSuccess:
+                    right_relay_result = toggle_relay(
+                        self.usbRightMotorRelayLabel, state
+                    )
+                    if (
+                        left_relay_result.toggleSuccess
+                        and right_relay_result.toggleSuccess
+                    ):
                         self._motorsOn = True
                     else:
                         self._motorsOn = False
@@ -945,130 +944,112 @@ class PropellerComm(object):
 
     def watchDog(self):
         while not rospy.is_shutdown():
-            if self._serialAvailable:
-                self._serialTimeout += 1
-            else:
-                self._serialTimeout = 0
-            # rospy.loginfo("Serial Timeout = " + str(self._serialTimeout))
-            if self._serialTimeout > 19:
-                rospy.loginfo("Watchdog Timeout Reset initiated")
-                self._reset_serial_connection()
+            # NOTE: This USED TO watch for the serial port to go down,
+            # and take corrective action.
+            # Now the PropellerSerialGateway does that itself.
+            # Instead this is just used to make periodic checks
+            # on important status
+
+            # TODO: This should watch for odom to be timed out now instead,
+            # TODO: and set a variable that the static odom broadcaster can use to know
+            # TODO: to start up.
+
             if self._unPlugging or self._wasUnplugging:
                 self.UnplugRobot()
 
-            old_track_width = self.track_width
-            self.track_width = rospy.get_param("~driveGeometry/trackWidth", "0")
-            if not old_track_width == self.track_width:
-                self.robotParamChanged = True
+            self._updateSettingsFromROS()
 
-            old_distance_per_count = self.distance_per_count
-            self.distance_per_count = rospy.get_param("~driveGeometry/distancePerCount", "0")
-            if not old_distance_per_count == self.distance_per_count:
-                self.robotParamChanged = True
-
-            old_ignore_proximity = self.ignore_proximity
-            self.ignore_proximity = rospy.get_param("~ignoreProximity", False)
-            if not old_ignore_proximity == self.ignore_proximity:
-                self.robotParamChanged = True
-
-            old_ignore_cliff_sensors = self.ignore_cliff_sensors
-            self.ignore_cliff_sensors = rospy.get_param("~ignoreCliffSensors", False)
-            if not old_ignore_cliff_sensors == self.ignore_cliff_sensors:
-                self.robotParamChanged = True
-
-            old_ignore_ir_sensors = self.ignore_ir_sensors
-            self.ignore_ir_sensors = rospy.get_param("~ignoreIRSensors", False)
-            if not old_ignore_ir_sensors == self.ignore_ir_sensors:
-                self.robotParamChanged = True
-
-            old_ignore_floor_sensors = self.ignore_floor_sensors
-            self.ignore_floor_sensors = rospy.get_param("~ignoreFloorSensors", False)
-            if not old_ignore_floor_sensors == self.ignore_floor_sensors:
-                self.robotParamChanged = True
-
-            if self.robotParamChanged:
-                if (self.ignore_proximity):
-                    ignore_proximity = 1
-                else:
-                    ignore_proximity = 0
-                if (self.ignore_cliff_sensors):
-                    ignore_cliff_sensors = 1
-                else:
-                    ignore_cliff_sensors = 0
-                if (self.ignore_ir_sensors):
-                    ignore_ir_sensors = 1
-                else:
-                    ignore_ir_sensors = 0
-                if (self.ignore_floor_sensors):
-                    ignore_floor_sensors = 1
-                else:
-                    ignore_floor_sensors = 0
-                if (self._acPower):
-                    ac_power = 1
-                else:
-                    ac_power = 0
-                # WARNING! If you change this check the buffer length in the Propeller C code!
-                message = 'd,%f,%f,%d,%d,%d,%d,%d\r' % (
-                    self.track_width, self.distance_per_count, ignore_proximity,
-                    ignore_cliff_sensors,
-                    ignore_ir_sensors, ignore_floor_sensors, ac_power)
-                self._write_serial(message)
-                self.robotParamChanged = False
+            # Check if any settings need to be updated
+            if (
+                self._config_from_propeller["trackWidth"]
+                != self._settings_from_ros["trackWidth"]
+                or self._config_from_propeller["distancePerCount"]
+                != self._settings_from_ros["distancePerCount"]
+                or self._config_from_propeller["ignoreProximity"]
+                != self._settings_from_ros["ignoreProximity"]
+                or self._config_from_propeller["ignoreCliffSensors"]
+                != self._settings_from_ros["ignoreCliffSensors"]
+                or self._config_from_propeller["ignoreIRSensors"]
+                != self._settings_from_ros["ignoreIRSensors"]
+                or self._config_from_propeller["ignoreFloorSensors"]
+                != self._settings_from_ros["ignoreFloorSensors"]
+                or self._config_from_propeller["pluggedIn"]
+                != self._settings_from_ros["pluggedIn"]
+            ):
+                settingsData = self.dataTypes.SettingsDataPacket(
+                    self._settings_from_ros["trackWidth"],
+                    self._settings_from_ros["distancePerCount"],
+                    1 if self._settings_from_ros["ignoreProximity"] else 0,
+                    1 if self._settings_from_ros["ignoreCliffSensors"] else 0,
+                    1 if self._settings_from_ros["ignoreIRSensors"] else 0,
+                    1 if self._settings_from_ros["ignoreFloorSensors"] else 0,
+                    1 if self._settings_from_ros["pluggedIn"] else 0,
+                )
+                self.serialInterface.SendToPropellerOverSerial(
+                    "settings", settingsData, False
+                )
 
             self.r.sleep()
 
     def UnplugRobot(self):
-        if self._unPlugging and \
-                not self._wasUnplugging and \
-                self._clear_to_go("forUnplugging"):
+        if (
+            self._unPlugging
+            and not self._wasUnplugging
+            and self._clear_to_go("forUnplugging")
+        ):
             # We will only do this once, and let it continue until AC power is disconnected
             self._wasUnplugging = True
             # Slow backup until unplugged
             # This should be a slow backward crawl
             # Minimum Linear Velocity: 0.06 m/s (18 TPS)
             rospy.loginfo("Unplugging!")
-            message = 's,-0.06,0.0\r'
-            self._write_serial(message)
+            moveData = self.dataTypes.MoveDataPacket(-0.06, 0.0)
+            self.serialInterface.SendToPropellerOverSerial("move", moveData)
         # Once we are unplugged, stop the robot before returning control to handle_velocity_command
         # And we only need permission to stop at this point.
-        if self._wasUnplugging and \
-                not self._acPower and \
-                self._serialAvailable:
+        if (
+            self._wasUnplugging
+            and not self._settings_from_ros["pluggedIn"]
+            and self._serialAvailable
+        ):
             rospy.loginfo("Unplugging complete")
-            message = 's,0.0,0.0\r'
             self._wasUnplugging = False
-            self._write_serial(message)
+            moveData = self.dataTypes.MoveDataPacket(0.0, 0.0)
+            self.serialInterface.SendToPropellerOverSerial("move", moveData)
         # Finally, if we were unplugging, but something went wrong, we should stop the robot
         # Since no one else will do this while we have the "_wasUnplugging" variable
         # set.
-        if self._wasUnplugging and \
-                not self._clear_to_go("forUnplugging") and \
-                self._serialAvailable:
-            message = 's,0.0,0.0\r'
+        if (
+            self._wasUnplugging
+            and not self._clear_to_go("forUnplugging")
+            and self._serialAvailable
+        ):
             self._wasUnplugging = False
-            self._write_serial(message)
+            moveData = self.dataTypes.MoveDataPacket(0.0, 0.0)
+            self.serialInterface.SendToPropellerOverSerial("move", moveData)
 
     # Consolidate "clear to go" requirements here.
     def _clear_to_go(self, forWhat):
         return_value = False
         # Required for all operations
-        if self._serialAvailable and \
-                self._SafeToOperate and \
-                self._safeToGo and \
-                self._motorsOn and \
-                self._leftMotorPower and \
-                self._rightMotorPower:
+        if (
+            self._serialAvailable
+            and self._SafeToOperate
+            and self._safeToGo
+            and self._motorsOn
+            and self._leftMotorPower
+            and self._rightMotorPower
+        ):
             return_value = True
         # Negations by use case
         if forWhat == "forUnplugging":
-            # Unpugging should only happen if AC is connected
-            if not self._acPower:
+            # Unplugging should only happen if AC is connected
+            if not self._settings_from_ros["pluggedIn"]:
                 return_value = False
         if forWhat == "forGeneralUse":
             # The handle_velocity_command should only operate if the robot is unplugged,
             # and the unplugging function of the Watchdog process is not in control
-            if self._acPower or \
-                    self._wasUnplugging:
+            if self._settings_from_ros["pluggedIn"] or self._wasUnplugging:
                 return_value = False
         # Special Cases
         if forWhat == "to_stop":
@@ -1077,22 +1058,20 @@ class PropellerComm(object):
             # as long as the unplugging operation is not in progress
             # This should bring the robot to a halt in response to any other requset,
             # if anything is amiss.
-            if self._serialAvailable and \
-                    not self._wasUnplugging:
+            if self._serialAvailable and not self._wasUnplugging:
                 return_value = True
             else:
                 return_value = False
         return return_value
 
 
-if __name__ == '__main__':
-    propellercomm = PropellerComm()
-    rospy.on_shutdown(propellercomm.stop)
+if __name__ == "__main__":
+    propellerComm = PropellerComm()
+    rospy.on_shutdown(propellerComm.stop)
     try:
-        propellercomm.start()
+        propellerComm.start()
         rospy.loginfo("Propellerbot_node has started.")
-        propellercomm.watchDog()
-        # rospy.spin()
+        propellerComm.watchDog()
 
     except rospy.ROSInterruptException:
-        propellercomm.stop()
+        propellerComm.stop()
