@@ -21,8 +21,8 @@ DARKGRAY='\033[1;30m'
 LIGHTBLUE='\033[1;34m'
 LIGHTGREEN='\033[1;32m'
 LIGHTCYAN='\033[1;36m'
-LIGHTRED='\033[1;31m'
-LIGHTPURPLE='\033[1;35m'
+LIGHT_RED='\033[1;31m'
+LIGHT_PURPLE='\033[1;35m'
 YELLOW='\033[1;33m'
 WHITE='\033[1;37m'
 NC='\033[0m' # NoColor
@@ -48,7 +48,7 @@ esac
 #sudo apt-get install -y chrony
 #sudo ntpdate ntp.ubuntu.com
 
-if ! [ -e /etc/apt/sources.list.d/ros-latest.list ]
+if ! [[ -e /etc/apt/sources.list.d/ros-latest.list ]]
     then
     printf "${YELLOW}[Adding the ROS repository]${NC}\n"
     # This should follow the official ROS install instructions closely.
@@ -74,7 +74,7 @@ if ! (dpkg -s ros-kinetic-desktop-full|grep "Status: install ok installed" &> /d
     sudo apt install -y ros-kinetic-desktop-full
     printf "${YELLOW}[ROS installed!]${NC}\n"
     printf "\n${YELLOW}[rosdep init and python-rosinstall]${NC}\n"
-    if ! [ -e /etc/ros/rosdep/sources.list.d/20-default.list ]
+    if ! [[ -e /etc/ros/rosdep/sources.list.d/20-default.list ]]
         then
         sudo sh -c "rosdep init"
     fi
@@ -132,14 +132,14 @@ fi
 
 # Update pip?
 sudo -H pip install --upgrade pip
-sudo chown -R $USER /home/$USER/.cache/
+sudo chown -R ${USER} /home/${USER}/.cache/
 
 # For 8-CH USB Relay board:
 sudo -H pip install pylibftdi
 # As of 4/27/2016 Rosbridge required me to install twisted via pip otherwise it failed.
 sudo -H pip install twisted
 
-if ! [ -d ~/catkin_ws/src ]
+if ! [[ -d ~/catkin_ws/src ]]
     then
     printf "\n${YELLOW}[Creating the catkin workspace and testing with catkin_make]${NC}\n"
     mkdir -p ~/catkin_ws/src
@@ -155,7 +155,7 @@ fi
 # TODO: http://wiki.ros.org/explore_lite
 printf "\n${YELLOW}[Cloning or Updating git repositories]${NC}\n"
 #cd ~/catkin_ws/src
-#if ! [ -d ~/catkin_ws/src/hector_slam ]
+#if ! [[ -d ~/catkin_ws/src/hector_slam ]]
 #    then
 #    git clone https://github.com/tu-darmstadt-ros-pkg/hector_slam.git
 #else
@@ -164,7 +164,7 @@ printf "\n${YELLOW}[Cloning or Updating git repositories]${NC}\n"
 #fi
 cd ~/catkin_ws/src
 
-if ! [ -d ~/catkin_ws/src/ArloBot ]
+if ! [[ -d ~/catkin_ws/src/ArloBot ]]
     then
     git clone -b kinetic https://github.com/chrisl8/ArloBot.git
 else
@@ -174,7 +174,7 @@ fi
 
 #cd ~/catkin_ws/src
 # If you have an XV-11 "Neato" Scanner
-#if ! [ -d ~/catkin_ws/src/xv_11_laser_driver ]
+#if ! [[ -d ~/catkin_ws/src/xv_11_laser_driver ]]
 #    then
 #    git clone https://github.com/chrisl8/xv_11_laser_driver.git
 #else
@@ -195,7 +195,7 @@ if ! [[ -f /usr/local/lib/cmake/sweep/SweepConfig.cmake ]]; then
     sudo ldconfig
 fi
 cd ~/catkin_ws/src
-if ! [ -d ~/catkin_ws/src/sweep-ros ]
+if ! [[ -d ~/catkin_ws/src/sweep-ros ]]
     then
     git clone https://github.com/scanse/sweep-ros.git
 else
@@ -204,7 +204,7 @@ else
 fi
 cd ~/catkin_ws/src
 # If you have the excellent ROS by Example book now is a good time to clone the code for following along in the book:
-if ! [ -d ~/catkin_ws/src/rbx1 ]
+if ! [[ -d ~/catkin_ws/src/rbx1 ]]
     then
     git clone -b indigo-devel https://github.com/pirobot/rbx1.git
 else
@@ -213,7 +213,7 @@ else
 fi
 cd ~/catkin_ws/src
 # If you want to use the USB Camera code from the ROS by Example book:
-if ! [ -d ~/catkin_ws/src/usb_cam ]
+if ! [[ -d ~/catkin_ws/src/usb_cam ]]
     then
     git clone https://github.com/bosch-ros-pkg/usb_cam.git
 else
@@ -259,13 +259,13 @@ else
     # TODO: Could maybe test this, but ./dev_setup.sh asks interactive questions!
 fi
 
-if [ -d /opt/mycroft/skills ]
+if [[ -d /opt/mycroft/skills ]]
 then
-    if ! [ -L /opt/mycroft/skills/arlobot-robot-skill ]; then
+    if ! [[ -L /opt/mycroft/skills/arlobot-robot-skill ]]; then
         cd /opt/mycroft/skills/
         ln -s ${HOME}/catkin_ws/src/ArloBot/mycroft-arlobot-skill arlobot-robot-skill
     fi
-    if ! [ -L /opt/mycroft/skills/arlobot-smalltalk-skill ]; then
+    if ! [[ -L /opt/mycroft/skills/arlobot-smalltalk-skill ]]; then
         cd /opt/mycroft/skills/
         ln -s ${HOME}/catkin_ws/src/ArloBot/mycroft-smalltalk-skill arlobot-smalltalk-skill
     fi
@@ -319,7 +319,7 @@ then
     rm /tmp/simple-ide_1-0-1-rc1_amd64.deb
 fi
 
-if ! [ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/Arlo/libarlodrive/arlodrive.c ]
+if ! [[ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/Arlo/libarlodrive/arlodrive.c ]]
 then
     printf "\n${YELLOW}[You must Update your SimpleIDE Learn Folder using the instructions here!]${NC}\n"
     printf "\n${GREEN}http://learn.parallax.com/tutorials/language/propeller-c/propeller-c-set-simpleide/update-your-learn-folder${NC}\n"
@@ -329,14 +329,14 @@ fi
 # That is data that doesn't need to be part of
 # the public github repo like user tokens,
 # sounds, and room maps and per robot settings
-if ! [ -d ${HOME}/.arlobot ]
+if ! [[ -d ${HOME}/.arlobot ]]
     then
     mkdir ${HOME}/.arlobot
 fi
 
 ARLOHOME=${HOME}/.arlobot
 
-if [ -e ${ARLOHOME}/arlobot.yaml ]
+if [[ -e ${ARLOHOME}/arlobot.yaml ]]
     then
     if ! (diff ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/arlobot.yaml > /dev/null)
         then
@@ -352,12 +352,12 @@ else
     printf "\n"
     cp ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/
     printf "${GREEN}A brand new ${RED}~/.arlobot/arlobot.yaml${GREEN} file has been created,${NC}\n"
-    printf "${LIGHTPURPLE}Please edit this file to customize according to your robot!${NC}\n"
+    printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
 fi
 
 for i in `ls ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/`
 do
-    if [ -e  ${ARLOHOME}/${i} ]
+    if [[ -e  ${ARLOHOME}/${i} ]]
         then
         if ! (diff ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLOHOME}/${i} > /dev/null)
             then
@@ -372,7 +372,7 @@ do
         printf "\n"
         cp ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLOHOME}/
         printf "${GREEN}A brand new ${RED}${ARLOHOME}/${i}${GREEN} file has been created,${NC}\n"
-        printf "${LIGHTPURPLE}Please edit this file to customize according to your robot!${NC}\n"
+        printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
     fi
 done
 
