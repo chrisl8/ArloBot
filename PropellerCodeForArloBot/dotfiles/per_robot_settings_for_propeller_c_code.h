@@ -227,9 +227,8 @@ onto your Propeller Activity board!
 */
 
 // Maximum speed in ticks per second. Even if ROS asks us to go faster, we will not.
-// This is used to set the abd_speedLimit and abdR_speedLimit
 #define MAXIMUM_SPEED 220 // Two TPS faster than what we are telling ROS is the maximum speed.
-// Use MotorResponseTesting.c if you want to test/adjust this,
+// Use MotorReponseTesting.c if you want to test/adjust this,
 // And be sure to edit the ROS config files with the maximum linear (m/s) and angular (rad/s) velocity
 
 // Acceleration rate for DBH-10
@@ -240,25 +239,6 @@ onto your Propeller Activity board!
 // Use MotorReponseTesting.c if you want to test/adjust this,
 // And be sure to edit the ROS config files with the maximum linear (m/s^2) and angular (rad/s^2) acceleration
 // Calculator: http://www.smartconversion.com/unit_calculation/Acceleration_calculator.aspx
-
-/* Connect Encoder Pins directly to the Propeller board,
-instead of using the DHB10.
-The DBH10 reads the encoder pins to give the wheel speed,
-however, some user have found the DBH10 to be unreliable, so they hook
-the encoder pins to the Propeller directly.
-*/
-// #define encoderConnectedToPropeller
-// Define the encoders pins if connected directly to Propeller
-#define LEFT_A 3
-#define LEFT_B 2
-#define RIGHT_A 1
-#define RIGHT_B 0
-
-/* Pause between cog starts
-This just sets a delay between each cog start,
-mostly so that startup messages don't collide,
-but it may help in some other way too. */
-#define cogStartupDelay 100
 
 /* These settings affect the speed at which the "loop" on the robot runs.
 If it runs too fast we overwhelm serial connections and crash things or get garbage.
@@ -276,3 +256,20 @@ It is often desirable to set this longer when doing direct to serial testing.
 However, ROS typically updates the robot frequently, so this should work with ROS.
 */
 #define ROS_TIMEOUT 5
+
+/* Enable this to turn on extra debugging information,
+for use with the
+/home/chrisl8/catkin_ws/src/ArloBot/scripts/direct2PropSerialTest.sh
+script.
+Do not try to use it with ROS, as the extra output will confuse it. */
+
+//#define debugModeOn
+
+/* You can disable this for use with the
+~/catkin_ws/src/ArloBot/scripts/direct2PropSerialTest.sh
+script in order to disable the normal sensor data lines.
+Sometimes this is helpful to clean up the output for debugging.
+This MUST be enabled for ROS to work though!
+*/
+
+#define enableOutput // Do NOT comment this out when running ROS!

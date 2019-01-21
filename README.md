@@ -1,22 +1,6 @@
 ArloBot Package for ROS
 =======================
 
-# DO NOT USE THIS BRANCH YET!
-
-## New Propeller C Code with new Serial Interface
-
-* Entirely new Propeller C code. Based on original but with many changes
-and modularized into .h files to help with organization.
-Also using clangformat to format code.
-
-* An entirely new serial interface has been written, using "binary" data
-transmission that includes strict checks for length and checksums on
-the data.
-
-* An new python curses based serial communications test program now allows testing of ALL Propeller board functions over serial with zero use of ROS to more easily ensure the hardware is working before starting ROS.
-
-**NOTE that the ROS Propeller Node is now BROKEN in this branch until I finish coding the update for it to work with the new serial interface!**
-
 ## and SO MUCH MORE! ##
 
 1. This package provides a set of ROS packages for using a [Parallax Arlo Platform](http://www.parallax.com/product/arlo-robotic-platform-system "Parallax") robot to run all of the demonstration projects for the [Robot Operating System (ROS)](http://www.ros.org/ "ROS") based [TurtleBot](http://wiki.ros.org/Robots/TurtleBot "TurtleBot")

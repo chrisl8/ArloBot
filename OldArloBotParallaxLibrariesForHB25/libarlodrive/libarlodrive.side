@@ -1,0 +1,19 @@
+libarlodrive.c
+Display.c
+arlodrive.c -> arlodrive.c
+arlodrive.h -> arlodrive.h
+debug.c
+getticks.c
+goto.c
+ramp.c
+servoPins.c
+trimset.c
+>compiler=C
+>memtype=cmm main ram compact
+>optimize=-Os
+>-m32bit-doubles
+>-Wall
+>-fno-exceptions
+>defs::-std=c99
+>-create_library
+>BOARD::ACTIVITYBOARD
