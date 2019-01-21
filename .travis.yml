@@ -11,7 +11,6 @@ matrix:
       before_install:
         - wget -O enable_kernel_sources.sh https://raw.githubusercontent.com/IntelRealSense/librealsense/rosdebian/scripts/enable_kernel_sources.sh
         - bash ./enable_kernel_sources.sh
-        - sudo apt install 'ros-*-librealsense'
       script:
         - ./setup-kinetic.sh
 
