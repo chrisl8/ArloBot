@@ -52,7 +52,9 @@ class PropellerComm(object):
         )  # Track previous unplugging status for motor control
         self._SwitchingMotors = False  # Prevent overlapping calls to _switch_motors
         self._serialAvailable = False
-        self._serialTimeout = 0
+        self._odometry_broadcast_timeout = 0
+        self._odometry_broadcast_timeout_max = 2
+        self._broadcast_static_odometry = False
         self._leftMotorPower = False
         self._rightMotorPower = False
         self._laptop_battery_percent = 100
@@ -260,7 +262,8 @@ class PropellerComm(object):
         Broadcast all data from propeller monitored sensors on the appropriate topics.
         """
 
-        self._serialTimeout = 0
+        self._odometry_broadcast_timeout = 0
+        self._broadcast_static_odometry = False
 
         # If we got this far, we can assume that the Propeller board is initialized and the motors should be on.
         # The _switch_motors() function will deal with the _SafeToOparete issue
@@ -722,7 +725,6 @@ class PropellerComm(object):
     def start(self):
         self._OdomStationaryBroadcaster.Start()
         self.startSerialPort()
-        self._serialTimeout = 0
 
     def startSerialPort(self):
         self.serialInterface.Start()
@@ -784,7 +786,6 @@ class PropellerComm(object):
         # When the Propeller Board first boots it will send a 'ready' message
         # until it gets init data.
         rospy.logdebug(data)
-        self._serialTimeout = 0
         rospy.logdebug("Initialising Propeller Board.")
         initData = self.dataTypes.InitDataPacket(
             self.lastX, self.lastY, self.lastHeading
@@ -852,15 +853,9 @@ class PropellerComm(object):
         so that ROS can continue to track status
         Otherwise things like gmapping will fail when we loose our transform and publishing topics
         """
-        # TODO: I think that this should operate any time odometry isn't broadcasting often enough.
-        # TODO: Formerly the serial timeout watcher (watchdog) would shut off the motors, and then
-        # TODO: This would start, but now I think this should just be purely based on the odometry
-        # TODO: output frequency. Basically set an odom timeout and watch it in watchdog,
-        # TODO: instead of the serial timeout.
 
-        # TODO: TL;DR: Use the old serial timeout code as a gude to build a new odom timeout code
         if (
-            not self._motorsOn
+            self._broadcast_static_odometry
         ):  # Use motor status to decide when to broadcast static odometry:
             x = self.lastX
             y = self.lastY
@@ -944,15 +939,10 @@ class PropellerComm(object):
 
     def watchDog(self):
         while not rospy.is_shutdown():
-            # NOTE: This USED TO watch for the serial port to go down,
-            # and take corrective action.
-            # Now the PropellerSerialGateway does that itself.
-            # Instead this is just used to make periodic checks
-            # on important status
 
-            # TODO: This should watch for odom to be timed out now instead,
-            # TODO: and set a variable that the static odom broadcaster can use to know
-            # TODO: to start up.
+            self._odometry_broadcast_timeout += 1
+            if self._odometry_broadcast_timeout > self._odometry_broadcast_timeout_max:
+                self._broadcast_static_odometry = True
 
             if self._unPlugging or self._wasUnplugging:
                 self.UnplugRobot()
