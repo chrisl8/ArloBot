@@ -490,8 +490,6 @@ class PropellerComm(object):
 
         # Note that sensor orientation is important here!
         # If you have a different number or aim them differently this will not work!
-        # TODO: Tweak this value based on real measurements!
-        # TODO: Use both IR and PING sensors?
         # The offset between the pretend sensor location in the URDF
         # and real location needs to be added to these values. This may need to be tweaked.
         sensor_offset = 0.217  # Measured, Calculated: 0.22545
@@ -505,7 +503,6 @@ class PropellerComm(object):
         max_range_accepted = rospy.get_param("/arlobot/maxPingRangeAccepted", 0.5)
 
         # max_range_accepted Testing:
-        # TODO: More tweaking here could be done.
         # I think it is a trade-off, so there is no end to the adjustment that could be done.
         # I did a lot of testing with gmappinng while building a map.
         # Obviously this would be slightly different from using a map we do not update.
@@ -540,7 +537,6 @@ class PropellerComm(object):
         #     I think if this is well tuned to avoid low lying obstacles it
         # probably will not work well for mapping features.
         #     IF we could map features with the PING sensors, we wouldn't need the 3D sensor. :)
-        # TODO: One option may be more PING sensors around back.
         # Right now when the robot spins, it clears the obstacles behind it,
         # because there are fewer sensors on the back side.
         # If the obstacle was seen all of the way around the robot, in the same spot,
@@ -595,7 +591,6 @@ class PropellerComm(object):
                 ir[i] = artificial_far_distance
 
         # Overwrite main sensors with upper deck sensors if they exist and are closer,
-        # TODO: This code is very manual. It won't break if you don't have these sensors, but
         # the positions are hard coded. :(
 
         if len(telemetry_pingData) > 10:
