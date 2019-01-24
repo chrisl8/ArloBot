@@ -128,6 +128,7 @@ class PropellerComm(object):
         }
 
         self._ledInputData_from_propeller = []
+        self._ledRequestedState_from_ROS = []
 
         # Subscriptions
         rospy.Subscriber(
@@ -764,13 +765,21 @@ class PropellerComm(object):
         # rosservice call /arlobot/ToggleLED 0 True
         # Or for all 5:
         # for i in 0 1 2 3 4;do rosservice call /arlobot/ToggleLED $i True;done
-        if self._serialAvailable:
-            ledData = self.dataTypes.LEDDataPacket(LED.led, 1 if LED.state else 0)
-            self.serialInterface.SendToPropellerOverSerial("led", ledData)
-            return LED.state
-        else:
-            return False
-        # TODO: This should actually update the local state, and another function should notice the difference and send the command, like we do with the settings.
+
+        # Note that we SET the DESIRED state in the list,
+        # then it will get updated to Propeller if it isn't the same when the watchdog runs,
+        # and then we'll get the new status via odometry
+        # The return value is the CURRENT known value from the propeller though, not the one we set.
+        # So if we don't trust THIS to get the job done, we an also basically say,
+        # "Set True until Returns True
+
+        # Lengthen array if it is called before it is filled
+        while len(self._ledRequestedState_from_ROS) <= LED.led:
+            self._ledRequestedState_from_ROS.append(0)
+
+        self._ledRequestedState_from_ROS[LED.led] = 1 if LED.state else 0
+
+        return self._ledInputData_from_propeller[LED.led]
 
     # TODO: Implement all functions that can be sent to/from Propeller,
     # TODO: Including Test
@@ -973,6 +982,13 @@ class PropellerComm(object):
                 self.serialInterface.SendToPropellerOverSerial(
                     "settings", settingsData, False
                 )
+
+            # Check if any LEDs need to be updated
+            for index, setting in enumerate(self._ledRequestedState_from_ROS):
+                if self._ledInputData_from_propeller[index] != setting:
+                    if self._serialAvailable:
+                        ledData = self.dataTypes.LEDDataPacket(index, setting)
+                        self.serialInterface.SendToPropellerOverSerial("led", ledData)
 
             self.r.sleep()
 
