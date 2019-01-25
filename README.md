@@ -26,10 +26,14 @@ the data.
 
 2. This package also installs a node.js based front end GUI for the robot, complete with Twilio and Pushover integration and push button access to ROS functions:
 
-New Mobile friendly web layout:  
+### Mobile Friendly Web Interface  
 ![Alt text](/screenshots/arlobotNewWebInterface.png "Web Interface")
 
-Here is a demonstration video of this code on my ArloBot:
+### New Curses Serial Testing Interface:  
+`~/catkin_ws/src/ArloBot/scripts/PropellerSerialTest.sh`  
+![Alt text](/screenshots/PropellerSerialTest.png "Serial Test Program")
+
+An old demonstration video of this code on my ArloBot:
 http://youtu.be/7qJaA6K_WPE
 
 # Build a Robot! #
@@ -58,9 +62,9 @@ Ask questions in the [Parallax Forums](http://forums.parallax.com/ "Parallax For
 Once your robot is built, you can use this package.
 
 ## Requirements ##
-Arlobot operates on ROS Kinetic which requires Ubuntu 16.04 LTS, or Xbuntu or Lubuntu of the same version. I personally use Lubuntu on my robot's on board computer.
+Arlobot operates on ROS Kinetic which requires Ubuntu *16.04 LTS*, or Xbuntu or Lubuntu of the same version. I personally use Lubuntu on my robot's on board computer.
 
-If you put a fresh copy of Lubuntu on your robot's laptop then you can use the quick install script below.
+If you put a fresh copy of Lubuntu 16.04 LTS on your robot's laptop then you can use the quick install script below.
 
 ## Quick Install: ##
 There is now a script to install everything. Just run:
@@ -75,8 +79,15 @@ To update your code just run the same script again and it will pull down and com
 
 Please note that you will need the code to run on your Propeller board. This is stored in the "Propeller C Code for ArloBot" folder. Details on the Propeller code and setup are here: [http://ekpyroticfrood.net/?p=165](http://ekpyroticfrood.net/?p=165)
 
-## Quick Start: ##
-Run:
+## Propeller Serial Interface Test ##
+Before you start trying to get ROS running, but after you have loaded the C code onto the Propeller Activity board, use the PropellerSerialTest to test the hardware and interface.  
+
+Place the robot up on blocks so it won't drive into anything if it goes nuts, and then run:  
+`~/catkin_ws/src/ArloBot/scripts/PropellerSerialTest.sh`  
+This provides an interface to send all controls, commands, and settings directly to the Propeller Activity Board without involving ROS. Use this to test everything and make sure your robot's hardware is functioning before you start playing with ROS.
+
+## Quick Start of Entire Robot: ##
+To start the Web Interface, which also allows starting ROS run:
 ```
 ~/catkin_ws/src/ArloBot/startRobot.sh
 ```
@@ -115,68 +126,6 @@ http://ekpyroticfrood.net/?p=162
 ## Edit your robot's Description ##
 `roscd arlobot_description/urdf`  
 and then read the Readme.txt file there!
-
-## Serial Interface and Propeller Code Testing ##
-It is a good idea to first test your serial interface to the propeller board:
-```
-cd ~/catkin_ws/src/ArloBot/scripts/
-./direct2PropSerialTest.sh
-```
-This will make a direct serial connection to the Propeller Activity board.
-
-It will reset the Prop board and then start spitting out:
-```
-i 0
-```
-
-Then paste the line suggested by the script to initialize the program
-and it should start sending odometry info in the form of:
-```
-o       0.000   0.000   0.000   0.000   0.068   0.000   {"p0":135,"p1":90,"p2":78,"p3":78,"p4":107,"p5":34,"p6":15,"p7":11,"p8":16,"p9":67,"p10":77,"p11":120,"p12":9,"p13":10,"i0":1991,"i1":212,"i2":153,"i3":82,"i4":99,"i5":24,"i6":25,"i7":12}
-```
-With the occasional:
-```
-s       1       1       0       100     10      12      0.05    0.06    0    0
-```
-You may have fewer "p#" and "i#" instances. Those are the distance readings from your PING an IR sensors. They should change as you move around your robot.
-The "s" line is handy because it tells you about some of the robot's decisions.
-
-1 = True and 0 = False
-
-The meanings of each numbers are:
-
-- Safe to Proceed
-- Safe to Recede
-- Escaping
-- Forward speed limit
-- Reverse speed limit
-- Distance sensor with lowest number
-- Left motor voltage
-- Right motor voltage
-- Cliff detected
-- Floor obstacle detected
-
-If you want to get really fancy you can even send it twist commands from the terminal too! Just remember to turn on the motors first for that to work!
-
-Twist command format:
-```
-s,0.0,0.0
-```
-where the first number is the linear meters per second and the second number is the angular radians per second of a standard ROS "Twist" message.
-
-Slow Forward:
-```
-s,0.100,0.000
-```
-Slow Reverse:
-```
-s,-0.100,0.000
-```
-Slow turn left or right:
-```
-s,0.00,0.50
-s,0.00,-0.50
-```
 
 ## Basic ROS based usage instructions: ##
 Depending on what you want to do there are different ways to "bring up" the robot with just ROS.<br/>These are the "recipes" that are well tested so far:
@@ -259,8 +208,15 @@ Please report an issue for any problems or if you need me to clarify anything!
 ##Convenience Scripts##
 Look in the scripts folder for a set of handy scripts for starting up and shutting down various aspects of Arlobot.
 
-## HB-25 Motor Controller Support untested! ##
+## HB-25 Motor Controller Support Gone! ##
 Parallax has updated the Arlo platform to use their new DHB-10 Dual H-Bridge controller.  
 My robot now uses the DHB-10 motor controller.  
-In theory the HB-25 controller should continue to work with this code just fine, but as I no longer have them installed anywhere, I cannot test to be 100% sure I did not break something with them.  
-If you do find a problem though, open an issue and I will try to fix it. I do not intend to end support for the HB-25, I just need your help to test it if it breaks.
+Unfortunately I do not have time to support two controllers, especially when I only have one. (If I had money and time to build a second robot, maybe I could.)  
+If you have HB-25 controllers, you can try using the last release that I made that still supported them here:  
+[Old Propeller Code Release](https://github.com/chrisl8/ArloBot/releases/tag/oldPropellerCode)
+
+
+## Contributing
+All code contributions are greatly welcomed! I almost always accept pull requests. Worst case, I accept it, find an issue, and fix it, but even code that I have to fix up is better than code I have to write from scratch!  
+Feel free to use this repository for [Hacktoberfest](https://hacktoberfest.digitalocean.com/) or other code contribution events, or just to get your feet wet using git. I'm happy to get spelling corrections and documentation improvements.  
+I use [prettier](https://prettier.io/) on my JavaScript code and [Black](https://pypi.org/project/black/) on my Python code to format it. However, I won't let code formatting prevent me from accepting a pull request. I can tidy it up later.
