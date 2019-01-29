@@ -141,6 +141,13 @@ http://ekpyroticfrood.net/?p=162
 `roscd arlobot_description/urdf`  
 and then read the Readme.txt file there!
 
+## WARNING: BY DEFAULT YOUR ROBOT WILL TRY TO MOVE EVEN WHEN IT IS PLUGGED IN!!!!
+Edit `~/.arlobot/arlobot.yaml`  
+Set `monitorACconnection: True` to have ROS monitor the power connection and FREEZE  
+the robot whenever the laptop is plugged into AC power  
+
+If you want to disable AC connection monitoring in real time, while ROS is running, run `rosparam set /arlobot/monitorACconnection False`
+
 ## Basic ROS based usage instructions: ##
 Depending on what you want to do there are different ways to "bring up" the robot with just ROS.<br/>These are the "recipes" that are well tested so far:
 
