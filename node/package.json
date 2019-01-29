@@ -18,12 +18,12 @@
     "pushover-notifications": "^1.0.0",
     "redis": "^2.6.0-1",
     "request": "^2.88.0",
-    "roslib": "^0.20.0",
+    "roslib": "^1.0.0",
     "say": "^0.15.0",
-    "serialport": "^7.1.0",
+    "serialport": "^7.1.4",
     "socket.io": "^2.1.1",
     "stochator": "^0.6.2",
-    "twilio": "^3.20.0",
+    "twilio": "^3.27.1",
     "websocket": "^1.0.28"
   },
   "devDependencies": {
