@@ -1,3 +1,4 @@
+const ROSLIB = require('roslib');
 const personalData = require('./personalData');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
@@ -5,7 +6,6 @@ const tts = require('./tts');
 const robotModel = require('./robotModel');
 // Set last movement to now to initiate the idle timer
 robotModel.lastMovementTime = Date.now();
-const ROSLIB = require('roslib');
 
 let unplug;
 let pauseExplore; // Empty global for actual topic
