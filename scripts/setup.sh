@@ -46,6 +46,7 @@ export NVM_DIR="${HOME}/.nvm"
 
 printf "\n${YELLOW}[Initializing the Current Node LTS version]${NC}\n"
 nvm install --lts
+nvm alias default lts/*
 
 printf "\n${YELLOW}[Updating npm]${NC}\n"
 npm update -g npm
