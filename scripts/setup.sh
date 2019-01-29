@@ -44,12 +44,8 @@ wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh |
 export NVM_DIR="${HOME}/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 
-printf "\n${YELLOW}[Initializing the required Node version]${NC}\n"
-printf "${RED}This is the version I'm developing with now, so stick with it.${NC}\n"
-source ${SCRIPTDIR}/setNodeVersion.sh
-nvm install ${node_version}
-nvm alias stable ${node_version}
-nvm alias default ${node_version}
+printf "\n${YELLOW}[Initializing the Current Node LTS version]${NC}\n"
+nvm install --lts
 
 printf "\n${YELLOW}[Updating npm]${NC}\n"
 npm update -g npm
