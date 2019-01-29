@@ -4,7 +4,8 @@
 ArloBot Package for ROS
 =======================
 
-# DO NOT USE THIS BRANCH YET!
+# THIS BRANCH IS STILL EXPERIMENTAL!!
+### It is not fully tested yet, so use at your own risk and report issues.
 
 ## New Propeller C Code with new Serial Interface
 
@@ -70,7 +71,7 @@ If you put a fresh copy of Lubuntu 16.04 LTS on your robot's laptop then you can
 There is now a script to install everything. Just run:
 
 ```
-bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/kinetic/setup-kinetic.sh)
+bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/setup-kinetic.sh)
 ```
 
 Be sure to read the instructions that the script will print at the end about editing the config files in ~/.arlobot/
@@ -115,13 +116,13 @@ RVIZ, rqt_graph, etc. on, you can run this script to set up enough of ROS to do 
 attempting to compile the robot code.
 
 ```
-bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/kinetic/workstation-kinetic.sh)
+bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/workstation-kinetic.sh)
 ```  
 
 or if you have a newer version of Ubuntu installed you can use ROS Lunar on your workstation (NOT the Robot!):  
 
 ```
-bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/kinetic/workstation-lunar.sh)
+bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/workstation-lunar.sh)
 ```  
 
 and your system will be set up to use as a "remote" station.  
@@ -228,6 +229,7 @@ Please report an issue for any problems or if you need me to clarify anything!
 
 ## Convenience Scripts ##
 Look in the scripts folder for a set of handy scripts for starting up and shutting down various aspects of Arlobot.
+
 
 ## HB-25 Motor Controller Support Gone! ##
 Parallax has updated the Arlo platform to use their new DHB-10 Dual H-Bridge controller.  

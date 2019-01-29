@@ -1,6 +1,10 @@
 #!/bin/bash
-# This script is meant to help set up your machine
-# and user environment for Arlobot to work
+# DO NOT RUN THIS. It is called by the setup script in the folder above here.
+# TODO: Merge this script with setup-kinetic.sh
+
+if [[ ${TRAVIS} == "true" ]];then
+    set -e
+fi
 
 # Grab and save the path to this script
 # http://stackoverflow.com/a/246128
