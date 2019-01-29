@@ -1,7 +1,7 @@
 ArloBot Package for ROS
 =======================
 
-#Indigo Branch#
+# Indigo Branch #
 NOTE: This is the old branch for ROS Indigo on Ubuntu 14.04. Please switch to the kinetic branch unless you have a reason to keep using this older branch.  
 This branch is no longer maintained, so bug fixes or new features will be missing.  
 If you need me to port a fix or feature over from Kinetic to Indigo branch please open an issue.
