@@ -5,13 +5,13 @@
 # Grab and save the path to this script
 # http://stackoverflow.com/a/246128
 SOURCE="${BASH_SOURCE[0]}"
-while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+while [[ -h "$SOURCE" ]]; do # resolve $SOURCE until the file is no longer a symlink
   DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
   SOURCE="$(readlink "$SOURCE")"
-  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+  [[ ${SOURCE} != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 done
-SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-# echo ${SCRIPTDIR} # For debugging
+SCRIPT_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+# echo ${SCRIPT_DIR} # For debugging
 
 BLACK='\033[0;30m'
 BLUE='\033[0;34m'
@@ -25,24 +25,24 @@ DARKGRAY='\033[1;30m'
 LIGHTBLUE='\033[1;34m'
 LIGHTGREEN='\033[1;32m'
 LIGHTCYAN='\033[1;36m'
-LIGHTRED='\033[1;31m'
-LIGHTPURPLE='\033[1;35m'
+LIGHT_RED='\033[1;31m'
+LIGHT_PURPLE='\033[1;35m'
 YELLOW='\033[1;33m'
 WHITE='\033[1;37m'
 NC='\033[0m' # NoColor
 
 printf "\n${YELLOW}[Installing/Updating Node Version Manager]${NC}\n"
-if [ -e  ${HOME}/.nvm/nvm.sh ]
+if [[ -e  ${HOME}/.nvm/nvm.sh ]]
     then
     printf "${YELLOW}Deactivating existing Node Version Manager:${NC}\n"
     export NVM_DIR="${HOME}/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+    [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh"  # This loads nvm
     nvm deactivate
 fi
 
 wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
 export NVM_DIR="${HOME}/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+[[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 
 printf "\n${YELLOW}[Initializing the Current Node LTS version]${NC}\n"
 nvm install --lts
@@ -65,15 +65,15 @@ if ! (which pm2 > /dev/null)
     then
     npm install -g pm2
 fi
-cd ${SCRIPTDIR}/../node
+cd ${SCRIPT_DIR}/../node
 printf "\n${YELLOW}You will get some errors here, that is normal. As long as things work, it is OK.$NC\n"
 npm ci
 
-cd ${SCRIPTDIR}/../website
+cd ${SCRIPT_DIR}/../website
 npm ci
 npm run build
 
-cd ${SCRIPTDIR}
+cd ${SCRIPT_DIR}
 
 # Install required Ubuntu packages
 # All required Ubuntu packages have been moved to the Arlobot setup.sh file,
@@ -82,7 +82,7 @@ cd ${SCRIPTDIR}
 if ! (which mjpg_streamer > /dev/null)
     then
     printf "\n${YELLOW}[Installing mjpg_streamer for Web Page camera viewing]${NC}\n"
-    cd ${SCRIPTDIR}
+    cd ${SCRIPT_DIR}
     svn co https://svn.code.sf.net/p/mjpg-streamer/code mjpg-streamer
     cd mjpg-streamer/mjpg-streamer
     # https://www.raspberrypi.org/forums/viewtopic.php?f=28&t=109352
@@ -91,12 +91,12 @@ if ! (which mjpg_streamer > /dev/null)
     make USE_LIBV4L2=true clean all
     sudo make install
     # mjpg_streamer usage example:
-    #mjpg_streamer -i "/usr/local/lib/input_uvc.so -d /dev/video0 -f 30 -r 640x480" -o "/usr/local/lib/output_http.so -p 58180 -w ${SCRIPTDIR}/mjpg-streamer/mjpg-streamer/www"
+    #mjpg_streamer -i "/usr/local/lib/input_uvc.so -d /dev/video0 -f 30 -r 640x480" -o "/usr/local/lib/output_http.so -p 58180 -w ${SCRIPT_DIR}/mjpg-streamer/mjpg-streamer/www"
 fi
 
-if [ ! -d ${SCRIPTDIR}/meld ]
+if [[ ! -d ${SCRIPT_DIR}/meld ]]
  then
- cd ${SCRIPTDIR}
+ cd ${SCRIPT_DIR}
  wget -q -N https://download.gnome.org/sources/meld/3.16/meld-3.16.1.tar.xz -O meld.tar.xz
  tar xf meld.tar.xz
  rm meld.tar.xz
@@ -106,7 +106,7 @@ fi
 printf "\n${YELLOW}[Enable non-root use of Bluetooth 4.0.]${NC}\n"
 sudo setcap cap_net_raw+eip $(eval readlink -f `which node`)
 
-if ! [ -f ${HOME}/Desktop/arlobot.desktop ]
+if ! [[ -f ${HOME}/Desktop/arlobot.desktop ]]
     then
     printf "\n${YELLOW}[Creating Desktop Icon]${NC}\n"
     echo "[Desktop Entry]" > ${HOME}/Desktop/arlobot.desktop
@@ -128,7 +128,7 @@ if ! [ -f ${HOME}/Desktop/arlobot.desktop ]
     chmod +x ${HOME}/Desktop/arlobot.desktop
 fi
 
-if [ ! -d ${HOME}/.arlobot ]
+if [[ ! -d ${HOME}/.arlobot ]]
     then
     printf "\n${YELLOW}[Setting up .arlobot folder]${NC}\n"
     printf "${GREEN}This holds personal data for your robot.${NC}\n"
@@ -141,63 +141,63 @@ fi
 
 ARLOHOME=${HOME}/.arlobot
 
-if [ -e ${ARLOHOME}/personalDataForBehavior.json ]
+if [[ -e ${ARLOHOME}/personalDataForBehavior.json ]]
     then
-    node ${SCRIPTDIR}/../node/personalData.js
+    node ${SCRIPT_DIR}/../node/personalData.js
 else
     printf "\n"
-    cp ${SCRIPTDIR}/dotarlobot/personalDataForBehavior.json ${ARLOHOME}/
+    cp ${SCRIPT_DIR}/dotarlobot/personalDataForBehavior.json ${ARLOHOME}/
     printf "${GREEN}A brand new ${RED}~/.arlobot/personalDataForBehavior.json${GREEN} file has been created,${NC}\n"
-    printf "${LIGHTPURPLE}Please edit this file to customize according to your robot!${NC}\n"
+    printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
 fi
 
-if [ ! -d ${ARLOHOME}/rosmaps ]
+if [[ ! -d ${ARLOHOME}/rosmaps ]]
     then
     mkdir ${ARLOHOME}/rosmaps
 fi
 
-if [ ! -d ${ARLOHOME}/sounds ]
+if [[ ! -d ${ARLOHOME}/sounds ]]
     then
     mkdir ${ARLOHOME}/sounds
 fi
 
-if [ ! -d ${ARLOHOME}/status ]
+if [[ ! -d ${ARLOHOME}/status ]]
     then
     mkdir ${ARLOHOME}/status
 fi
 sudo chmod -R 777 ${ARLOHOME}/status
 
-if [ ! -d ${ARLOHOME}/status/doors ]
+if [[ ! -d ${ARLOHOME}/status/doors ]]
     then
     mkdir ${ARLOHOME}/status/doors
 fi
 sudo chmod -R 777 ${ARLOHOME}/status/doors
 
-if ! [ -f /etc/udev/rules.d/99-libftdi.rules ]
+if ! [[ -f /etc/udev/rules.d/99-libftdi.rules ]]
     then
     printf "\n${YELLOW}[Adding required sudo rule to reset USB ports.]${NC}\n"
-    sudo ${SCRIPTDIR}/addRuleForUSBRelayBoard.sh
+    sudo ${SCRIPT_DIR}/addRuleForUSBRelayBoard.sh
     printf "${RED}You may have to reboot before the USB Relay board will function!${NC}\n"
 fi
 
 if ! (grep mbrola /etc/festival.scm>/dev/null)
     then
-    sudo ${SCRIPTDIR}/updateFestivalDefaults.sh
+    sudo ${SCRIPT_DIR}/updateFestivalDefaults.sh
 fi
 
 if ! (sudo -nl|grep resetUSB > /dev/null)
     then
     printf "\n${YELLOW}[Setting up required sudo entries.]${NC}\n"
-    echo "${USER} ALL = NOPASSWD: ${SCRIPTDIR}/resetUSB.sh" >> /tmp/arlobot_sudoers
+    echo "${USER} ALL = NOPASSWD: ${SCRIPT_DIR}/resetUSB.sh" >> /tmp/arlobot_sudoers
     chmod 0440 /tmp/arlobot_sudoers
     sudo chown root:root /tmp/arlobot_sudoers
     sudo mv /tmp/arlobot_sudoers /etc/sudoers.d/
     sudo chown root:root /etc/sudoers.d/arlobot_sudoers
 fi
 
-if [ "${USER}" == chrisl8 ]
+if [[ "${USER}" == chrisl8 ]]
     then
-    if ! [ -d /home/robotStatusUser ]
+    if ! [[ -d /home/robotStatusUser ]]
         then
         printf "\n${YELLOW}[Adding robotStatusUser.]${NC}\n"
         printf "${GREEN}(This is NOT required for Arlobot, just a personal thing.)${NC}\n"
@@ -218,7 +218,7 @@ if [ "${USER}" == chrisl8 ]
     #fi
 
     # Special notices for the developer himself to keep his stuff up to date!
-    cd ${SCRIPTDIR}/../node
+    cd ${SCRIPT_DIR}/../node
     printf "\n${RED}[Hey ${USER} please make sure the below items are up to date!]${NC}\n"
     printf "\n${GREEN}[Hey ${USER} please make sure the below items are up to date!]${NC}\n"
     printf "\n${PURPLE}[Hey ${USER} please make sure the below items are up to date!]${NC}\n"
@@ -236,7 +236,7 @@ if [ "${USER}" == chrisl8 ]
     printf "${YELLOW}in /node:${NC}\n"
     npm outdated
     printf "${YELLOW}in /website:${NC}\n"
-    cd ${SCRIPTDIR}/../website
+    cd ${SCRIPT_DIR}/../website
     npm outdated
     printf "${PURPLE}-------------------------------------------------------${NC}\n"
 fi
