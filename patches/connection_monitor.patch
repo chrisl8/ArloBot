@@ -1,0 +1,4 @@
+278c278
+<       boost::posix_time::milliseconds(time_left.toSec() * 1000.0f));
+---
+>       boost::posix_time::milliseconds(int(time_left.toSec() * 1000.0f)));

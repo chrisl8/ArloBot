@@ -1,0 +1,4 @@
+604c604
+<     done_condition_.timed_wait(lock, boost::posix_time::milliseconds(time_left.toSec() * 1000.0f));
+---
+>     done_condition_.timed_wait(lock, boost::posix_time::milliseconds(int(time_left.toSec() * 1000.0f)));

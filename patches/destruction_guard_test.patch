@@ -1,0 +1,4 @@
+89c89
+<       cond_.timed_wait(lock, boost::posix_time::milliseconds(100.0f));
+---
+>       cond_.timed_wait(lock, boost::posix_time::milliseconds(100));
