@@ -99,21 +99,15 @@ if ! (which mjpg_streamer > /dev/null)
     #mjpg_streamer -i "/usr/local/lib/input_uvc.so -d /dev/video0 -f 30 -r 640x480" -o "/usr/local/lib/output_http.so -p 58180 -w ${SCRIPT_DIR}/mjpg-streamer/mjpg-streamer/www"
 fi
 
-if [[ ! -d ${SCRIPT_DIR}/meld ]]
- then
- cd ${SCRIPT_DIR}
- wget -q -N https://download.gnome.org/sources/meld/3.16/meld-3.16.1.tar.xz -O meld.tar.xz
- tar xf meld.tar.xz
- rm meld.tar.xz
- mv meld-3.16.1 meld
-fi
-
 printf "\n${YELLOW}[Enable non-root use of Bluetooth 4.0.]${NC}\n"
 sudo setcap cap_net_raw+eip $(eval readlink -f `which node`)
 
 if ! [[ -f ${HOME}/Desktop/arlobot.desktop ]]
     then
     printf "\n${YELLOW}[Creating Desktop Icon]${NC}\n"
+    if [[ ! -d ${HOME}/Desktop ]]; then
+        mkdir ${HOME}/Desktop
+    fi
     echo "[Desktop Entry]" > ${HOME}/Desktop/arlobot.desktop
     echo "Encoding=UTF-8" >> ${HOME}/Desktop/arlobot.desktop
     echo "Name=ArloBot" >> ${HOME}/Desktop/arlobot.desktop
