@@ -77,6 +77,9 @@ fi
 # TODO: This does not actually check for new package versions and update,
 # TODO: It just runs again in case the last run failed.
 # TODO: Actually update if that is possible.
+# TODO: http://wiki.ros.org/melodic/Installation/Source#Maintaining_a_Source_Checkout
+# TODO: NOTE I may have to check and patch files again?
+# TODO: Until I actually SEE updates, it is hard to test the idea.
 if ! [[ -e ~/ros_catkin_ws/install_isolated/setup.bash ]]; then
     printf "\n${YELLOW}[Installing ROS from Source]${NC}\n"
 
@@ -91,20 +94,28 @@ if ! [[ -e ~/ros_catkin_ws/install_isolated/setup.bash ]]; then
         mkdir ~/ros_catkin_ws
     fi
     cd ~/ros_catkin_ws
+    printf "\n${YELLOW}[Downloading Source Files]${NC}\n"
     if ! [[ -f src/.rosinstall ]]; then
         ROS_INSTALL_FILE=melodic-desktop-full.rosinstall
         rosinstall_generator desktop_full --rosdistro melodic --deps --tar > ${ROS_INSTALL_FILE}
         # Fix broken ROS downloads
-        # See: https://answers.ros.org/question/314827/wstool-failing-with-tf2_msgs/
-        # and: https://answers.ros.org/question/315325/wstool-init-fails-on-ros_commrosbag_storage-when-building-melodic/
+        # See: https://github.com/vcstools/wstool/issues/130
         sed -i 's/version: \(ros_comm-release-release-melodic-ros_comm\)-[0-9\.\-]\+/version: \1/g' ${ROS_INSTALL_FILE}
         sed -i 's/version: \(ros_comm-release-release-melodic-rosbag_storage\)-[0-9\.\-]\+/version: \1/g' ${ROS_INSTALL_FILE}
         sed -i 's/version: \(ros_comm-release-release-melodic-rosgraph\)-[0-9\.\-]\+/version: \1/g' ${ROS_INSTALL_FILE}
+        # TODO: There is some pretty nice code to do this here: https://github.com/vcstools/wstool/issues/130#issuecomment-462998392
         wstool init -j8 src ${ROS_INSTALL_FILE}
 
-        # Add other packages that are required, but not listed in desktop_full
-        rosinstall_generator move_base_msgs --rosdistro melodic --deps --tar > move_base_msgs.rosinstall
-        wstool merge -t src move_base_msgs.rosinstall
+        # Add other packages that are required by ArloBot, but not listed in desktop_full
+        # navigation
+        ROS_INSTALL_FILE=navigation.rosinstall
+        rosinstall_generator navigation --rosdistro melodic --deps --tar > ${ROS_INSTALL_FILE}
+        # Fix broken ROS downloads
+        # See: https://github.com/vcstools/wstool/issues/130
+        sed -i 's/version: \(ros_comm-release-release-melodic-ros_comm\)-[0-9\.\-]\+/version: \1/g' ${ROS_INSTALL_FILE}
+        sed -i 's/version: \(ros_comm-release-release-melodic-rosbag_storage\)-[0-9\.\-]\+/version: \1/g' ${ROS_INSTALL_FILE}
+        sed -i 's/version: \(ros_comm-release-release-melodic-rosgraph\)-[0-9\.\-]\+/version: \1/g' ${ROS_INSTALL_FILE}
+        wstool merge -t src ${ROS_INSTALL_FILE}
         wstool update -j8 -t src
     else
         wstool update -j8 -t src
@@ -117,14 +128,30 @@ if ! [[ -e ~/ros_catkin_ws/install_isolated/setup.bash ]]; then
     # See: https://stackoverflow.com/a/53382269/4982408
     #find -type f -print0 | xargs -0 grep 'boost::posix_time::milliseconds' | cut -d: -f1 | sort -u
 
+    printf "\n${YELLOW}[Patching code to work with Ubuntu 18.10's version of boost]${NC}\n"
     # Patch files where boost calls will break compilation due to using floats where only ints are allowed
     # See: https://stackoverflow.com/a/53382269/4982408
-    patch ./src/actionlib/include/actionlib/client/simple_action_client.h ~/catkin_ws/src/ArloBot/patches/simple_action_client.patch
-    patch ./src/actionlib/include/actionlib/destruction_guard.h ~/catkin_ws/src/ArloBot/patches/destruction_guard.patch
-    patch ./src/actionlib/include/actionlib/server/simple_action_server_imp.h ~/catkin_ws/src/ArloBot/patches/simple_action_server_imp.patch
-    patch ./src/actionlib/src/connection_monitor.cpp ~/catkin_ws/src/ArloBot/patches/connection_monitor.patch
-    patch ./src/actionlib/test/destruction_guard_test.cpp ~/catkin_ws/src/ArloBot/patches/destruction_guard_test.patch
+    if (patch -N --dry-run --silent ./src/actionlib/include/actionlib/client/simple_action_client.h ~/catkin_ws/src/ArloBot/patches/simple_action_client.patch > /dev/null); then
+        patch ./src/actionlib/include/actionlib/client/simple_action_client.h ~/catkin_ws/src/ArloBot/patches/simple_action_client.patch
+    fi
 
+    if (patch -N --dry-run --silent ./src/actionlib/include/actionlib/destruction_guard.h ~/catkin_ws/src/ArloBot/patches/destruction_guard.patch > /dev/null); then
+        patch ./src/actionlib/include/actionlib/destruction_guard.h ~/catkin_ws/src/ArloBot/patches/destruction_guard.patch
+    fi
+
+    if (patch -N --dry-run --silent ./src/actionlib/include/actionlib/server/simple_action_server_imp.h ~/catkin_ws/src/ArloBot/patches/simple_action_server_imp.patch > /dev/null); then
+            patch ./src/actionlib/include/actionlib/server/simple_action_server_imp.h ~/catkin_ws/src/ArloBot/patches/simple_action_server_impch
+        fi
+
+    if (patch -N --dry-run --silent ./src/actionlib/src/connection_monitor.cpp ~/catkin_ws/src/ArloBot/patches/connection_monitor.patch > /dev/null); then
+        patch ./src/actionlib/src/connection_monitor.cpp ~/catkin_ws/src/ArloBot/patches/connection_monitor.patch
+    fi
+
+    if (patch -N --dry-run --silent ./src/actionlib/test/destruction_guard_test.cpp ~/catkin_ws/src/ArloBot/patches/destruction_guard_test.patch > /dev/null); then
+        patch ./src/actionlib/test/destruction_guard_test.cpp ~/catkin_ws/src/ArloBot/patches/destruction_guard_test.patch
+    fi
+
+    printf "\n${YELLOW}[Compiling ROS Source]${NC}\n"
     ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release
 fi
 
