@@ -140,14 +140,13 @@ if ! [[ -d ~/catkin_ws/devel ]]; then
     fi
     cd ~/catkin_ws/src
     catkin_init_workspace
-    cd ~/catkin_ws/
-    printf "\n${YELLOW}[Building ArloBot Source]${NC}\n"
-    catkin_make
-    source ${HOME}/catkin_ws/devel/setup.bash
-    rospack profile
 fi
 
+cd ~/catkin_ws/
+printf "\n${YELLOW}[Building ArloBot Source]${NC}\n"
+catkin_make
 source ${HOME}/catkin_ws/devel/setup.bash
+rospack profile
 
 if ! [[ -f ${HOME}/Desktop/RVIZ.desktop ]]; then
     printf "\n${YELLOW}[Creating Desktop Icon to run RVIZ]${NC}\n"
@@ -181,11 +180,13 @@ fi
 ARLO_HOME=${HOME}/.arlobot
 
 if ! (which node > /dev/null); then
+    printf "\n${YELLOW}[Installing the Current Node LTS version]${NC}\n"
+    # Install nvm
     wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
+    # Initialize nvm without logging out and back in
     export NVM_DIR="${HOME}/.nvm"
     [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh"  # This loads nvm
-
-    printf "\n${YELLOW}[Initializing the Current Node LTS version]${NC}\n"
+    # Install Node LTS version via nvm
     nvm install --lts
     nvm alias default lts/*
 fi
