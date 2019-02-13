@@ -129,13 +129,11 @@ if ! [[ -e ~/ros_catkin_ws/install_isolated/setup.bash ]]; then
 fi
 
 # In case .bashrc wasn't set up, or you didn't reboot
-if ! (which catkin_make > /dev/null)
-    then
+if ! (which catkin_make > /dev/null); then
     source ~/ros_catkin_ws/install_isolated/setup.bash
 fi
 
-if ! [ -d ~/catkin_ws/devel ]
-    then
+if ! [[ -d ~/catkin_ws/devel ]]; then
     printf "\n${YELLOW}[Creating the catkin workspace and testing with catkin_make]${NC}\n"
     if ! [[ -d ~/catkin_ws/src ]]; then
         mkdir -p ~/catkin_ws/src
@@ -180,9 +178,9 @@ if ! [[ -d ${HOME}/.arlobot ]]; then
     mkdir ${HOME}/.arlobot
 fi
 
-ARLOHOME=${HOME}/.arlobot
+ARLO_HOME=${HOME}/.arlobot
 
-if ! $(which node); then
+if ! (which node > /dev/null); then
     wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
     export NVM_DIR="${HOME}/.nvm"
     [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -192,31 +190,27 @@ if ! $(which node); then
     nvm alias default lts/*
 fi
 
-if [[ -e ${ARLOHOME}/personalDataForBehavior.json ]]; then
+if [[ -e ${ARLO_HOME}/personalDataForBehavior.json ]]; then
     node ~/catkin_ws/src/ArloBot/node/personalData.js
 else
     printf "\n"
-    cp ~/catkin_ws/src/ArloBot/scripts/dotarlobot/personalDataForBehavior.json ${ARLOHOME}/
+    cp ~/catkin_ws/src/ArloBot/scripts/dotarlobot/personalDataForBehavior.json ${ARLO_HOME}/
     printf "${GREEN}A brand new ${RED}~/.arlobot/personalDataForBehavior.json${GREEN} file has been created,${NC}\n"
     printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
 fi
 
 printf "\n${YELLOW}[Setting the ROS environment in your .bashrc file]${NC}\n"
-if ! (grep ROS_MASTER_URI ~/.bashrc>/dev/null)
-    then
+if ! (grep ROS_MASTER_URI ~/.bashrc>/dev/null); then
     read -p "What is the host name or IP of your robot? " answer
     sh -c "echo \"export ROS_MASTER_URI=http://${answer}:11311\" >> ~/.bashrc"
 fi
-if ! (grep ROS_HOSTNAME ~/.bashrc>/dev/null)
-    then
+if ! (grep ROS_HOSTNAME ~/.bashrc>/dev/null); then
     sh -c "echo \"export ROS_HOSTNAME=`uname -n`.local\" >> ~/.bashrc"
 fi
-if ! (grep ROSLAUNCH_SSH_UNKNOWN ~/.bashrc>/dev/null)
-    then
+if ! (grep ROSLAUNCH_SSH_UNKNOWN ~/.bashrc>/dev/null); then
     sh -c "echo \"export ROSLAUNCH_SSH_UNKNOWN=1\" >> ~/.bashrc"
 fi
-if ! (grep catkin_ws ~/.bashrc>/dev/null)
-    then
+if ! (grep catkin_ws ~/.bashrc>/dev/null); then
     sh -c "echo \"source ~/catkin_ws/devel/setup.bash\" >> ~/.bashrc"
 fi
 
