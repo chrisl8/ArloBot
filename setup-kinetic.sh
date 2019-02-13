@@ -5,7 +5,7 @@
 # Run this straight off of github like this:
 # bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/setup-kinetic.sh)
 
-if [[ ${TRAVIS} == "true" ]];then
+if [[ ${TRAVIS} == "true" ]]; then
     set -e
 fi
 
@@ -35,11 +35,11 @@ version=`lsb_release -sc`
 
 printf "\n${YELLOW}[Checking the Ubuntu version]${NC}\n"
 printf "${BLUE}Ubuntu ${version} found${NC}\n"
-case $version in
+case ${version} in
   "xenial")
 ;;
 *)
-printf "${RED}[This script will only work on ubuntu xenial(16.04)]${NC}\n"
+printf "${RED}[This script will only work on Ubuntu Xenial (16.04)]${NC}\n"
 exit 1
 esac
 
@@ -48,8 +48,7 @@ esac
 #sudo apt-get install -y chrony
 #sudo ntpdate ntp.ubuntu.com
 
-if ! [[ -e /etc/apt/sources.list.d/ros-latest.list ]]
-    then
+if ! [[ -e /etc/apt/sources.list.d/ros-latest.list ]]; then
     printf "${YELLOW}[Adding the ROS repository]${NC}\n"
     # This should follow the official ROS install instructions closely.
     # That is why there is a separate section for extra packages that I need for Arlo.
@@ -68,14 +67,12 @@ sudo apt upgrade -y
 
 # This should follow the official ROS install instructions closely.
 # That is why there is a separate section for extra packages that I need for Arlo.
-if ! (dpkg -s ros-kinetic-desktop-full|grep "Status: install ok installed" &> /dev/null)
-    then
+if ! (dpkg -s ros-kinetic-desktop-full|grep "Status: install ok installed" &> /dev/null); then
     printf "\n${YELLOW}[Installing ROS]${NC}\n"
     sudo apt install -y ros-kinetic-desktop-full
     printf "${YELLOW}[ROS installed!]${NC}\n"
     printf "\n${YELLOW}[rosdep init and python-rosinstall]${NC}\n"
-    if ! [[ -e /etc/ros/rosdep/sources.list.d/20-default.list ]]
-        then
+    if ! [[ -e /etc/ros/rosdep/sources.list.d/20-default.list ]]; then
         sudo sh -c "rosdep init"
     fi
     printf "${BLUE}Running rosdep update . . .${NC}\n"
@@ -87,8 +84,7 @@ if ! (dpkg -s ros-kinetic-desktop-full|grep "Status: install ok installed" &> /d
 fi
 
 # In case .bashrc wasn't set up, or you didn't reboot
-if ! (which catkin_make > /dev/null)
-    then
+if ! (which catkin_make > /dev/null); then
     source /opt/ros/kinetic/setup.bash
 fi
 
@@ -96,6 +92,7 @@ printf "\n${YELLOW}[Installing additional Ubuntu and ROS Packages for Arlo]${NC}
 printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 # Notes on what the packages are for:
 
+# build-essential - Needed for building almost anything from source
 # python-serial is required for ROS to talk to the Propeller board
 
 # For 8-CH USB Relay board:
@@ -121,10 +118,11 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 #ros-kinetic-pointcloud-to-laserscan for Scanse Sweep
 #ros-kinetic-geodesy for hector compile, might not need it if I stop using hector_explore
 #libceres-dev for hector compile, might not need it if I stop using hector_explore
+#git allows for cloning of repositories
 
-sudo apt install -y ros-kinetic-rqt-* ros-kinetic-kobuki-ftdi python-ftdi1 python-pip python-serial ros-kinetic-openni-* ros-kinetic-openni2-* ros-kinetic-freenect-* ros-kinetic-vision-opencv ros-kinetic-rtabmap-ros ros-kinetic-scan-tools ros-kinetic-explore-lite libopencv-dev python-opencv ros-kinetic-rosbridge-server imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol ros-kinetic-pointcloud-to-laserscan
+sudo apt install -y build-essential ros-kinetic-rqt-* ros-kinetic-kobuki-ftdi python-ftdi1 python-pip python-serial ros-kinetic-openni-* ros-kinetic-openni2-* ros-kinetic-freenect-* ros-kinetic-vision-opencv ros-kinetic-rtabmap-ros ros-kinetic-scan-tools ros-kinetic-explore-lite libopencv-dev python-opencv ros-kinetic-rosbridge-server ros-kinetic-tf2-tools imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol ros-kinetic-pointcloud-to-laserscan git
 
-if ! [[ ${TRAVIS} == "true" ]];then
+if ! [[ ${TRAVIS} == "true" ]]; then
     sudo apt install -y ros-kinetic-turtlebot-apps ros-kinetic-turtlebot-interactions ros-kinetic-turtlebot-simulator
 else
     printf "\n${GREEN}Skipping turtlebot bits forTravis CI Testing, because librealsense fails due to uvcvideo in Travis CI environment${NC}\n"
@@ -139,8 +137,7 @@ sudo -H pip install pylibftdi
 # As of 4/27/2016 Rosbridge required me to install twisted via pip otherwise it failed.
 sudo -H pip install twisted
 
-if ! [[ -d ~/catkin_ws/src ]]
-    then
+if ! [[ -d ~/catkin_ws/src ]]; then
     printf "\n${YELLOW}[Creating the catkin workspace and testing with catkin_make]${NC}\n"
     mkdir -p ~/catkin_ws/src
     cd ~/catkin_ws/src
@@ -164,8 +161,7 @@ printf "\n${YELLOW}[Cloning or Updating git repositories]${NC}\n"
 #fi
 cd ~/catkin_ws/src
 
-if ! [[ -d ~/catkin_ws/src/ArloBot ]]
-    then
+if ! [[ -d ~/catkin_ws/src/ArloBot ]]; then
     git clone -b new-serial-interface https://github.com/chrisl8/ArloBot.git
 else
     cd ~/catkin_ws/src/ArloBot
@@ -195,8 +191,7 @@ if ! [[ -f /usr/local/lib/cmake/sweep/SweepConfig.cmake ]]; then
     sudo ldconfig
 fi
 cd ~/catkin_ws/src
-if ! [[ -d ~/catkin_ws/src/sweep-ros ]]
-    then
+if ! [[ -d ~/catkin_ws/src/sweep-ros ]]; then
     git clone https://github.com/scanse/sweep-ros.git
 else
     cd ~/catkin_ws/src/sweep-ros
@@ -204,8 +199,7 @@ else
 fi
 cd ~/catkin_ws/src
 # If you have the excellent ROS by Example book now is a good time to clone the code for following along in the book:
-if ! [[ -d ~/catkin_ws/src/rbx1 ]]
-    then
+if ! [[ -d ~/catkin_ws/src/rbx1 ]]; then
     git clone -b indigo-devel https://github.com/pirobot/rbx1.git
 else
     cd ~/catkin_ws/src/rbx1
@@ -213,15 +207,14 @@ else
 fi
 cd ~/catkin_ws/src
 # If you want to use the USB Camera code from the ROS by Example book:
-if ! [[ -d ~/catkin_ws/src/usb_cam ]]
-    then
+if ! [[ -d ~/catkin_ws/src/usb_cam ]]; then
     git clone https://github.com/bosch-ros-pkg/usb_cam.git
 else
     cd ~/catkin_ws/src/usb_cam
     git pull
 fi
 cd ~/catkin_ws/src/ArloBot
-if ! [[ ${TRAVIS} == "true" ]];then
+if ! [[ ${TRAVIS} == "true" ]]; then
     if ! [[ -d ~/catkin_ws/src/ArloBot/mycroft-core ]]; then
         printf "\n${YELLOW}Do you want to install MyCroft on the Robot?${NC}\n"
         read -n 1 -s -r -p "Press 'y' if this is OK" RESPONSE_TO_MYCROFT_QUERY
@@ -259,8 +252,7 @@ else
     # TODO: Could maybe test this, but ./dev_setup.sh asks interactive questions!
 fi
 
-if [[ -d /opt/mycroft/skills ]]
-then
+if [[ -d /opt/mycroft/skills ]]; then
     if ! [[ -L /opt/mycroft/skills/arlobot-robot-skill ]]; then
         cd /opt/mycroft/skills/
         ln -s ${HOME}/catkin_ws/src/ArloBot/mycroft-arlobot-skill arlobot-robot-skill
@@ -278,16 +270,13 @@ source ~/catkin_ws/devel/setup.bash
 rospack profile
 
 printf "\n${YELLOW}[Setting the ROS environment in your .bashrc file]${NC}\n"
-if ! (grep ROS_HOSTNAME ~/.bashrc>/dev/null)
-    then
+if ! (grep ROS_HOSTNAME ~/.bashrc>/dev/null); then
     sh -c "echo \"export ROS_HOSTNAME=`uname -n`\" >> ~/.bashrc"
 fi
-if ! (grep ROSLAUNCH_SSH_UNKNOWN ~/.bashrc>/dev/null)
-    then
+if ! (grep ROSLAUNCH_SSH_UNKNOWN ~/.bashrc>/dev/null); then
     sh -c "echo \"export ROSLAUNCH_SSH_UNKNOWN=1\" >> ~/.bashrc"
 fi
-if ! (grep catkin_ws ~/.bashrc>/dev/null)
-    then
+if ! (grep catkin_ws ~/.bashrc>/dev/null); then
     sh -c "echo \"source ~/catkin_ws/devel/setup.bash\" >> ~/.bashrc"
 fi
 
@@ -297,21 +286,18 @@ printf "\n${YELLOW}[Setting up the Robot Package.]${NC}\n"
 
 # Arlobot Specific settings:
 
-if ! (id|grep dialout>/dev/null)
-    then
+if ! (id|grep dialout>/dev/null); then
     printf "\n${GREEN}Adding your user to the 'dialout' group.${NC}\n"
     sudo adduser ${USER} dialout > /dev/null
     printf "${RED}You may have to reboot before you can use the Propeller Board.${NC}\n"
 fi
 
-if ! (id|grep video>/dev/null)
-    then
+if ! (id|grep video>/dev/null); then
     printf "\n${GREEN}Adding your user to the 'video' group for access to cameras.${NC}\n"
     sudo adduser ${USER} video > /dev/null
 fi
 
-if ! (which simpleide > /dev/null)
-then
+if ! (which simpleide > /dev/null); then
     printf "\n${YELLOW}[Setting up Parallax SimpleIDE for putting code on Activity Board.]${NC}\n"
     cd /tmp
     wget https://web.archive.org/web/20161005174013/http://downloads.parallax.com/plx/software/side/101rc1/simple-ide_1-0-1-rc1_amd64.deb
@@ -319,8 +305,7 @@ then
     rm /tmp/simple-ide_1-0-1-rc1_amd64.deb
 fi
 
-if ! [[ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/Arlo/libarlodrive/arlodrive.c ]]
-then
+if ! [[ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/Arlo/libarlodrive/arlodrive.c ]]; then
     printf "\n${YELLOW}[You must Update your SimpleIDE Learn Folder using the instructions here!]${NC}\n"
     printf "\n${GREEN}http://learn.parallax.com/tutorials/language/propeller-c/propeller-c-set-simpleide/update-your-learn-folder${NC}\n"
 fi
@@ -329,17 +314,14 @@ fi
 # That is data that doesn't need to be part of
 # the public github repo like user tokens,
 # sounds, and room maps and per robot settings
-if ! [[ -d ${HOME}/.arlobot ]]
-    then
+if ! [[ -d ${HOME}/.arlobot ]]; then
     mkdir ${HOME}/.arlobot
 fi
 
 ARLOHOME=${HOME}/.arlobot
 
-if [[ -e ${ARLOHOME}/arlobot.yaml ]]
-    then
-    if ! (diff ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/arlobot.yaml > /dev/null)
-        then
+if [[ -e ${ARLOHOME}/arlobot.yaml ]]; then
+    if ! (diff ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/arlobot.yaml > /dev/null); then
         printf "\n${GREEN}The arlobot.yaml file in the repository is different from the one${NC}\n"
         printf "${GREEN}in your local settings.${NC}\n"
         printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
@@ -357,10 +339,8 @@ fi
 
 for i in `ls ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/`
 do
-    if [[ -e  ${ARLOHOME}/${i} ]]
-        then
-        if ! (diff ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLOHOME}/${i} > /dev/null)
-            then
+    if [[ -e  ${ARLOHOME}/${i} ]]; then
+        if ! (diff ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLOHOME}/${i} > /dev/null); then
             printf "\n${GREEN}The ${RED}${i}${GREEN} file in the repository is different from the one${NC}\n"
             printf "${GREEN}in your local settings.${NC}\n"
             printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
