@@ -172,27 +172,6 @@ if ! [[ -f ${HOME}/Desktop/RVIZ.desktop ]]; then
     chmod +x ${HOME}/Desktop/RVIZ.desktop
 fi
 
-if ! [[ -f ${HOME}/.local/share/applications/RVIZ.desktop ]]; then
-    printf "\n${YELLOW}[Creating GNOME Icon to run RVIZ]${NC}\n"
-    echo "[Desktop Entry]" > ${HOME}/.local/share/applications/RVIZ.desktop
-    echo "Encoding=UTF-8" >> ${HOME}/.local/share/applications/RVIZ.desktop
-    echo "Name=RVIZ" >> ${HOME}/.local/share/applications/RVIZ.desktop
-    echo "GenericName=RVIZ" >> ${HOME}/.local/share/applications/RVIZ.desktop
-    echo "Comment=RVIZ" >> ${HOME}/.local/share/applications/RVIZ.desktop
-    if (which lxterminal > /dev/null)
-        then
-        echo "Exec=lxterminal --command \"bash -ci ${HOME}/catkin_ws/src/ArloBot/scripts/view-navigation.sh\"" >> ${HOME}/.local/share/applications/RVIZ.desktop
-    elif (which gnome-terminal > /dev/null)
-        then
-        echo "Exec=gnome-terminal --command \"bash -ci ${HOME}/catkin_ws/src/ArloBot/scripts/view-navigation.sh\"" >> ${HOME}/.local/share/applications/RVIZ.desktop
-    fi
-    echo "Icon=${HOME}/catkin_ws/src/ArloBot/icon-70x70.png" >> ${HOME}/.local/share/applications/RVIZ.desktop
-    echo "Type=Application" >> ${HOME}/.local/share/applications/RVIZ.desktop
-    echo "Path=${HOME}/catkin_ws/src/ArloBot/scripts/" >> ${HOME}/.local/share/applications/RVIZ.desktop
-    echo "Terminal=false" >> ${HOME}/.local/share/applications/RVIZ.desktop
-    chmod +x ${HOME}/.local/share/applications/RVIZ.desktop
-fi
-
 # We will use ~/.arlobot to store "private" data
 # That is data that doesn't need to be part of
 # the public github repo like user tokens,
