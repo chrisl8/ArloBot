@@ -100,9 +100,19 @@ if ! [[ -e ~/ros_catkin_ws/install_isolated/setup.bash ]]; then
         rosinstall_generator desktop_full --rosdistro melodic --deps --tar > ${ROS_INSTALL_FILE}
         # Fix broken ROS downloads
         # See: https://github.com/vcstools/wstool/issues/130
-        sed -i 's/version: \(ros_comm-release-release-melodic-ros_comm\)-[0-9\.\-]\+/version: \1/g' ${ROS_INSTALL_FILE}
-        sed -i 's/version: \(ros_comm-release-release-melodic-rosbag_storage\)-[0-9\.\-]\+/version: \1/g' ${ROS_INSTALL_FILE}
-        sed -i 's/version: \(ros_comm-release-release-melodic-rosgraph\)-[0-9\.\-]\+/version: \1/g' ${ROS_INSTALL_FILE}
+        for brokenVersion in \
+                ros_comm-release-release-${ROS_RELEASE_NAME}-ros_comm \
+                ros_comm-release-release-${ROS_RELEASE_NAME}-rosgraph \
+                ros-release-release-${ROS_RELEASE_NAME}-roslib \
+                ros-release-release-${ROS_RELEASE_NAME}-rosunit \
+                ros_comm-release-release-${ROS_RELEASE_NAME}-rosmaster \
+                ros_comm-release-release-${ROS_RELEASE_NAME}-rosout \
+                ros_comm-release-release-${ROS_RELEASE_NAME}-rostest \
+                ros_comm-release-release-${ROS_RELEASE_NAME}-roswtf \
+                ros_comm-release-release-${ROS_RELEASE_NAME}-topic_tools \
+                ; do
+            sed -i 's/version: \('${brokenVersion}'\)-[0-9\.\-]\+/version: \1/g' ${ROS_INSTALL_FILE}
+        done
         # TODO: There is some pretty nice code to do this here: https://github.com/vcstools/wstool/issues/130#issuecomment-462998392
         wstool init -j8 src ${ROS_INSTALL_FILE}
 
@@ -110,12 +120,7 @@ if ! [[ -e ~/ros_catkin_ws/install_isolated/setup.bash ]]; then
         # navigation
         ROS_INSTALL_FILE=navigation.rosinstall
         rosinstall_generator navigation --rosdistro melodic --deps --tar > ${ROS_INSTALL_FILE}
-        # Fix broken ROS downloads
-        # See: https://github.com/vcstools/wstool/issues/130
-        sed -i 's/version: \(ros_comm-release-release-melodic-ros_comm\)-[0-9\.\-]\+/version: \1/g' ${ROS_INSTALL_FILE}
-        sed -i 's/version: \(ros_comm-release-release-melodic-rosbag_storage\)-[0-9\.\-]\+/version: \1/g' ${ROS_INSTALL_FILE}
-        sed -i 's/version: \(ros_comm-release-release-melodic-rosgraph\)-[0-9\.\-]\+/version: \1/g' ${ROS_INSTALL_FILE}
-        wstool merge -t src ${ROS_INSTALL_FILE}
+        wstool merge --merge-keep -y -t src ${ROS_INSTALL_FILE}
         wstool update -j8 -t src
     else
         wstool update -j8 -t src
