@@ -98,8 +98,9 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 # vlc-nox is for listening to rebot's microphone.
 # zbar-tools python-qrtools qtqr for generating and reading QR Codes.
 # rtabmap is for 3D mapping
+# git required for cloning packages from GitHub
 
-sudo apt install -y vlc-nox zbar-tools python-qrtools qtqr ros-kinetic-rtabmap-ros
+sudo apt install -y vlc-nox zbar-tools python-qrtools qtqr ros-kinetic-rtabmap-ros git
 
 if ! [ -d ~/catkin_ws/src ]
     then

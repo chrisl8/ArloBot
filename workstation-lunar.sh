@@ -99,8 +99,9 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 # zbar-tools python-qrtools qtqr for generating and reading QR Codes.
 # rtabmap is for 3D mapping
 # jq allows shell scripts to read .json formatted config files.
+# git required for cloning packages from GitHub
 
-sudo apt install -y vlc-nox zbar-tools python-qrtools qtqr ros-lunar-rtabmap-ros jq
+sudo apt install -y vlc-nox zbar-tools python-qrtools qtqr ros-lunar-rtabmap-ros jq git
 
 if ! [ -d ~/catkin_ws/src ]
     then
