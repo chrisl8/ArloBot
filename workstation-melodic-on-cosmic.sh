@@ -145,7 +145,7 @@ if ! [[ -e ~/ros_catkin_ws/install_isolated/setup.bash ]]; then
     fi
 
     if (patch -N --dry-run --silent ./src/actionlib/include/actionlib/server/simple_action_server_imp.h ~/catkin_ws/src/ArloBot/patches/simple_action_server_imp.patch > /dev/null); then
-            patch ./src/actionlib/include/actionlib/server/simple_action_server_imp.h ~/catkin_ws/src/ArloBot/patches/simple_action_server_impch
+            patch ./src/actionlib/include/actionlib/server/simple_action_server_imp.h ~/catkin_ws/src/ArloBot/patches/simple_action_server_imp.patch
         fi
 
     if (patch -N --dry-run --silent ./src/actionlib/src/connection_monitor.cpp ~/catkin_ws/src/ArloBot/patches/connection_monitor.patch > /dev/null); then
