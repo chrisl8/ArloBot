@@ -113,16 +113,25 @@ If you use Ubuntu or Lubuntu there should also be a desktop icon on the robot's 
 ## Workstation Install: ##
 If you have a desktop or another laptop computer running Ubuntu that you just want to run
 RVIZ, rqt_graph, etc. on, you can run this script to set up enough of ROS to do that, without
-attempting to compile the robot code.
+attempting to compile the robot code.  
 
+**NOTE: These "workstation" installs will NOT run the robot! These are only for REMOTE work from another system.**
+
+For Ubuntu Wily (15.10) and Xenial (16.04):
 ```
 bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/workstation-kinetic.sh)
 ```  
 
-or if you have a newer version of Ubuntu installed you can use ROS Lunar on your workstation (NOT the Robot!):  
+For Ubuntu Zesty (17.04), Yakkety (16.10), and Xenial (16.04):  
 
 ```
 bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/workstation-lunar.sh)
+```  
+
+For Ubuntu Cosmic (18.10):  
+
+```
+bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/workstation-melodic-on-cosmic.sh)
 ```  
 
 and your system will be set up to use as a "remote" station.  
@@ -131,6 +140,8 @@ Once you have ROS running with a map loaded (or building) then you can run RVIZ 
 Look for the RVIZ icon on your desktop or in your Gnome Menu.  
 If that isn't there you can run this script to start RVIZ on your workstation:  
 `~/catkin_ws/src/ArloBot/scripts/view-navigation.sh`  
+There are also other things you can do, like look at the Transform Graph:  
+`~/catkin_ws/src/Arlobot/scripts/tf2pdf.sh`
 
 To update your code just run the same script again and it will pull down and compile anything new without erasing custom settings.
 
