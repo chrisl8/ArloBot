@@ -46,3 +46,12 @@ matrix:
         - npm run build
       before_install:
         - cd website
+
+    - language: minimal
+      name: "Cosmic Workstation Setup"
+      services:
+        - docker
+      before_install:
+        - docker pull ubuntu
+      script:
+        - ./workstation-melodic-on-cosmic.sh
