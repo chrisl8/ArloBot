@@ -6,7 +6,7 @@ notifications:
 matrix:
   include:
     - language: minimal
-      name: "Setup Script"
+      name: "Kinetic Robot Setup Script"
       script:
         - ./setup-kinetic.sh
 
