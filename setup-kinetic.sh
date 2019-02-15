@@ -5,9 +5,7 @@
 # Run this straight off of github like this:
 # bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/setup-kinetic.sh)
 
-if [[ ${TRAVIS} == "true" ]]; then
-    set -e
-fi
+set -e
 
 BLACK='\033[0;30m'
 BLUE='\033[0;34m'

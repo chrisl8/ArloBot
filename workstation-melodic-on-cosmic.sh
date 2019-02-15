@@ -6,6 +6,25 @@
 # Run this straight off of github like this:
 # bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/workstation-melodic.sh)
 
+'''
+Testing
+
+Testing workstation install with Docker:
+
+You can Test this with Docker by installing Docker, then pulling down the Ubuntu 18.10 image:
+sudo docker pull ubuntu:18.10
+cd ~/catkin_ws/src/ArloBot
+
+Then either kick it off all in one shot:
+sudo docker run -ti -v $PWD:/home/user ubuntu:18.10 /bin/bash -c "/home/user/workstation-melodic-on-cosmic.sh"
+
+Or start an interactive shell in Docker and run it, with the ability to make changes and start it again when it finishes:
+sudo docker run -ti -v $PWD:/home/user ubuntu:18.10 /bin/bash
+/home/user/workstation-melodic-on-cosmic.sh
+
+Unfortunately, Travis CI seems to choke on this, so I cannot use CI testing on this script yet.
+'''
+
 set -e
 
 ROS_RELEASE_NAME=melodic
@@ -28,13 +47,13 @@ YELLOW='\033[1;33m'
 WHITE='\033[1;37m'
 NC='\033[0m' # NoColor
 
+echo ${TRAVIS}
+
 printf "\n${YELLOW}SETTING UP ROS ${ROS_RELEASE_NAME} FOR YOUR REMOTE WORK!${NC}\n"
 printf "${YELLOW}-------------------------------------------${NC}\n"
 printf "${GREEN}You will be asked for your password for running commands as root!${NC}\n"
 
-export DOCKER_TEST=0
 if [[ ! -e /etc/localtime ]]; then
-    export DOCKER_TEST=1
     # These steps are to allow this script to work in a minimal Docker container for testing.
     printf "${YELLOW}[This looks like a Docker setup.]${NC}\n"
     printf "${BLUE}Adding settings and basic packages for Docker based Ubuntu images.${NC}\n"
@@ -74,10 +93,11 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 # zbar-tools python-qrtools qtqr for generating and reading QR Codes.
 # jq allows shell scripts to read .json formatted config files.
 # git allows cloning of source files
+# wget used for grabbing dependencies. Usually already installed, but just in case.
 
-sudo apt install -y zbar-tools python-qrtools qtqr jq git
+sudo apt install -y zbar-tools python-qrtools qtqr jq git wget
 
-printf "\n${YELLOW}[Cloning or Updating git repositories]${NC}\n"
+printf "\n${YELLOW}[Cloning or Updating ArloBot Code]${NC}\n"
 if ! [[ -d ~/catkin_ws/src ]]; then
     mkdir -p ~/catkin_ws/src
 fi
@@ -118,29 +138,21 @@ if ! [[ -e ~/ros_catkin_ws/install_isolated/setup.bash ]]; then
     if ! [[ -f src/.rosinstall ]]; then
         ROS_INSTALL_FILE=melodic-desktop-full.rosinstall
         rosinstall_generator desktop_full --rosdistro melodic --deps --tar > ${ROS_INSTALL_FILE}
-        if [[ ${DOCKER_TEST} -gt 0 ]]; then
-            # Attempt to patch wstool ONLY IN Docker Test!
-            if (patch -N --dry-run --silent /usr/lib/python2.7/dist-packages/vcstools/tar.py ~/catkin_ws/src/ArloBot/patches/vcstools-tar.patch > /dev/null); then
-                patch /usr/lib/python2.7/dist-packages/vcstools/tar.py ~/catkin_ws/src/ArloBot/patches/vcstools-tar.patch
-            fi
-        else
-            # Fix broken ROS downloads
-            # See: https://github.com/vcstools/wstool/issues/130
-            for brokenVersion in \
-                    ros_comm-release-release-${ROS_RELEASE_NAME}-ros_comm \
-                    ros-release-release-${ROS_RELEASE_NAME}-roslib \
-                    ros-release-release-${ROS_RELEASE_NAME}-rosunit \
-                    ros_comm-release-release-${ROS_RELEASE_NAME}-rosout \
-                    ros_comm-release-release-${ROS_RELEASE_NAME}-rostest \
-                    ros_comm-release-release-${ROS_RELEASE_NAME}-roswtf \
-                    ros_comm-release-release-${ROS_RELEASE_NAME}-topic_tools \
-                    ros_comm-release-release-${ROS_RELEASE_NAME}-roslaunch \
-                    pluginlib-release-release-melodic-pluginlib \
-                    ros_comm-release-release-melodic-rostopic \
-                    ; do
-                sed -i 's/version: \('${brokenVersion}'\)-[0-9\.\-]\+/version: \1/g' ${ROS_INSTALL_FILE}
-            done
+
+        # Patch wstool for GitHub issue
+        # See: https://github.com/vcstools/vcstools/issues/147
+        wget https://github.com/vcstools/vcstools/commit/ddcfacb7dd10429ff5e57845d18657c8f1dc2997.patch
+        if (sudo patch -N --dry-run --silent /usr/lib/python2.7/dist-packages/vcstools/tar.py ddcfacb7dd10429ff5e57845d18657c8f1dc2997.patch > /dev/null); then
+            sudo patch /usr/lib/python2.7/dist-packages/vcstools/tar.py ddcfacb7dd10429ff5e57845d18657c8f1dc2997.patch
         fi
+        rm ddcfacb7dd10429ff5e57845d18657c8f1dc2997.patch
+
+        wget https://github.com/vcstools/vcstools/commit/eb39db2a30fdb84506ec14c040f836cce6c8874f.patch
+        if (sudo patch -N --dry-run --silent /usr/lib/python2.7/dist-packages/vcstools/tar.py eb39db2a30fdb84506ec14c040f836cce6c8874f.patch > /dev/null); then
+            sudo patch /usr/lib/python2.7/dist-packages/vcstools/tar.py eb39db2a30fdb84506ec14c040f836cce6c8874f.patch
+        fi
+        rm eb39db2a30fdb84506ec14c040f836cce6c8874f.patch
+
         wstool init -j8 src ${ROS_INSTALL_FILE}
 
         # Add other packages that are required by ArloBot, but not listed in desktop_full
@@ -187,10 +199,7 @@ if ! [[ -e ~/ros_catkin_ws/install_isolated/setup.bash ]]; then
     ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release
 fi
 
-# In case .bashrc wasn't set up, or you didn't reboot
-if ! (which catkin_make > /dev/null); then
-    source ~/ros_catkin_ws/install_isolated/setup.bash
-fi
+source ~/ros_catkin_ws/install_isolated/setup.bash
 
 if ! [[ -d ~/catkin_ws/devel ]]; then
     printf "\n${YELLOW}[Creating the catkin workspace and testing with catkin_make]${NC}\n"
