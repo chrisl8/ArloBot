@@ -58,4 +58,4 @@ matrix:
       before_install:
         - docker pull ubuntu:18.10
       script:
-        - docker run -ti -v $PWD:/home/user ubuntu:18.10 /bin/bash -c "/home/user/workstation-melodic-on-cosmic.sh"
+        - docker run -ti -e TRAVIS=${TRAVIS} -v $PWD:/home/user ubuntu:18.10 /bin/bash -c "/home/user/workstation-melodic-on-cosmic.sh"

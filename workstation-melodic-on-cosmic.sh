@@ -6,24 +6,22 @@
 # Run this straight off of github like this:
 # bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/workstation-melodic.sh)
 
-'''
-Testing
-
-Testing workstation install with Docker:
-
-You can Test this with Docker by installing Docker, then pulling down the Ubuntu 18.10 image:
-sudo docker pull ubuntu:18.10
-cd ~/catkin_ws/src/ArloBot
-
-Then either kick it off all in one shot:
-sudo docker run -ti -v $PWD:/home/user ubuntu:18.10 /bin/bash -c "/home/user/workstation-melodic-on-cosmic.sh"
-
-Or start an interactive shell in Docker and run it, with the ability to make changes and start it again when it finishes:
-sudo docker run -ti -v $PWD:/home/user ubuntu:18.10 /bin/bash
-/home/user/workstation-melodic-on-cosmic.sh
-
-Unfortunately, Travis CI seems to choke on this, so I cannot use CI testing on this script yet.
-'''
+#   TESTING
+#
+# Testing workstation install with Docker:
+#
+# You can Test this with Docker by installing Docker, then pulling down the Ubuntu 18.10 image:
+# sudo docker pull ubuntu:18.10
+# cd ~/catkin_ws/src/ArloBot
+#
+# Then either kick it off all in one shot:
+# sudo docker run -ti -v $PWD:/home/user ubuntu:18.10 /bin/bash -c "/home/user/workstation-melodic-on-cosmic.sh"
+#
+# Or start an interactive shell in Docker and run it, with the ability to make changes and start it again when it finishes:
+# sudo docker run -ti -v $PWD:/home/user ubuntu:18.10 /bin/bash
+# /home/user/workstation-melodic-on-cosmic.sh
+#
+# Unfortunately, Travis CI seems to choke on this, so I cannot use CI testing on this script yet.
 
 set -e
 
@@ -46,8 +44,6 @@ LIGHT_PURPLE='\033[1;35m'
 YELLOW='\033[1;33m'
 WHITE='\033[1;37m'
 NC='\033[0m' # NoColor
-
-echo ${TRAVIS}
 
 printf "\n${YELLOW}SETTING UP ROS ${ROS_RELEASE_NAME} FOR YOUR REMOTE WORK!${NC}\n"
 printf "${YELLOW}-------------------------------------------${NC}\n"
@@ -195,11 +191,18 @@ if ! [[ -e ~/ros_catkin_ws/install_isolated/setup.bash ]]; then
         patch ./src/actionlib/test/destruction_guard_test.cpp ~/catkin_ws/src/ArloBot/patches/destruction_guard_test.patch
     fi
 
-    printf "\n${YELLOW}[Compiling ROS Source]${NC}\n"
-    ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release
+    if ! [[ ${TRAVIS} == "true" ]]; then
+        printf "\n${YELLOW}[Compiling ROS Source]${NC}\n"
+        ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release
+    else
+        printf "\n${YELLOW}[SKIPPING Compile on Travis CI]${NC}\n"
+        printf "${BLUE}Travis CI cannot complete the build. I suspect maybe it chokes on the MD5 processes?${NC}\n"
+    fi
 fi
 
-source ~/ros_catkin_ws/install_isolated/setup.bash
+if ! [[ ${TRAVIS} == "true" ]]; then
+    source ~/ros_catkin_ws/install_isolated/setup.bash
+fi
 
 if ! [[ -d ~/catkin_ws/devel ]]; then
     printf "\n${YELLOW}[Creating the catkin workspace and testing with catkin_make]${NC}\n"
@@ -210,11 +213,16 @@ if ! [[ -d ~/catkin_ws/devel ]]; then
     catkin_init_workspace
 fi
 
-cd ~/catkin_ws/
-printf "\n${YELLOW}[Building ArloBot Source]${NC}\n"
-catkin_make
-source ${HOME}/catkin_ws/devel/setup.bash
-rospack profile
+if ! [[ ${TRAVIS} == "true" ]]; then
+    printf "\n${YELLOW}[Building ArloBot Source]${NC}\n"
+    cd ~/catkin_ws/
+    catkin_make
+    source ${HOME}/catkin_ws/devel/setup.bash
+    rospack profile
+else
+    printf "\n${YELLOW}[SKIPPING Compile on Travis CI]${NC}\n"
+    printf "${BLUE}Travis CI cannot complete the Arlobot Build because it could not do the ROS build${NC}\n"
+fi
 
 if ! [[ -f ${HOME}/Desktop/RVIZ.desktop ]]; then
     printf "\n${YELLOW}[Creating Desktop Icon to run RVIZ]${NC}\n"
