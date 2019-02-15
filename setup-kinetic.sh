@@ -1,6 +1,7 @@
 #!/bin/bash
-# ROS Indigo Automated Install - credit goes to everyone
-# Blame goes to ChrisL8
+# ROS Arlobot Automated Install
+
+ROS_VERSION=kinetic
 
 # Run this straight off of github like this:
 # bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/setup-kinetic.sh)
@@ -25,7 +26,7 @@ YELLOW='\033[1;33m'
 WHITE='\033[1;37m'
 NC='\033[0m' # NoColor
 
-printf "\n${YELLOW}SETTING UP ROBOT OPERATING SYSTEM FOR YOUR ARLOBOT!${NC}\n"
+printf "\n${YELLOW}SETTING UP ROS ${ROS_VERSION} FOR YOUR ARLOBOT!${NC}\n"
 printf "${YELLOW}---------------------------------------------------${NC}\n"
 printf "${GREEN}You will be asked for your password for running commands as root!${NC}\n"
 
@@ -65,9 +66,9 @@ sudo apt upgrade -y
 
 # This should follow the official ROS install instructions closely.
 # That is why there is a separate section for extra packages that I need for Arlo.
-if ! (dpkg -s ros-kinetic-desktop-full|grep "Status: install ok installed" &> /dev/null); then
+if ! (dpkg -s ros-${ROS_VERSION}-desktop-full|grep "Status: install ok installed" &> /dev/null); then
     printf "\n${YELLOW}[Installing ROS]${NC}\n"
-    sudo apt install -y ros-kinetic-desktop-full
+    sudo apt install -y ros-${ROS_VERSION}-desktop-full
     printf "${YELLOW}[ROS installed!]${NC}\n"
     printf "\n${YELLOW}[rosdep init and python-rosinstall]${NC}\n"
     if ! [[ -e /etc/ros/rosdep/sources.list.d/20-default.list ]]; then
@@ -75,7 +76,7 @@ if ! (dpkg -s ros-kinetic-desktop-full|grep "Status: install ok installed" &> /d
     fi
     printf "${BLUE}Running rosdep update . . .${NC}\n"
     rosdep update
-    source /opt/ros/kinetic/setup.bash
+    source /opt/ros/${ROS_VERSION}/setup.bash
     printf "${BLUE}Installing python-rosinstall:${NC}\n"
     sudo apt install -y python-rosinstall
     # END Offical ROS Install section
@@ -83,7 +84,7 @@ fi
 
 # In case .bashrc wasn't set up, or you didn't reboot
 if ! (which catkin_make > /dev/null); then
-    source /opt/ros/kinetic/setup.bash
+    source /opt/ros/${ROS_VERSION}/setup.bash
 fi
 
 printf "\n${YELLOW}[Installing additional Ubuntu and ROS Packages for Arlo]${NC}\n"
@@ -113,15 +114,15 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 #libgif-dev is required for roslib in order to build canvas
 #rtabmap is for 3D mapping
 #pulseaudio pavucontrol are for setting the default microphone. I use this for mycroft among other things
-#ros-kinetic-pointcloud-to-laserscan for Scanse Sweep
-#ros-kinetic-geodesy for hector compile, might not need it if I stop using hector_explore
+#ros-${ROS_VERSION}-pointcloud-to-laserscan for Scanse Sweep
+#ros-${ROS_VERSION}-geodesy for hector compile, might not need it if I stop using hector_explore
 #libceres-dev for hector compile, might not need it if I stop using hector_explore
 #git allows for cloning of repositories
 
-sudo apt install -y build-essential ros-kinetic-rqt-* ros-kinetic-kobuki-ftdi python-ftdi1 python-pip python-serial ros-kinetic-openni-* ros-kinetic-openni2-* ros-kinetic-freenect-* ros-kinetic-vision-opencv ros-kinetic-rtabmap-ros ros-kinetic-scan-tools ros-kinetic-explore-lite libopencv-dev python-opencv ros-kinetic-rosbridge-server ros-kinetic-tf2-tools imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol ros-kinetic-pointcloud-to-laserscan git
+sudo apt install -y build-essential ros-${ROS_VERSION}-rqt-* ros-${ROS_VERSION}-kobuki-ftdi python-ftdi1 python-pip python-serial ros-${ROS_VERSION}-openni-* ros-${ROS_VERSION}-openni2-* ros-${ROS_VERSION}-freenect-* ros-${ROS_VERSION}-vision-opencv ros-${ROS_VERSION}-rtabmap-ros ros-${ROS_VERSION}-scan-tools ros-${ROS_VERSION}-explore-lite libopencv-dev python-opencv ros-${ROS_VERSION}-rosbridge-server ros-${ROS_VERSION}-tf2-tools imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol ros-${ROS_VERSION}-pointcloud-to-laserscan git
 
 if ! [[ ${TRAVIS} == "true" ]]; then
-    sudo apt install -y ros-kinetic-turtlebot-apps ros-kinetic-turtlebot-interactions ros-kinetic-turtlebot-simulator
+    sudo apt install -y ros-${ROS_VERSION}-turtlebot-apps ros-${ROS_VERSION}-turtlebot-interactions ros-${ROS_VERSION}-turtlebot-simulator
 else
     printf "\n${GREEN}Skipping turtlebot bits forTravis CI Testing, because librealsense fails due to uvcvideo in Travis CI environment${NC}\n"
 fi
@@ -377,39 +378,39 @@ if [[ ! -d ${HOME}/.arlobot ]]
     mkdir ${HOME}/.arlobot
 fi
 
-ARLOHOME=${HOME}/.arlobot
+ARLO_HOME=${HOME}/.arlobot
 
-if [[ -e ${ARLOHOME}/personalDataForBehavior.json ]]
+if [[ -e ${ARLO_HOME}/personalDataForBehavior.json ]]
     then
     node ${HOME}/catkin_ws/src/ArloBot/node/personalData.js
 else
     printf "\n"
-    cp ${HOME}/catkin_ws/src/ArloBot/scripts/dotarlobot/personalDataForBehavior.json ${ARLOHOME}/
+    cp ${HOME}/catkin_ws/src/ArloBot/scripts/dotarlobot/personalDataForBehavior.json ${ARLO_HOME}/
     printf "${GREEN}A brand new ${RED}~/.arlobot/personalDataForBehavior.json${GREEN} file has been created,${NC}\n"
     printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
 fi
 
-if [[ ! -d ${ARLOHOME}/rosmaps ]]
+if [[ ! -d ${ARLO_HOME}/rosmaps ]]
     then
-    mkdir ${ARLOHOME}/rosmaps
+    mkdir ${ARLO_HOME}/rosmaps
 fi
 
-if [[ ! -d ${ARLOHOME}/sounds ]]
+if [[ ! -d ${ARLO_HOME}/sounds ]]
     then
-    mkdir ${ARLOHOME}/sounds
+    mkdir ${ARLO_HOME}/sounds
 fi
 
-if [[ ! -d ${ARLOHOME}/status ]]
+if [[ ! -d ${ARLO_HOME}/status ]]
     then
-    mkdir ${ARLOHOME}/status
+    mkdir ${ARLO_HOME}/status
 fi
-sudo chmod -R 777 ${ARLOHOME}/status
+sudo chmod -R 777 ${ARLO_HOME}/status
 
-if [[ ! -d ${ARLOHOME}/status/doors ]]
+if [[ ! -d ${ARLO_HOME}/status/doors ]]
     then
-    mkdir ${ARLOHOME}/status/doors
+    mkdir ${ARLO_HOME}/status/doors
 fi
-sudo chmod -R 777 ${ARLOHOME}/status/doors
+sudo chmod -R 777 ${ARLO_HOME}/status/doors
 
 if ! [[ -f /etc/udev/rules.d/99-libftdi.rules ]]
     then
@@ -513,40 +514,40 @@ if ! [[ -d ${HOME}/.arlobot ]]; then
     mkdir ${HOME}/.arlobot
 fi
 
-ARLOHOME=${HOME}/.arlobot
+ARLO_HOME=${HOME}/.arlobot
 
-if [[ -e ${ARLOHOME}/arlobot.yaml ]]; then
-    if ! (diff ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/arlobot.yaml > /dev/null); then
+if [[ -e ${ARLO_HOME}/arlobot.yaml ]]; then
+    if ! (diff ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLO_HOME}/arlobot.yaml > /dev/null); then
         printf "\n${GREEN}The arlobot.yaml file in the repository is different from the one${NC}\n"
         printf "${GREEN}in your local settings.${NC}\n"
         printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
         printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
-        diff ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/arlobot.yaml
-        cp -i ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/
+        diff ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLO_HOME}/arlobot.yaml
+        cp -i ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLO_HOME}/
         printf "\n"
     fi
 else
     printf "\n"
-    cp ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLOHOME}/
+    cp ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLO_HOME}/
     printf "${GREEN}A brand new ${RED}~/.arlobot/arlobot.yaml${GREEN} file has been created,${NC}\n"
     printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
 fi
 
 for i in `ls ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/`
 do
-    if [[ -e  ${ARLOHOME}/${i} ]]; then
-        if ! (diff ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLOHOME}/${i} > /dev/null); then
+    if [[ -e  ${ARLO_HOME}/${i} ]]; then
+        if ! (diff ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLO_HOME}/${i} > /dev/null); then
             printf "\n${GREEN}The ${RED}${i}${GREEN} file in the repository is different from the one${NC}\n"
             printf "${GREEN}in your local settings.${NC}\n"
             printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
             printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
-            diff ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLOHOME}/${i}
-            cp -i ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLOHOME}/
+            diff ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLO_HOME}/${i}
+            cp -i ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLO_HOME}/
         fi
     else
         printf "\n"
-        cp ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLOHOME}/
-        printf "${GREEN}A brand new ${RED}${ARLOHOME}/${i}${GREEN} file has been created,${NC}\n"
+        cp ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLO_HOME}/
+        printf "${GREEN}A brand new ${RED}${ARLO_HOME}/${i}${GREEN} file has been created,${NC}\n"
         printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
     fi
 done
