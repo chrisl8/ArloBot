@@ -1,4 +1,8 @@
 dist: xenial
+notifications:
+  email:
+    on_success: change
+    on_failure: always
 matrix:
   include:
     - language: minimal
