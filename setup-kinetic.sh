@@ -1,10 +1,28 @@
 #!/bin/bash
 # ROS Arlobot Automated Install
 
-ROS_VERSION=kinetic
+INSTALLING_ROS_DISTRO=kinetic
 
 # Run this straight off of github like this:
 # bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/setup-kinetic.sh)
+
+#   TESTING
+#
+# Testing workstation install with Docker:
+#
+# You can Test this with Docker by installing Docker, then pulling down the Ubuntu 16.04 image:
+# sudo docker pull ubuntu:16.04
+# cd ~/catkin_ws/src/ArloBot
+#
+# Then either kick it off all in one shot:
+# sudo docker run -ti -v $PWD:/home/user ubuntu:16.04 /bin/bash -c "/home/user/setup-kinetic.sh"
+#
+# Or start an interactive shell in Docker and run it, with the ability to make changes and start it again when it finishes:
+# sudo docker run -ti -v $PWD:/home/user ubuntu:16.04 /bin/bash
+# /home/user/setup-kinetic.sh
+#
+# To clean up Docker when you are done run:
+# sudo docker system prune
 
 set -e
 
@@ -26,9 +44,27 @@ YELLOW='\033[1;33m'
 WHITE='\033[1;37m'
 NC='\033[0m' # NoColor
 
-printf "\n${YELLOW}SETTING UP ROS ${ROS_VERSION} FOR YOUR ARLOBOT!${NC}\n"
+printf "\n${YELLOW}SETTING UP ROS ${INSTALLING_ROS_DISTRO} FOR YOUR ARLOBOT!${NC}\n"
 printf "${YELLOW}---------------------------------------------------${NC}\n"
 printf "${GREEN}You will be asked for your password for running commands as root!${NC}\n"
+
+if [[ ! -e /etc/localtime ]]; then
+    # These steps are to allow this script to work in a minimal Docker container for testing.
+    printf "${YELLOW}[This looks like a Docker setup.]${NC}\n"
+    printf "${BLUE}Adding settings and basic packages for Docker based Ubuntu images.${NC}\n"
+    # The docker image has no /etc/localtime
+    # When the prereq install install the tzdat package,
+    # It stops and asks for time zone info.
+    # This should prevent that.
+    # https://bugs.launchpad.net/ubuntu/+source/tzdata/+bug/1773687
+    export DEBIAN_FRONTEND=noninteractive
+    # This won't work inside of sudo though, so just install tzdata now
+    # rather than letting it get picked up later as a pre-req,
+    # and add the other things we know Docker is missing too while we are at it.
+    apt update
+    apt install -y tzdata sudo lsb-release
+    # Now the rest of the script should work as if it was in a normal Ubuntu install.
+fi
 
 version=`lsb_release -sc`
 
@@ -66,9 +102,9 @@ sudo apt upgrade -y
 
 # This should follow the official ROS install instructions closely.
 # That is why there is a separate section for extra packages that I need for Arlo.
-if ! (dpkg -s ros-${ROS_VERSION}-desktop-full|grep "Status: install ok installed" &> /dev/null); then
+if ! (dpkg -s ros-${INSTALLING_ROS_DISTRO}-desktop-full|grep "Status: install ok installed" &> /dev/null); then
     printf "\n${YELLOW}[Installing ROS]${NC}\n"
-    sudo apt install -y ros-${ROS_VERSION}-desktop-full
+    sudo apt install -y ros-${INSTALLING_ROS_DISTRO}-desktop-full
     printf "${YELLOW}[ROS installed!]${NC}\n"
     printf "\n${YELLOW}[rosdep init and python-rosinstall]${NC}\n"
     if ! [[ -e /etc/ros/rosdep/sources.list.d/20-default.list ]]; then
@@ -76,7 +112,7 @@ if ! (dpkg -s ros-${ROS_VERSION}-desktop-full|grep "Status: install ok installed
     fi
     printf "${BLUE}Running rosdep update . . .${NC}\n"
     rosdep update
-    source /opt/ros/${ROS_VERSION}/setup.bash
+    source /opt/ros/${INSTALLING_ROS_DISTRO}/setup.bash
     printf "${BLUE}Installing python-rosinstall:${NC}\n"
     sudo apt install -y python-rosinstall
     # END Offical ROS Install section
@@ -84,7 +120,7 @@ fi
 
 # In case .bashrc wasn't set up, or you didn't reboot
 if ! (which catkin_make > /dev/null); then
-    source /opt/ros/${ROS_VERSION}/setup.bash
+    source /opt/ros/${INSTALLING_ROS_DISTRO}/setup.bash
 fi
 
 printf "\n${YELLOW}[Installing additional Ubuntu and ROS Packages for Arlo]${NC}\n"
@@ -114,15 +150,15 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 #libgif-dev is required for roslib in order to build canvas
 #rtabmap is for 3D mapping
 #pulseaudio pavucontrol are for setting the default microphone. I use this for mycroft among other things
-#ros-${ROS_VERSION}-pointcloud-to-laserscan for Scanse Sweep
-#ros-${ROS_VERSION}-geodesy for hector compile, might not need it if I stop using hector_explore
+#ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan for Scanse Sweep
+#ros-${INSTALLING_ROS_DISTRO}-geodesy for hector compile, might not need it if I stop using hector_explore
 #libceres-dev for hector compile, might not need it if I stop using hector_explore
 #git allows for cloning of repositories
 
-sudo apt install -y build-essential ros-${ROS_VERSION}-rqt-* ros-${ROS_VERSION}-kobuki-ftdi python-ftdi1 python-pip python-serial ros-${ROS_VERSION}-openni-* ros-${ROS_VERSION}-openni2-* ros-${ROS_VERSION}-freenect-* ros-${ROS_VERSION}-vision-opencv ros-${ROS_VERSION}-rtabmap-ros ros-${ROS_VERSION}-scan-tools ros-${ROS_VERSION}-explore-lite libopencv-dev python-opencv ros-${ROS_VERSION}-rosbridge-server ros-${ROS_VERSION}-tf2-tools imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol ros-${ROS_VERSION}-pointcloud-to-laserscan git
+sudo apt install -y build-essential ros-${INSTALLING_ROS_DISTRO}-rqt-* ros-${INSTALLING_ROS_DISTRO}-kobuki-ftdi python-ftdi1 python-pip python-serial ros-${INSTALLING_ROS_DISTRO}-openni-* ros-${INSTALLING_ROS_DISTRO}-openni2-* ros-${INSTALLING_ROS_DISTRO}-freenect-* ros-${INSTALLING_ROS_DISTRO}-vision-opencv ros-${INSTALLING_ROS_DISTRO}-rtabmap-ros ros-${INSTALLING_ROS_DISTRO}-scan-tools ros-${INSTALLING_ROS_DISTRO}-explore-lite libopencv-dev python-opencv ros-${INSTALLING_ROS_DISTRO}-rosbridge-server ros-${INSTALLING_ROS_DISTRO}-tf2-tools imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan git
 
 if ! [[ ${TRAVIS} == "true" ]]; then
-    sudo apt install -y ros-${ROS_VERSION}-turtlebot-apps ros-${ROS_VERSION}-turtlebot-interactions ros-${ROS_VERSION}-turtlebot-simulator
+    sudo apt install -y ros-${INSTALLING_ROS_DISTRO}-turtlebot-apps ros-${INSTALLING_ROS_DISTRO}-turtlebot-interactions ros-${INSTALLING_ROS_DISTRO}-turtlebot-simulator
 else
     printf "\n${GREEN}Skipping turtlebot bits forTravis CI Testing, because librealsense fails due to uvcvideo in Travis CI environment${NC}\n"
 fi
