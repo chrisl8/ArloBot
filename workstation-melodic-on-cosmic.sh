@@ -158,6 +158,7 @@ if ! [[ -e ~/ros_catkin_ws/install_isolated/setup.bash ]]; then
         wstool merge --merge-keep -y -t src ${ROS_INSTALL_FILE}
         wstool update -j8 -t src
     else
+        # This just runs the update again in case the last one was interrupted or failed due to network issues.
         wstool update -j8 -t src
     fi
 
@@ -204,16 +205,17 @@ if ! [[ ${TRAVIS} == "true" ]]; then
     source ~/ros_catkin_ws/install_isolated/setup.bash
 fi
 
-if ! [[ -d ~/catkin_ws/devel ]]; then
-    printf "\n${YELLOW}[Creating the catkin workspace and testing with catkin_make]${NC}\n"
-    if ! [[ -d ~/catkin_ws/src ]]; then
-        mkdir -p ~/catkin_ws/src
-    fi
-    cd ~/catkin_ws/src
-    catkin_init_workspace
-fi
-
 if ! [[ ${TRAVIS} == "true" ]]; then
+
+    if ! [[ -d ~/catkin_ws/devel ]]; then
+        printf "\n${YELLOW}[Creating the catkin workspace and testing with catkin_make]${NC}\n"
+        if ! [[ -d ~/catkin_ws/src ]]; then
+            mkdir -p ~/catkin_ws/src
+        fi
+        cd ~/catkin_ws/src
+        catkin_init_workspace
+    fi
+
     printf "\n${YELLOW}[Building ArloBot Source]${NC}\n"
     cd ~/catkin_ws/
     catkin_make
