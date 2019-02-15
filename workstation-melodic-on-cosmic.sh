@@ -21,6 +21,9 @@
 # sudo docker run -ti -v $PWD:/home/user ubuntu:18.10 /bin/bash
 # /home/user/workstation-melodic-on-cosmic.sh
 #
+# To clean up Docker when you are done run:
+# sudo docker system prune
+#
 # Unfortunately, Travis CI seems to choke on this, so I cannot use CI testing on this script yet.
 
 set -e
@@ -137,6 +140,9 @@ if ! [[ -e ~/ros_catkin_ws/install_isolated/setup.bash ]]; then
 
         # Patch wstool for GitHub issue
         # See: https://github.com/vcstools/vcstools/issues/147
+        # NOTE: Another option is to run this script to fix the generated .rosinstall file:
+        # https://gist.github.com/machinekoder/49ff3aa0734b4b2ec99ec86586cb40c1
+        # from: https://github.com/isaacs/github/issues/1483#issuecomment-464072676
         wget https://github.com/vcstools/vcstools/commit/ddcfacb7dd10429ff5e57845d18657c8f1dc2997.patch
         if (sudo patch -N --dry-run --silent /usr/lib/python2.7/dist-packages/vcstools/tar.py ddcfacb7dd10429ff5e57845d18657c8f1dc2997.patch > /dev/null); then
             sudo patch /usr/lib/python2.7/dist-packages/vcstools/tar.py ddcfacb7dd10429ff5e57845d18657c8f1dc2997.patch
