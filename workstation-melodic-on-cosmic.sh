@@ -32,6 +32,26 @@ printf "\n${YELLOW}SETTING UP ROS ${ROS_RELEASE_NAME} FOR YOUR REMOTE WORK!${NC}
 printf "${YELLOW}-------------------------------------------${NC}\n"
 printf "${GREEN}You will be asked for your password for running commands as root!${NC}\n"
 
+export DOCKER_TEST=0
+if [[ ! -e /etc/localtime ]]; then
+    export DOCKER_TEST=1
+    # These steps are to allow this script to work in a minimal Docker container for testing.
+    printf "${YELLOW}[This looks like a Docker setup.]${NC}\n"
+    printf "${BLUE}Adding settings and basic packages for Docker based Ubuntu images.${NC}\n"
+    # The docker image has no /etc/localtime
+    # When the prereq install install the tzdat package,
+    # It stops and asks for time zone info.
+    # This should prevent that.
+    # https://bugs.launchpad.net/ubuntu/+source/tzdata/+bug/1773687
+    export DEBIAN_FRONTEND=noninteractive
+    # This won't work inside of sudo though, so just install tzdata now
+    # rather than letting it get picked up later as a pre-req,
+    # and add the other things we know Docker is missing too while we are at it.
+    apt update
+    apt install -y tzdata sudo lsb-release
+    # Now the rest of the script should work as if it was in a normal Ubuntu install.
+fi
+
 version=`lsb_release -sc`
 
 printf "\n${YELLOW}[Checking the Ubuntu version]${NC}\n"
@@ -98,22 +118,29 @@ if ! [[ -e ~/ros_catkin_ws/install_isolated/setup.bash ]]; then
     if ! [[ -f src/.rosinstall ]]; then
         ROS_INSTALL_FILE=melodic-desktop-full.rosinstall
         rosinstall_generator desktop_full --rosdistro melodic --deps --tar > ${ROS_INSTALL_FILE}
-        # Fix broken ROS downloads
-        # See: https://github.com/vcstools/wstool/issues/130
-        for brokenVersion in \
-                ros_comm-release-release-${ROS_RELEASE_NAME}-ros_comm \
-                ros_comm-release-release-${ROS_RELEASE_NAME}-rosgraph \
-                ros-release-release-${ROS_RELEASE_NAME}-roslib \
-                ros-release-release-${ROS_RELEASE_NAME}-rosunit \
-                ros_comm-release-release-${ROS_RELEASE_NAME}-rosmaster \
-                ros_comm-release-release-${ROS_RELEASE_NAME}-rosout \
-                ros_comm-release-release-${ROS_RELEASE_NAME}-rostest \
-                ros_comm-release-release-${ROS_RELEASE_NAME}-roswtf \
-                ros_comm-release-release-${ROS_RELEASE_NAME}-topic_tools \
-                ; do
-            sed -i 's/version: \('${brokenVersion}'\)-[0-9\.\-]\+/version: \1/g' ${ROS_INSTALL_FILE}
-        done
-        # TODO: There is some pretty nice code to do this here: https://github.com/vcstools/wstool/issues/130#issuecomment-462998392
+        if [[ ${DOCKER_TEST} -gt 0 ]]; then
+            # Attempt to patch wstool ONLY IN Docker Test!
+            if (patch -N --dry-run --silent /usr/lib/python2.7/dist-packages/vcstools/tar.py ~/catkin_ws/src/ArloBot/patches/vcstools-tar.patch > /dev/null); then
+                patch /usr/lib/python2.7/dist-packages/vcstools/tar.py ~/catkin_ws/src/ArloBot/patches/vcstools-tar.patch
+            fi
+        else
+            # Fix broken ROS downloads
+            # See: https://github.com/vcstools/wstool/issues/130
+            for brokenVersion in \
+                    ros_comm-release-release-${ROS_RELEASE_NAME}-ros_comm \
+                    ros-release-release-${ROS_RELEASE_NAME}-roslib \
+                    ros-release-release-${ROS_RELEASE_NAME}-rosunit \
+                    ros_comm-release-release-${ROS_RELEASE_NAME}-rosout \
+                    ros_comm-release-release-${ROS_RELEASE_NAME}-rostest \
+                    ros_comm-release-release-${ROS_RELEASE_NAME}-roswtf \
+                    ros_comm-release-release-${ROS_RELEASE_NAME}-topic_tools \
+                    ros_comm-release-release-${ROS_RELEASE_NAME}-roslaunch \
+                    pluginlib-release-release-melodic-pluginlib \
+                    ros_comm-release-release-melodic-rostopic \
+                    ; do
+                sed -i 's/version: \('${brokenVersion}'\)-[0-9\.\-]\+/version: \1/g' ${ROS_INSTALL_FILE}
+            done
+        fi
         wstool init -j8 src ${ROS_INSTALL_FILE}
 
         # Add other packages that are required by ArloBot, but not listed in desktop_full
@@ -182,6 +209,9 @@ rospack profile
 
 if ! [[ -f ${HOME}/Desktop/RVIZ.desktop ]]; then
     printf "\n${YELLOW}[Creating Desktop Icon to run RVIZ]${NC}\n"
+    if [[ ! -d ${HOME}/Desktop ]]; then
+        mkdir ${HOME}/Desktop
+    fi
     echo "[Desktop Entry]" > ${HOME}/Desktop/RVIZ.desktop
     echo "Encoding=UTF-8" >> ${HOME}/Desktop/RVIZ.desktop
     echo "Name=RVIZ" >> ${HOME}/Desktop/RVIZ.desktop
