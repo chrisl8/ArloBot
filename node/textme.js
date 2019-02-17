@@ -14,7 +14,7 @@ function textMe(text, debug) {
       personalData.twilio.auth_token,
     );
     // Pass in parameters to the REST API using an object literal notation. The
-    // REST client will handle authentication and response serialzation for you.
+    // REST client will handle authentication and response serialization for you.
     client.messages.create(
       {
         to: personalData.twilio.my_phone_number,
