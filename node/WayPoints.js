@@ -1,6 +1,6 @@
-const getCurrentPosition = require('./getCurrentPosition');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
+const getCurrentPosition = require('./getCurrentPosition');
 
 const personalDataFolder = `${process.env.HOME}/.arlobot/`;
 const webModel = require('./webModel');
@@ -67,10 +67,9 @@ class WayPoints {
     fs.readdir(waypointFolder, (err, list) => {
       if (err) {
         webModelFunctions.scrollingStatusUpdate(
-          'Error updating waypoint list.',
+          'No waypoints found for this map.',
         );
-        console.error('Error updating waypoint list:');
-        console.error(err);
+        console.log('No waypoints found for this map.');
       } else {
         webModel.wayPoints = list;
       }
