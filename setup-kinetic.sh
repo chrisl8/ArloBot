@@ -302,7 +302,7 @@ if ! [[ ${TRAVIS} == "true" ]]; then
         fi
     else
         cd ~/catkin_ws/src/ArloBot/mycroft-core
-        ./stop-mycroft.sh
+        ./stop-mycroft.sh || true # Do not let failures crash the script.
         git pull
         ./dev_setup.sh
         ./start-mycroft.sh all
@@ -483,6 +483,8 @@ if ! (sudo -nl|grep resetUSB > /dev/null); then
 fi
 
 if [[ "${USER}" == chrisl8 ]]; then
+    # NOTE: It is OK if this section "crashes" the script on a failure,
+    # because it ONLY runs for me, not end users.
     if ! [[ -d /home/robotStatusUser ]]; then
         printf "\n${YELLOW}[Adding robotStatusUser.]${NC}\n"
         printf "${GREEN}(This is NOT required for Arlobot, just a personal thing.)${NC}\n"
@@ -516,11 +518,11 @@ if [[ "${USER}" == chrisl8 ]]; then
     printf "${YELLOW}and this is the current stable version of node:${NC} "
     wget -qO- https://nodejs.org/en/download/|grep "Latest LTS Version:"|sed "s/<\/p>//g"|sed "s/<p class=\"color-lightgray\">//"
     printf "\n${YELLOW}Checking for out of date global node modules:${NC}\n"
-    npm outdated -g
+    npm outdated -g || true # Log.io will always be "old", so do not let failures crash the script.
     printf "${YELLOW}Checking for out of date package node modules:${NC}\n"
-    printf "${YELLOW}in /node:${NC}\n"
+    printf "${YELLOW}in node/:${NC}\n"
     npm outdated
-    printf "${YELLOW}in /website:${NC}\n"
+    printf "${YELLOW}in website/:${NC}\n"
     cd ${HOME}/catkin_ws/src/ArloBot/website
     npm outdated
     printf "${PURPLE}-------------------------------------------------------${NC}\n"
@@ -568,7 +570,7 @@ if [[ -e ${ARLO_HOME}/arlobot.yaml ]]; then
         printf "${GREEN}in your local settings.${NC}\n"
         printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
         printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
-        diff ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLO_HOME}/arlobot.yaml
+        diff ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLO_HOME}/arlobot.yaml || true
         cp -i ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLO_HOME}/
         printf "\n"
     fi
@@ -587,7 +589,7 @@ do
             printf "${GREEN}in your local settings.${NC}\n"
             printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
             printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
-            diff ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLO_HOME}/${i}
+            diff ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLO_HOME}/${i} || true
             cp -i ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLO_HOME}/
         fi
     else
