@@ -8,6 +8,7 @@
         "mcp3208_ir_cm.h": "c",
         "arlodrive.h": "c",
         "encodercount.h": "c",
-        "broadcastodometryandrunmotors.h": "c"
+        "broadcastodometryandrunmotors.h": "c",
+        "mcp3208.h": "c"
     }
 }
