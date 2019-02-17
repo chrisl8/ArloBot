@@ -25,30 +25,16 @@ class AccordionGroup extends Component {
     this.openGroup = this.openGroup.bind(this);
   }
 
-  toggle(group) {
-    const newState = {};
-    newState[`${group}IsOpen`] = !this.state[`${group}IsOpen`];
-    this.setState(newState);
-  }
-
-  openGroup(group) {
-    const newState = {};
-    newState[`${group}IsOpen`] = true;
-    this.setState(newState);
-    // TODO: This is always scrolling to start, but sometimes we opened a different group.
-    if (group === 'startupShutdown') {
-      this.handleScrollToStart();
-    } else if (group === 'navigation') {
-      this.handleScrollToNavigation();
-    }
-  }
-
   // Ref usage
   // https://stackoverflow.com/questions/43441856/reactjs-how-to-scroll-to-an-element If you get an
   // error about attaching an ref to a stateless functional component,
   // remember it is about the element you attach it to, not the container you do it in!
   handleUpdateStartupElement = (element) => {
     this.startupElement = element;
+  };
+
+  handleUpdateNavigationElement = (element) => {
+    this.navigationElement = element;
   };
 
   handleScrollToStart() {
@@ -64,9 +50,23 @@ class AccordionGroup extends Component {
     }
   }
 
-  handleUpdateNavigationElement = (element) => {
-    this.navigationElement = element;
-  };
+  openGroup(group) {
+    const newState = {};
+    newState[`${group}IsOpen`] = true;
+    this.setState(newState);
+    // TODO: This is always scrolling to start, but sometimes we opened a different group.
+    if (group === 'startupShutdown') {
+      this.handleScrollToStart();
+    } else if (group === 'navigation') {
+      this.handleScrollToNavigation();
+    }
+  }
+
+  toggle(group) {
+    const newState = {};
+    newState[`${group}IsOpen`] = !this.state[`${group}IsOpen`];
+    this.setState(newState);
+  }
 
   handleScrollToNavigation() {
     if (this.navigationElement) {

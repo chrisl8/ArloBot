@@ -176,18 +176,17 @@ class Behavior extends Component {
                 </div>
               </div>
               <div className="flex-row-wrap behavior-buttons">
-                {this.props.ROSisRunning &&
-                  !this.props.colorFollowerRunning && (
-                    <button
-                      type="button"
-                      className="btn btn-success"
-                      onClick={() =>
-                        this.props.sendDataToRobot('startColorFollower')
-                      }
-                    >
-                      Start Color Follower
-                    </button>
-                  )}
+                {this.props.ROSisRunning && !this.props.colorFollowerRunning && (
+                  <button
+                    type="button"
+                    className="btn btn-success"
+                    onClick={() =>
+                      this.props.sendDataToRobot('startColorFollower')
+                    }
+                  >
+                    Start Color Follower
+                  </button>
+                )}
                 {this.props.colorFollowerRunning && (
                   <button
                     type="button"

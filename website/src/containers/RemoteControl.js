@@ -114,10 +114,10 @@ class RemoteControl extends Component {
               Math.sin(data.angle.radian) * data.distance;
             const DECREASER = 100;
             const linearSpeed =
-              Math.round(joystickYfromCenter / DECREASER * 100) / 100;
+              Math.round((joystickYfromCenter / DECREASER) * 100) / 100;
             // Angular is reversed.
             const angularSpeed =
-              Math.round(-joystickXfromCenter / DECREASER * 100) / 100;
+              Math.round((-joystickXfromCenter / DECREASER) * 100) / 100;
             this.setState({
               joystickOutput: `LinearSpeed: ${linearSpeed}, AngularSpeed: ${angularSpeed}`,
             });

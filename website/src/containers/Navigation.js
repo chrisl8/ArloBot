@@ -108,26 +108,25 @@ class Navigation extends Component {
           </CardHeader>
           <Collapse isOpen={this.props.isOpen}>
             <CardBody>
-              {this.props.mapName === '' &&
-                !this.props.makeMap && (
-                  <div>
-                    <button
-                      type="button"
-                      className="btn btn-warning"
-                      onClick={() => this.props.sendDataToRobot('makeMap')}
-                    >
-                      Make Map
-                    </button>
-                    &nbsp;or&nbsp;
-                    <button
-                      type="button"
-                      className="btn btn-warning"
-                      onClick={this.handleLoadMapButton}
-                    >
-                      Load Map
-                    </button>
-                  </div>
-                )}
+              {this.props.mapName === '' && !this.props.makeMap && (
+                <div>
+                  <button
+                    type="button"
+                    className="btn btn-warning"
+                    onClick={() => this.props.sendDataToRobot('makeMap')}
+                  >
+                    Make Map
+                  </button>
+                  &nbsp;or&nbsp;
+                  <button
+                    type="button"
+                    className="btn btn-warning"
+                    onClick={this.handleLoadMapButton}
+                  >
+                    Load Map
+                  </button>
+                </div>
+              )}
 
               {this.state.showMapPicker &&
                 this.props.mapName === '' &&
@@ -138,13 +137,12 @@ class Navigation extends Component {
                   </div>
                 )}
 
-              {this.props.mapName !== '' &&
-                this.props.wayPoints.length > 0 && (
-                  <div>
-                    <h3>Send Robot to a Destination:</h3>
-                    <ul>{waypointList}</ul>
-                  </div>
-                )}
+              {this.props.mapName !== '' && this.props.wayPoints.length > 0 && (
+                <div>
+                  <h3>Send Robot to a Destination:</h3>
+                  <ul>{waypointList}</ul>
+                </div>
+              )}
 
               {this.props.mapName !== '' && (
                 <div>
@@ -175,15 +173,14 @@ class Navigation extends Component {
                 </div>
               )}
 
-              {!this.props.makeMapRunning &&
-                this.props.mapName === '' && (
-                  <p>
-                    To make a new map, click on &quot;Make Map&quot;. Then you
-                    can guide the robot either by setting destinations in RVIZ,
-                    using the remote control feature, or even a joystick or
-                    keyboard teleop if you have those working.
-                  </p>
-                )}
+              {!this.props.makeMapRunning && this.props.mapName === '' && (
+                <p>
+                  To make a new map, click on &quot;Make Map&quot;. Then you can
+                  guide the robot either by setting destinations in RVIZ, using
+                  the remote control feature, or even a joystick or keyboard
+                  teleop if you have those working.
+                </p>
+              )}
               {this.props.makeMapRunning && (
                 <div>
                   <p>

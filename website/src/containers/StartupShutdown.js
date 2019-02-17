@@ -63,22 +63,20 @@ class StartupShutdown extends Component {
           </CardHeader>
           <Collapse isOpen={this.props.isOpen}>
             <CardBody>
-              {!this.props.ROSisRunning &&
-                !this.props.ROSstart && (
-                  <button
-                    type="button"
-                    className="btn btn-success"
-                    onClick={() => this.props.sendDataToRobot('startROS')}
-                  >
-                    Start ROS
-                  </button>
-                )}
-              {!this.props.ROSisRunning &&
-                this.props.ROSstart && (
-                  <button type="button" className="btn">
-                    Starting...
-                  </button>
-                )}
+              {!this.props.ROSisRunning && !this.props.ROSstart && (
+                <button
+                  type="button"
+                  className="btn btn-success"
+                  onClick={() => this.props.sendDataToRobot('startROS')}
+                >
+                  Start ROS
+                </button>
+              )}
+              {!this.props.ROSisRunning && this.props.ROSstart && (
+                <button type="button" className="btn">
+                  Starting...
+                </button>
+              )}
               {this.props.ROSisRunning && (
                 <span>
                   <button
