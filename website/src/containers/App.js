@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import openSocket from 'socket.io-client';
 import './App.css';
 import AccordionGroup from './AccordionGroup';
+import Settings from './PersonalSettings';
 
 import Banner from '../components/Banner';
 
@@ -12,6 +13,7 @@ class App extends Component {
       webModel: {
         status: 'Robot Offline',
       },
+      personalData: {},
     };
     this.sendDataToRobot = this.sendDataToRobot.bind(this);
   }
@@ -32,6 +34,13 @@ class App extends Component {
         webModel: data,
       });
     });
+
+    this.socket.on('personalData', (data) => {
+      this.setState({
+        personalData: data,
+      });
+    });
+
     this.socket.on('disconnect', () => {
       this.setState({
         webModel: {
@@ -40,6 +49,11 @@ class App extends Component {
       });
     });
   }
+
+  handleBottomButton = (e) => {
+    this.sendDataToRobot('getPersonalData');
+    this.setState({ appFunction: e.target.id });
+  };
 
   sendDataToRobot(value, data) {
     if (this.socket) {
@@ -52,16 +66,23 @@ class App extends Component {
   }
 
   render() {
-    return (
-      <div className="decorative-border">
-        <Banner
-          haltRobot={this.state.webModel.haltRobot}
-          status={this.state.webModel.status}
-          behaviorStatus={this.state.webModel.behaviorStatus}
-          sendDataToRobot={this.sendDataToRobot}
-        />
-        {/* Doing if/else in REACT https://www.robinwieruch.de/conditional-rendering-react/ */}
-        {this.state.webModel.status !== 'Robot Offline' && (
+    let pageContent = <></>;
+    let bottomButton = <></>;
+    if (this.state.webModel.status !== 'Robot Offline') {
+      if (this.state.appFunction === 'settings') {
+        pageContent = <Settings personalData={this.state.personalData} />;
+        bottomButton = (
+          <button
+            type="button"
+            id="control"
+            className="btn btn-primary settings-button"
+            onClick={this.handleBottomButton}
+          >
+            Control
+          </button>
+        );
+      } else {
+        pageContent = (
           <AccordionGroup
             laptopBatteryPercentage={
               this.state.webModel.laptopBatteryPercentage
@@ -106,11 +127,33 @@ class App extends Component {
             RosService={this.RosService}
             sendDataToRobot={this.sendDataToRobot}
           />
-        )}
+        );
+        bottomButton = (
+          <button
+            type="button"
+            id="settings"
+            className="btn btn-primary settings-button"
+            onClick={this.handleBottomButton}
+          >
+            Settings
+          </button>
+        );
+      }
+    }
+    return (
+      <div className="decorative-border">
+        <Banner
+          haltRobot={this.state.webModel.haltRobot}
+          status={this.state.webModel.status}
+          behaviorStatus={this.state.webModel.behaviorStatus}
+          sendDataToRobot={this.sendDataToRobot}
+        />
+        {pageContent}
         <p id="footer-line">
           <a href="https://github.com/chrisl8/ArloBot">
             https://github.com/chrisl8/ArloBot
           </a>
+          {bottomButton}
         </p>
       </div>
     );

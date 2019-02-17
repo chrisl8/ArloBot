@@ -528,6 +528,9 @@ async function start() {
     socket.on('scrollingStatusUpdate', (data) => {
       webModelFunctions.scrollingStatusUpdate(data);
     });
+    socket.on('getPersonalData', () => {
+      socket.emit('personalData', personalData);
+    });
     // socket.on('toggleMycroft', function () {
     //     myCroft.start();
     // });

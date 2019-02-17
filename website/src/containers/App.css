@@ -30,3 +30,12 @@
         transform: rotate(360deg);
     }
 }
+
+.settings-button {
+    float: right;
+    margin-right: 23px;
+}
+
+#footer-line {
+    line-height: 35px;
+}
