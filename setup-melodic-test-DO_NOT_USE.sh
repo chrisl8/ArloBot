@@ -1,25 +1,29 @@
 #!/bin/bash
 # ROS Arlobot Automated Install
 
-INSTALLING_ROS_DISTRO=kinetic
+INSTALLING_ROS_DISTRO=melodic
 
 # Run this straight off of github like this:
-# bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/setup-kinetic.sh)
+# bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/setup-melodic-test-DO_NOT_USE.sh)
+
+# TODO: This is a test to start moving toward conversion from Kinetic to Melodic
+# TODO: Compare this script to setup-kinetic.sh to see if I need to add any changes made there.
+# TODO: Actually use this on the robot!
 
 #   TESTING
 #
 # Testing workstation install with Docker:
 #
 # You can Test this with Docker by installing Docker, then pulling down the Ubuntu 16.04 image:
-# sudo docker pull ubuntu:16.04
+# sudo docker pull ubuntu:18.04
 # cd ~/catkin_ws/src/ArloBot
 #
 # Then either kick it off all in one shot:
-# sudo docker run -ti -v $PWD:/home/user ubuntu:16.04 /bin/bash -c "/home/user/setup-kinetic.sh"
+# sudo docker run -ti -v $PWD:/home/user ubuntu:18.04 /bin/bash -c "/home/user/setup-melodic-test-DO_NOT_USE.sh"
 #
 # Or start an interactive shell in Docker and run it, with the ability to make changes and start it again when it finishes:
-# sudo docker run -ti -v $PWD:/home/user ubuntu:16.04 /bin/bash
-# /home/user/setup-kinetic.sh
+# sudo docker run -ti -v $PWD:/home/user ubuntu:18.04 /bin/bash
+# /home/user/setup-melodic-test-DO_NOT_USE.sh
 #
 # If you started a non-interactive ("one shot") build and then it crashed and you want to get in and look around:
 # https://docs.docker.com/engine/reference/commandline/commit/
@@ -78,7 +82,7 @@ if [[ ! -e /etc/localtime ]]; then
     # rather than letting it get picked up later as a pre-req,
     # and add the other things we know Docker is missing too while we are at it.
     apt update
-    apt install -y tzdata sudo lsb-release
+    apt install -y tzdata sudo lsb-release gnupg
     # Now the rest of the script should work as if it was in a normal Ubuntu install.
 fi
 
@@ -87,10 +91,10 @@ version=`lsb_release -sc`
 printf "\n${YELLOW}[Checking the Ubuntu version]${NC}\n"
 printf "${BLUE}Ubuntu ${version} found${NC}\n"
 case ${version} in
-  "xenial")
+  "bionic")
 ;;
 *)
-printf "${RED}[This script will only work on Ubuntu Xenial (16.04)]${NC}\n"
+printf "${RED}[This script will only work on Ubuntu Bionic (18.04)]${NC}\n"
 exit 1
 esac
 
@@ -107,7 +111,10 @@ if ! [[ -e /etc/apt/sources.list.d/ros-latest.list ]]; then
     printf "${BLUE}[Checking the ROS keys]${NC}\n"
     if ! apt-key list | grep -i "ROS builder"; then
         printf "${BLUE}[Adding the ROS keys]${NC}\n"
-        sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
+        # TODO: The Ubuntu 18.04 Docker image (testing) requires ipv4. instead of ha. as suggested in the docs.
+        # TODO: I'm not sure if this has any negative repercussions?
+        #sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
+        sudo apt-key adv --keyserver hkp://ipv4.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
         printf "${BLUE}^^ He says it is 'OK'.${NC}\n"
     fi
 fi
@@ -173,13 +180,22 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 #libqtgui4 - Required by simpleide
 #libqtcore4 - Required by simpleide
 
-PACKAGE_TO_INSTALL_LIST="build-essential ros-${INSTALLING_ROS_DISTRO}-rqt-* ros-${INSTALLING_ROS_DISTRO}-kobuki-ftdi python-ftdi1 python-pip python-serial ros-${INSTALLING_ROS_DISTRO}-openni-* ros-${INSTALLING_ROS_DISTRO}-openni2-* ros-${INSTALLING_ROS_DISTRO}-freenect-* ros-${INSTALLING_ROS_DISTRO}-vision-opencv ros-${INSTALLING_ROS_DISTRO}-rtabmap-ros ros-${INSTALLING_ROS_DISTRO}-scan-tools ros-${INSTALLING_ROS_DISTRO}-explore-lite libopencv-dev python-opencv ros-${INSTALLING_ROS_DISTRO}-rosbridge-server ros-${INSTALLING_ROS_DISTRO}-tf2-tools imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan git libqtgui4 libqtcore4"
+# TODO: See http://repositories.ros.org/status_page/compare_kinetic_melodic.html for what is missing
+# TODO: ros-${INSTALLING_ROS_DISTRO}-freenect-* does not exist in Melodic. Does that matter?
+# TODO: ros-${INSTALLING_ROS_DISTRO}-scan-tools does not exist in Melodic. Does that matter?
+# TODO: ros-${INSTALLING_ROS_DISTRO}-explore-lite does not exist in Melodic. Does that matter?
+# TODO: libav-tools does not exist for Ubuntu 18.04 Does it matter?
 
-if ! [[ ${TRAVIS} == "true" ]]; then
-    PACKAGE_TO_INSTALL_LIST="${PACKAGE_TO_INSTALL_LIST} ros-${INSTALLING_ROS_DISTRO}-turtlebot-apps ros-${INSTALLING_ROS_DISTRO}-turtlebot-interactions ros-${INSTALLING_ROS_DISTRO}-turtlebot-simulator"
-else
-    printf "\n${GREEN}Skipping turtlebot bits forTravis CI Testing, because librealsense fails due to uvcvideo in Travis CI environment${NC}\n"
-fi
+PACKAGE_TO_INSTALL_LIST="build-essential ros-${INSTALLING_ROS_DISTRO}-rqt-* ros-${INSTALLING_ROS_DISTRO}-kobuki-ftdi python-ftdi1 python-pip python-serial ros-${INSTALLING_ROS_DISTRO}-openni-* ros-${INSTALLING_ROS_DISTRO}-openni2-* ros-${INSTALLING_ROS_DISTRO}-vision-opencv ros-${INSTALLING_ROS_DISTRO}-rtabmap-ros libopencv-dev python-opencv ros-${INSTALLING_ROS_DISTRO}-rosbridge-server ros-${INSTALLING_ROS_DISTRO}-tf2-tools imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan git libqtgui4 libqtcore4"
+
+# TODO: ros-melodic-turtlebot-apps does not exist in Meldocic. Does that matter?
+# TODO: ros-melodic-turtlebot-interactions does not exist in Meldocic. Does that matter?
+# TODO: ros-melodic-turtlebot-simulator does not exist in Meldocic. Does that matter?
+#if ! [[ ${TRAVIS} == "true" ]]; then
+#    PACKAGE_TO_INSTALL_LIST="${PACKAGE_TO_INSTALL_LIST} ros-${INSTALLING_ROS_DISTRO}-turtlebot-apps ros-${INSTALLING_ROS_DISTRO}-turtlebot-interactions ros-${INSTALLING_ROS_DISTRO}-turtlebot-simulator"
+#else
+#    printf "\n${GREEN}Skipping turtlebot bits forTravis CI Testing, because librealsense fails due to uvcvideo in Travis CI environment${NC}\n"
+#fi
 
 sudo apt install -y ${PACKAGE_TO_INSTALL_LIST}
 
@@ -214,6 +230,7 @@ fi
 
 # TODO: Replace ALL hector junk with:
 # TODO: http://wiki.ros.org/explore_lite
+# TODO: explore_lite has no Melodic candidate, so do we just abandon explore?
 printf "\n${YELLOW}[Cloning or Updating git repositories]${NC}\n"
 #cd ~/catkin_ws/src
 #if ! [[ -d ~/catkin_ws/src/hector_slam ]]
@@ -371,7 +388,8 @@ cd
 if ! (which forever > /dev/null); then
     npm install -g forever
 fi
-if ! (which log.io-harvester > /dev/null); then
+if ! (which log.io-harvester > /dev/null) && [[ ! "${USER}" = "root" ]]; then
+    # Does not work in Docker (testing) on Ubuntu 18.04
     npm install -g https://github.com/pruge/Log.io
 fi
 if ! (which pm2 > /dev/null); then
