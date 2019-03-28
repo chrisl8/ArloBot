@@ -4,8 +4,9 @@
 ArloBot Package for ROS
 =======================
 
-# THIS BRANCH IS STILL EXPERIMENTAL!!
-### It is not fully tested yet, so use at your own risk and report issues.
+# THIS BRANCH HAS SOME NEW FEATURES!
+### **You MUST replace the code on your Propeller Board if you were using a previous branch!**
+### Please create issues if you discover my new code is not working.
 
 ## New Propeller C Code with new Serial Interface
 
