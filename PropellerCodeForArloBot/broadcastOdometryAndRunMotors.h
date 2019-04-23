@@ -107,7 +107,7 @@ void broadcastOdometryAndRunMotors(void *par) {
       ticksRight = right_ticks;
 #else
       // Else use DHB10 for DIST data
-      uint8_t dhb10_ticksLeft, dhb10_ticksRight;
+      int64_t dhb10_ticksLeft, dhb10_ticksRight;
       reply = dhb10_com("DIST\r");
       if (*reply == '\r') {
         // Wrong response
