@@ -272,11 +272,10 @@ function pollROS() {
     if (ros !== undefined) {
       ros.close();
     }
-    setTimeout(pollROS, longDelay);
   });
 
   ros.on('close', () => {
-    // console.log('Connection to websocket server closed.');
+    // console.log('Connection to ROSLIB Websocket server closed.');
     webModelFunctions.scrollingStatusUpdate('ROSLIB Websocket closed');
     // updateConnectedButton();
     setTimeout(pollROS, longDelay);
