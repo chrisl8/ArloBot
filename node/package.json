@@ -6,7 +6,7 @@
   "main": "index.js",
   "dependencies": {
     "body-parser": "^1.19.0",
-    "chokidar": "^3.0.1",
+    "chokidar": "^3.0.2",
     "connect-redis": "^3.4.1",
     "cookie-parser": "^1.4.4",
     "express": "^4.17.1",
@@ -14,6 +14,8 @@
     "glob": "^7.1.4",
     "jsonwebtoken": "^8.5.1",
     "mkdirp": "^0.5.1",
+    "package-lock.json": "^1.0.0",
+    "package.json": "^2.0.1",
     "ps-tree": "^1.0.0",
     "pushover-notifications": "^1.0.0",
     "redis": "^2.6.0-1",
@@ -24,8 +26,8 @@
     "socket.io": "^2.1.1",
     "socket.io-client": "^2.2.0",
     "stochator": "^0.6.2",
-    "twilio": "^3.32.0",
-    "websocket": "^1.0.28"
+    "twilio": "^3.33.1",
+    "websocket": "^1.0.29"
   },
   "devDependencies": {
     "jasmine": "^3.4.0"
