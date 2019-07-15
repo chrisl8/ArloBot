@@ -125,11 +125,7 @@ if ! [[ -e /etc/apt/sources.list.d/ros-latest.list ]]; then
     export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
     if ! apt-key list | grep -i "ROS builder"; then
         printf "${BLUE}[Adding the ROS keys]${NC}\n"
-        APT_KEY_SERVER=ha.pool.sks-keyservers.net
-        if ! [[ ${DOCKER_INSTALL} == "true" ]]; then
-          # The Ubuntu 18.04 Docker image (testing) requires ipv4. instead of ha. as suggested in the docs.
-          APT_KEY_SERVER=ipv4.pool.sks-keyservers.net
-        fi
+        APT_KEY_SERVER=pool.sks-keyservers.net
         COMMAND_DONE=1
         COMMAND_LOOPS=0
         while [[ ${COMMAND_DONE} -gt 0 ]]; do
