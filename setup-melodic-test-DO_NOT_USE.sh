@@ -68,7 +68,7 @@ function finish {
   if [[ -z ${INSTALL_FINISHED} ]]; then
     printf "\n"
     printf "${RED}INSTALL FAILURE!!!${NC}\n"
-    printf "${RED}The Install Script has failed. Please invistigate cause, correct, and run again befor eproceeding.${NC}\n"
+    printf "${RED}The Install Script has failed. Please investigate cause, correct, and run again before proceeding.${NC}\n"
     printf "\n"
     exit 1
   fi
@@ -79,12 +79,14 @@ printf "\n${YELLOW}SETTING UP ROS ${INSTALLING_ROS_DISTRO} FOR YOUR ARLOBOT!${NC
 printf "${YELLOW}---------------------------------------------------${NC}\n"
 printf "${GREEN}You will be asked for your password for running commands as root!${NC}\n"
 
+DOCKER_INSTALL="false"
 if [[ ! -e /etc/localtime ]]; then
     # These steps are to allow this script to work in a minimal Docker container for testing.
     printf "${YELLOW}[This looks like a Docker setup.]${NC}\n"
     printf "${BLUE}Adding settings and basic packages for Docker based Ubuntu images.${NC}\n"
+    DOCKER_INSTALL="true"
     # The docker image has no /etc/localtime
-    # When the prereq install install the tzdat package,
+    # When the prereq install installs the tzdat package,
     # It stops and asks for time zone info.
     # This should prevent that.
     # https://bugs.launchpad.net/ubuntu/+source/tzdata/+bug/1773687
@@ -120,13 +122,28 @@ if ! [[ -e /etc/apt/sources.list.d/ros-latest.list ]]; then
     # That is why there is a separate section for extra packages that I need for Arlo.
     sudo sh -c "echo \"deb http://packages.ros.org/ros/ubuntu ${version} main\" > /etc/apt/sources.list.d/ros-latest.list"
     printf "${BLUE}[Checking the ROS keys]${NC}\n"
+    export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
     if ! apt-key list | grep -i "ROS builder"; then
         printf "${BLUE}[Adding the ROS keys]${NC}\n"
-        export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
-        # TODO: The Ubuntu 18.04 Docker image (testing) requires ipv4. instead of ha. as suggested in the docs.
-        # TODO: I'm not sure if this has any negative repercussions?
-        #sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
-        sudo apt-key adv --keyserver hkp://ipv4.pool.sks-keyservers.net:80 --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+        APT_KEY_SERVER=ha.pool.sks-keyservers.net
+        if ! [[ ${DOCKER_INSTALL} == "true" ]]; then
+          # The Ubuntu 18.04 Docker image (testing) requires ipv4. instead of ha. as suggested in the docs.
+          APT_KEY_SERVER=ipv4.pool.sks-keyservers.net
+        fi
+        COMMAND_DONE=1
+        COMMAND_LOOPS=0
+        while [[ ${COMMAND_DONE} -gt 0 ]]; do
+            if [[ ${COMMAND_LOOPS} -gt 5 ]]; then
+                printf "${RED}Too many retires attempting to get ROS apt key.${NC}\n"
+                rm /etc/apt/sources.list.d/ros-latest.list
+                exit 1
+            fi
+            if [[ ${COMMAND_LOOPS} -gt 0 ]]; then
+                printf "${RED}Failed to retrieve ROS apt key. Retrying...${NC}\n"
+            fi
+            sudo apt-key adv --keyserver hkp://${APT_KEY_SERVER}:80 --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 && COMMAND_DONE=$?
+            COMMAND_LOOPS=$((COMMAND_LOOPS + 1))
+        done
         printf "${BLUE}^^ He says it is 'OK'.${NC}\n"
     fi
 fi
@@ -332,7 +349,7 @@ if ! [[ ${TRAVIS} == "true" ]]; then
     #git apply ~/catkin_ws/src/ArloBot/mycroft-things/tts_source_patch.diff
 else
     printf "\n${GREEN}Skipping Mycroft entirely for Travis CI Testing${NC}\n"
-    # TODO: Could maybe test this, but ./dev_setup.sh asks interactive questions!
+    # ./dev_setup.sh asks interactive questions!
 fi
 
 if [[ -d /opt/mycroft/skills ]]; then
