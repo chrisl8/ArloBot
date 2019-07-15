@@ -60,6 +60,17 @@ YELLOW='\033[1;33m'
 WHITE='\033[1;37m'
 NC='\033[0m' # NoColor
 
+function finish {
+  if [[ -z ${INSTALL_FINISHED} ]]; then
+    printf "\n"
+    printf "${RED}INSTALL FAILURE!!!${NC}\n"
+    printf "${RED}The Install Script has failed. Please invistigate cause, correct, and run again befor eproceeding.${NC}\n"
+    printf "\n"
+    exit 1
+  fi
+}
+trap finish EXIT
+
 printf "\n${YELLOW}SETTING UP ROS ${INSTALLING_ROS_DISTRO} FOR YOUR ARLOBOT!${NC}\n"
 printf "${YELLOW}---------------------------------------------------${NC}\n"
 printf "${GREEN}You will be asked for your password for running commands as root!${NC}\n"
@@ -371,7 +382,8 @@ cd
 if ! (which forever > /dev/null); then
     npm install -g forever
 fi
-if ! (which log.io-harvester > /dev/null); then
+if ! (which log.io-harvester > /dev/null) && [[ ! "${USER}" = "root" ]]; then
+    # Does not work in Docker (testing) on Ubuntu 18.04
     npm install -g https://github.com/pruge/Log.io
 fi
 if ! (which pm2 > /dev/null); then
@@ -516,15 +528,15 @@ if [[ "${USER}" == chrisl8 ]]; then
     printf "\n${YELLOW}You are using this version of node:${NC} "
     node --version
     printf "${YELLOW}and this is the current stable version of node:${NC} "
-    wget -qO- https://nodejs.org/en/download/|grep "Latest LTS Version:"|sed "s/<\/p>//g"|sed "s/<p class=\"color-lightgray\">//"
+    wget -qO- https://nodejs.org/en/download/|grep "Latest LTS Version:"|sed "s/<\/p>//g"|sed "s/.*<strong>//"|sed "s/<.*//"
     printf "\n${YELLOW}Checking for out of date global node modules:${NC}\n"
     npm outdated -g || true # Log.io will always be "old", so do not let failures crash the script.
     printf "${YELLOW}Checking for out of date package node modules:${NC}\n"
     printf "${YELLOW}in node/:${NC}\n"
-    npm outdated
+    npm outdated || true # Informational, do not crash  script
     printf "${YELLOW}in website/:${NC}\n"
     cd ${HOME}/catkin_ws/src/ArloBot/website
-    npm outdated
+    npm outdated || true # Informational, do not crash  script
     printf "${PURPLE}-------------------------------------------------------${NC}\n"
 fi
 
@@ -600,10 +612,11 @@ do
     fi
 done
 
-printf "\n${PURPLE}Anytime you want to update ArloBot code from the web you can run this same script again. It will pull down and compile new code without wiping out custom configs in ~/.arlarbot. I run this script myself almost every day.\n"
+printf "\n${PURPLE}Anytime you want to update ArloBot code from the web you can run this same script again. It will pull down and compile new code without wiping out custom configs in ~/.arlarbot. I run this script myself almost every day.${NC}\n"
 
 printf "\n${YELLOW}-----------------------------------${NC}\n"
 printf "${YELLOW}ALL DONE! REBOOT AND START TESTING!${NC}\n"
 printf "${BLUE}I have a list of tests here: cat ${HOME}/catkin_ws/src/ArloBot/manualTests.txt${NC}\n"
 printf "${GREEN}Look at README.md for testing ideas.${NC}\n"
 printf "${GREEN}See here for your next step: ${BLUE}http://ekpyroticfrood.net/?p=165\n${NC}\n"
+INSTALL_FINISHED="true"
