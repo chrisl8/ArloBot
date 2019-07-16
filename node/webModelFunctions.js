@@ -24,10 +24,15 @@ util.inherits(WebModelEmitter, EventEmitter);
 const emitter = new WebModelEmitter();
 exports.emitter = emitter;
 
+let previousScrollingStatusUpdate;
+
 const scrollingStatusUpdate = (value) => {
-  webModel.lastUpdateTime = Date.now();
-  webModel.scrollingStatus = `${value}<br/>${webModel.scrollingStatus}`;
-  emitter.emit('change');
+  if (value !== previousScrollingStatusUpdate) {
+    previousScrollingStatusUpdate = value;
+    webModel.lastUpdateTime = Date.now();
+    webModel.scrollingStatus = `${value}<br/>${webModel.scrollingStatus}`;
+    emitter.emit('change');
+  }
 };
 exports.scrollingStatusUpdate = scrollingStatusUpdate;
 
