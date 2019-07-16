@@ -162,7 +162,7 @@ const publishRelayState = (relayNumber, relayState, relayName) => {
   const relayOn = relayState === 'ON';
   const result = relayName
     .replace(/([A-Z]+)/g, ' $1')
-    .replace(/([A-Z][a-z])/g, ' $1');
+    .replace(/([A-Z][a-z])/g, '$1');
   const fancyName = result.charAt(0).toUpperCase() + result.slice(1);
   const relayIndex = webModel.relays.findIndex((x) => x.number === relayNumber);
   if (relayIndex === -1) {
