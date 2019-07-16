@@ -19,8 +19,11 @@ class App extends Component {
   }
 
   componentDidMount() {
-    // For local testing.
-    // this.socket = openSocket(`http://${window.location.hostname}:8080`); // For testing
+    // For local testing on the robot:
+    // this.socket = openSocket(`http://${window.location.hostname}:8080`);
+    // For testing running locally while connecting site to a remote robot:
+    // this.socket = openSocket(`http://twoflower.local:8080`);
+    // For production:
     this.socket = openSocket();
 
     this.socket.on('startup', (data) => {
