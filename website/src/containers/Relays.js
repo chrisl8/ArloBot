@@ -24,6 +24,7 @@ class Relays extends Component {
       return (
         <span key={entry.number}>
           <button
+            id={`${entry.name}Button`}
             type="button"
             className={thisButtonClass}
             onClick={() =>

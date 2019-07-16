@@ -84,19 +84,28 @@ const Status = (props) => {
       </CardHeader>
       <Collapse isOpen={props.isOpen}>
         <CardBody>
-          <button type="button" className={laptopBatteryClass}>
+          <button
+            id="laptopBatteryStatusButton"
+            type="button"
+            className={laptopBatteryClass}
+          >
             Laptop Battery&nbsp;
             <span className="badge badge-light">
               {props.laptopBatteryPercentage}%
             </span>
           </button>
-          <button type="button" className={laptopFullyChargedClass}>
+          <button
+            id="laptopChargedButton"
+            type="button"
+            className={laptopFullyChargedClass}
+          >
             Laptop Fully Charged&nbsp;
             <span className={laptopFullyChargedBadgeClass}>
               {boolToYesNo(props.laptopFullyCharged)}
             </span>
           </button>
           <button
+            id="pluggedInStatusButton"
             type="button"
             className={pluggedInClass}
             onClick={() => props.openGroup('startupShutdown')}
@@ -107,6 +116,7 @@ const Status = (props) => {
             </span>
           </button>
           <button
+            id="doorsOpenStatusButton"
             type="button"
             className={doorsOpenClass}
             onClick={() => props.openGroup('startupShutdown')}
@@ -121,6 +131,7 @@ const Status = (props) => {
           {/* className={explorePausedBadgeClass}>{boolToYesNo(props.explorePaused)}</span> */}
           {/* </button> */}
           <button
+            id="mapStatusButton"
             type="button"
             className={mapClass}
             onClick={() => props.openGroup('navigation')}
@@ -133,6 +144,7 @@ const Status = (props) => {
           {/* className={autoExploreBadgeClass}>{boolToYesNo(props.autoExplore)}</span> */}
           {/* </button> */}
           <button
+            id="debuggingStatusButton"
             type="button"
             className={debuggingClass}
             onClick={() => props.sendDataToRobot('toggleDebug')}
@@ -143,6 +155,7 @@ const Status = (props) => {
             </span>
           </button>
           <button
+            id="cameraStatusButton"
             type="button"
             className={cameraClass}
             onClick={() => props.openGroup('video')}
@@ -153,6 +166,7 @@ const Status = (props) => {
             </span>
           </button>
           <button
+            id="masterRelayButton"
             type="button"
             className={masterRelayClass}
             onClick={() => props.sendDataToRobot('toggleMasterRelay')}
