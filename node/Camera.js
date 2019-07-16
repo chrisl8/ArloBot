@@ -1,8 +1,8 @@
+const spawn = require('child_process').spawn;
 const personalData = require('./personalData');
 const webModel = require('./webModel');
 const robotModel = require('./robotModel');
 const webModelFunctions = require('./webModelFunctions');
-const spawn = require('child_process').spawn;
 const ipAddress = require('./ipAddress');
 const masterRelay = require('./MasterRelay');
 

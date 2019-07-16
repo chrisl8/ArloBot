@@ -1,7 +1,7 @@
+const spawn = require('child_process').spawn;
 const personalData = require('./personalData');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
-const spawn = require('child_process').spawn;
 
 /*
  To get the state of all relays:
