@@ -70,6 +70,8 @@ function finish {
     printf "${RED}INSTALL FAILURE!!!${NC}\n"
     printf "${RED}The Install Script has failed. Please investigate cause, correct, and run again before proceeding.${NC}\n"
     printf "\n"
+    printf "${YELLOW}If this was a transient error, such as a network failure connecting to something, you may just need to run it again.${NC}\n"
+    printf "\n"
     exit 1
   fi
 }
@@ -125,11 +127,12 @@ if ! [[ -e /etc/apt/sources.list.d/ros-latest.list ]]; then
     export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
     if ! apt-key list | grep -i "ROS builder"; then
         printf "${BLUE}[Adding the ROS keys]${NC}\n"
+        # The pool options are listed here: https://sks-keyservers.net/overview-of-pools.php
         APT_KEY_SERVER=pool.sks-keyservers.net
         COMMAND_DONE=1
         COMMAND_LOOPS=0
         while [[ ${COMMAND_DONE} -gt 0 ]]; do
-            if [[ ${COMMAND_LOOPS} -gt 5 ]]; then
+            if [[ ${COMMAND_LOOPS} -gt 8 ]]; then
                 printf "${RED}Too many retires attempting to get ROS apt key.${NC}\n"
                 rm /etc/apt/sources.list.d/ros-latest.list
                 exit 1
@@ -204,6 +207,7 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 #git allows for cloning of repositories
 #libqtgui4 - Required by simpleide
 #libqtcore4 - Required by simpleide
+#xvfb libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 - For Cypress Testing https://docs.cypress.io/guides/guides/continuous-integration.html#Advanced-setup
 
 # TODO: See http://repositories.ros.org/status_page/compare_kinetic_melodic.html for what is missing
 # TODO: ros-${INSTALLING_ROS_DISTRO}-freenect-* does not exist in Melodic. Does that matter?
@@ -211,7 +215,7 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 # TODO: ros-${INSTALLING_ROS_DISTRO}-explore-lite does not exist in Melodic. Does that matter?
 # TODO: libav-tools does not exist for Ubuntu 18.04 Does it matter?
 
-PACKAGE_TO_INSTALL_LIST="build-essential ros-${INSTALLING_ROS_DISTRO}-rqt-* ros-${INSTALLING_ROS_DISTRO}-kobuki-ftdi python-ftdi1 python-pip python-serial ros-${INSTALLING_ROS_DISTRO}-openni-* ros-${INSTALLING_ROS_DISTRO}-openni2-* ros-${INSTALLING_ROS_DISTRO}-vision-opencv ros-${INSTALLING_ROS_DISTRO}-rtabmap-ros libopencv-dev python-opencv ros-${INSTALLING_ROS_DISTRO}-rosbridge-server ros-${INSTALLING_ROS_DISTRO}-tf2-tools imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan git libqtgui4 libqtcore4 ros-${INSTALLING_ROS_DISTRO}-yocs-cmd-vel-mux"
+PACKAGE_TO_INSTALL_LIST="build-essential ros-${INSTALLING_ROS_DISTRO}-rqt-* ros-${INSTALLING_ROS_DISTRO}-kobuki-ftdi python-ftdi1 python-pip python-serial ros-${INSTALLING_ROS_DISTRO}-openni-* ros-${INSTALLING_ROS_DISTRO}-openni2-* ros-${INSTALLING_ROS_DISTRO}-vision-opencv ros-${INSTALLING_ROS_DISTRO}-rtabmap-ros libopencv-dev python-opencv ros-${INSTALLING_ROS_DISTRO}-rosbridge-server ros-${INSTALLING_ROS_DISTRO}-tf2-tools imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan git libqtgui4 libqtcore4 ros-${INSTALLING_ROS_DISTRO}-yocs-cmd-vel-mux xvfb libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2"
 
 # TODO: ros-melodic-turtlebot-apps does not exist in Meldocic. Does that matter?
 # TODO: ros-melodic-turtlebot-interactions does not exist in Meldocic. Does that matter?

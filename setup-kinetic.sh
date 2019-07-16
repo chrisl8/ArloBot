@@ -121,11 +121,12 @@ if ! [[ -e /etc/apt/sources.list.d/ros-latest.list ]]; then
     export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
     if ! apt-key list | grep -i "ROS builder"; then
         printf "${BLUE}[Adding the ROS keys]${NC}\n"
+        # The pool options are listed here: https://sks-keyservers.net/overview-of-pools.php
         APT_KEY_SERVER=pool.sks-keyservers.net
         COMMAND_DONE=1
         COMMAND_LOOPS=0
         while [[ ${COMMAND_DONE} -gt 0 ]]; do
-            if [[ ${COMMAND_LOOPS} -gt 5 ]]; then
+            if [[ ${COMMAND_LOOPS} -gt 8 ]]; then
                 printf "${RED}Too many retires attempting to get ROS apt key.${NC}\n"
                 rm /etc/apt/sources.list.d/ros-latest.list
                 exit 1
