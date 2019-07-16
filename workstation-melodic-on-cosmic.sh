@@ -138,11 +138,18 @@ if ! [[ -e ~/ros_catkin_ws/install_isolated/setup.bash ]]; then
         ROS_INSTALL_FILE=melodic-desktop-full.rosinstall
         rosinstall_generator desktop_full --rosdistro melodic --deps --tar > ${ROS_INSTALL_FILE}
 
+        # TODO: Patching system installed files is probably less than ideal. Other options?
+        # NOTE: Another option is to run this script to fix the generated .rosinstall file:
+        # https://gist.githubusercontent.com/machinekoder/49ff3aa0734b4b2ec99ec86586cb40c1/raw/1594b0a8f235735c837e4619f21c4bf52d2c9b5e/fix_rosinstall.py
+        # from: https://github.com/isaacs/github/issues/1483#issuecomment-464072676
+        # but this script requires:
+        #sudo apt install python-pip
+        #sudo pip install sh
+        #wget  https://gist.githubusercontent.com/machinekoder/49ff3aa0734b4b2ec99ec86586cb40c1/raw/1594b0a8f235735c837e4619f21c4bf52d2c9b5e/fix_rosinstall.py
+        # and even then it assumes the file is called ros_catkin_ws/docker/kinetic.rosinstall.vanilla
+
         # Patch wstool for GitHub issue
         # See: https://github.com/vcstools/vcstools/issues/147
-        # NOTE: Another option is to run this script to fix the generated .rosinstall file:
-        # https://gist.github.com/machinekoder/49ff3aa0734b4b2ec99ec86586cb40c1
-        # from: https://github.com/isaacs/github/issues/1483#issuecomment-464072676
         wget https://github.com/vcstools/vcstools/commit/ddcfacb7dd10429ff5e57845d18657c8f1dc2997.patch
         if (sudo patch -N --dry-run --silent /usr/lib/python2.7/dist-packages/vcstools/tar.py ddcfacb7dd10429ff5e57845d18657c8f1dc2997.patch > /dev/null); then
             sudo patch /usr/lib/python2.7/dist-packages/vcstools/tar.py ddcfacb7dd10429ff5e57845d18657c8f1dc2997.patch
