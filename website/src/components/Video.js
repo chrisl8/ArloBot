@@ -27,6 +27,7 @@ const Video = (props) => {
       <Collapse isOpen={props.isOpen}>
         <CardBody>
           <button
+            id="cameraButton"
             type="button"
             className={cameraClass}
             onClick={() => props.sendDataToRobot('toggleCamera')}

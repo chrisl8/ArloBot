@@ -95,7 +95,7 @@ const Status = (props) => {
             </span>
           </button>
           <button
-            id="laptopChargedButton"
+            id="laptopChargedStatusButton"
             type="button"
             className={laptopFullyChargedClass}
           >
@@ -166,7 +166,7 @@ const Status = (props) => {
             </span>
           </button>
           <button
-            id="masterRelayButton"
+            id="masterRelayStatusButton"
             type="button"
             className={masterRelayClass}
             onClick={() => props.sendDataToRobot('toggleMasterRelay')}
