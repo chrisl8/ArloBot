@@ -27,6 +27,7 @@ from PropellerSerialTestCursesInterface import Screen
 
 
 class Linear(object):
+    # Pieces needed for Twist Object below
     x = 0.0
     y = 0.0
     z = 0.0
@@ -38,6 +39,7 @@ class Linear(object):
 
 
 class Angular(object):
+    # Pieces needed for Twist Object below
     x = 0.0
     y = 0.0
     z = 0.0
