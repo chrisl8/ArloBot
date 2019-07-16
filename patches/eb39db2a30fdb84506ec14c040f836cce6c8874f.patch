@@ -1,0 +1,69 @@
+From eb39db2a30fdb84506ec14c040f836cce6c8874f Mon Sep 17 00:00:00 2001
+From: 7980062 <ken.nicolson@jp.panasonic.com>
+Date: Fri, 15 Feb 2019 14:31:01 +0900
+Subject: [PATCH] Hack to get around GitHub playing with TAR
+
+Further patches to handle the situation correctly.
+---
+ src/vcstools/tar.py | 27 ++++++++++++++++++++-------
+ 1 file changed, 20 insertions(+), 7 deletions(-)
+
+diff --git a/src/vcstools/tar.py b/src/vcstools/tar.py
+index 9e90cf0..659c8d6 100644
+--- a/src/vcstools/tar.py
++++ b/src/vcstools/tar.py
+@@ -110,6 +110,9 @@ def checkout(self, url, version='', verbose=False,
+                 # print "filename", filename
+             temp_tarfile = tarfile.open(filename, 'r:*')
+             members = None  # means all members in extractall
++            # We're using versioned directories by default
++            # Note that everything is either versioned or not, there are no intermediate states
++            use_unversioned = False
+             if version == '' or version is None:
+                 subdir = tempdir
+                 self.logger.warn("No tar subdirectory chosen via the 'version' argument for url: %s" % url)
+@@ -120,17 +123,26 @@ def checkout(self, url, version='', verbose=False,
+                 members = []
+                 unversioned = re.sub(r'-[0-9.-]+$', '', version)
+                 for m in temp_tarfile.getmembers():
+-                    if m.name.startswith(version + '/') or m.name.startswith(unversioned + '/'):
++                    if m.name.startswith(version + '/'):
++                        members.append(m)
++                    elif m.name.startswith(unversioned + '/'):
++                        # This archive is unversioned
++                        use_unversioned = True
++                        # Replace with unversioned directory name
++                        m.name = re.sub('^'+version, unversioned, m.name)
+                         members.append(m)
+                     if m.name.split('/')[0] not in subdirs:
+                         subdirs.append(m.name.split('/')[0])
+                 if not members:
+-                    raise VcsError("%s is not a subdirectory with contents in members %s" % (version, subdirs))
+-                subdir = os.path.join(tempdir, version)
++                    raise VcsError("Neither %s nor %s is a subdirectory with contents in members %s" % (version, unversioned, subdirs))
++                if use_unversioned:
++                    subdir = os.path.join(tempdir, unversioned)
++                else:
++                    subdir = os.path.join(tempdir, version)
+             temp_tarfile.extractall(path=tempdir, members=members)
+ 
+             if not os.path.isdir(subdir):
+-                raise VcsError("%s is not a subdirectory\n" % subdir)
++                raise VcsError("%s is not a subdirectory\n" % (subdir))
+ 
+             try:
+                 # os.makedirs(os.path.dirname(self._path))
+@@ -156,9 +168,10 @@ def update(self, version='', verbose=False, timeout=None):
+         """
+         if not self.detect_presence():
+             return False
+-        if version != self.get_version():
+-            sys.stderr.write("Tarball Client does not support updating with different version '%s' != '%s'\n"
+-                             % (version, self.get_version()))
++        unversioned = re.sub(r'-[0-9.-]+$', '', version)
++        if version != self.get_version() and unversioned != self.get_version():
++            sys.stderr.write("Tarball Client does not support updating with different version '%s' != '%s' and '%s' != '%s'\n"
++                             % (version, self.get_version(), unversioned, self.get_version()))
+             return False
+ 
+         return True
