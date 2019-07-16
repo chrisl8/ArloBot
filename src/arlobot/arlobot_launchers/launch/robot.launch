@@ -13,7 +13,5 @@
     <arg name="loadScanseSweep" value="$(optenv HAS_SCANSE_SWEEP false)" />
     <group if="$(arg loadScanseSweep)">
         <include file="$(find arlobot_launchers)/launch/sweep.launch" />
-        <!-- TODO: rtabmap should not be tied to sweep -->
-        <include file="$(find arlobot_launchers)/launch/rtabmap_obstacle_avoidance.launch" />
     </group>
 </launch>
