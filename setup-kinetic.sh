@@ -66,6 +66,8 @@ function finish {
     printf "${RED}INSTALL FAILURE!!!${NC}\n"
     printf "${RED}The Install Script has failed. Please investigate cause, correct, and run again before proceeding.${NC}\n"
     printf "\n"
+    printf "${YELLOW}If this was a transient error, such as a network failure connecting to something, you may just need to run it again.${NC}\n"
+    printf "\n"
     exit 1
   fi
 }
@@ -512,6 +514,78 @@ if ! (sudo -nl|grep resetUSB > /dev/null); then
     sudo chown root:root /etc/sudoers.d/arlobot_sudoers
 fi
 
+# Arlobot Specific settings:
+
+if ! (id|grep dialout>/dev/null); then
+    printf "\n${GREEN}Adding your user to the 'dialout' group.${NC}\n"
+    sudo adduser ${USER} dialout > /dev/null
+    printf "${RED}You may have to reboot before you can use the Propeller Board.${NC}\n"
+fi
+
+if ! (id|grep video>/dev/null); then
+    printf "\n${GREEN}Adding your user to the 'video' group for access to cameras.${NC}\n"
+    sudo adduser ${USER} video > /dev/null
+fi
+
+if ! (which simpleide > /dev/null); then
+    printf "\n${YELLOW}[Setting up Parallax SimpleIDE for putting code on Activity Board.]${NC}\n"
+    cd /tmp
+    wget https://web.archive.org/web/20161005174013/http://downloads.parallax.com/plx/software/side/101rc1/simple-ide_1-0-1-rc1_amd64.deb
+    sudo dpkg -i /tmp/simple-ide_1-0-1-rc1_amd64.deb
+    rm /tmp/simple-ide_1-0-1-rc1_amd64.deb
+fi
+
+if ! [[ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/Arlo/libarlodrive/arlodrive.c ]]; then
+    printf "\n${YELLOW}[You must Update your SimpleIDE Learn Folder using the instructions here!]${NC}\n"
+    printf "\n${GREEN}http://learn.parallax.com/tutorials/language/propeller-c/propeller-c-set-simpleide/update-your-learn-folder${NC}\n"
+fi
+
+# We will use ~/.arlobot to store "private" data
+# That is data that doesn't need to be part of
+# the public github repo like user tokens,
+# sounds, and room maps and per robot settings
+if ! [[ -d ${HOME}/.arlobot ]]; then
+    mkdir ${HOME}/.arlobot
+fi
+
+ARLO_HOME=${HOME}/.arlobot
+
+if [[ -e ${ARLO_HOME}/arlobot.yaml ]]; then
+    if ! (diff ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLO_HOME}/arlobot.yaml > /dev/null); then
+        printf "\n${GREEN}The ${RED}arlobot.yaml${GREEN} file in the repository is different from the one${NC}\n"
+        printf "${GREEN}in your local settings.${NC}\n"
+        printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
+        printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
+        diff ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLO_HOME}/arlobot.yaml || true
+        cp -i ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLO_HOME}/
+        printf "\n"
+    fi
+else
+    printf "\n"
+    cp ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLO_HOME}/
+    printf "${GREEN}A brand new ${RED}~/.arlobot/arlobot.yaml${GREEN} file has been created,${NC}\n"
+    printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
+fi
+
+for i in `ls ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/`
+do
+    if [[ -e  ${ARLO_HOME}/${i} ]]; then
+        if ! (diff ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLO_HOME}/${i} > /dev/null); then
+            printf "\n${GREEN}The ${RED}${i}${GREEN} file in the repository is different from the one${NC}\n"
+            printf "${GREEN}in your local settings.${NC}\n"
+            printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
+            printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
+            diff ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLO_HOME}/${i} || true
+            cp -i ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLO_HOME}/
+        fi
+    else
+        printf "\n"
+        cp ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLO_HOME}/
+        printf "${GREEN}A brand new ${RED}${ARLO_HOME}/${i}${GREEN} file has been created,${NC}\n"
+        printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
+    fi
+done
+
 if [[ "${USER}" == chrisl8 ]]; then
     # NOTE: It is OK if this section "crashes" the script on a failure,
     # because it ONLY runs for me, not end users.
@@ -557,78 +631,6 @@ if [[ "${USER}" == chrisl8 ]]; then
     npm outdated || true # Informational, do not crash  script
     printf "${PURPLE}-------------------------------------------------------${NC}\n"
 fi
-
-# Arlobot Specific settings:
-
-if ! (id|grep dialout>/dev/null); then
-    printf "\n${GREEN}Adding your user to the 'dialout' group.${NC}\n"
-    sudo adduser ${USER} dialout > /dev/null
-    printf "${RED}You may have to reboot before you can use the Propeller Board.${NC}\n"
-fi
-
-if ! (id|grep video>/dev/null); then
-    printf "\n${GREEN}Adding your user to the 'video' group for access to cameras.${NC}\n"
-    sudo adduser ${USER} video > /dev/null
-fi
-
-if ! (which simpleide > /dev/null); then
-    printf "\n${YELLOW}[Setting up Parallax SimpleIDE for putting code on Activity Board.]${NC}\n"
-    cd /tmp
-    wget https://web.archive.org/web/20161005174013/http://downloads.parallax.com/plx/software/side/101rc1/simple-ide_1-0-1-rc1_amd64.deb
-    sudo dpkg -i /tmp/simple-ide_1-0-1-rc1_amd64.deb
-    rm /tmp/simple-ide_1-0-1-rc1_amd64.deb
-fi
-
-if ! [[ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/Arlo/libarlodrive/arlodrive.c ]]; then
-    printf "\n${YELLOW}[You must Update your SimpleIDE Learn Folder using the instructions here!]${NC}\n"
-    printf "\n${GREEN}http://learn.parallax.com/tutorials/language/propeller-c/propeller-c-set-simpleide/update-your-learn-folder${NC}\n"
-fi
-
-# We will use ~/.arlobot to store "private" data
-# That is data that doesn't need to be part of
-# the public github repo like user tokens,
-# sounds, and room maps and per robot settings
-if ! [[ -d ${HOME}/.arlobot ]]; then
-    mkdir ${HOME}/.arlobot
-fi
-
-ARLO_HOME=${HOME}/.arlobot
-
-if [[ -e ${ARLO_HOME}/arlobot.yaml ]]; then
-    if ! (diff ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLO_HOME}/arlobot.yaml > /dev/null); then
-        printf "\n${GREEN}The arlobot.yaml file in the repository is different from the one${NC}\n"
-        printf "${GREEN}in your local settings.${NC}\n"
-        printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
-        printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
-        diff ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLO_HOME}/arlobot.yaml || true
-        cp -i ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLO_HOME}/
-        printf "\n"
-    fi
-else
-    printf "\n"
-    cp ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLO_HOME}/
-    printf "${GREEN}A brand new ${RED}~/.arlobot/arlobot.yaml${GREEN} file has been created,${NC}\n"
-    printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
-fi
-
-for i in `ls ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/`
-do
-    if [[ -e  ${ARLO_HOME}/${i} ]]; then
-        if ! (diff ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLO_HOME}/${i} > /dev/null); then
-            printf "\n${GREEN}The ${RED}${i}${GREEN} file in the repository is different from the one${NC}\n"
-            printf "${GREEN}in your local settings.${NC}\n"
-            printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
-            printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
-            diff ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLO_HOME}/${i} || true
-            cp -i ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLO_HOME}/
-        fi
-    else
-        printf "\n"
-        cp ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLO_HOME}/
-        printf "${GREEN}A brand new ${RED}${ARLO_HOME}/${i}${GREEN} file has been created,${NC}\n"
-        printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
-    fi
-done
 
 printf "\n${PURPLE}Anytime you want to update ArloBot code from the web you can run this same script again. It will pull down and compile new code without wiping out custom configs in ~/.arlarbot. I run this script myself almost every day.${NC}\n"
 
