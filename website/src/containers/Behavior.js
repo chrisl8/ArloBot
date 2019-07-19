@@ -124,7 +124,7 @@ class Behavior extends Component {
                 {/* TODO: Pretty up or move this response text. */}
                 <div className="no-flex">
                   Response:&nbsp;
-                  <div className="robot-said-text">
+                  <div id="robot-said-text" className="robot-said-text">
                     {this.props.myCroftSaid !== '' && (
                       <p>{this.props.myCroftSaid}</p>
                     )}
@@ -199,6 +199,7 @@ class Behavior extends Component {
                   </button>
                 )}
                 <button
+                  id="blinky-lights-button"
                   type="button"
                   className={blinkyLightButtonClass}
                   onClick={() => this.props.sendDataToRobot('arduino')}

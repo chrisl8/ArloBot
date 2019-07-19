@@ -14,7 +14,13 @@ class Relays extends Component {
   }
 
   render() {
+    const buttonIdList = [];
     const cardBody = this.props.relays.map((entry) => {
+      let buttonId = `${entry.name}RelayButton`;
+      if (buttonIdList.indexOf(buttonId) > -1) {
+        buttonId = `${buttonId}${entry.number}`;
+      }
+      buttonIdList.push(buttonId);
       let thisButtonClass = 'btn';
       let thisButtonBadgeClass = 'badge badge-secondary';
       if (entry.relayOn) {
@@ -24,7 +30,7 @@ class Relays extends Component {
       return (
         <span key={entry.number}>
           <button
-            id={`${entry.name}Button`}
+            id={buttonId}
             type="button"
             className={thisButtonClass}
             onClick={() =>
