@@ -5,6 +5,55 @@ describe("site initial layout and page function", () => {
     cy.contains("Reset Robot Server").click();
 
     cy.contains("Robot is Offline!").should("be.visible");
+
+    cy.contains("Robot Service Log").click();
+
+    cy.contains("ROSLIB Websocket closed").should("be.visible");
+
+    cy.contains("Robot Service Log").click();
+
+    cy.contains("Behavior").click();
+    cy.contains("Hello my name is two flower").should("be.visible");
+
+    cy.contains("Behavior").click();
+  });
+
+  it("should set sound to Quiet if currently set to Talk", () => {
+    cy.contains("Behavior").click();
+    cy.get("#talk-bequiet-button")
+      .contains("Talk")
+      .each($elm => {
+        cy.wrap($elm).then(() => {
+          if ($elm.hasClass("brightly-positive-text")) {
+            cy.get("#talk-bequiet-button").click();
+          }
+        });
+      });
+
+    cy.get("#talk-bequiet-button")
+      .contains("Quiet")
+      .should("have.class", "brightly-negative-text");
+
+    cy.contains("Behavior").click();
+  });
+
+  it("should set sound to Idle Timeout, not Never", () => {
+    cy.contains("Behavior").click();
+    cy.get("#idle-timeout-button")
+      .contains("Never")
+      .each($elm => {
+        cy.wrap($elm).then(() => {
+          if ($elm.hasClass("brightly-positive-text")) {
+            cy.get("#idle-timeout-button").click();
+          }
+        });
+      });
+
+    cy.get("#idle-timeout-button")
+      .contains("Timeout")
+      .should("have.class", "brightly-negative-text");
+
+    cy.contains("Behavior").click();
   });
 
   it("correct items are visible on the screen", () => {
@@ -32,6 +81,17 @@ describe("site initial layout and page function", () => {
     cy.contains("Camera Off").should("be.visible");
     cy.contains("https://github.com/chrisl8/ArloBot").should("be.visible");
     cy.get("#settings").should("be.visible");
+  });
+
+  it("emergency stop button should cycle", () => {
+    cy.contains("Emergency STOP").should("be.visible");
+    cy.contains("Resume").should("not.be.visible");
+    cy.contains("Emergency STOP").click();
+    cy.contains("Emergency STOP").should("not.be.visible");
+    cy.contains("Resume").should("be.visible");
+    cy.contains("Resume").click();
+    cy.contains("Emergency STOP").should("be.visible");
+    cy.contains("Resume").should("not.be.visible");
   });
 
   it("status tab should close and open and contain correct data", () => {
@@ -109,35 +169,35 @@ describe("site initial layout and page function", () => {
     cy.contains("Five Volt").should("be.visible");
     cy.contains("Light One").should("be.visible");
 
-    cy.get("#emptyButton")
+    cy.get("#emptyRelayButton")
       .contains("span", "Off")
       .should("be.visible");
 
-    cy.get("#rightMotorButton")
+    cy.get("#rightMotorRelayButton")
       .contains("span", "Off")
       .should("be.visible");
 
-    cy.get("#arduinoButton")
+    cy.get("#arduinoRelayButton")
       .contains("span", "Off")
       .should("be.visible");
 
-    cy.get("#lightTwoButton")
+    cy.get("#lightTwoRelayButton")
       .contains("span", "Off")
       .should("be.visible");
 
-    cy.get("#emptyButton")
+    cy.get("#emptyRelayButton5")
       .contains("span", "Off")
       .should("be.visible");
 
-    cy.get("#leftMotorButton")
+    cy.get("#leftMotorRelayButton")
       .contains("span", "Off")
       .should("be.visible");
 
-    cy.get("#fiveVoltButton")
+    cy.get("#fiveVoltRelayButton")
       .contains("span", "Off")
       .should("be.visible");
 
-    cy.get("#lightOneButton")
+    cy.get("#lightOneRelayButton")
       .contains("span", "Off")
       .should("be.visible");
 
@@ -218,6 +278,8 @@ describe("site initial layout and page function", () => {
     cy.get("#statusScrollBox").should("not.be.visible");
 
     cy.contains("Robot Service Log").click();
+
+    cy.get("#statusScrollBox").should("be.visible");
 
     cy.contains("ROSLIB Websocket closed").should("be.visible");
 

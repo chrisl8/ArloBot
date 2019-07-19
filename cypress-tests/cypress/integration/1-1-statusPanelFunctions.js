@@ -1,4 +1,4 @@
-describe("Status Pane Functions", () => {
+describe("Status Panel Functions", () => {
   it("reset robot service for a fresh start", () => {
     cy.visit("");
 
@@ -140,7 +140,7 @@ describe("Status Pane Functions", () => {
   });
 
   it("camera status button should function", () => {
-    // NOTE: This tests the camera button in the Status pane, not the Video tab
+    // NOTE: This tests the camera button in the Status panel, not the Video tab
     cy.get("#cameraButton")
       .contains("span", "Off")
       .should("not.be.visible");
@@ -172,7 +172,7 @@ describe("Status Pane Functions", () => {
     cy.get("#videoFeed").should("not.be.visible");
   });
 
-  it("master relay status buton should function", () => {
+  it("master relay status button should function", () => {
     cy.get("#statusScrollBox").should("not.be.visible");
 
     cy.contains("Robot Service Log").click();
@@ -211,6 +211,6 @@ describe("Status Pane Functions", () => {
     cy.get("#statusScrollBox").should("not.be.visible");
   });
 
-  // NOTE: Other buttons in the Status pane only function when things in the other panes
+  // NOTE: Other buttons in the Status panel only function when things in the other panels
   // are activated. We will test them there.
 });
