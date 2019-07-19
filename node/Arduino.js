@@ -4,14 +4,15 @@
  Set this.currentCommandArrayPoint to 0 to put it back at command 0.
  */
 
+const SerialPort = require('serialport');
 const webModel = require('./webModel');
 const robotModel = require('./robotModel');
 const webModelFunctions = require('./webModelFunctions');
 const UsbDevice = require('./UsbDevice.js');
-const SerialPort = require('serialport');
 const howManySecondsSince = require('./howManySecondsSince');
 const masterRelay = require('./MasterRelay');
 const personalData = require('./personalData');
+const wait = require('./wait');
 
 // Adjustable constants for the board:
 const baudrate = 115200;
@@ -24,14 +25,8 @@ class Arduino {
   /** @namespace personalData.arduinoUniqueString */
   /** @namespace personalData.arduinoStringLocation */
   constructor(runFromCommandLine) {
-    this.programIsBusy = false; // Prevent multiple instances from running at once in the same program
-    this.arduinoReady = false;
-    this.arduinoBusy = true;
-    this.arduinoBusyStartTime = new Date();
     this.arduinoBusyTimeoutSeconds = 60;
-    this.repeatTimeout = null;
     this.runFromCommandLine = runFromCommandLine;
-    this.portObj = null;
 
     // Commands programmed into the arduino
     this.lightPattern = {
@@ -50,7 +45,6 @@ class Arduino {
       LOOP_END: 119, // My last pixel has no green :(
     };
 
-    this.currentCommandArrayPoint = 0;
     this.ledTestCommandArray = [
       // Clear the loop with a black wipe
       `${this.lightPattern.colorWipe},0,0,0,${this.pixel.LOOP_START},${
@@ -206,7 +200,7 @@ class Arduino {
     } else {
       this.arduinoBusy = false;
       this.arduinoBusyStartTime = new Date();
-      if (this.runFromCommandLine) {
+      if (this.runFromCommandLine || webModel.debugging) {
         console.log(
           `${this.currentCommandArray[this.currentCommandArrayPoint]}->`,
         );
@@ -218,6 +212,9 @@ class Arduino {
           if (err) {
             console.log(`Write ERROR: ${err}`);
           }
+          this.lastSentData = `${
+            this.currentCommandArray[this.currentCommandArrayPoint]
+          }`;
           if (
             this.currentCommandArrayPoint <
             this.currentCommandArray.length - 1
@@ -269,7 +266,7 @@ class Arduino {
               inputArray.push(inputStream.split('\r\n'));
               inputStream = '';
               const output = inputArray.shift();
-              if (this.runFromCommandLine) {
+              if (this.runFromCommandLine || webModel.debugging) {
                 console.log(`<-${output[0]}`);
               }
               if (output[0] === 'BUSY') {
@@ -324,7 +321,6 @@ class Arduino {
   }
 
   pause() {
-    this.arduinoReady = false;
     if (this.repeatTimeout) {
       clearTimeout(this.repeatTimeout);
     }
@@ -342,20 +338,36 @@ class Arduino {
     }, 1000);
   }
 
-  lightsOut() {
+  async lightsOut() {
     this.currentCommandArrayPoint = 0;
     this.currentCommandArray = [
       `${this.lightPattern.fillSolid},0,0,0,${this.pixel.LOOP_END}`,
     ];
-    setTimeout(() => {
-      // Give it time to send the new command at least once.
-      this.pause();
-      if (this.portObj) {
-        this.portObj.close();
+    // Wait for clear command to actually get sent before shutting down
+    // with maximum wait timer
+    let waitCountdown = 30;
+    while (
+      this.lastSentData !==
+        `${this.lightPattern.fillSolid},0,0,0,${this.pixel.LOOP_END}` &&
+      waitCountdown > 0
+    ) {
+      if (this.runFromCommandLine || webModel.debugging) {
+        console.log('Waiting for Arduino to turn lights off:');
+        console.log(this.lastSentData);
+        console.log(
+          `${this.lightPattern.fillSolid},0,0,0,${this.pixel.LOOP_END}`,
+        );
       }
-      this.programIsBusy = false;
-      webModelFunctions.update('neoPixelsOn', false);
-    }, 5000);
+      // eslint-disable-next-line no-await-in-loop
+      await wait(1);
+      waitCountdown--;
+    }
+    await wait(1); // On last wait to ensure the commands had time to get through.
+    if (this.portObj) {
+      this.portObj.close();
+    }
+    this.programIsBusy = false;
+    webModelFunctions.update('neoPixelsOn', false);
   }
 }
 

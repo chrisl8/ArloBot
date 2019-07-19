@@ -17,7 +17,7 @@ const Camera = require('./Camera');
 const camera = new Camera('Camera', personalData.camera0name);
 const Arduino = require('./Arduino');
 
-const arduino = new Arduino(true);
+const arduino = new Arduino();
 const robotModel = require('./robotModel');
 const LaunchScript = require('./LaunchScript');
 const tts = require('./tts');
