@@ -1,4 +1,5 @@
-const personalData = require('./personalData');
+// TODO: I don't think this code is used.
+const io = require('socket.io-client');
 
 function SocketServerSubscriber(messageHandler) {
   // this.remoteServer = personalData.cloudServer.service + '://' + personalData.cloudServer.fqdn;
@@ -8,10 +9,9 @@ function SocketServerSubscriber(messageHandler) {
 
 SocketServerSubscriber.prototype.start = function() {
   const self = this;
-  const io = require('socket.io-client'),
-    socket = io.connect(this.remoteServer, {
-      port: 8000,
-    });
+  const socket = io.connect(this.remoteServer, {
+    port: 8000,
+  });
   socket.on('connect', () => {
     self.messageHandler({
       event: 'connect',

@@ -1,3 +1,14 @@
+const express = require('express');
+const session = require('express-session');
+const RedisStore = require('connect-redis')(session);
+// Because Express.js says not to use their session store for production.
+const jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
+const cookieParser = require('cookie-parser');
+
+const spawn = require('child_process').spawn;
+const bodyParser = require('body-parser');
+const socketIo = require('socket.io');
+
 const personalData = require('./personalData');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
@@ -18,15 +29,6 @@ const wayPointEditor = new WayPoints();
 
 const rosInterface = require('./rosInterface');
 
-const express = require('express');
-const session = require('express-session');
-const RedisStore = require('connect-redis')(session);
-// Because Express.js says not to use their session store for production.
-const jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
-const cookieParser = require('cookie-parser');
-
-const spawn = require('child_process').spawn;
-const bodyParser = require('body-parser');
 const masterRelay = require('./MasterRelay');
 
 const updateMapList = require('./updateMapList');
@@ -71,6 +73,7 @@ app.use(
 
 // Allow posting to root with a username and password for authentication.
 app.post('/', (req, res) => {
+  // TODO: I think this code is dead/not used, but I need to test to make sure before removing it.
   // Allow for local plaintext password (in case we are offline) by creating and sending ourselves a token.
   // This is kind of overkill, but I did it to test the system locally before building it remotely.
   /** @namespace personalData.webSiteSettings.basicAuthPassword */
@@ -92,7 +95,7 @@ app.post('/', (req, res) => {
     );
     console.log('Token:', token);
     // Not setting a cookie actually.
-    // This would be use dif I was using full token auth instaed of only using the token as a means
+    // This would be used if I was using full token auth instead of only using the token as a means
     // to pass authentication from a remote server to myself here.
     // res.cookie('access_token', token);
     // Create a page to post the token back to ourselves:
@@ -177,17 +180,6 @@ const saveMap = function(newMapName) {
 const startLogStreamer = function() {
   const command = `${__dirname}/../scripts/log-watcher.sh`;
   const logStreamerProcess = spawn(command);
-  logStreamerProcess.stdout.setEncoding('utf8');
-  logStreamerProcess.stdout.on('data', (data) => {
-    // console.log(data);
-  });
-  logStreamerProcess.stderr.setEncoding('utf8');
-  logStreamerProcess.stderr.on('data', (data) => {
-    // console.log(data);
-  });
-  logStreamerProcess.on('error', (err) => {
-    // console.log(err);
-  });
   logStreamerProcess.on('exit', (code) => {
     // Will catch multiple exit codes I think:
     if (code === 0) {
@@ -204,32 +196,18 @@ const stopLogStreamer = function() {
   const command = '/usr/bin/pkill';
   const commandArgs = ['-f', 'log.io'];
   const process = spawn(command, commandArgs);
-  process.stdout.setEncoding('utf8');
-  process.stdout.on('data', (data) => {
-    // console.log(data);
-  });
-  process.stderr.setEncoding('utf8');
-  process.stderr.on('data', (data) => {
-    // console.log(data);
-  });
-  process.on('error', (err) => {
-    // console.log(err);
-  });
   process.on('exit', () => {
-    // Argument Options: code
-    // console.log(code);
     webModelFunctions.scrollingStatusUpdate('Log streamer killed');
     webModelFunctions.update('logStreamerRunning', false);
   });
   return process;
 };
 
-// TODO: Shouldn't this be a behavior in along with Explore and Load Map?
 // This is a good example of integrating a simple ROS function into the web menu,
 // without having to redesign everything.
 // Place the buttons for things like this into the "Behavior" section,
-// and only show them when ROS is starting.
-// Behaviors like these could also fall into "ramdon activities" when robot is "idle",
+// and only show them when ROS is started.
+// Behaviors like these could also fall into "random activities" when robot is "idle",
 // but then I think that it would need to be in the behavior tree
 const startColorFollower = function() {
   webModelFunctions.scrollingStatusUpdate('Starting Color Follower.');
@@ -270,27 +248,13 @@ const stopColorFollower = function() {
     'roslaunch arlobot_launchers object_follower.launch',
   ];
   const process = spawn(command, commandArgs);
-  process.stdout.setEncoding('utf8');
-  process.stdout.on('data', (data) => {
-    // console.log(data);
-  });
-  process.stderr.setEncoding('utf8');
-  process.stderr.on('data', (data) => {
-    // console.log(data);
-  });
-  process.on('error', (err) => {
-    // console.log(err);
-  });
-  process.on('exit', (code) => {
-    // console.log(code);
-  });
   return process;
 };
 
 async function start() {
   /** @namespace personalData.webServerPort */
   const webServer = app.listen(personalData.webServerPort);
-  const io = require('socket.io').listen(webServer);
+  const io = socketIo.listen(webServer);
 
   webModelFunctions.emitter.on('change', () => {
     io.sockets.emit('webModel', webModel);

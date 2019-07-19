@@ -1,11 +1,4 @@
 /* eslint-disable no-param-reassign */
-// robotModel *IS* used, don't remove it!
-// eslint-disable-next-line no-unused-vars
-const robotModel = require('./robotModel');
-const webModel = require('./webModel');
-const webModelFunctions = require('./webModelFunctions');
-const tts = require('./tts');
-const howManySecondsSince = require('./howManySecondsSince');
 // fs.watch sees like 5 updates instead of one,
 // chokidar is smarter,
 // although it is still possible to hit the file when it is empty,
@@ -15,6 +8,13 @@ const chokidar = require('chokidar');
 // For random selection of items
 const Stochator = require('stochator');
 const fs = require('fs');
+// robotModel *IS* used, don't remove it!
+// eslint-disable-next-line no-unused-vars
+const robotModel = require('./robotModel');
+const webModel = require('./webModel');
+const webModelFunctions = require('./webModelFunctions');
+const tts = require('./tts');
+const howManySecondsSince = require('./howManySecondsSince');
 
 let speechModel = JSON.parse(fs.readFileSync('./speechModel.json', 'utf8'));
 const speechInMemoryObject = {};

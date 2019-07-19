@@ -1,9 +1,8 @@
 // Numato Lab - http://numato.com
 // https://github.com/numato/samplecode/blob/master/RelayAndGPIOModules/USBRelayAndGPIOModules/node.js/usbrelay/UsbRelay.js
-const process = require('process');
+const SerialPort = require('serialport');
 const webModelFunctions = require('./webModelFunctions');
 const UsbDevice = require('./UsbDevice.js');
-const SerialPort = require('serialport');
 const personalData = require('./personalData');
 
 let working = false; // Prevent multiple instances from running at once in the same program

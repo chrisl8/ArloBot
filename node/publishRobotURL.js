@@ -1,9 +1,9 @@
+const os = require('os');
+const request = require('request');
 const personalData = require('./personalData');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
-const request = require('request');
 const ipAddress = require('./ipAddress');
-const os = require('os');
 
 const robotHostname = os.hostname();
 const updateRobotURL = () => {

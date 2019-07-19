@@ -1,10 +1,10 @@
+const exec = require('child_process').exec;
+const say = require('say');
+const Push = require('pushover-notifications');
 const personalData = require('./personalData');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
 const handleSemaphoreFiles = require('./handleSemaphoreFiles');
-const exec = require('child_process').exec;
-const say = require('say');
-const Push = require('pushover-notifications');
 const myCroft = require('./MyCroft');
 
 async function tts(sound) {

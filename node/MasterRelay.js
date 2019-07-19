@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
 // Numato Lab - http://numato.com
 // https://github.com/numato/samplecode/blob/master/RelayAndGPIOModules/USBRelayAndGPIOModules/node.js/usbrelay/UsbRelay.js
-const process = require('process');
 const SerialPort = require('serialport');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');

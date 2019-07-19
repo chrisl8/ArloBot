@@ -1,6 +1,5 @@
-const personalData = require('./personalData');
-// eslint-disable-next-line import/no-extraneous-dependencies
 const io = require('socket.io-client');
+const personalData = require('./personalData');
 
 class SocketServerSubscriber {
   constructor(messageHandler) {

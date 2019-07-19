@@ -40,14 +40,11 @@ describe('Suite of unit tests for webserver', () => {
 
   beforeEach((done) => {
     // Setup
-    socket = io.connect(
-      `http://localhost:${personalData.webServerPort}`,
-      {
-        'reconnection delay': 0,
-        'reopen delay': 0,
-        'force new connection': true,
-      },
-    );
+    socket = io.connect(`http://localhost:${personalData.webServerPort}`, {
+      'reconnection delay': 0,
+      'reopen delay': 0,
+      'force new connection': true,
+    });
     socket.on('connect', () => {
       // console.log('worked...');
       done();

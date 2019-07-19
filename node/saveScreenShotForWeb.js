@@ -1,9 +1,9 @@
 const exec = require('child_process').exec;
 const fs = require('fs');
+const path = require('path');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
 const personalData = require('./personalData');
-const path = require('path');
 
 function resolvePath(str) {
   if (str.substr(0, 2) === '~/') {

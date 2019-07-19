@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 
-const personalData = require('./personalData');
+const WebSocketClient = require('websocket').client;
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
-const WebSocketClient = require('websocket').client;
 const Arduino = require('./Arduino');
 
 const arduino = new Arduino(true);

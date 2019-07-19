@@ -1,8 +1,8 @@
+const fs = require('fs');
+const glob = require('glob');
 const personalData = require('./personalData');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
-const fs = require('fs');
-const glob = require('glob');
 
 const batteryLevelFileWildcard = '/sys/class/power_supply/BAT*/uevent';
 const pluggedInFileWildcard = '/sys/class/power_supply/AC*/uevent';

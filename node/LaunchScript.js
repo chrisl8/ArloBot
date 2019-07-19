@@ -1,6 +1,6 @@
+const spawn = require('child_process').spawn;
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
-const spawn = require('child_process').spawn;
 
 function LaunchScript(options) {
   this.name = options.name || undefined;

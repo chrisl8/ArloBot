@@ -31,11 +31,14 @@ const foldersExist = {
 async function folderExists(folderName) {
   while (!foldersExist[folderName]) {
     try {
+      // eslint-disable-next-line no-await-in-loop
       await access(folderName);
+      // eslint-disable-next-line no-await-in-loop
       await chmod(folderName, 0o777);
       foldersExist[folderName] = true;
     } catch (e) {
       if (e.errno && e.errno === -2) {
+        // eslint-disable-next-line no-await-in-loop
         await mkdirp(folderName, 0o777);
         console.log(`Created status folder ${folderName}`);
       } else {

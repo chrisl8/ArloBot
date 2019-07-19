@@ -1,5 +1,5 @@
-const personalData = require('./personalData');
 const request = require('request');
+const personalData = require('./personalData');
 
 const getRobotDataFromWeb = async function() {
   const serverURL = `${personalData.cloudServer.service}://${

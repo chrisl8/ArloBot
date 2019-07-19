@@ -42,20 +42,20 @@ async function loop() {
 
   // A behavior should be callable over and over, even if it is already running.
 
-  if (!await startROS()) {
+  if (!(await startROS())) {
     return;
   }
 
   if (webModel.ROSisRunning) {
     if (webModel.autoExplore) {
-      if (!await autoExplore()) {
+      if (!(await autoExplore())) {
         return;
       }
     } else if (webModel.makeMap) {
-      if (!await makeMap()) {
+      if (!(await makeMap())) {
         return;
       }
-    } else if (!await loadMap()) {
+    } else if (!(await loadMap())) {
       // TODO: Only call if there is a map name, and make another behavior for "Where am I?"
       return;
     }
@@ -64,14 +64,14 @@ async function loop() {
       webModel.pluggedIn &&
       (webModel.autoExplore || webModel.mapName !== '')
     ) {
-      if (!await unPlugRobot()) {
+      if (!(await unPlugRobot())) {
         return;
       }
     }
 
     if (webModel.mapName !== '' && !webModel.pluggedIn) {
       if (webModel.wayPointNavigator.goToWaypoint) {
-        if (!await goToWaypoint()) {
+        if (!(await goToWaypoint())) {
           return;
         }
       } else {
