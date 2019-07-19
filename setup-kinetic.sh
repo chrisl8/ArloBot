@@ -473,7 +473,7 @@ if [[ -e ${ARLO_HOME}/personalDataForBehavior.json ]]; then
 else
     printf "\n"
     cp ${HOME}/catkin_ws/src/ArloBot/scripts/dotarlobot/personalDataForBehavior.json ${ARLO_HOME}/
-    printf "${GREEN}A brand new ${RED}~/.arlobot/personalDataForBehavior.json${GREEN} file has been created,${NC}\n"
+    printf "${GREEN}A brand new ${RED}${ARLO_HOME}/personalDataForBehavior.json${GREEN} file has been created,${NC}\n"
     printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
 fi
 
@@ -563,7 +563,7 @@ if [[ -e ${ARLO_HOME}/arlobot.yaml ]]; then
 else
     printf "\n"
     cp ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLO_HOME}/
-    printf "${GREEN}A brand new ${RED}~/.arlobot/arlobot.yaml${GREEN} file has been created,${NC}\n"
+    printf "${GREEN}A brand new ${RED}${ARLO_HOME}/arlobot.yaml${GREEN} file has been created,${NC}\n"
     printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
 fi
 
