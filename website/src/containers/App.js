@@ -128,6 +128,7 @@ class App extends Component {
             scrollingStatus={this.state.webModel.scrollingStatus}
             logStreamerRunning={this.state.webModel.logStreamerRunning}
             RosService={this.RosService}
+            robotURL={this.state.webModel.robotURL}
             sendDataToRobot={this.sendDataToRobot}
           />
         );

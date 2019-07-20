@@ -1,87 +1,18 @@
+import {
+  resetRobotService,
+  correctItemsAreVisible,
+  setSoundToQuiet,
+  setIdleToTimeout,
+  closeStartupShutdownPanel,
+  openServiceLogPanel,
+  openVideoPanel
+} from "../support/reusableTestsAndSetupTasks";
+
 describe("site initial layout and page function", () => {
-  it("reset robot service for a fresh start", () => {
-    cy.visit("");
-
-    cy.contains("Reset Robot Server").click();
-
-    cy.contains("Robot is Offline!").should("be.visible");
-
-    cy.contains("Robot Service Log").click();
-
-    cy.contains("ROSLIB Websocket closed").should("be.visible");
-
-    cy.contains("Robot Service Log").click();
-
-    cy.contains("Behavior").click();
-    cy.contains("Hello my name is two flower").should("be.visible");
-
-    cy.contains("Behavior").click();
-  });
-
-  it("should set sound to Quiet if currently set to Talk", () => {
-    cy.contains("Behavior").click();
-    cy.get("#talk-bequiet-button")
-      .contains("Talk")
-      .each($elm => {
-        cy.wrap($elm).then(() => {
-          if ($elm.hasClass("brightly-positive-text")) {
-            cy.get("#talk-bequiet-button").click();
-          }
-        });
-      });
-
-    cy.get("#talk-bequiet-button")
-      .contains("Quiet")
-      .should("have.class", "brightly-negative-text");
-
-    cy.contains("Behavior").click();
-  });
-
-  it("should set sound to Idle Timeout, not Never", () => {
-    cy.contains("Behavior").click();
-    cy.get("#idle-timeout-button")
-      .contains("Never")
-      .each($elm => {
-        cy.wrap($elm).then(() => {
-          if ($elm.hasClass("brightly-positive-text")) {
-            cy.get("#idle-timeout-button").click();
-          }
-        });
-      });
-
-    cy.get("#idle-timeout-button")
-      .contains("Timeout")
-      .should("have.class", "brightly-negative-text");
-
-    cy.contains("Behavior").click();
-  });
-
-  it("correct items are visible on the screen", () => {
-    cy.contains("Starting behaviors.").should("be.visible");
-    cy.contains("Waiting for StartROS request.").should("be.visible");
-    cy.contains("Emergency STOP").should("be.visible");
-    cy.contains("Status").should("be.visible");
-    cy.contains("Laptop Battery").should("be.visible");
-    cy.contains("Laptop Fully Charged").should("be.visible");
-    cy.contains("Plugged In").should("be.visible");
-    cy.contains("Dangerous Doors Open").should("be.visible");
-    cy.contains("Map").should("be.visible");
-    cy.contains("Debugging").should("be.visible");
-    cy.contains("Camera").should("be.visible");
-    cy.contains("Master Relay").should("be.visible");
-    cy.contains("Relays").should("be.visible");
-    cy.contains("Behavior").should("be.visible");
-    cy.contains("Startup/Shutdown").should("be.visible");
-    cy.contains("ROS Stopped").should("be.visible");
-    cy.contains("Start ROS").should("be.visible");
-    cy.contains("Reset Robot Server").should("be.visible");
-    cy.contains("Unplug").should("be.visible");
-    cy.contains("Robot Service Log").should("be.visible");
-    cy.contains("Video").should("be.visible");
-    cy.contains("Camera Off").should("be.visible");
-    cy.contains("https://github.com/chrisl8/ArloBot").should("be.visible");
-    cy.get("#settings").should("be.visible");
-  });
+  resetRobotService();
+  setSoundToQuiet();
+  setIdleToTimeout();
+  correctItemsAreVisible();
 
   it("emergency stop button should cycle", () => {
     cy.contains("Emergency STOP").should("be.visible");
@@ -258,27 +189,18 @@ describe("site initial layout and page function", () => {
     cy.contains("Blinky Lights").should("not.be.visible");
   });
 
-  it("startup/shutdown tab should open and close", () => {
-    cy.contains("Start ROS").should("be.visible");
-    cy.contains("Reset Robot Server").should("be.visible");
-    cy.contains("Unplug").should("be.visible");
+  closeStartupShutdownPanel();
 
-    cy.contains("Startup/Shutdown").click();
-    cy.contains("Start ROS").should("not.be.visible");
-    cy.contains("Reset Robot Server").should("not.be.visible");
-    cy.contains("Unplug").should("not.be.visible");
-
+  it("startup/shutdown tab should open", () => {
     cy.contains("Startup/Shutdown").click();
     cy.contains("Start ROS").should("be.visible");
     cy.contains("Reset Robot Server").should("be.visible");
     cy.contains("Unplug").should("be.visible");
   });
 
-  it("robot service log tab should open and close", () => {
-    cy.get("#statusScrollBox").should("not.be.visible");
+  openServiceLogPanel();
 
-    cy.contains("Robot Service Log").click();
-
+  it("robot service log tab should close", () => {
     cy.get("#statusScrollBox").should("be.visible");
 
     cy.contains("ROSLIB Websocket closed").should("be.visible");
@@ -288,19 +210,10 @@ describe("site initial layout and page function", () => {
     cy.get("#statusScrollBox").should("not.be.visible");
   });
 
-  it("video tab should open and close", () => {
-    cy.get("#cameraButton")
-      .contains("span", "Off")
-      .should("not.be.visible");
-    cy.get("#videoFeed").should("not.be.visible");
+  openVideoPanel();
 
-    cy.contains("Video").click();
-    cy.get("#cameraButton")
-      .contains("span", "Off")
-      .should("be.visible");
-    cy.get("#videoFeed").should("be.visible");
-
-    cy.contains("Video").click();
+  it("video tab should close", () => {
+    cy.contains("Video - Camera Off").click();
     cy.get("#cameraButton")
       .contains("span", "Off")
       .should("not.be.visible");

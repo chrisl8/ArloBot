@@ -1,22 +1,7 @@
+import { resetRobotService, closeStartupShutdownPanel, openServiceLogPanel } from "../support/reusableTestsAndSetupTasks";
+
 describe("Toggle Light One", () => {
-  it("reset robot service for a fresh start", () => {
-    cy.visit("");
-
-    cy.contains("Reset Robot Server").click();
-
-    cy.contains("Robot is Offline!").should("be.visible");
-
-    cy.contains("Robot Service Log").click();
-
-    cy.contains("ROSLIB Websocket closed").should("be.visible");
-
-    cy.contains("Robot Service Log").click();
-
-    cy.contains("Behavior").click();
-    cy.contains("Hello my name is two flower").should("be.visible");
-
-    cy.contains("Behavior").click();
-  });
+  resetRobotService();
 
   it("page loads correctly", () => {
     cy.contains("Master Relay").should("be.visible");
@@ -30,16 +15,8 @@ describe("Toggle Light One", () => {
     cy.contains("Relays").should("be.visible");
   });
 
-  it("set up panels to monitor log", () => {
-    cy.contains("Startup/Shutdown").click();
-    cy.contains("Start ROS").should("not.be.visible");
-
-    cy.contains("Robot Service Log").click();
-
-    cy.get("#statusScrollBox").should("be.visible");
-
-    cy.contains("ROSLIB Websocket closed").should("be.visible");
-  });
+  closeStartupShutdownPanel();
+  openServiceLogPanel();
 
   it("toggle Master Relay On", () => {
     cy.get("#masterRelayStatusButton").click();

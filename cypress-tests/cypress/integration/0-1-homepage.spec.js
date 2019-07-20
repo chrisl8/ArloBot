@@ -7,7 +7,7 @@
 
 describe("The Home Page", () => {
   it("successfully loads", () => {
-    cy.visit("/");
+    cy.visit("");
   });
 
   it("new project page loads correctly", () => {

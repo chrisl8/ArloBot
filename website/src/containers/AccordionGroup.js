@@ -167,6 +167,7 @@ class AccordionGroup extends Component {
           toggle={this.toggle}
           cameraOn={this.props.cameraOn}
           videoSource={this.props.videoSource}
+          robotURL={this.props.robotURL}
           sendDataToRobot={this.props.sendDataToRobot}
         />
       </React.Fragment>

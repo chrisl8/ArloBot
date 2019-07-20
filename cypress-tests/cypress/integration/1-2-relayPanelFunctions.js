@@ -1,38 +1,14 @@
+import {
+  resetRobotService,
+  correctItemsAreVisible,
+  openRelayPanel,
+  openServiceLogPanel,
+  closeStartupShutdownPanel
+} from "../support/reusableTestsAndSetupTasks";
+
 describe("Relay Panel Functions", () => {
-  it("reset robot service for a fresh start", () => {
-    cy.visit("");
-
-    cy.contains("Reset Robot Server").click();
-
-    cy.contains("Robot is Offline!").should("be.visible");
-
-    cy.contains("Robot Service Log").click();
-
-    cy.contains("ROSLIB Websocket closed").should("be.visible");
-
-    cy.contains("Robot Service Log").click();
-
-    cy.contains("Behavior").click();
-    cy.contains("Hello my name is two flower").should("be.visible");
-
-    cy.contains("Behavior").click();
-  });
-
-  it("correct items are visible on the screen", () => {
-    cy.contains("Starting behaviors.").should("be.visible");
-    cy.contains("Waiting for StartROS request.").should("be.visible");
-    cy.contains("Emergency STOP").should("be.visible");
-    cy.contains("Status").should("be.visible");
-    cy.contains("Relays").should("be.visible");
-    cy.contains("Behavior").should("be.visible");
-    cy.contains("Startup/Shutdown").should("be.visible");
-    cy.contains("ROS Stopped").should("be.visible");
-    cy.contains("Robot Service Log").should("be.visible");
-    cy.contains("Video").should("be.visible");
-    cy.contains("Camera Off").should("be.visible");
-    cy.contains("https://github.com/chrisl8/ArloBot").should("be.visible");
-    cy.get("#settings").should("be.visible");
-  });
+  resetRobotService();
+  correctItemsAreVisible();
 
   it("relay tab should be closed and open properly", () => {
     cy.contains("Empty").should("not.be.visible");
@@ -44,57 +20,10 @@ describe("Relay Panel Functions", () => {
     cy.contains("Light One").should("not.be.visible");
 
     cy.contains("Relays").should("be.visible");
-
-    cy.contains("Relays").click();
-
-    cy.contains("Empty").should("be.visible");
-    cy.contains("Right Motor").should("be.visible");
-    cy.contains("Arduino").should("be.visible");
-    cy.contains("Light Two").should("be.visible");
-    cy.contains("Left Motor").should("be.visible");
-    cy.contains("Five Volt").should("be.visible");
-    cy.contains("Light One").should("be.visible");
-
-    cy.get("#emptyRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
-    cy.get("#emptyRelayButton").should("not.have.class", "btn-success");
-
-    cy.get("#rightMotorRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
-    cy.get("#rightMotorRelayButton").should("not.have.class", "btn-success");
-
-    cy.get("#arduinoRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
-    cy.get("#arduinoRelayButton").should("not.have.class", "btn-success");
-
-    cy.get("#lightTwoRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
-    cy.get("#lightTwoRelayButton").should("not.have.class", "btn-success");
-
-    cy.get("#emptyRelayButton5")
-      .contains("span", "Off")
-      .should("be.visible");
-    cy.get("#emptyRelayButton5").should("not.have.class", "btn-success");
-
-    cy.get("#leftMotorRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
-    cy.get("#leftMotorRelayButton").should("not.have.class", "btn-success");
-
-    cy.get("#fiveVoltRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
-    cy.get("#fiveVoltRelayButton").should("not.have.class", "btn-success");
-
-    cy.get("#lightOneRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
-    cy.get("#lightOneRelayButton").should("not.have.class", "btn-success");
   });
+
+  openRelayPanel();
+  openServiceLogPanel();
 
   it("set up panels to monitor log", () => {
     cy.contains("Status").click();
@@ -106,16 +35,9 @@ describe("Relay Panel Functions", () => {
     cy.contains("Debugging").should("not.be.visible");
     cy.contains("Camera").should("not.be.visible");
     cy.contains("Master Relay").should("not.be.visible");
-
-    cy.contains("Startup/Shutdown").click();
-    cy.contains("Start ROS").should("not.be.visible");
-
-    cy.contains("Robot Service Log").click();
-
-    cy.get("#statusScrollBox").should("be.visible");
-
-    cy.contains("ROSLIB Websocket closed").should("be.visible");
   });
+
+  closeStartupShutdownPanel();
 
   it("Empty Relay button should function", () => {
     cy.get("#emptyRelayButton")

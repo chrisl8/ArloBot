@@ -19,6 +19,15 @@ const Video = (props) => {
     cameraBadgeClass = 'badge badge-light';
   }
 
+  let { videoSource } = props;
+  // For running the web server locally for testing
+  if (
+    window.location.hostname === 'localhost' &&
+    videoSource.substring(0, 7) === 'xscreen'
+  ) {
+    videoSource = `${props.robotURL}/${props.videoSource}`;
+  }
+
   return (
     <Card id="status-card" className="card-title">
       <CardHeader onClick={() => props.toggle('video')}>
@@ -40,7 +49,7 @@ const Video = (props) => {
           <img
             id="videoFeed"
             alt="Video feed"
-            src={props.videoSource}
+            src={videoSource}
             style={{ width: '100%' }}
           />
         </CardBody>

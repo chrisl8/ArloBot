@@ -1,38 +1,11 @@
+import {
+  resetRobotService,
+  correctItemsAreVisible
+} from "../support/reusableTestsAndSetupTasks";
+
 describe("Status Panel Functions", () => {
-  it("reset robot service for a fresh start", () => {
-    cy.visit("");
-
-    cy.contains("Reset Robot Server").click();
-
-    cy.contains("Robot is Offline!").should("be.visible");
-
-    cy.contains("Robot Service Log").click();
-
-    cy.contains("ROSLIB Websocket closed").should("be.visible");
-
-    cy.contains("Robot Service Log").click();
-
-    cy.contains("Behavior").click();
-    cy.contains("Hello my name is two flower").should("be.visible");
-
-    cy.contains("Behavior").click();
-  });
-
-  it("correct items are visible on the screen", () => {
-    cy.contains("Starting behaviors.").should("be.visible");
-    cy.contains("Waiting for StartROS request.").should("be.visible");
-    cy.contains("Emergency STOP").should("be.visible");
-    cy.contains("Status").should("be.visible");
-    cy.contains("Relays").should("be.visible");
-    cy.contains("Behavior").should("be.visible");
-    cy.contains("Startup/Shutdown").should("be.visible");
-    cy.contains("ROS Stopped").should("be.visible");
-    cy.contains("Robot Service Log").should("be.visible");
-    cy.contains("Video").should("be.visible");
-    cy.contains("Camera Off").should("be.visible");
-    cy.contains("https://github.com/chrisl8/ArloBot").should("be.visible");
-    cy.get("#settings").should("be.visible");
-  });
+  resetRobotService();
+  correctItemsAreVisible();
 
   it("status tab should close and open and contain correct data", () => {
     cy.contains("Status").click();
@@ -165,7 +138,7 @@ describe("Status Panel Functions", () => {
       .should("be.visible");
     cy.get("#videoFeed").should("be.visible");
 
-    cy.contains("Video").click();
+    cy.contains("Video - Camera Off").click();
     cy.get("#cameraButton")
       .contains("span", "Off")
       .should("not.be.visible");
