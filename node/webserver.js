@@ -4,6 +4,7 @@ const RedisStore = require('connect-redis')(session);
 // Because Express.js says not to use their session store for production.
 const jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 const cookieParser = require('cookie-parser');
+const _ = require('lodash');
 
 const spawn = require('child_process').spawn;
 const bodyParser = require('body-parser');
@@ -256,8 +257,17 @@ async function start() {
   const webServer = app.listen(personalData.webServerPort);
   const io = socketIo.listen(webServer);
 
+  const throttledWebModelEmitter = _.throttle(
+    () => {
+      io.sockets.emit('webModel', webModel);
+    },
+    personalData.socketEmitterThrottle
+      ? personalData.socketEmitterThrottle
+      : 500,
+  );
+
   webModelFunctions.emitter.on('change', () => {
-    io.sockets.emit('webModel', webModel);
+    throttledWebModelEmitter();
   });
 
   // Socket listeners
