@@ -81,6 +81,7 @@ async function startROS() {
     if (!personalData.demoWebSite) {
       robotModel.ROSprocess.start();
     } else {
+      // Dummy data for demoWebSite
       robotModel.ROSprocess.started = true;
       setTimeout(() => {
         if (!robotModel.ROSprocess.startupComplete) {
