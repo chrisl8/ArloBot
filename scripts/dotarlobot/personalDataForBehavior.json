@@ -122,6 +122,7 @@
     "speaker": 2
   },
   "maxPingRangeAccepted": 0.5,
+  "socketEmitterThrottle": 500,
   "_hasBeenEdited": "Set to true once you have put your settings in this file to let the program know that you did it.",
   "hasBeenEdited": false
 }
