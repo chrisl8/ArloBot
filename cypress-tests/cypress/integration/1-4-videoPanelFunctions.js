@@ -1,24 +1,30 @@
 import {
   resetRobotService,
-  correctItemsAreVisible,
+  initialPageLoadItemsVisible,
   setSoundToQuiet,
   setIdleToTimeout,
-  openRelayPanel,
-  openServiceLogPanel,
-  closeStartupShutdownPanel,
-  openVideoPanel
+  openPanelIfClosed,
+  closePanelIfOpen
 } from "../support/reusableTestsAndSetupTasks";
+
+import {
+  videoPanelShouldBeOpen,
+  startupShutdownPanelShouldBeOpen
+} from "../support/panelTestsWithRosOff";
 
 describe("Behavior Panel Functions", () => {
   resetRobotService();
   setSoundToQuiet();
   setIdleToTimeout();
-  correctItemsAreVisible();
+  initialPageLoadItemsVisible();
 
-  openRelayPanel();
-  openServiceLogPanel();
-  closeStartupShutdownPanel();
-  openVideoPanel();
+  openPanelIfClosed("relays");
+  openPanelIfClosed("robot-service-log");
+  closePanelIfOpen("startup-shutdown");
+  startupShutdownPanelShouldBeOpen(false);
+  videoPanelShouldBeOpen(false);
+  openPanelIfClosed("video");
+  videoPanelShouldBeOpen(true);
 
   // Test current static image
 

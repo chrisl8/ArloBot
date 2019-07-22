@@ -1,43 +1,31 @@
 import {
   resetRobotService,
-  correctItemsAreVisible,
-  openRelayPanel,
-  openServiceLogPanel,
-  closeStartupShutdownPanel
+  initialPageLoadItemsVisible,
+  openPanelIfClosed,
+  closePanelIfOpen
 } from "../support/reusableTestsAndSetupTasks";
+
+import {
+  statusPanelShouldBeOpen,
+  relayPanelShouldBeOpen,
+  relayPanelCorrectIntialState,
+  startupShutdownPanelShouldBeOpen
+} from "../support/panelTestsWithRosOff";
 
 describe("Relay Panel Functions", () => {
   resetRobotService();
-  correctItemsAreVisible();
+  initialPageLoadItemsVisible();
 
-  it("relay tab should be closed and open properly", () => {
-    cy.contains("Empty").should("not.be.visible");
-    cy.contains("Right Motor").should("not.be.visible");
-    cy.contains("Arduino").should("not.be.visible");
-    cy.contains("Light Two").should("not.be.visible");
-    cy.contains("Left Motor").should("not.be.visible");
-    cy.contains("Five Volt").should("not.be.visible");
-    cy.contains("Light One").should("not.be.visible");
+  openPanelIfClosed("relays");
+  relayPanelShouldBeOpen(true);
+  relayPanelCorrectIntialState();
+  openPanelIfClosed("robot-service-log");
 
-    cy.contains("Relays").should("be.visible");
-  });
+  closePanelIfOpen("status");
+  statusPanelShouldBeOpen();
 
-  openRelayPanel();
-  openServiceLogPanel();
-
-  it("set up panels to monitor log", () => {
-    cy.contains("Status").click();
-    cy.contains("Laptop Battery").should("not.be.visible");
-    cy.contains("Laptop Fully Charged").should("not.be.visible");
-    cy.contains("Plugged In").should("not.be.visible");
-    cy.contains("Dangerous Doors Open").should("not.be.visible");
-    cy.contains("Map").should("not.be.visible");
-    cy.contains("Debugging").should("not.be.visible");
-    cy.contains("Camera").should("not.be.visible");
-    cy.contains("Master Relay").should("not.be.visible");
-  });
-
-  closeStartupShutdownPanel();
+  closePanelIfOpen("startup-shutdown");
+  startupShutdownPanelShouldBeOpen(false);
 
   it("Empty Relay button should function", () => {
     cy.get("#emptyRelayButton")
@@ -238,6 +226,8 @@ describe("Relay Panel Functions", () => {
       .should("be.visible");
     cy.get("#lightOneRelayButton").should("not.have.class", "btn-success");
   });
+
+  relayPanelCorrectIntialState();
 });
 
 // TODO: Flipping these buttons doesn't actually test the function in this case for many reasons,

@@ -1,11 +1,11 @@
 import {
   resetRobotService,
-  correctItemsAreVisible
+  initialPageLoadItemsVisible
 } from "../support/reusableTestsAndSetupTasks";
 
 describe("Status Panel Functions", () => {
   resetRobotService();
-  correctItemsAreVisible();
+  initialPageLoadItemsVisible();
 
   it("status tab should close and open and contain correct data", () => {
     cy.contains("Status").click();
@@ -97,7 +97,9 @@ describe("Status Panel Functions", () => {
     cy.get("#debuggingStatusButton").should("have.class", "btn-warning");
 
     cy.contains("Handle Power without ROS").should("be.visible");
-    cy.contains("Start ROS").should("be.visible");
+    cy.get("#startup-shutdown-card")
+      .contains("Start ROS")
+      .should("be.visible");
     cy.contains("Polling").should("be.visible");
 
     cy.contains("Robot Service Log").click();

@@ -1,3 +1,39 @@
+function openPanelIfClosed(id) {
+  it(`open ${id} if it is closed`, () => {
+    cy.get(`#${id}-card-body`).each($elm => {
+      cy.wrap($elm).then(() => {
+        if (!$elm.hasClass("show")) {
+          cy.get($elm)
+            .parent()
+            .click();
+          // Do not continue until animation is done.
+          cy.get(`#${id}-card-body`).should("not.have.class", "collapsing");
+        }
+      });
+    });
+  });
+}
+
+function closePanelIfOpen(id) {
+  it(`close ${id} if it is open`, () => {
+    // Cannot close while it is still in motion, so wait for it to be done
+    // if it was in motion.
+    cy.get(`#${id}-card-body`).should("not.have.class", "collapsing");
+    cy.get(`#${id}-card-body`).each($elm => {
+      cy.wrap($elm).then(() => {
+        console.log($elm);
+        if ($elm.hasClass("show")) {
+          cy.get(`#${id}-card`).within(() => {
+            cy.get("div[class='card-header']").click();
+            // Do not continue until animation is done.
+            cy.get(`#${id}-card-body`).should("not.have.class", "collapsing");
+          });
+        }
+      });
+    });
+  });
+}
+
 function resetRobotService() {
   it("reset robot service for a fresh start", () => {
     cy.visit("");
@@ -6,7 +42,7 @@ function resetRobotService() {
 
     cy.contains("Reset Robot Server").click();
 
-    cy.contains("Robot is Offline!").should("be.visible");
+    cy.contains("Robot is Offline!", { timeout: 10000 }).should("be.visible");
 
     cy.contains("Robot Service Log").click();
 
@@ -21,7 +57,7 @@ function resetRobotService() {
   });
 }
 
-function correctItemsAreVisible() {
+function initialPageLoadItemsVisible() {
   it("correct items are visible on the screen", () => {
     cy.contains("Starting behaviors.").should("be.visible");
     cy.contains("Waiting for StartROS request.").should("be.visible");
@@ -39,7 +75,9 @@ function correctItemsAreVisible() {
     cy.contains("Behavior").should("be.visible");
     cy.contains("Startup/Shutdown").should("be.visible");
     cy.contains("ROS Stopped").should("be.visible");
-    cy.contains("Start ROS").should("be.visible");
+    cy.get("#startup-shutdown-card")
+      .contains("Start ROS")
+      .should("be.visible");
     cy.contains("Reset Robot Server").should("be.visible");
     cy.contains("Unplug").should("be.visible");
     cy.contains("Robot Service Log").should("be.visible");
@@ -92,112 +130,11 @@ function setIdleToTimeout() {
   });
 }
 
-function openRelayPanel() {
-  it("should open Relay Panel", () => {
-    cy.contains("Relays").click();
-
-    cy.contains("Empty").should("be.visible");
-    cy.contains("Right Motor").should("be.visible");
-    cy.contains("Arduino").should("be.visible");
-    cy.contains("Light Two").should("be.visible");
-    cy.contains("Left Motor").should("be.visible");
-    cy.contains("Five Volt").should("be.visible");
-    cy.contains("Light One").should("be.visible");
-
-    cy.get("#emptyRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
-    cy.get("#emptyRelayButton").should("not.have.class", "btn-success");
-
-    cy.get("#rightMotorRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
-    cy.get("#rightMotorRelayButton").should("not.have.class", "btn-success");
-
-    cy.get("#arduinoRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
-    cy.get("#arduinoRelayButton").should("not.have.class", "btn-success");
-
-    cy.get("#lightTwoRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
-    cy.get("#lightTwoRelayButton").should("not.have.class", "btn-success");
-
-    cy.get("#emptyRelayButton5")
-      .contains("span", "Off")
-      .should("be.visible");
-    cy.get("#emptyRelayButton5").should("not.have.class", "btn-success");
-
-    cy.get("#leftMotorRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
-    cy.get("#leftMotorRelayButton").should("not.have.class", "btn-success");
-
-    cy.get("#fiveVoltRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
-    cy.get("#fiveVoltRelayButton").should("not.have.class", "btn-success");
-
-    cy.get("#lightOneRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
-    cy.get("#lightOneRelayButton").should("not.have.class", "btn-success");
-  });
-}
-
-function openServiceLogPanel() {
-  it("should open Robot Service Log Panel", () => {
-    cy.get("#statusScrollBox").should("not.be.visible");
-    cy.contains("ROSLIB Websocket closed").should("not.be.visible");
-
-    cy.contains("Robot Service Log").click();
-
-    cy.get("#statusScrollBox").should("be.visible");
-    cy.contains("ROSLIB Websocket closed").should("be.visible");
-  });
-}
-
-function closeStartupShutdownPanel() {
-  it("should close Startup/Shutdown Panel", () => {
-    cy.contains("Start ROS").should("be.visible");
-    cy.contains("Reset Robot Server").should("be.visible");
-    cy.contains("Unplug").should("be.visible");
-
-    cy.contains("Startup/Shutdown").click();
-
-    cy.contains("Start ROS").should("not.be.visible");
-    cy.contains("Reset Robot Server").should("not.be.visible");
-    cy.contains("Unplug").should("not.be.visible");
-  });
-}
-
-function openVideoPanel() {
-  it("should open Video Panel", () => {
-    cy.get("#cameraButton")
-      .contains("span", "Off")
-      .should("not.be.visible");
-    cy.get("#videoFeed").should("not.be.visible");
-
-    cy.contains("Video - Camera Off").click();
-    cy.get("#cameraButton")
-      .contains("span", "Off")
-      .should("be.visible");
-    cy.get("#cameraButton").should("not.have.class", "btn-success");
-    cy.get("#videoFeed").should("be.visible");
-    cy.get("#videoFeed")
-      .should("have.attr", "src")
-      .should("include", "xscreen.png");
-  });
-}
-
 module.exports = {
   resetRobotService,
-  correctItemsAreVisible,
+  initialPageLoadItemsVisible,
   setSoundToQuiet,
   setIdleToTimeout,
-  openRelayPanel,
-  openServiceLogPanel,
-  closeStartupShutdownPanel,
-  openVideoPanel
+  openPanelIfClosed,
+  closePanelIfOpen
 };

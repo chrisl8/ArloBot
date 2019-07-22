@@ -1,4 +1,10 @@
-import { resetRobotService, closeStartupShutdownPanel, openServiceLogPanel } from "../support/reusableTestsAndSetupTasks";
+import {
+  resetRobotService,
+  openPanelIfClosed,
+  closePanelIfOpen
+} from "../support/reusableTestsAndSetupTasks";
+
+import { startupShutdownPanelShouldBeOpen } from "../support/panelTestsWithRosOff";
 
 describe("Toggle Light One", () => {
   resetRobotService();
@@ -15,8 +21,9 @@ describe("Toggle Light One", () => {
     cy.contains("Relays").should("be.visible");
   });
 
-  closeStartupShutdownPanel();
-  openServiceLogPanel();
+  closePanelIfOpen("startup-shutdown");
+  startupShutdownPanelShouldBeOpen(false);
+  openPanelIfClosed("robot-service-log");
 
   it("toggle Master Relay On", () => {
     cy.get("#masterRelayStatusButton").click();
@@ -31,9 +38,9 @@ describe("Toggle Light One", () => {
     cy.get("#masterRelayStatusButton").should("have.class", "btn-success");
   });
 
-  it("can open relay panel", () => {
-    cy.contains("Relays").click();
+  openPanelIfClosed("relays");
 
+  it("relays panel is open", () => {
     cy.contains("Light One").should("be.visible");
 
     cy.get("#lightOneRelayButton")
@@ -96,13 +103,7 @@ describe("Toggle Light One", () => {
     cy.get("#lightTwoRelayButton").should("not.have.class", "btn-success");
   });
 
-  it("can close relay panel", () => {
-    cy.contains("Relays").click();
-
-    cy.contains("Light One").should("not.be.visible");
-
-    cy.contains("Relays").should("be.visible");
-  });
+  closePanelIfOpen("relays");
 
   it("toggle Master Relay Off", () => {
     cy.get("#masterRelayStatusButton").click();

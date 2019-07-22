@@ -1,53 +1,33 @@
 import {
   resetRobotService,
-  correctItemsAreVisible,
+  initialPageLoadItemsVisible,
   setSoundToQuiet,
   setIdleToTimeout,
-  openRelayPanel,
-  openServiceLogPanel,
-  closeStartupShutdownPanel
+  openPanelIfClosed,
+  closePanelIfOpen
 } from "../support/reusableTestsAndSetupTasks";
+
+import {
+  behaviorPanelShouldBeOpen,
+  startupShutdownPanelShouldBeOpen
+} from "../support/panelTestsWithRosOff";
 
 describe("Behavior Panel Functions", () => {
   resetRobotService();
   setSoundToQuiet();
   setIdleToTimeout();
-  correctItemsAreVisible();
+  initialPageLoadItemsVisible();
 
-  it("bahavior tab should be closed and open and contain correct data", () => {
-    cy.get("#say-something").should("not.be.visible");
-    cy.contains("Speak").should("not.be.visible");
-    cy.get("#ask-something").should("not.be.visible");
-    cy.contains("Ask").should("not.be.visible");
-    cy.contains("Response:").should("not.be.visible");
-    cy.contains("Hello my name is two flower").should("not.be.visible");
-    cy.contains("Never").should("not.be.visible");
-    cy.contains("Idle").should("not.be.visible");
-    cy.contains("Timeout").should("not.be.visible");
-    cy.contains("Talk").should("not.be.visible");
-    cy.contains("Sound").should("not.be.visible");
-    cy.contains("Quiet").should("not.be.visible");
-    cy.contains("Blinky Lights").should("not.be.visible");
+  behaviorPanelShouldBeOpen(false);
 
-    cy.contains("Behavior").click();
-    cy.get("#say-something").should("be.visible");
-    cy.contains("Speak").should("be.visible");
-    cy.get("#ask-something").should("be.visible");
-    cy.contains("Ask").should("be.visible");
-    cy.contains("Response:").should("be.visible");
-    cy.contains("Hello my name is two flower").should("be.visible");
-    cy.contains("Never").should("be.visible");
-    cy.contains("Idle").should("be.visible");
-    cy.contains("Timeout").should("be.visible");
-    cy.contains("Talk").should("be.visible");
-    cy.contains("Sound").should("be.visible");
-    cy.contains("Quiet").should("be.visible");
-    cy.contains("Blinky Lights").should("be.visible");
-  });
+  openPanelIfClosed("behavior");
 
-  openRelayPanel();
-  openServiceLogPanel();
-  closeStartupShutdownPanel();
+  behaviorPanelShouldBeOpen(true);
+
+  openPanelIfClosed("relays");
+  openPanelIfClosed("robot-service-log");
+  closePanelIfOpen("startup-shutdown");
+  startupShutdownPanelShouldBeOpen(false);
 
   it("should respond in text box when asked to speak when in quiet mode", () => {
     cy.get("#say-something").should("be.visible");

@@ -1,18 +1,25 @@
 import {
   resetRobotService,
-  correctItemsAreVisible,
+  initialPageLoadItemsVisible,
   setSoundToQuiet,
   setIdleToTimeout,
-  closeStartupShutdownPanel,
-  openServiceLogPanel,
-  openVideoPanel
+  openPanelIfClosed,
+  closePanelIfOpen
 } from "../support/reusableTestsAndSetupTasks";
+
+import {
+  relayPanelShouldBeOpen,
+  relayPanelCorrectIntialState,
+  statusPanelShouldBeOpen,
+  behaviorPanelShouldBeOpen,
+  startupShutdownPanelShouldBeOpen
+} from "../support/panelTestsWithRosOff";
 
 describe("site initial layout and page function", () => {
   resetRobotService();
   setSoundToQuiet();
   setIdleToTimeout();
-  correctItemsAreVisible();
+  initialPageLoadItemsVisible();
 
   it("emergency stop button should cycle", () => {
     cy.contains("Emergency STOP").should("be.visible");
@@ -25,27 +32,14 @@ describe("site initial layout and page function", () => {
     cy.contains("Resume").should("not.be.visible");
   });
 
-  it("status tab should close and open and contain correct data", () => {
-    cy.contains("Status").click();
-    cy.contains("Laptop Battery").should("not.be.visible");
-    cy.contains("Laptop Fully Charged").should("not.be.visible");
-    cy.contains("Plugged In").should("not.be.visible");
-    cy.contains("Dangerous Doors Open").should("not.be.visible");
-    cy.contains("Map").should("not.be.visible");
-    cy.contains("Debugging").should("not.be.visible");
-    cy.contains("Camera").should("not.be.visible");
-    cy.contains("Master Relay").should("not.be.visible");
+  closePanelIfOpen("status");
 
-    cy.contains("Status").click();
-    cy.contains("Laptop Battery").should("be.visible");
-    cy.contains("Laptop Fully Charged").should("be.visible");
-    cy.contains("Plugged In").should("be.visible");
-    cy.contains("Dangerous Doors Open").should("be.visible");
-    cy.contains("Map").should("be.visible");
-    cy.contains("Debugging").should("be.visible");
-    cy.contains("Camera").should("be.visible");
-    cy.contains("Master Relay").should("be.visible");
+  statusPanelShouldBeOpen(false);
 
+  openPanelIfClosed("status");
+
+  statusPanelShouldBeOpen(true);
+  it("Status Panel entries should be set correctly", () => {
     cy.get("#laptopBatteryStatusButton")
       .contains("span", "100%")
       .should("be.visible");
@@ -79,141 +73,41 @@ describe("site initial layout and page function", () => {
       .should("be.visible");
   });
 
-  it("relay tab should open and close", () => {
-    cy.contains("Empty").should("not.be.visible");
-    cy.contains("Right Motor").should("not.be.visible");
-    cy.contains("Arduino").should("not.be.visible");
-    cy.contains("Light Two").should("not.be.visible");
-    cy.contains("Left Motor").should("not.be.visible");
-    cy.contains("Five Volt").should("not.be.visible");
-    cy.contains("Light One").should("not.be.visible");
+  relayPanelShouldBeOpen(false);
 
-    cy.contains("Relays").should("be.visible");
+  openPanelIfClosed("relays");
 
-    cy.contains("Relays").click();
+  relayPanelShouldBeOpen(true);
+  relayPanelCorrectIntialState();
+  closePanelIfOpen("relays");
 
-    cy.contains("Empty").should("be.visible");
-    cy.contains("Right Motor").should("be.visible");
-    cy.contains("Arduino").should("be.visible");
-    cy.contains("Light Two").should("be.visible");
-    cy.contains("Left Motor").should("be.visible");
-    cy.contains("Five Volt").should("be.visible");
-    cy.contains("Light One").should("be.visible");
+  relayPanelShouldBeOpen(false);
 
-    cy.get("#emptyRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
+  behaviorPanelShouldBeOpen(false);
+  openPanelIfClosed("behavior");
+  behaviorPanelShouldBeOpen(true);
+  closePanelIfOpen("behavior");
+  behaviorPanelShouldBeOpen(false);
 
-    cy.get("#rightMotorRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
+  openPanelIfClosed("startup-shutdown");
+  startupShutdownPanelShouldBeOpen(true);
 
-    cy.get("#arduinoRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
+  openPanelIfClosed("robot-service-log");
 
-    cy.get("#lightTwoRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
-
-    cy.get("#emptyRelayButton5")
-      .contains("span", "Off")
-      .should("be.visible");
-
-    cy.get("#leftMotorRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
-
-    cy.get("#fiveVoltRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
-
-    cy.get("#lightOneRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
-
-    cy.contains("Relays").click();
-
-    cy.contains("Empty").should("not.be.visible");
-    cy.contains("Right Motor").should("not.be.visible");
-    cy.contains("Arduino").should("not.be.visible");
-    cy.contains("Light Two").should("not.be.visible");
-    cy.contains("Left Motor").should("not.be.visible");
-    cy.contains("Five Volt").should("not.be.visible");
-    cy.contains("Light One").should("not.be.visible");
-  });
-
-  it("behavior tab should open and close", () => {
-    cy.get("#say-something").should("not.be.visible");
-    cy.contains("Speak").should("not.be.visible");
-    cy.get("#ask-something").should("not.be.visible");
-    cy.contains("Ask").should("not.be.visible");
-    cy.contains("Response:").should("not.be.visible");
-    cy.contains("Hello my name is two flower").should("not.be.visible");
-    cy.contains("Never").should("not.be.visible");
-    cy.contains("Idle").should("not.be.visible");
-    cy.contains("Timeout").should("not.be.visible");
-    cy.contains("Talk").should("not.be.visible");
-    cy.contains("Sound").should("not.be.visible");
-    cy.contains("Quiet").should("not.be.visible");
-    cy.contains("Blinky Lights").should("not.be.visible");
-
-    cy.contains("Behavior").click();
-    cy.get("#say-something").should("be.visible");
-    cy.contains("Speak").should("be.visible");
-    cy.get("#ask-something").should("be.visible");
-    cy.contains("Ask").should("be.visible");
-    cy.contains("Response:").should("be.visible");
-    cy.contains("Hello my name is two flower").should("be.visible");
-    cy.contains("Never").should("be.visible");
-    cy.contains("Idle").should("be.visible");
-    cy.contains("Timeout").should("be.visible");
-    cy.contains("Talk").should("be.visible");
-    cy.contains("Sound").should("be.visible");
-    cy.contains("Quiet").should("be.visible");
-    cy.contains("Blinky Lights").should("be.visible");
-
-    cy.contains("Behavior").click();
-    cy.get("#say-something").should("not.be.visible");
-    cy.contains("Speak").should("not.be.visible");
-    cy.get("#ask-something").should("not.be.visible");
-    cy.contains("Ask").should("not.be.visible");
-    cy.contains("Response:").should("not.be.visible");
-    cy.contains("Hello my name is two flower").should("not.be.visible");
-    cy.contains("Never").should("not.be.visible");
-    cy.contains("Idle").should("not.be.visible");
-    cy.contains("Timeout").should("not.be.visible");
-    cy.contains("Talk").should("not.be.visible");
-    cy.contains("Sound").should("not.be.visible");
-    cy.contains("Quiet").should("not.be.visible");
-    cy.contains("Blinky Lights").should("not.be.visible");
-  });
-
-  closeStartupShutdownPanel();
-
-  it("startup/shutdown tab should open", () => {
-    cy.contains("Startup/Shutdown").click();
-    cy.contains("Start ROS").should("be.visible");
-    cy.contains("Reset Robot Server").should("be.visible");
-    cy.contains("Unplug").should("be.visible");
-  });
-
-  openServiceLogPanel();
-
-  it("robot service log tab should close", () => {
+  it("robot service log tab should be open", () => {
     cy.get("#statusScrollBox").should("be.visible");
 
     cy.contains("ROSLIB Websocket closed").should("be.visible");
+  });
 
-    cy.contains("Robot Service Log").click();
-
+  closePanelIfOpen("robot-service-log");
+  it("robot service log tab should be closed", () => {
     cy.get("#statusScrollBox").should("not.be.visible");
   });
 
-  openVideoPanel();
+  closePanelIfOpen("video");
 
-  it("video tab should close", () => {
-    cy.contains("Video - Camera Off").click();
+  it("video tab should be closed", () => {
     cy.get("#cameraButton")
       .contains("span", "Off")
       .should("not.be.visible");
