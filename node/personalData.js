@@ -54,7 +54,9 @@ for (const prop in defaultData) {
 if (updateNeeded) {
   const newFileOutputData = `{\n${DumpObjectIndented(personalData, '    ')}\n}`;
   // console.log(newFileOutputData);
-  fs.writeFile(personalDataFile, newFileOutputData);
+  fs.writeFile(personalDataFile, newFileOutputData, (err) => {
+    if (err) console.log('error', err);
+  });
   console.log(`${personalDataFile} has been updated with new settings`);
   console.log('Please check to see if you need to adjust them for your robot!');
 }

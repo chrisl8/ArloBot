@@ -136,7 +136,13 @@ const setSemaphoreFiles = async (text) => {
       }
     });
   } else if (text === 'markDoorsOpen') {
-    fs.writeFile(doorFile, 'STOP\n');
+    fs.writeFile(doorFile, 'STOP\n', (err) => {
+      if (err) {
+        console.error('Error writing haltRobot file:');
+        console.error(err);
+        foldersExist[statusFolder] = false;
+      }
+    });
   }
 };
 
