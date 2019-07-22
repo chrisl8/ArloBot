@@ -82,7 +82,7 @@ const Status = (props) => {
       <CardHeader onClick={() => props.toggle('status')}>
         <CardTitle>Status</CardTitle>
       </CardHeader>
-      <Collapse isOpen={props.isOpen}>
+      <Collapse id="status-card-body" isOpen={props.isOpen}>
         <CardBody>
           <button
             id="laptopBatteryStatusButton"

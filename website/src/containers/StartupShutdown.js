@@ -57,11 +57,11 @@ class StartupShutdown extends Component {
           this.cardDiv = element;
         }}
       >
-        <Card id="status-card" className="card-title">
+        <Card id="startup-shutdown-card" className="card-title">
           <CardHeader onClick={() => this.props.toggle('startupShutdown')}>
             <CardTitle>{cardTitleText}</CardTitle>
           </CardHeader>
-          <Collapse isOpen={this.props.isOpen}>
+          <Collapse id="startup-shutdown-card-body" isOpen={this.props.isOpen}>
             <CardBody>
               {!this.props.ROSisRunning && !this.props.ROSstart && (
                 <button
@@ -87,6 +87,7 @@ class StartupShutdown extends Component {
                     Stop ROS
                   </button>
                   <button
+                    id="set-all-doors-closed-button"
                     type="button"
                     className={doorsClosedClass}
                     onClick={() =>

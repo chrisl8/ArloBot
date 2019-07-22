@@ -25,11 +25,11 @@ class RobotServiceLog extends Component {
       startRosLogStreamerBadgeClass = 'badge badge-light';
     }
     return (
-      <Card id="status-card" className="card-title">
+      <Card id="robot-service-log-card" className="card-title">
         <CardHeader onClick={this.toggle}>
           <CardTitle>Robot Service Log</CardTitle>
         </CardHeader>
-        <Collapse isOpen={this.state.isOpen}>
+        <Collapse id="robot-service-log-card-body" isOpen={this.state.isOpen}>
           <CardBody>
             <div
               id="statusScrollBox"
@@ -38,6 +38,7 @@ class RobotServiceLog extends Component {
             <div style={{ marginTop: '10px' }}>
               {this.props.logStreamerRunning && (
                 <button
+                  id="view-log-streamer-button"
                   type="button"
                   className="btn btn-primary"
                   onClick={() => this.goToLogStreamer()}
@@ -47,6 +48,7 @@ class RobotServiceLog extends Component {
               )}
               {this.props.ROSisRunning && (
                 <button
+                  id="log-streamer-button"
                   type="button"
                   className={startRosLogStreamerClass}
                   onClick={() =>

@@ -148,11 +148,14 @@ class RemoteControl extends Component {
 
   render() {
     return (
-      <Card id="status-card" className="card-title">
+      <Card id="remote-control-card" className="card-title">
         <CardHeader onClick={this.toggle}>
           <CardTitle>Remote Control</CardTitle>
         </CardHeader>
-        <Collapse isOpen={this.state.isOpen}>
+        <Collapse
+          id="remote-control-card-body"
+          isOpen={this.state.isOpen}
+        >
           <CardBody>
             {!this.props.ROSisRunning && (
               <button

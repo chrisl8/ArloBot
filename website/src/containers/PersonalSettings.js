@@ -26,7 +26,7 @@ class PersonalSettings extends Component {
       }
     }
     return (
-      <Card id="status-card" className="card-title">
+      <Card id="personal-settings-card" className="card-title">
         <CardHeader>
           <CardTitle>{this.cardTitle}</CardTitle>
         </CardHeader>

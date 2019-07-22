@@ -33,11 +33,11 @@ class Telemetry extends Component {
       });
     }
     return (
-      <Card id="status-card" className="card-title">
+      <Card id="telemetry-card" className="card-title">
         <CardHeader onClick={this.toggle}>
           <CardTitle>Telemetry</CardTitle>
         </CardHeader>
-        <Collapse isOpen={this.state.isOpen}>
+        <Collapse id="telemetry-card-body" isOpen={this.state.isOpen}>
           <CardBody>{cardBody}</CardBody>
         </Collapse>
       </Card>

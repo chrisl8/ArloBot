@@ -46,11 +46,11 @@ class Relays extends Component {
       );
     });
     return (
-      <Card id="status-card" className="card-title">
+      <Card id="relays-card" className="card-title">
         <CardHeader onClick={this.toggle}>
           <CardTitle>Relays</CardTitle>
         </CardHeader>
-        <Collapse isOpen={this.state.isOpen}>
+        <Collapse id="relays-card-body" isOpen={this.state.isOpen}>
           <CardBody>{cardBody}</CardBody>
         </Collapse>
       </Card>

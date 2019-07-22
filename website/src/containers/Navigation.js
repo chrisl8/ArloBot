@@ -102,11 +102,11 @@ class Navigation extends Component {
           this.cardDiv = element;
         }}
       >
-        <Card id="status-card" className="card-title">
+        <Card id="navigation-card" className="card-title">
           <CardHeader onClick={() => this.props.toggle('navigation')}>
             <CardTitle>{cardTitleText}</CardTitle>
           </CardHeader>
-          <Collapse isOpen={this.props.isOpen}>
+          <Collapse id="navigation-card-body" isOpen={this.props.isOpen}>
             <CardBody>
               {this.props.mapName === '' && !this.props.makeMap && (
                 <div>

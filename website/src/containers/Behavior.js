@@ -72,11 +72,11 @@ class Behavior extends Component {
     }
 
     return (
-      <Card id="status-card" className="card-title">
+      <Card id="behavior-card" className="card-title">
         <CardHeader onClick={this.toggle}>
           <CardTitle>Behavior</CardTitle>
         </CardHeader>
-        <Collapse isOpen={this.state.isOpen}>
+        <Collapse id="behavior-card-body" isOpen={this.state.isOpen}>
           {/* TODO: Can these spread and wrap responsively? */}
           <CardBody>
             <div className="flex-column-wrap">
@@ -178,6 +178,7 @@ class Behavior extends Component {
               <div className="flex-row-wrap behavior-buttons">
                 {this.props.ROSisRunning && !this.props.colorFollowerRunning && (
                   <button
+                    id="start-color-follower-button"
                     type="button"
                     className="btn btn-success"
                     onClick={() =>
@@ -189,6 +190,7 @@ class Behavior extends Component {
                 )}
                 {this.props.colorFollowerRunning && (
                   <button
+                    id="stop-color-follower-button"
                     type="button"
                     className="btn btn-danger"
                     onClick={() =>

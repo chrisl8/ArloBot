@@ -29,11 +29,11 @@ const Video = (props) => {
   }
 
   return (
-    <Card id="status-card" className="card-title">
+    <Card id="video-card" className="card-title">
       <CardHeader onClick={() => props.toggle('video')}>
         <CardTitle>{cardTitle}</CardTitle>
       </CardHeader>
-      <Collapse isOpen={props.isOpen}>
+      <Collapse id="video-card-body" isOpen={props.isOpen}>
         <CardBody>
           <button
             id="cameraButton"

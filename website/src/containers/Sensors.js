@@ -66,7 +66,7 @@ class Sensors extends Component {
         <div
           key={entry.index}
           className="lcarish-toggle-button no-flex"
-          id="idle-timeout-button"
+          id={entry.status}
           onClick={() => this.props.sendDataToRobot(buttonValueToSend)}
         >
           <label className={buttonLeftSideLabelClass}>Monitor</label>
@@ -85,11 +85,11 @@ class Sensors extends Component {
     });
 
     return (
-      <Card id="status-card" className="card-title">
+      <Card id="sensors-card" className="card-title">
         <CardHeader onClick={this.toggle}>
           <CardTitle>Sensors</CardTitle>
         </CardHeader>
-        <Collapse isOpen={this.state.isOpen}>
+        <Collapse id="sensors-card-body" isOpen={this.state.isOpen}>
           <CardBody>
             {!this.props.ROSisRunning && (
               <p>These do not work until ROS is Running.</p>
