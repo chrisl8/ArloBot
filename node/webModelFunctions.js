@@ -30,7 +30,8 @@ const scrollingStatusUpdate = (value) => {
   if (value !== previousScrollingStatusUpdate) {
     previousScrollingStatusUpdate = value;
     webModel.lastUpdateTime = Date.now();
-    webModel.scrollingStatus.unshift(value);
+    webModel.scrollingStatus.unshift(`${value}`);
+    webModel.scrollingStatus = webModel.scrollingStatus.slice(0, 100);
     emitter.emit('change');
   }
 };
