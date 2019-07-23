@@ -25,7 +25,7 @@ const ignoreMessageTypes = [
 // These types might be useful for other things too someday?
 // TODO: Set up lights on robot to blink when the mouth or eyes of mycroft are supposed to move?
 
-const init = function() {
+const init = () => {
   const connect = () => {
     client.connect('ws://localhost:8181/core', '');
   };
@@ -82,7 +82,7 @@ const init = function() {
   connect();
 };
 
-const injectText = function(text) {
+const injectText = (text) => {
   if (connection && connection.connected) {
     // If you just want to SEE what Mycroft puts on the bus, don't send anything,
     // Then you can just watch and use what it gives you as a template
@@ -112,7 +112,7 @@ const injectText = function(text) {
   }
 };
 
-const sayText = function(text) {
+const sayText = (text) => {
   if (connection && connection.connected) {
     if (!webModel.beQuiet) {
       // MyCroft Activity: '{"data": {"expect_response": false, "utterance": "this is some text to"}, "type": "speak", "context": null}'
