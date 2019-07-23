@@ -32,46 +32,9 @@ describe("site initial layout and page function", () => {
     cy.contains("Resume").should("not.be.visible");
   });
 
-  closePanelIfOpen("status");
-
-  statusPanelShouldBeOpen(false);
-
   openPanelIfClosed("status");
 
   statusPanelShouldBeOpen(true);
-  it("Status Panel entries should be set correctly", () => {
-    cy.get("#laptopBatteryStatusButton")
-      .contains("span", "100%")
-      .should("be.visible");
-
-    cy.get("#laptopChargedStatusButton")
-      .contains("span", "Yes")
-      .should("be.visible");
-
-    cy.get("#pluggedInStatusButton")
-      .contains("span", "Yes")
-      .should("be.visible");
-
-    cy.get("#doorsOpenStatusButton")
-      .contains("span", "No")
-      .should("be.visible");
-
-    cy.get("#mapStatusButton")
-      .contains("span", "None")
-      .should("be.visible");
-
-    cy.get("#debuggingStatusButton")
-      .contains("span", "No")
-      .should("be.visible");
-
-    cy.get("#cameraStatusButton")
-      .contains("span", "Off")
-      .should("be.visible");
-
-    cy.get("#masterRelayStatusButton")
-      .contains("span", "Off")
-      .should("be.visible");
-  });
 
   relayPanelShouldBeOpen(false);
 

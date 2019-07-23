@@ -478,7 +478,7 @@ describe("Start ROS", () => {
       .should("have.class", "brightly-negative-text");
 
     // With IR and Proximity sensors off,
-    // Forwrad and Reverse speed limit should be at max.
+    // Forward and Reverse speed limit should be at max.
     // TODO: Check other things that should be set
     cy.get("#telemetry-card")
       .contains("Forward Speed Limit")
@@ -667,7 +667,7 @@ describe("Start ROS", () => {
       .should("be.visible");
     cy.get("#ignoreFloorSensors")
       .children("label")
-      .contains("Monitor")
+      .contains("Monitor", { timeout: 10000 })
       .should("have.class", "brightly-positive-text");
     cy.get("#ignoreFloorSensors")
       .children("label")

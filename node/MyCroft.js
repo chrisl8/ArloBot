@@ -41,11 +41,13 @@ const init = function() {
   client.on('connect', (newConnection) => {
     connection = newConnection;
     console.log('MyCroft found and Connected');
+    webModelFunctions.update('myCroftIsRunning', true);
     connection.on('error', (error) => {
       console.log(`Connection Error: ${error.toString()}`);
     });
     connection.on('close', () => {
       console.log('MyCroft connection closed.');
+      webModelFunctions.update('myCroftIsRunning', false);
       setTimeout(() => {
         console.log('Retrying MyCroft connection...');
         connect();

@@ -1,5 +1,6 @@
 const personalData = require('./personalData');
 const robotModel = require('./robotModel');
+const webModelFunctions = require('./webModelFunctions');
 const tts = require('./tts');
 const handleSemaphoreFiles = require('./handleSemaphoreFiles');
 // This will handle messages from the remote cloud based web server.
@@ -86,12 +87,14 @@ class RemoteMessageHandler {
         break;
       case 'connect':
         console.log('Remote web server connected!');
+        webModelFunctions.update('cloudServerConnected', true);
         break;
       case 'welcome':
         console.log("Remote web server says, 'Welcome!'");
         break;
       case 'disconnect':
         console.log('Remote web server disconnected.');
+        webModelFunctions.update('cloudServerConnected', false);
         break;
       default:
         console.log('Unknown result from remote web server:');

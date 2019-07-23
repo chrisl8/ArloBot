@@ -91,6 +91,8 @@ class AccordionGroup extends Component {
           openGroup={this.openGroup}
           cameraOn={this.props.cameraOn}
           masterRelayOn={this.props.masterRelayOn}
+          myCroftIsRunning={this.props.myCroftIsRunning}
+          cloudServerConnected={this.props.cloudServerConnected}
           sendDataToRobot={this.props.sendDataToRobot}
         />
         {this.props.ROSisRunning && (

@@ -1,80 +1,72 @@
 import {
   resetRobotService,
-  initialPageLoadItemsVisible
+  initialPageLoadItemsVisible,
+  openPanelIfClosed,
+  closePanelIfOpen
 } from "../support/reusableTestsAndSetupTasks";
+
+import { statusPanelShouldBeOpen } from "../support/panelTestsWithRosOff";
 
 describe("Status Panel Functions", () => {
   resetRobotService();
   initialPageLoadItemsVisible();
 
-  it("status tab should close and open and contain correct data", () => {
-    cy.contains("Status").click();
-    cy.contains("Laptop Battery").should("not.be.visible");
-    cy.contains("Laptop Fully Charged").should("not.be.visible");
-    cy.contains("Plugged In").should("not.be.visible");
-    cy.contains("Dangerous Doors Open").should("not.be.visible");
-    cy.contains("Map").should("not.be.visible");
-    cy.contains("Debugging").should("not.be.visible");
-    cy.contains("Camera").should("not.be.visible");
-    cy.contains("Master Relay").should("not.be.visible");
+  statusPanelShouldBeOpen(true);
+  closePanelIfOpen("status");
+  statusPanelShouldBeOpen(false);
+  openPanelIfClosed("status");
+  statusPanelShouldBeOpen(true);
 
-    cy.contains("Status").click();
-    cy.contains("Laptop Battery").should("be.visible");
-    cy.contains("Laptop Fully Charged").should("be.visible");
-    cy.contains("Plugged In").should("be.visible");
-    cy.contains("Dangerous Doors Open").should("be.visible");
-    cy.contains("Map").should("be.visible");
-    cy.contains("Debugging").should("be.visible");
-    cy.contains("Camera").should("be.visible");
-    cy.contains("Master Relay").should("be.visible");
-
+  it("Status Panel should contain correct data", () => {
     cy.get("#laptopBatteryStatusButton")
       .contains("span", "100%")
       .should("be.visible");
-
     cy.get("#laptopBatteryStatusButton").should("have.class", "btn-success");
 
     cy.get("#laptopChargedStatusButton")
       .contains("span", "Yes")
       .should("be.visible");
-
     cy.get("#laptopChargedStatusButton").should("have.class", "btn-success");
 
     cy.get("#pluggedInStatusButton")
       .contains("span", "Yes")
       .should("be.visible");
-
     cy.get("#pluggedInStatusButton").should("have.class", "btn-danger");
 
     cy.get("#doorsOpenStatusButton")
       .contains("span", "No")
       .should("be.visible");
-
     cy.get("#doorsOpenStatusButton").should("not.have.class", "btn-success");
 
     cy.get("#mapStatusButton")
       .contains("span", "None")
       .should("be.visible");
-
     cy.get("#mapStatusButton").should("not.have.class", "btn-success");
 
     cy.get("#debuggingStatusButton")
       .contains("span", "No")
       .should("be.visible");
-
     cy.get("#debuggingStatusButton").should("not.have.class", "btn-warning");
 
     cy.get("#cameraStatusButton")
       .contains("span", "Off")
       .should("be.visible");
-
     cy.get("#cameraStatusButton").should("not.have.class", "btn-success");
 
     cy.get("#masterRelayStatusButton")
       .contains("span", "Off")
       .should("be.visible");
-
     cy.get("#masterRelayStatusButton").should("not.have.class", "btn-success");
+
+    cy.get("#mycroftStatusButton")
+      .contains("span", "Up")
+      .should("be.visible");
+    cy.get("#mycroftStatusButton").should("have.class", "btn-success");
+
+    cy.get("#cloudStatusButton")
+      .contains("span", "Up")
+      .should("be.visible");
+    cy.get("#cloudStatusButton").should("have.class", "btn-success");
   });
 
   it("debugging button should function", () => {

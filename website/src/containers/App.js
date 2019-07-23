@@ -100,6 +100,8 @@ class App extends Component {
             cameraOn={this.state.webModel.cameraOn}
             videoSource={this.state.webModel.videoSource}
             masterRelayOn={this.state.webModel.masterRelayOn}
+            myCroftIsRunning={this.state.webModel.myCroftIsRunning}
+            cloudServerConnected={this.state.webModel.cloudServerConnected}
             ROSisRunning={this.state.webModel.ROSisRunning}
             rosTopicItems={this.state.webModel.rosTopicItems}
             relays={this.state.webModel.relays}

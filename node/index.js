@@ -92,7 +92,6 @@ async function main() {
     // MyCroft is primarily for interactive operations, such as asking the robot to do things.
     // eslint-disable-next-line global-require
     const myCroft = require('./MyCroft');
-    webModelFunctions.update('myCroftIsRunning', true);
     myCroft.init();
     setTimeout(() => {
       // Give init time to finish.

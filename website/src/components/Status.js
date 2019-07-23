@@ -2,6 +2,7 @@ import React from 'react';
 import { Collapse, Card, CardBody, CardHeader, CardTitle } from 'reactstrap';
 import boolToYesNo from '../utils/boolToYesNo';
 import boolToOnOff from '../utils/boolToOnOff';
+import boolToUpDown from '../utils/boolToUpDown';
 import './Status.css';
 
 const Status = (props) => {
@@ -75,6 +76,20 @@ const Status = (props) => {
   if (props.masterRelayOn) {
     masterRelayClass = 'btn btn-success';
     masterRelayBadgeClass = 'badge badge-light';
+  }
+
+  let myCroftClass = 'btn';
+  let myCroftBadgeClass = 'badge badge-secondary';
+  if (props.myCroftIsRunning) {
+    myCroftClass = 'btn btn-success';
+    myCroftBadgeClass = 'badge badge-light';
+  }
+
+  let cloudServerClass = 'btn';
+  let cloudServerBadgeClass = 'badge badge-secondary';
+  if (props.cloudServerConnected) {
+    cloudServerClass = 'btn btn-success';
+    cloudServerBadgeClass = 'badge badge-light';
   }
 
   return (
@@ -174,6 +189,26 @@ const Status = (props) => {
             Master Relay&nbsp;
             <span className={masterRelayBadgeClass}>
               {boolToOnOff(props.masterRelayOn)}
+            </span>
+          </button>
+          <button
+            id="mycroftStatusButton"
+            type="button"
+            className={myCroftClass}
+          >
+            Mycroft&nbsp;
+            <span className={myCroftBadgeClass}>
+              {boolToUpDown(props.myCroftIsRunning)}
+            </span>
+          </button>
+          <button
+            id="cloudStatusButton"
+            type="button"
+            className={cloudServerClass}
+          >
+            Cloud&nbsp;
+            <span className={cloudServerBadgeClass}>
+              {boolToUpDown(props.cloudServerConnected)}
             </span>
           </button>
         </CardBody>

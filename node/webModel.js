@@ -6,6 +6,7 @@
 
 module.exports = {
   robotName: 'ArloBot', // This will be overridden by personalData in index.js,
+  cloudServerConnected: false,
   myCroftIsRunning: false,
   myCroftSaid: '',
   lastUpdateTime: 0,
