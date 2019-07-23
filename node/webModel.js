@@ -35,7 +35,7 @@ module.exports = {
   shutdownRequested: false,
   status: 'Arlo behavior is not running.',
   behaviorStatus: '',
-  scrollingStatus: '',
+  scrollingStatus: [],
   mapList: ['Explore!'],
   QRcode: '',
   hasSetupViaQRcode: false, // So we only do this once. ;)

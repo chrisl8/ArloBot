@@ -24,6 +24,15 @@ class RobotServiceLog extends Component {
       startRosLogStreamerClass = 'btn btn-success';
       startRosLogStreamerBadgeClass = 'badge badge-light';
     }
+    const scrollingStatus = this.props.scrollingStatus.map((entry, index) => {
+      return (
+        // eslint-disable-next-line react/no-array-index-key
+        <span key={index}>
+          {entry}
+          <br />
+        </span>
+      );
+    });
     return (
       <Card id="robot-service-log-card" className="card-title">
         <CardHeader onClick={this.toggle}>
@@ -31,10 +40,7 @@ class RobotServiceLog extends Component {
         </CardHeader>
         <Collapse id="robot-service-log-card-body" isOpen={this.state.isOpen}>
           <CardBody>
-            <div
-              id="statusScrollBox"
-              dangerouslySetInnerHTML={{ __html: this.props.scrollingStatus }}
-            />
+            <div id="statusScrollBox">{scrollingStatus}</div>
             <div style={{ marginTop: '10px' }}>
               {this.props.logStreamerRunning && (
                 <button
