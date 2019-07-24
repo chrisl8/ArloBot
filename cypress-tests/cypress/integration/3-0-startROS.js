@@ -1,20 +1,23 @@
 import {
   resetRobotService,
   initialPageLoadItemsVisible,
-  openPanelIfClosed
+  openPanelIfClosed,
+  closePanelIfOpen
 } from "../support/reusableTestsAndSetupTasks";
 
 import { startROS, stopROS } from "../support/rosStartStop";
 
-import { additionalItemsAreVisibleWhenRosIsRunning } from "../support/panelTestsWithRosRunning";
+import panelTestsWithRosRunning, {
+  additionalItemsAreVisibleWhenRosIsRunning
+} from "../support/panelTestsWithRosRunning";
 
-import { robotServiceLogPanelShouldBeOpen } from "../support/panelTestsWithRosOff";
+import panelTestsWithRosOff from "../support/panelTestsWithRosOff";
 
 describe("Start ROS", () => {
   resetRobotService();
   initialPageLoadItemsVisible();
   openPanelIfClosed("robot-service-log");
-  robotServiceLogPanelShouldBeOpen(true);
+  panelTestsWithRosOff.robotServiceLogPanelShouldBeOpen(true);
   startROS();
   additionalItemsAreVisibleWhenRosIsRunning();
 
@@ -721,16 +724,77 @@ describe("Start ROS", () => {
 
   // Robot Service Log
   openPanelIfClosed("robot-service-log");
-  // TODO: Check contents
-  // TODO: Test Log Streamer
+  panelTestsWithRosRunning.robotServiceLogPanelShouldBeOpen(true);
+  it("Robot Log Streamer should work", () => {
+    cy.get("#robot-service-log-card")
+      .get("#log-streamer-button")
+      .contains("span", "Off")
+      .should("be.visible");
+
+    cy.get("#robot-service-log-card")
+      .get("#log-streamer-button")
+      .should("not.have.class", "btn-success");
+
+    cy.get("#robot-service-log-card")
+      .get("#view-log-streamer-button")
+      .should("not.be.visible");
+
+    cy.get("#robot-service-log-card")
+      .get("#log-streamer-button")
+      .contains("span", "Off")
+      .click();
+
+    cy.get("#robot-service-log-card")
+      .get("#log-streamer-button")
+      .should("have.class", "btn-success");
+
+    cy.get("#robot-service-log-card")
+      .get("#log-streamer-button")
+      .contains("span", "On")
+      .should("be.visible");
+
+    cy.get("#robot-service-log-card")
+      .get("#view-log-streamer-button")
+      .should("be.visible");
+
+    cy.get("#robot-service-log-card")
+      .get("#view-log-streamer-button")
+      .click();
+
+    cy.wait(30000);
+
+    cy.get("#robot-service-log-card")
+      .get("#log-streamer-button")
+      .contains("span", "On")
+      .click();
+
+    cy.get("#robot-service-log-card")
+      .get("#log-streamer-button")
+      .contains("span", "Off")
+      .should("be.visible");
+
+    cy.get("#robot-service-log-card")
+      .get("#log-streamer-button")
+      .should("not.have.class", "btn-success");
+
+    cy.get("#robot-service-log-card")
+      .get("#view-log-streamer-button")
+      .should("not.be.visible");
+  });
+  closePanelIfOpen("robot-service-log");
+  panelTestsWithRosRunning.robotServiceLogPanelShouldBeOpen(false);
 
   // Navigation
   openPanelIfClosed("navigation");
-  // TODO: Check contents
+  panelTestsWithRosRunning.navigationPanelShouldBeOpen(true);
+  closePanelIfOpen("navigation");
+  panelTestsWithRosRunning.navigationPanelShouldBeOpen(false);
 
   // Remote Control
   openPanelIfClosed("remote-control");
-  // TODO: Check contents
+  panelTestsWithRosRunning.remoteControlPanelShouldBeOpen(true);
+  closePanelIfOpen("remote-control");
+  panelTestsWithRosRunning.remoteControlPanelShouldBeOpen(false);
 
   stopROS();
 
@@ -751,3 +815,10 @@ describe("Start ROS", () => {
     cy.get("#masterRelayStatusButton").should("not.have.class", "btn-success");
   });
 });
+
+// TODO: In other files
+// TODO: Test Unplugging
+// TODO: Test Make Map
+// TODO: Test Load Map
+// TODO: Test Remote Control
+// TODO: Test color follower?

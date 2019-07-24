@@ -5,13 +5,10 @@ import {
 
 import { relayPanelShouldBeOpen } from "../support/panelTestsWithRosOff";
 
+import panelTestsWithRosRunning from "../support/panelTestsWithRosRunning";
+
 describe("test", () => {
   it("successfully loads", () => {
     cy.visit("");
   });
-  relayPanelShouldBeOpen(false);
-  openPanelIfClosed("relays");
-  relayPanelShouldBeOpen(true);
-  closePanelIfOpen("relays");
-  relayPanelShouldBeOpen(false);
 });

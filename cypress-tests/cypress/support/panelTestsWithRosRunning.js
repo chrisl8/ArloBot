@@ -17,18 +17,82 @@ function additionalItemsAreVisibleWhenRosIsRunning() {
       .should("be.visible");
 
     cy.get("#robot-service-log-card")
-      .get("#log-streamer-button")
-      .contains("span", "Off")
-      .should("be.visible");
-
-    cy.get("#robot-service-log-card")
-      .get("#log-streamer-button")
-      .should("not.have.class", "btn-success");
-
-    cy.get("#robot-service-log-card")
       .get("#set-all-doors-closed-button")
       .should("be.visible");
   });
 }
 
-module.exports = { additionalItemsAreVisibleWhenRosIsRunning };
+function robotServiceLogPanelShouldBeOpen(trueFalse) {
+  let visibilitystatus = "not.be.visible";
+  let openClosed = "Closed";
+  if (trueFalse) {
+    visibilitystatus = "be.visible";
+    openClosed = "Open";
+  }
+  it(`Robot Service Log Panel should be ${openClosed}`, () => {
+    cy.get("#statusScrollBox").should(visibilitystatus);
+
+    cy.get("#statusScrollBox")
+      .contains("ROSLIB Websocket connected.")
+      .should(visibilitystatus);
+
+    cy.get("#robot-service-log-card")
+      .get("#log-streamer-button")
+      .should(visibilitystatus);
+  });
+}
+
+function navigationPanelShouldBeOpen(trueFalse) {
+  let visibilitystatus = "not.be.visible";
+  let openClosed = "Closed";
+  if (trueFalse) {
+    visibilitystatus = "be.visible";
+    openClosed = "Open";
+  }
+  it(`Navigation Log Panel should be ${openClosed}`, () => {
+    cy.get("#navigation-card")
+      .contains("Make Map")
+      .should(visibilitystatus);
+
+    cy.get("#navigation-card")
+      .contains("Load Map")
+      .should(visibilitystatus);
+
+    cy.get("#navigation-card")
+      .contains("To make a new map")
+      .should(visibilitystatus);
+
+    cy.get("#navigation-card")
+      .contains("The only way to load a map after making it")
+      .should(visibilitystatus);
+  });
+}
+
+function remoteControlPanelShouldBeOpen(trueFalse) {
+  let visibilitystatus = "not.be.visible";
+  let openClosed = "Closed";
+  if (trueFalse) {
+    visibilitystatus = "be.visible";
+    openClosed = "Open";
+  }
+  it(`Remote Control Panel should be ${openClosed}`, () => {
+    cy.get("#remote-control-card")
+      .contains("Plugged In")
+      .should(visibilitystatus);
+
+    cy.get("#remote-control-card")
+      .contains("Use finger or mouse to drive robot!")
+      .should(visibilitystatus);
+
+    cy.get("#remote-control-card").within(() => {
+      cy.get("#virtual-joystick-container").should(visibilitystatus);
+    });
+  });
+}
+
+module.exports = {
+  additionalItemsAreVisibleWhenRosIsRunning,
+  robotServiceLogPanelShouldBeOpen,
+  navigationPanelShouldBeOpen,
+  remoteControlPanelShouldBeOpen
+};

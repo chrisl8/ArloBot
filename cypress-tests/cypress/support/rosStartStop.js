@@ -1,4 +1,7 @@
+import { openPanelIfClosed } from "./reusableTestsAndSetupTasks";
+
 function startROS() {
+  openPanelIfClosed("robot-service-log");
   it("Start ROS", () => {
     cy.get("#startup-shutdown-card")
       .contains("Start ROS")
@@ -77,6 +80,7 @@ function startROS() {
 }
 
 function stopROS() {
+  openPanelIfClosed("robot-service-log");
   it("Stop ROS", () => {
     cy.get("#startup-shutdown-card")
       .contains("Stop ROS")
