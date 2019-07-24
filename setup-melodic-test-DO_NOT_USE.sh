@@ -401,8 +401,8 @@ nvm alias default lts/*
 printf "\n${YELLOW}[Updating npm]${NC}\n"
 npm update -g npm
 
-printf "\n${YELLOW}[Grabbing dependencies for node packages]${NC}\n"
-printf "\n${YELLOW}You will get some errors here, that is normal. As long as things work, it is OK.$NC\n"
+printf "\n${YELLOW}[Grabbing global dependencies for node packages]${NC}\n"
+printf "\n${YELLOW}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
 cd
 if ! (which forever > /dev/null); then
     npm install -g forever
@@ -415,12 +415,19 @@ if ! (which pm2 > /dev/null); then
     npm install -g pm2
 fi
 cd ${HOME}/catkin_ws/src/ArloBot/node
-printf "\n${YELLOW}You will get some errors here, that is normal. As long as things work, it is OK.$NC\n"
+printf "\n${YELLOW}[Grabbing node dependencies for scripts]${NC}\n"
+printf "\n${YELLOW}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
 npm ci
 
 cd ${HOME}/catkin_ws/src/ArloBot/website
+printf "\n${YELLOW}[Grabbing node dependencies for React website]${NC}\n"
 npm ci
+printf "\n${YELLOW}[Building React website]${NC}\n"
 npm run build
+
+cd ${HOME}/catkin_ws/src/ArloBot/cypress-tests
+printf "\n${YELLOW}[Installing Cypress.io for Tests]$NC\n"
+npm ci
 
 if ! (which mjpg_streamer > /dev/null); then
     printf "\n${YELLOW}[Installing mjpg_streamer for Web Page camera viewing]${NC}\n"
