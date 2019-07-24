@@ -1,5 +1,5 @@
 const fs = require('fs');
-const io = require('socket.io/node_modules/socket.io-client');
+const io = require('socket.io-client');
 const webModel = require('../webModel');
 
 const personalDataFile = `${
