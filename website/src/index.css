@@ -18,22 +18,20 @@ body {
 
 body, input[text], button {
     color: #888;
-    font-family: Cambria, Georgia;
+    font-family: Cambria, Georgia, serif;
 }
 
 a {
     cursor: pointer;
-    cursor: hand;
 }
 
 button {
-    font-family: Arial;
+    font-family: Arial, serif;
     background-color: #eee;
     border: none;
     padding: 5px 10px;
     border-radius: 4px;
     cursor: pointer;
-    cursor: hand;
 }
 
 button:hover {
@@ -308,7 +306,7 @@ nav a.router-link-active {
 
 #footer-line {
     text-align: center;
-    margin-bottom: 0px;
+    margin-bottom: 0;
     margin-top: 8px;
 }
 
