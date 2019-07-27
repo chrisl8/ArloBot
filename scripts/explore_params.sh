@@ -25,4 +25,3 @@ echo -n "security_constant: "
 rosparam get /hector_exploration_node/hector_exploration_planner/security_constant
 echo -n "use_inflated_obstacles: "
 rosparam get /hector_exploration_node/hector_exploration_planner/use_inflated_obstacles
-

@@ -252,4 +252,4 @@ If you have HB-25 controllers, you can try using the last release that I made th
 ## Contributing
 All code contributions are greatly welcomed! I almost always accept pull requests. Worst case, I accept it, find an issue, and fix it, but even code that I have to fix up is better than code I have to write from scratch!  
 Feel free to use this repository for [Hacktoberfest](https://hacktoberfest.digitalocean.com/) or other code contribution events, or just to get your feet wet using git. I'm happy to get spelling corrections and documentation improvements.  
-I use [prettier](https://prettier.io/) on my JavaScript code and [Black](https://pypi.org/project/black/) on my Python code to format it. However, I won't let code formatting prevent me from accepting a pull request. I can tidy it up later.
+I use [prettier](https://prettier.io/) on my JavaScript code, [Black](https://pypi.org/project/black/) on my Python code, and [shfmt](https://github.com/mvdan/sh) on my Bash code to format it. However, I won't let code formatting prevent me from accepting a pull request. I can tidy it up later.

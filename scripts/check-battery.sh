@@ -1,1 +1,1 @@
-upower -d|egrep "percentage|model"
+upower -d | egrep "percentage|model"

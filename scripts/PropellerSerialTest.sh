@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # This script allows testing the Arlobot
 # Propeller Board functions without
 # ROS
@@ -12,25 +12,23 @@
 # http://stackoverflow.com/a/246128
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
-  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
   SOURCE="$(readlink "$SOURCE")"
   [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 done
-SCRIPTDIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 # echo ${SCRIPTDIR} # For debugging
 
-if (pgrep -f simpleide>/dev/null)
-then
-    echo "SimpleIDE is running,"
-    echo "please close it and try again."
-    exit 1
+if (pgrep -f simpleide >/dev/null); then
+  echo "SimpleIDE is running,"
+  echo "please close it and try again."
+  exit 1
 fi
 
 # Check to make sure required hardware is present
-if ! (${SCRIPTDIR}/check_hardware.sh)
-then
-    echo "ERROR: Hardware failed to come on line:"
-    exit 1
+if ! (${SCRIPTDIR}/check_hardware.sh); then
+  echo "ERROR: Hardware failed to come on line:"
+  exit 1
 fi
 
 USB_PORT=$(${SCRIPTDIR}/find_ActivityBoard.sh)

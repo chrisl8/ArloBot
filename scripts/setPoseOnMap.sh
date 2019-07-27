@@ -7,4 +7,3 @@ rostopic pub -1 initialpose geometry_msgs/PoseWithCovarianceStamped "{ header: {
 # to affect the robot's postion on the map
 # If you get errors, check the format. It is VERY picky about spaces and such!
 # Also, don't try to set your z axis on the orientation to 0.0, it breaks everything. Not sure why.:q
-

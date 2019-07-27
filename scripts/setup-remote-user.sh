@@ -11,4 +11,3 @@ echo "scp id_rsa root@pi:robotStatusUser.key"
 echo "exit"
 echo "On remote host:"
 echo "ssh -i robotStatusUser.key robotStatusUser@arlobot"
-

@@ -7,4 +7,3 @@
 export ROS_MASTER_URI=http://localhost:11311
 export ARLOBOT_MODEL=$(jq '.arlobotModel' ${HOME}/.arlobot/personalDataForBehavior.json | tr -d '"')
 roslaunch arlobot_bringup model_robot.launch
-
