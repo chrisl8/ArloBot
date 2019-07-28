@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2059
 # ROS Arlobot Automated Install
 
 INSTALLING_ROS_DISTRO=melodic
@@ -46,22 +47,12 @@ INSTALLING_ROS_DISTRO=melodic
 
 set -e
 
-BLACK='\033[0;30m'
 BLUE='\033[0;34m'
 GREEN='\033[0;32m'
-CYAN='\033[0;36m'
 RED='\033[0;31m'
 PURPLE='\033[0;35m'
-ORANGE='\033[0;33m' # or brown
-LIGHTGRAY='\033[0;37m'
-DARKGRAY='\033[1;30m'
-LIGHTBLUE='\033[1;34m'
-LIGHTGREEN='\033[1;32m'
-LIGHTCYAN='\033[1;36m'
-LIGHT_RED='\033[1;31m'
 LIGHT_PURPLE='\033[1;35m'
 YELLOW='\033[1;33m'
-WHITE='\033[1;37m'
 NC='\033[0m' # NoColor
 
 function finish() {
@@ -81,12 +72,10 @@ printf "\n${YELLOW}SETTING UP ROS ${INSTALLING_ROS_DISTRO} FOR YOUR ARLOBOT!${NC
 printf "${YELLOW}---------------------------------------------------${NC}\n"
 printf "${GREEN}You will be asked for your password for running commands as root!${NC}\n"
 
-DOCKER_INSTALL="false"
 if [[ ! -e /etc/localtime ]]; then
   # These steps are to allow this script to work in a minimal Docker container for testing.
   printf "${YELLOW}[This looks like a Docker setup.]${NC}\n"
   printf "${BLUE}Adding settings and basic packages for Docker based Ubuntu images.${NC}\n"
-  DOCKER_INSTALL="true"
   # The docker image has no /etc/localtime
   # When the prereq install installs the tzdat package,
   # It stops and asks for time zone info.
@@ -164,6 +153,7 @@ if ! (dpkg -s ros-${INSTALLING_ROS_DISTRO}-desktop-full | grep "Status: install 
   fi
   printf "${BLUE}Running rosdep update . . .${NC}\n"
   rosdep update
+  # shellcheck source=/opt/ros/melodic/setup.bash
   source /opt/ros/${INSTALLING_ROS_DISTRO}/setup.bash
   printf "${BLUE}Installing python-rosinstall:${NC}\n"
   sudo apt install -y python-rosinstall
@@ -171,7 +161,8 @@ if ! (dpkg -s ros-${INSTALLING_ROS_DISTRO}-desktop-full | grep "Status: install 
 fi
 
 # In case .bashrc wasn't set up, or you didn't reboot
-if ! (which catkin_make >/dev/null); then
+if ! (command -v catkin_make >/dev/null); then
+  # shellcheck source=/opt/ros/melodic/setup.bash
   source /opt/ros/${INSTALLING_ROS_DISTRO}/setup.bash
 fi
 
@@ -227,7 +218,7 @@ PACKAGE_TO_INSTALL_LIST="build-essential ros-${INSTALLING_ROS_DISTRO}-rqt-* ros-
 #    printf "\n${GREEN}Skipping turtlebot bits forTravis CI Testing, because librealsense fails due to uvcvideo in Travis CI environment${NC}\n"
 #fi
 
-sudo apt install -y ${PACKAGE_TO_INSTALL_LIST}
+sudo apt install -y "${PACKAGE_TO_INSTALL_LIST}"
 
 # Update pip?
 sudo -H pip install --upgrade pip
@@ -236,10 +227,11 @@ if [[ -z ${USER} ]]; then
   # that I need $USER, npm uses it too, else you get weird errors like:
   #sh: 1: cannot create build_log.txt: Permission denied
   # even when running as root! if $USER is not set
-  export USER=$(whoami)
+  USER=$(whoami)
+  export USER
 fi
 if [[ -d ${HOME}/.cache/ ]]; then
-  sudo chown -R ${USER} ${HOME}/.cache/
+  sudo chown -R "${USER}" "${HOME}/.cache/"
 fi
 
 # For 8-CH USB Relay board:
@@ -254,6 +246,7 @@ if ! [[ -d ~/catkin_ws/src ]]; then
   catkin_init_workspace
   cd ~/catkin_ws/
   catkin_make
+  # shellcheck source=/home/chrisl8/catkin_ws/devel/setup.bash
   source ~/catkin_ws/devel/setup.bash
   rospack profile
 fi
@@ -283,7 +276,7 @@ fi
 if ! [[ -f /usr/local/lib/cmake/sweep/SweepConfig.cmake ]]; then
   cd
   git clone https://github.com/scanse/sweep-sdk.git
-  cd ${HOME}/sweep-sdk/libsweep
+  cd "${HOME}/sweep-sdk/libsweep"
   mkdir build
   cd build
   cmake .. -DCMAKE_BUILD_TYPE=Release
@@ -356,17 +349,18 @@ fi
 if [[ -d /opt/mycroft/skills ]]; then
   if ! [[ -L /opt/mycroft/skills/arlobot-robot-skill ]]; then
     cd /opt/mycroft/skills/
-    ln -s ${HOME}/catkin_ws/src/ArloBot/mycroft-arlobot-skill arlobot-robot-skill
+    ln -s "${HOME}/catkin_ws/src/ArloBot/mycroft-arlobot-skill" arlobot-robot-skill
   fi
   if ! [[ -L /opt/mycroft/skills/arlobot-smalltalk-skill ]]; then
     cd /opt/mycroft/skills/
-    ln -s ${HOME}/catkin_ws/src/ArloBot/mycroft-smalltalk-skill arlobot-smalltalk-skill
+    ln -s "${HOME}/catkin_ws/src/ArloBot/mycroft-smalltalk-skill" arlobot-smalltalk-skill
   fi
 fi
 
 printf "\n${YELLOW}[(Re)Building ROS Source files.]${NC}\n"
 cd ~/catkin_ws
 catkin_make
+# shellcheck source=/home/chrisl8/catkin_ws/devel/setup.bash
 source ~/catkin_ws/devel/setup.bash
 rospack profile
 
@@ -387,12 +381,14 @@ printf "\n${YELLOW}[Installing/Updating Node Version Manager]${NC}\n"
 if [[ -e ${HOME}/.nvm/nvm.sh ]]; then
   printf "${YELLOW}Deactivating existing Node Version Manager:${NC}\n"
   export NVM_DIR="${HOME}/.nvm"
+  # shellcheck source=/home/chrisl8/.nvm/nvm.sh
   [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
   nvm deactivate
 fi
 
 wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
 export NVM_DIR="${HOME}/.nvm"
+# shellcheck source=/home/chrisl8/.nvm/nvm.sh
 [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
 
 printf "\n${YELLOW}[Initializing the Current Node LTS version]${NC}\n"
@@ -405,34 +401,34 @@ npm update -g npm
 printf "\n${YELLOW}[Grabbing global dependencies for node packages]${NC}\n"
 printf "\n${YELLOW}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
 cd
-if ! (which forever >/dev/null); then
+if ! (command -v forever >/dev/null); then
   npm install -g forever
 fi
-if ! (which log.io-harvester >/dev/null) && [[ ! "${USER}" == "root" ]]; then
+if ! (command -v log.io-harvester >/dev/null) && [[ ! "${USER}" == "root" ]]; then
   # Does not work in Docker (testing) on Ubuntu 18.04
   npm install -g https://github.com/pruge/Log.io
 fi
-if ! (which pm2 >/dev/null); then
+if ! (command -v pm2 >/dev/null); then
   npm install -g pm2
 fi
-cd ${HOME}/catkin_ws/src/ArloBot/node
+cd "${HOME}/catkin_ws/src/ArloBot/node"
 printf "\n${YELLOW}[Grabbing node dependencies for scripts]${NC}\n"
 printf "\n${YELLOW}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
 npm ci
 
-cd ${HOME}/catkin_ws/src/ArloBot/website
+cd "${HOME}/catkin_ws/src/ArloBot/website"
 printf "\n${YELLOW}[Grabbing node dependencies for React website]${NC}\n"
 npm ci
 printf "\n${YELLOW}[Building React website]${NC}\n"
 npm run build
 
-cd ${HOME}/catkin_ws/src/ArloBot/cypress-tests
+cd "${HOME}/catkin_ws/src/ArloBot/cypress-tests"
 printf "\n${YELLOW}[Installing Cypress.io for Tests]$NC\n"
 npm ci
 
-if ! (which mjpg_streamer >/dev/null); then
+if ! (command -v mjpg_streamer >/dev/null); then
   printf "\n${YELLOW}[Installing mjpg_streamer for Web Page camera viewing]${NC}\n"
-  cd ${HOME}/catkin_ws/src/ArloBot/scripts
+  cd "${HOME}/catkin_ws/src/ArloBot/scripts"
   svn co https://svn.code.sf.net/p/mjpg-streamer/code mjpg-streamer
   cd mjpg-streamer/mjpg-streamer
   # https://www.raspberrypi.org/forums/viewtopic.php?f=28&t=109352
@@ -445,28 +441,32 @@ if ! (which mjpg_streamer >/dev/null); then
 fi
 
 printf "\n${YELLOW}[Enable non-root use of Bluetooth 4.0.]${NC}\n"
-sudo setcap cap_net_raw+eip $(eval readlink -f $(which node))
+sudo setcap cap_net_raw+eip "$(eval readlink -f "$(command -v node)")"
 
 if ! [[ -f ${HOME}/Desktop/arlobot.desktop ]]; then
   printf "\n${YELLOW}[Creating Desktop Icon]${NC}\n"
   if [[ ! -d ${HOME}/Desktop ]]; then
-    mkdir ${HOME}/Desktop
+    mkdir "${HOME}/Desktop"
   fi
-  echo "[Desktop Entry]" >${HOME}/Desktop/arlobot.desktop
-  echo "Encoding=UTF-8" >>${HOME}/Desktop/arlobot.desktop
-  echo "Name=ArloBot" >>${HOME}/Desktop/arlobot.desktop
-  echo "GenericName=ArloBot" >>${HOME}/Desktop/arlobot.desktop
-  echo "Comment=Start the robot" >>${HOME}/Desktop/arlobot.desktop
-  if (which lxterminal); then
-    echo "Exec=lxterminal --command \"${HOME}/catkin_ws/src/ArloBot/scripts/arlobotXwindows.sh\"" >>${HOME}/Desktop/arlobot.desktop
-  elif (which gnome-terminal); then
-    echo "Exec=gnome-terminal --command \"${HOME}/catkin_ws/src/ArloBot/scripts/arlobotXwindows.sh\"" >>${HOME}/Desktop/arlobot.desktop
+  {
+    echo "[Desktop Entry]"
+    "Encoding=UTF-8"
+    "Name=ArloBot"
+    "GenericName=ArloBot"
+    "Comment=Start the robot"
+  } >"${HOME}/Desktop/arlobot.desktop"
+  if (command -v lxterminal); then
+    echo "Exec=lxterminal --command \"${HOME}/catkin_ws/src/ArloBot/scripts/arlobotXwindows.sh\"" >>"${HOME}/Desktop/arlobot.desktop"
+  elif (command -v gnome-terminal); then
+    echo "Exec=gnome-terminal --command \"${HOME}/catkin_ws/src/ArloBot/scripts/arlobotXwindows.sh\"" >>"${HOME}/Desktop/arlobot.desktop"
   fi
-  echo "Icon=${HOME}/catkin_ws/src/ArloBot/icon-70x70.png" >>${HOME}/Desktop/arlobot.desktop
-  echo "Type=Application" >>${HOME}/Desktop/arlobot.desktop
-  echo "Path=${HOME}/catkin_ws/src/ArloBot/scripts/" >>${HOME}/Desktop/arlobot.desktop
-  echo "Terminal=false" >>${HOME}/Desktop/arlobot.desktop
-  chmod +x ${HOME}/Desktop/arlobot.desktop
+  {
+    echo "Icon=${HOME}/catkin_ws/src/ArloBot/icon-70x70.png"
+    "Type=Application"
+    "Path=${HOME}/catkin_ws/src/ArloBot/scripts/"
+    "Terminal=false"
+  }>>"${HOME}/Desktop/arlobot.desktop"
+  chmod +x "${HOME}/Desktop/arlobot.desktop"
 fi
 
 if [[ ! -d ${HOME}/.arlobot ]]; then
@@ -476,46 +476,46 @@ if [[ ! -d ${HOME}/.arlobot ]]; then
   # That is data that doesn't need to be part of
   # the public github repo like user tokens,
   # sounds, and room maps and per robot settings
-  mkdir ${HOME}/.arlobot
+  mkdir "${HOME}/.arlobot"
 fi
 
 ARLO_HOME=${HOME}/.arlobot
 
 if [[ -e ${ARLO_HOME}/personalDataForBehavior.json ]]; then
-  node ${HOME}/catkin_ws/src/ArloBot/node/personalData.js
+  node "${HOME}/catkin_ws/src/ArloBot/node/personalData.js"
 else
   printf "\n"
-  cp ${HOME}/catkin_ws/src/ArloBot/scripts/dotarlobot/personalDataForBehavior.json ${ARLO_HOME}/
+  cp "${HOME}/catkin_ws/src/ArloBot/scripts/dotarlobot/personalDataForBehavior.json" "${ARLO_HOME}/"
   printf "${GREEN}A brand new ${RED}${ARLO_HOME}/personalDataForBehavior.json${GREEN} file has been created,${NC}\n"
   printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
 fi
 
 if [[ ! -d ${ARLO_HOME}/rosmaps ]]; then
-  mkdir ${ARLO_HOME}/rosmaps
+  mkdir "${ARLO_HOME}/rosmaps"
 fi
 
 if [[ ! -d ${ARLO_HOME}/sounds ]]; then
-  mkdir ${ARLO_HOME}/sounds
+  mkdir "${ARLO_HOME}/sounds"
 fi
 
 if [[ ! -d ${ARLO_HOME}/status ]]; then
-  mkdir ${ARLO_HOME}/status
+  mkdir "${ARLO_HOME}/status"
 fi
-sudo chmod -R 777 ${ARLO_HOME}/status
+sudo chmod -R 777 "${ARLO_HOME}/status"
 
 if [[ ! -d ${ARLO_HOME}/status/doors ]]; then
-  mkdir ${ARLO_HOME}/status/doors
+  mkdir "${ARLO_HOME}/status/doors"
 fi
-sudo chmod -R 777 ${ARLO_HOME}/status/doors
+sudo chmod -R 777 "${ARLO_HOME}/status/doors"
 
 if ! [[ -f /etc/udev/rules.d/99-libftdi.rules ]]; then
   printf "\n${YELLOW}[Adding required sudo rule to reset USB ports.]${NC}\n"
-  sudo ${HOME}/catkin_ws/src/ArloBot/scripts/addRuleForUSBRelayBoard.sh
+  sudo "${HOME}/catkin_ws/src/ArloBot/scripts/addRuleForUSBRelayBoard.sh"
   printf "${RED}You may have to reboot before the USB Relay board will function!${NC}\n"
 fi
 
 if ! (grep mbrola /etc/festival.scm >/dev/null); then
-  sudo ${HOME}/catkin_ws/src/ArloBot/scripts/updateFestivalDefaults.sh
+  sudo "${HOME}/catkin_ws/src/ArloBot/scripts/updateFestivalDefaults.sh"
 fi
 
 if ! (sudo -nl | grep resetUSB >/dev/null); then
@@ -531,16 +531,16 @@ fi
 
 if ! (id | grep dialout >/dev/null); then
   printf "\n${GREEN}Adding your user to the 'dialout' group.${NC}\n"
-  sudo adduser ${USER} dialout >/dev/null
+  sudo adduser "${USER}" dialout >/dev/null
   printf "${RED}You may have to reboot before you can use the Propeller Board.${NC}\n"
 fi
 
 if ! (id | grep video >/dev/null); then
   printf "\n${GREEN}Adding your user to the 'video' group for access to cameras.${NC}\n"
-  sudo adduser ${USER} video >/dev/null
+  sudo adduser "${USER}" video >/dev/null
 fi
 
-if ! (which simpleide >/dev/null); then
+if ! (command -v simpleide >/dev/null); then
   printf "\n${YELLOW}[Setting up Parallax SimpleIDE for putting code on Activity Board.]${NC}\n"
   cd /tmp
   wget https://web.archive.org/web/20161005174013/http://downloads.parallax.com/plx/software/side/101rc1/simple-ide_1-0-1-rc1_amd64.deb
@@ -558,41 +558,42 @@ fi
 # the public github repo like user tokens,
 # sounds, and room maps and per robot settings
 if ! [[ -d ${HOME}/.arlobot ]]; then
-  mkdir ${HOME}/.arlobot
+  mkdir "${HOME}/.arlobot"
 fi
 
 ARLO_HOME=${HOME}/.arlobot
 
 if [[ -e ${ARLO_HOME}/arlobot.yaml ]]; then
-  if ! (diff ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLO_HOME}/arlobot.yaml >/dev/null); then
+  if ! (diff "${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml" "${ARLO_HOME}/arlobot.yaml" >/dev/null); then
     printf "\n${GREEN}The ${RED}arlobot.yaml${GREEN} file in the repository is different from the one${NC}\n"
     printf "${GREEN}in your local settings.${NC}\n"
     printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
     printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
-    diff ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLO_HOME}/arlobot.yaml || true
-    cp -i ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLO_HOME}/
+    diff "${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml" "${ARLO_HOME}/arlobot.yaml" || true
+    cp -i "${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml" "${ARLO_HOME}/"
     printf "\n"
   fi
 else
   printf "\n"
-  cp ${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml ${ARLO_HOME}/
+  cp "${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml" "${ARLO_HOME}/"
   printf "${GREEN}A brand new ${RED}${ARLO_HOME}/arlobot.yaml${GREEN} file has been created,${NC}\n"
   printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
 fi
 
-for i in $(ls ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/); do
+for i in "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/"*; do
+  [[ -e "$i" ]] || break # handle the case of no files
   if [[ -e ${ARLO_HOME}/${i} ]]; then
-    if ! (diff ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLO_HOME}/${i} >/dev/null); then
+    if ! (diff "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i}" "${ARLO_HOME}/${i}" >/dev/null); then
       printf "\n${GREEN}The ${RED}${i}${GREEN} file in the repository is different from the one${NC}\n"
       printf "${GREEN}in your local settings.${NC}\n"
       printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
       printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
-      diff ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLO_HOME}/${i} || true
-      cp -i ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLO_HOME}/
+      diff "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i}" "${ARLO_HOME}/${i}" || true
+      cp -i "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i}" "${ARLO_HOME}/"
     fi
   else
     printf "\n"
-    cp ${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i} ${ARLO_HOME}/
+    cp "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i}" "${ARLO_HOME}/"
     printf "${GREEN}A brand new ${RED}${ARLO_HOME}/${i}${GREEN} file has been created,${NC}\n"
     printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
   fi
@@ -613,7 +614,7 @@ if [[ "${USER}" == chrisl8 ]]; then
     printf "${GREEN}(This is NOT required for Arlobot, just a personal thing.)${NC}\n"
   fi
   # For use with the paid text to speech engine I use
-  #if ! (which aoss > /dev/null)
+  #if ! (command -v aoss > /dev/null)
   #    then
   #    printf "\n${YELLOW}[Adding aoss for Text To Speech.]${NC}\n"
   #    sudo apt install -y alsa-oss
@@ -621,7 +622,7 @@ if [[ "${USER}" == chrisl8 ]]; then
   #fi
 
   # Special notices for the developer himself to keep his stuff up to date!
-  cd ${HOME}/catkin_ws/src/ArloBot/node
+  cd "${HOME}/catkin_ws/src/ArloBot/node"
   printf "\n${RED}[Hey ${USER} please make sure the below items are up to date!]${NC}\n"
   printf "\n${GREEN}[Hey ${USER} please make sure the below items are up to date!]${NC}\n"
   printf "\n${PURPLE}[Hey ${USER} please make sure the below items are up to date!]${NC}\n"
@@ -639,7 +640,7 @@ if [[ "${USER}" == chrisl8 ]]; then
   printf "${YELLOW}in node/:${NC}\n"
   npm outdated || true # Informational, do not crash  script
   printf "${YELLOW}in website/:${NC}\n"
-  cd ${HOME}/catkin_ws/src/ArloBot/website
+  cd "${HOME}/catkin_ws/src/ArloBot/website"
   npm outdated || true # Informational, do not crash  script
   printf "${PURPLE}-------------------------------------------------------${NC}\n"
 fi

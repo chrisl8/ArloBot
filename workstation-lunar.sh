@@ -47,7 +47,7 @@ esac
 #sudo apt-get install -y chrony
 #sudo ntpdate ntp.ubuntu.com
 
-if ! [ -e /etc/apt/sources.list.d/ros-latest.list ]; then
+if ! [[ -e /etc/apt/sources.list.d/ros-latest.list ]]; then
   printf "${YELLOW}[Adding the ROS repository]${NC}\n"
   # This should follow the official ROS install instructions closely.
   # That is why there is a separate section for extra packages that I need for Arlo.

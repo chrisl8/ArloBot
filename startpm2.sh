@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 export NVM_DIR="${HOME}/.nvm"
+# shellcheck source=/home/chrisl8/.nvm/nvm.sh
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
 
 # USB Relay Controller
@@ -11,9 +12,9 @@ fi
 # Master Power Relay
 if [[ "$(jq '.useMasterPowerRelay' "${HOME}"/.arlobot/personalDataForBehavior.json)" == true ]]; then
   echo "Turning off Arlo Power."
-  "${HOME}"/catkin_ws/src/ArloBot/scripts/switch_master_relay.sh off
+
   # It takes a while before it works after boot up.
-  while [ $? -gt 0 ]; do
+  while ! "${HOME}"/catkin_ws/src/ArloBot/scripts/switch_master_relay.sh off; do
     sleep 1
     "${HOME}"/catkin_ws/src/ArloBot/scripts/switch_master_relay.sh off
   done

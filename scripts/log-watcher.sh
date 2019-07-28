@@ -11,6 +11,7 @@ SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 # echo ${SCRIPTDIR} # For debugging
 
 export NVM_DIR="${HOME}/.nvm"
+# shellcheck source=/home/chrisl8/.nvm/nvm.sh
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
 source ${SCRIPTDIR}/setNodeVersion.sh
 nvm use ${node_version}

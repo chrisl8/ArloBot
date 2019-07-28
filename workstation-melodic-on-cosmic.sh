@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2059
 # ROS Melodic "Workstation" Automated Install
 # This is to set up enough of ROS to use RVIZ and some other GUI tools,
 # on a secondary system. It will not run a robot.
@@ -30,22 +31,12 @@ set -e
 
 ROS_RELEASE_NAME=melodic
 
-BLACK='\033[0;30m'
 BLUE='\033[0;34m'
 GREEN='\033[0;32m'
-CYAN='\033[0;36m'
 RED='\033[0;31m'
 PURPLE='\033[0;35m'
-ORANGE='\033[0;33m' # or brown
-LIGHTGRAY='\033[0;37m'
-DARKGRAY='\033[1;30m'
-LIGHTBLUE='\033[1;34m'
-LIGHTGREEN='\033[1;32m'
-LIGHTCYAN='\033[1;36m'
-LIGHT_RED='\033[1;31m'
 LIGHT_PURPLE='\033[1;35m'
 YELLOW='\033[1;33m'
-WHITE='\033[1;37m'
 NC='\033[0m' # NoColor
 
 printf "\n${YELLOW}SETTING UP ROS ${ROS_RELEASE_NAME} FOR YOUR REMOTE WORK!${NC}\n"
@@ -216,6 +207,7 @@ if ! [[ -e ~/ros_catkin_ws/install_isolated/setup.bash ]]; then
 fi
 
 if ! [[ ${TRAVIS} == "true" ]]; then
+  # shellcheck source=/opt/ros/kinetic/setup.bash
   source ~/ros_catkin_ws/install_isolated/setup.bash
 fi
 
@@ -233,7 +225,8 @@ if ! [[ ${TRAVIS} == "true" ]]; then
   printf "\n${YELLOW}[Building ArloBot Source]${NC}\n"
   cd ~/catkin_ws/
   catkin_make
-  source ${HOME}/catkin_ws/devel/setup.bash
+  # shellcheck source=/home/chrisl8/catkin_ws/devel/setup.bash
+  source "${HOME}/catkin_ws/devel/setup.bash"
   rospack profile
 else
   printf "\n${YELLOW}[SKIPPING Compile on Travis CI]${NC}\n"
@@ -243,23 +236,27 @@ fi
 if ! [[ -f ${HOME}/Desktop/RVIZ.desktop ]]; then
   printf "\n${YELLOW}[Creating Desktop Icon to run RVIZ]${NC}\n"
   if [[ ! -d ${HOME}/Desktop ]]; then
-    mkdir ${HOME}/Desktop
+    mkdir "${HOME}/Desktop"
   fi
-  echo "[Desktop Entry]" >${HOME}/Desktop/RVIZ.desktop
-  echo "Encoding=UTF-8" >>${HOME}/Desktop/RVIZ.desktop
-  echo "Name=RVIZ" >>${HOME}/Desktop/RVIZ.desktop
-  echo "GenericName=RVIZ" >>${HOME}/Desktop/RVIZ.desktop
-  echo "Comment=RVIZ" >>${HOME}/Desktop/RVIZ.desktop
-  if (which lxterminal >/dev/null); then
-    echo "Exec=lxterminal --command \"bash -ci ${HOME}/catkin_ws/src/ArloBot/scripts/view-navigation.sh\"" >>${HOME}/Desktop/RVIZ.desktop
-  elif (which gnome-terminal >/dev/null); then
-    echo "Exec=gnome-terminal --command \"bash -ci ${HOME}/catkin_ws/src/ArloBot/scripts/view-navigation.sh\"" >>${HOME}/Desktop/RVIZ.desktop
+  {
+    echo "[Desktop Entry]"
+    "Encoding=UTF-8"
+    "Name=RVIZ"
+    "GenericName=RVIZ"
+    "Comment=RVIZ"
+  } >"${HOME}/Desktop/RVIZ.desktop"
+  if (command -v lxterminal >/dev/null); then
+    echo "Exec=lxterminal --command \"bash -ci ${HOME}/catkin_ws/src/ArloBot/scripts/view-navigation.sh\"" >>"${HOME}/Desktop/RVIZ.desktop"
+  elif (command -v gnome-terminal >/dev/null); then
+    echo "Exec=gnome-terminal --command \"bash -ci ${HOME}/catkin_ws/src/ArloBot/scripts/view-navigation.sh\"" >>"${HOME}/Desktop/RVIZ.desktop"
   fi
-  echo "Icon=${HOME}/catkin_ws/src/ArloBot/icon-70x70.png" >>${HOME}/Desktop/RVIZ.desktop
-  echo "Type=Application" >>${HOME}/Desktop/RVIZ.desktop
-  echo "Path=${HOME}/catkin_ws/src/ArloBot/scripts/" >>${HOME}/Desktop/RVIZ.desktop
-  echo "Terminal=false" >>${HOME}/Desktop/RVIZ.desktop
-  chmod +x ${HOME}/Desktop/RVIZ.desktop
+{
+  echo "Icon=${HOME}/catkin_ws/src/ArloBot/icon-70x70.png"
+  "Type=Application"
+  "Path=${HOME}/catkin_ws/src/ArloBot/scripts/"
+  "Terminal=false"
+  }>>"${HOME}/Desktop/RVIZ.desktop"
+  chmod +x "${HOME}/Desktop/RVIZ.desktop"
 fi
 
 # We will use ~/.arlobot to store "private" data
@@ -267,17 +264,18 @@ fi
 # the public github repo like user tokens,
 # sounds, and room maps and per robot settings
 if ! [[ -d ${HOME}/.arlobot ]]; then
-  mkdir ${HOME}/.arlobot
+  mkdir "${HOME}/.arlobot"
 fi
 
 ARLO_HOME=${HOME}/.arlobot
 
-if ! (which node >/dev/null); then
+if ! (command -v node >/dev/null); then
   printf "\n${YELLOW}[Installing the Current Node LTS version]${NC}\n"
   # Install nvm
   wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
   # Initialize nvm without logging out and back in
   export NVM_DIR="${HOME}/.nvm"
+  # shellcheck source=/home/chrisl8/.nvm/nvm.sh
   [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
   # Install Node LTS version via nvm
   nvm install --lts
@@ -288,7 +286,7 @@ if [[ -e ${ARLO_HOME}/personalDataForBehavior.json ]]; then
   node ~/catkin_ws/src/ArloBot/node/personalData.js
 else
   printf "\n"
-  cp ~/catkin_ws/src/ArloBot/scripts/dotarlobot/personalDataForBehavior.json ${ARLO_HOME}/
+  cp ~/catkin_ws/src/ArloBot/scripts/dotarlobot/personalDataForBehavior.json "${ARLO_HOME}/"
   printf "${GREEN}A brand new ${RED}~/.arlobot/personalDataForBehavior.json${GREEN} file has been created,${NC}\n"
   printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
 fi
@@ -296,7 +294,7 @@ fi
 printf "\n${YELLOW}[Setting the ROS environment in your .bashrc file]${NC}\n"
 if ! (grep ROS_MASTER_URI ~/.bashrc >/dev/null); then
   if ! [[ ${TRAVIS} == "true" ]]; then
-    read -p "What is the host name or IP of your robot? " answer
+    read -rp "What is the host name or IP of your robot? " answer
   else
     # Dummy data for testing
     answer=localhost

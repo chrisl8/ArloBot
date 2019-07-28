@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # This one script will start up the entire robot with web interface!
 export NVM_DIR="${HOME}/.nvm"
+# shellcheck source=/home/chrisl8/.nvm/nvm.sh
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
 
 # Grab and save the path to this script
