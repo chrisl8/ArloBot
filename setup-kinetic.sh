@@ -197,15 +197,14 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 #libqtcore4 - Required by simpleide
 #xvfb libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 - For Cypress Testing https://docs.cypress.io/guides/guides/continuous-integration.html#Advanced-setup
 
-PACKAGE_TO_INSTALL_LIST="build-essential ros-${INSTALLING_ROS_DISTRO}-rqt-* ros-${INSTALLING_ROS_DISTRO}-kobuki-ftdi python-ftdi1 python-pip python-serial ros-${INSTALLING_ROS_DISTRO}-openni-* ros-${INSTALLING_ROS_DISTRO}-openni2-* ros-${INSTALLING_ROS_DISTRO}-freenect-* ros-${INSTALLING_ROS_DISTRO}-vision-opencv ros-${INSTALLING_ROS_DISTRO}-rtabmap-ros ros-${INSTALLING_ROS_DISTRO}-scan-tools ros-${INSTALLING_ROS_DISTRO}-explore-lite libopencv-dev python-opencv ros-${INSTALLING_ROS_DISTRO}-rosbridge-server ros-${INSTALLING_ROS_DISTRO}-tf2-tools imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan git libqtgui4 libqtcore4 xvfb libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2"
+PACKAGE_TO_INSTALL_LIST=(build-essential "ros-${INSTALLING_ROS_DISTRO}-rqt-*" "ros-${INSTALLING_ROS_DISTRO}-kobuki-ftdi" python-ftdi1 python-pip python-serial "ros-${INSTALLING_ROS_DISTRO}-openni-*" "ros-${INSTALLING_ROS_DISTRO}-openni2-*" "ros-${INSTALLING_ROS_DISTRO}-freenect-*" "ros-${INSTALLING_ROS_DISTRO}-vision-opencv" "ros-${INSTALLING_ROS_DISTRO}-rtabmap-ros" "ros-${INSTALLING_ROS_DISTRO}-scan-tools" "ros-${INSTALLING_ROS_DISTRO}-explore-lite" libopencv-dev python-opencv "ros-${INSTALLING_ROS_DISTRO}-rosbridge-server" "ros-${INSTALLING_ROS_DISTRO}-tf2-tools" imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol "ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan" git libqtgui4 libqtcore4 xvfb libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2)
 
 if ! [[ ${TRAVIS} == "true" ]]; then
-  PACKAGE_TO_INSTALL_LIST="${PACKAGE_TO_INSTALL_LIST} ros-${INSTALLING_ROS_DISTRO}-turtlebot-apps ros-${INSTALLING_ROS_DISTRO}-turtlebot-interactions ros-${INSTALLING_ROS_DISTRO}-turtlebot-simulator"
+  PACKAGE_TO_INSTALL_LIST=("${PACKAGE_TO_INSTALL_LIST[@]}" "ros-${INSTALLING_ROS_DISTRO}-turtlebot-apps" "ros-${INSTALLING_ROS_DISTRO}-turtlebot-interactions" "ros-${INSTALLING_ROS_DISTRO}-turtlebot-simulator")
 else
   printf "\n${GREEN}Skipping turtlebot bits forTravis CI Testing, because librealsense fails due to uvcvideo in Travis CI environment${NC}\n"
 fi
-
-sudo apt install -y "${PACKAGE_TO_INSTALL_LIST}"
+sudo apt install -y "${PACKAGE_TO_INSTALL_LIST[@]}"
 
 # Update pip?
 sudo -H pip install --upgrade pip
