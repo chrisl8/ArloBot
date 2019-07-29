@@ -445,10 +445,10 @@ if ! [[ -f ${HOME}/Desktop/arlobot.desktop ]]; then
   fi
   {
     echo "[Desktop Entry]"
-    "Encoding=UTF-8"
-    "Name=ArloBot"
-    "GenericName=ArloBot"
-    "Comment=Start the robot"
+    echo "Encoding=UTF-8"
+    echo "Name=ArloBot"
+    echo "GenericName=ArloBot"
+    echo "Comment=Start the robot"
   } >"${HOME}/Desktop/arlobot.desktop"
   if (command -v lxterminal); then
     echo "Exec=lxterminal --command \"${HOME}/catkin_ws/src/ArloBot/scripts/arlobotXwindows.sh\"" >>"${HOME}/Desktop/arlobot.desktop"
@@ -457,9 +457,9 @@ if ! [[ -f ${HOME}/Desktop/arlobot.desktop ]]; then
   fi
   {
     echo "Icon=${HOME}/catkin_ws/src/ArloBot/icon-70x70.png"
-    "Type=Application"
-    "Path=${HOME}/catkin_ws/src/ArloBot/scripts/"
-    "Terminal=false"
+    echo "Type=Application"
+    echo "Path=${HOME}/catkin_ws/src/ArloBot/scripts/"
+    echo "Terminal=false"
   }>>"${HOME}/Desktop/arlobot.desktop"
   chmod +x "${HOME}/Desktop/arlobot.desktop"
 fi

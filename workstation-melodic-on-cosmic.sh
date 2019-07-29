@@ -240,10 +240,10 @@ if ! [[ -f ${HOME}/Desktop/RVIZ.desktop ]]; then
   fi
   {
     echo "[Desktop Entry]"
-    "Encoding=UTF-8"
-    "Name=RVIZ"
-    "GenericName=RVIZ"
-    "Comment=RVIZ"
+    echo "Encoding=UTF-8"
+    echo "Name=RVIZ"
+    echo "GenericName=RVIZ"
+    echo "Comment=RVIZ"
   } >"${HOME}/Desktop/RVIZ.desktop"
   if (command -v lxterminal >/dev/null); then
     echo "Exec=lxterminal --command \"bash -ci ${HOME}/catkin_ws/src/ArloBot/scripts/view-navigation.sh\"" >>"${HOME}/Desktop/RVIZ.desktop"
@@ -252,9 +252,9 @@ if ! [[ -f ${HOME}/Desktop/RVIZ.desktop ]]; then
   fi
 {
   echo "Icon=${HOME}/catkin_ws/src/ArloBot/icon-70x70.png"
-  "Type=Application"
-  "Path=${HOME}/catkin_ws/src/ArloBot/scripts/"
-  "Terminal=false"
+  echo "Type=Application"
+  echo "Path=${HOME}/catkin_ws/src/ArloBot/scripts/"
+  echo "Terminal=false"
   }>>"${HOME}/Desktop/RVIZ.desktop"
   chmod +x "${HOME}/Desktop/RVIZ.desktop"
 fi
