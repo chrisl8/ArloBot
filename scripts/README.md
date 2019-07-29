@@ -26,7 +26,6 @@ Many of these scripts are also used by the web site and the ROS nodes themselves
 <li>check_hardware.sh - This is a helper script that other scripts call to check that all hardware is in place before starting.</li>
 <li>drcontrol.py - This is the Python code from Sebastian Sjoholm to communicate with the USB Relay board.</li>
 <li>model-robot.sh - This will just bring up enough of ROS to view a model of your robot.</li>
-<li>resetUSB.sh - This will reset all of your USB ports without rebooting.</li>
 <li>ros_prep.sh - This is a helper script to get ports and things ready for ROS.</li>
 <li>There are a lot more scripts in here that I have forgotten to document. Please bug me if you want me to update this.</li>
 </ul>

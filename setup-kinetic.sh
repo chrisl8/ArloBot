@@ -509,15 +509,6 @@ if ! (grep mbrola /etc/festival.scm >/dev/null); then
   sudo "${HOME}/catkin_ws/src/ArloBot/scripts/updateFestivalDefaults.sh"
 fi
 
-if ! (sudo -nl | grep resetUSB >/dev/null); then
-  printf "\n${YELLOW}[Setting up required sudo entries.]${NC}\n"
-  echo "${USER} ALL = NOPASSWD: ${HOME}/catkin_ws/src/ArloBot/scripts/resetUSB.sh" >>/tmp/arlobot_sudoers
-  chmod 0440 /tmp/arlobot_sudoers
-  sudo chown root:root /tmp/arlobot_sudoers
-  sudo mv /tmp/arlobot_sudoers /etc/sudoers.d/
-  sudo chown root:root /etc/sudoers.d/arlobot_sudoers
-fi
-
 # Arlobot Specific settings:
 
 if ! (id | grep dialout >/dev/null); then
