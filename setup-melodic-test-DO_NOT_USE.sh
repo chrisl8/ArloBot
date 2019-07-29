@@ -577,20 +577,21 @@ else
 fi
 
 for i in "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/"*; do
-  [[ -e "$i" ]] || break # handle the case of no files
-  if [[ -e ${ARLO_HOME}/${i} ]]; then
-    if ! (diff "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i}" "${ARLO_HOME}/${i}" >/dev/null); then
-      printf "\n${GREEN}The ${RED}${i}${GREEN} file in the repository is different from the one${NC}\n"
+  [[ -e "${i}" ]] || break # handle the case of no files
+  # https://stackoverflow.com/a/9011264/4982408
+  if [[ -e ${ARLO_HOME}/${i##*/} ]]; then
+    if ! (diff "${i}" "${ARLO_HOME}/${i##*/}" >/dev/null); then
+      printf "\n${GREEN}The ${RED}${i##*/}${GREEN} file in the repository is different from the one${NC}\n"
       printf "${GREEN}in your local settings.${NC}\n"
       printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
       printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
-      diff "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i}" "${ARLO_HOME}/${i}" || true
-      cp -i "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i}" "${ARLO_HOME}/"
+      diff "${i}" "${ARLO_HOME}/${i##*/}" || true
+      cp -i "${i}" "${ARLO_HOME}/"
     fi
   else
     printf "\n"
-    cp "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/${i}" "${ARLO_HOME}/"
-    printf "${GREEN}A brand new ${RED}${ARLO_HOME}/${i}${GREEN} file has been created,${NC}\n"
+    cp "${i}" "${ARLO_HOME}/"
+    printf "${GREEN}A brand new ${RED}${ARLO_HOME}/${i##*/}${GREEN} file has been created,${NC}\n"
     printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
   fi
 done
