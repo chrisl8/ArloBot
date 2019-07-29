@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2059
+# shellcheck disable=SC2059 disable=SC2129
 # ROS Arlobot Automated Install
 
 INSTALLING_ROS_DISTRO=kinetic
@@ -443,24 +443,20 @@ if ! [[ -f ${HOME}/Desktop/arlobot.desktop ]]; then
   if [[ ! -d ${HOME}/Desktop ]]; then
     mkdir "${HOME}/Desktop"
   fi
-  {
-    echo "[Desktop Entry]"
-    echo "Encoding=UTF-8"
-    echo "Name=ArloBot"
-    echo "GenericName=ArloBot"
-    echo "Comment=Start the robot"
-  } >"${HOME}/Desktop/arlobot.desktop"
+  echo "[Desktop Entry]" >"${HOME}/Desktop/arlobot.desktop"
+  echo "Encoding=UTF-8" >>"${HOME}/Desktop/arlobot.desktop"
+  echo "Name=ArloBot" >>"${HOME}/Desktop/arlobot.desktop"
+  echo "GenericName=ArloBot" >>"${HOME}/Desktop/arlobot.desktop"
+  echo "Comment=Start the robot" >>"${HOME}/Desktop/arlobot.desktop"
   if (command -v lxterminal); then
     echo "Exec=lxterminal --command \"${HOME}/catkin_ws/src/ArloBot/scripts/arlobotXwindows.sh\"" >>"${HOME}/Desktop/arlobot.desktop"
   elif (command -v gnome-terminal); then
     echo "Exec=gnome-terminal --command \"${HOME}/catkin_ws/src/ArloBot/scripts/arlobotXwindows.sh\"" >>"${HOME}/Desktop/arlobot.desktop"
   fi
-  {
-    echo "Icon=${HOME}/catkin_ws/src/ArloBot/icon-70x70.png"
-    echo "Type=Application"
-    echo "Path=${HOME}/catkin_ws/src/ArloBot/scripts/"
-    echo "Terminal=false"
-  }>>"${HOME}/Desktop/arlobot.desktop"
+  echo "Icon=${HOME}/catkin_ws/src/ArloBot/icon-70x70.png" >>"${HOME}/Desktop/arlobot.desktop"
+  echo "Type=Application" >>"${HOME}/Desktop/arlobot.desktop"
+  echo "Path=${HOME}/catkin_ws/src/ArloBot/scripts/" >>"${HOME}/Desktop/arlobot.desktop"
+  echo "Terminal=false" >>"${HOME}/Desktop/arlobot.desktop"
   chmod +x "${HOME}/Desktop/arlobot.desktop"
 fi
 
