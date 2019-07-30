@@ -3,9 +3,11 @@
 # Start the entire robot
 
 # Set up ROS Environment
-export ROS_HOSTNAME=$(uname -n)
+ROS_HOSTNAME=$(uname -n)
+export ROS_HOSTNAME
 export ROS_MASTER_URI=http://localhost:11311
 export ROSLAUNCH_SSH_UNKNOWN=1
+# shellcheck source=/opt/ros/melodic/setup.bash
 source ~/catkin_ws/devel/setup.bash
 
 # Grab and save the path to this script
@@ -19,11 +21,13 @@ done
 SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 # echo ${SCRIPTDIR} # For debugging
 
-source ${SCRIPTDIR}/ros_prep.sh
+# shellcheck source=/home/chrisl8/catkin_ws/src/ArloBot/scripts/ros_prep.sh
+source "${SCRIPTDIR}/ros_prep.sh"
 
 echo "Use kill_ros.sh to close."
 
-export ARLOBOT_MODEL=$(jq '.arlobotModel' ${HOME}/.arlobot/personalDataForBehavior.json | tr -d '"')
+ARLOBOT_MODEL=$(jq '.arlobotModel' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
+export ARLOBOT_MODEL
 
 # 'unbuffer' is required for running this from the node based 'behavior'
 # scripts. Otherwise stdout data is buffered until ROS exits,

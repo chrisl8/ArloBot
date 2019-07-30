@@ -33,7 +33,7 @@
   <arg name="wait_for_transform"  default="0.1"/>
   
   <!-- Navigation stuff (move_base) -->
-  <include file="$(find turtlebot_bringup)/launch/3dsensor.launch"/>
+  <include file="$(find arlobot_bringup)/launch/3dsensor.launch"/>
   <include file="$(find arlobot_bringup)/launch/xv11_remap_for_dual_use.launch" />
   <include file="$(find arlobot_navigation)/launch/includes/move_base_wXV11.launch.xml"/>
   

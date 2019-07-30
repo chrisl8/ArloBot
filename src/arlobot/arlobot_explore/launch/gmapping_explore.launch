@@ -1,6 +1,6 @@
 <launch>
   <!-- This is a version of gmapping for autonomous exploration -->
-  <include file="$(find turtlebot_bringup)/launch/3dsensor.launch">
+  <include file="$(find arlobot_bringup)/launch/3dsensor.launch">
     <arg name="rgb_processing" value="false" />
     <arg name="depth_registration" value="false" />
     <arg name="depth_processing" value="false" />

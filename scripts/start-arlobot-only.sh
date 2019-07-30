@@ -3,9 +3,11 @@
 # Use start-robot.sh to start EVERYTHING instead
 
 # Set up ROS Environment
-export ROS_HOSTNAME=$(uname -n)
+ROS_HOSTNAME=$(uname -n)
+export ROS_HOSTNAME
 export ROS_MASTER_URI=http://localhost:11311
 export ROSLAUNCH_SSH_UNKNOWN=1
+# shellcheck source=/opt/ros/melodic/setup.bash
 source ~/catkin_ws/devel/setup.bash
 
 # Grab and save the path to this script
@@ -19,9 +21,11 @@ done
 SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 # echo ${SCRIPTDIR} # For debugging
 
-if ! (${SCRIPTDIR}/ros_prep.sh); then
-  echo "ROS Prep Failed, EXITING!"
-  exit 1
-fi
-export ARLOBOT_MODEL=$(jq '.arlobotModel' ${HOME}/.arlobot/personalDataForBehavior.json | tr -d '"')
+# shellcheck source=/home/chrisl8/catkin_ws/src/ArloBot/scripts/ros_prep.sh
+source "${SCRIPTDIR}/ros_prep.sh"
+
+echo "Use kill_ros.sh to close."
+
+ARLOBOT_MODEL=$(jq '.arlobotModel' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
+export ARLOBOT_MODEL
 roslaunch arlobot_bringup minimal.launch --screen

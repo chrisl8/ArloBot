@@ -168,7 +168,7 @@ roslaunch arlobot_bringup minimal.launch --screen
 <New Terminal>
 roslaunch arlobot_teleop keyboard_teleop.launch
 <New Terminal>
-roslaunch turtlebot_bringup 3dsensor.launch
+roslaunch arlobot_bringup 3dsensor.launch
 <GUI based Terminal>
 roslaunch arlobot_rviz_launchers view_robot.launch
 Tests from this setup:
