@@ -510,10 +510,6 @@ if ! [[ -f /etc/udev/rules.d/99-libftdi.rules ]]; then
   printf "${RED}You may have to reboot before the USB Relay board will function!${NC}\n"
 fi
 
-if ! (grep mbrola /etc/festival.scm >/dev/null); then
-  sudo "${HOME}/catkin_ws/src/ArloBot/scripts/updateFestivalDefaults.sh"
-fi
-
 # Arlobot Specific settings:
 
 if ! (id | grep dialout >/dev/null); then
