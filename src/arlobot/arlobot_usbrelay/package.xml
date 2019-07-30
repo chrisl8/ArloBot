@@ -10,10 +10,10 @@
      It will host a service that can be called to toggle any relay by number
      or by name.
   </description>
-  <maintainer email="hoopy@ekpyroticfrood.net">Hoopy Frood</maintainer>
+  <maintainer email="ekpyroticfrood@gmail.com">Chris L8</maintainer>
   <license>BSD</license>
   <url type="website">https://github.com/chrisl8/ArloBot</url>
-  <author email="hoopy@ekpyroticfrood.net">Hoopy Frood</author>
+  <author email="ekpyroticfrood@gmail.com">Chris L8</author>
 
   <buildtool_depend>catkin</buildtool_depend>
   <buildtool_depend>message_generation</buildtool_depend>

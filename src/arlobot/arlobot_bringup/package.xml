@@ -6,10 +6,10 @@
      arlobot_bringup provides roslaunch scripts for starting the ArloBot base functionality.
      This is based off of the turtlebot_bringup package, though somewhat consolidated.
   </description>
-  <maintainer email="hoopy@ekpyroticfrood.net">Hoopy Frood</maintainer>
+  <maintainer email="ekpyroticfrood@gmail.com">Chris L8</maintainer>
   <license>BSD</license>
   <url type="website">https://github.com/chrisl8/ArloBot</url>
-  <author email="hoopy@ekpyroticfrood.net">Hoopy Frood</author>
+  <author email="ekpyroticfrood@gmail.com">Chris L8</author>
 
   <buildtool_depend>catkin</buildtool_depend>
 

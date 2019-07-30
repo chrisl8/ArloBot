@@ -5,10 +5,10 @@
   <description>
     The arlobot_description package provides a complete 3D model of the ArloBot for simulation and visualization.
   </description>
-  <maintainer email="hoopy@ekpyroticfrood.net">Hoopy Frood</maintainer>
+  <maintainer email="ekpyroticfrood@gmail.com">Chris L8</maintainer>
   <license>BSD</license>
   <!-- <url type="website">http://wiki.ros.org/activitybot</url> -->
-  <author email="hoopy@ekpyroticfrood.net">Hoopy Frood</author>
+  <author email="ekpyroticfrood@gmail.com">Chris L8</author>
 
   <buildtool_depend>catkin</buildtool_depend>
 
