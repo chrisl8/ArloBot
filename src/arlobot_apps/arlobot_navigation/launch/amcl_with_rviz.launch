@@ -3,13 +3,13 @@
   <!-- roslaunch arlobot_navigation 3dsensor_only.launch -->
 
   <!-- Map server -->
-  <arg name="map_file" default="$(find turtlebot_navigation)/maps/willow-2010-02-18-0.10.yaml"/>
+  <arg name="map_file"/>
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
 
   <arg name="initial_pose_x" default="0.0"/> <!-- Use 17.0 for willow's map in simulation -->
   <arg name="initial_pose_y" default="0.0"/> <!-- Use 17.0 for willow's map in simulation -->
   <arg name="initial_pose_a" default="0.0"/>
-  <include file="$(find turtlebot_navigation)/launch/includes/amcl/amcl.launch.xml">
+  <include file="$(find arlobot_navigation)/launch/includes/amcl/amcl.launch.xml">
     <arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
     <arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
     <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
@@ -18,4 +18,3 @@
   <include file="$(find arlobot_rviz_launchers)/launch/view_navigation.launch"/>
 
 </launch>
-

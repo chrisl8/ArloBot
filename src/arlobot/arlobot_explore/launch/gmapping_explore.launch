@@ -10,7 +10,7 @@
     <arg name="scan_topic" value="/scan" />
   </include>
 
-  <include file="$(find turtlebot_navigation)/launch/includes/gmapping/gmapping.launch.xml"/>
+  <include file="$(find arlobot_navigation)/launch/includes/gmapping/gmapping.launch.xml"/>
   <param name="slam_gmapping/delta" value="0.01"/>
 
   <include file="$(find arlobot_explore)/launch/includes/move_base.launch.xml"/>

@@ -2,8 +2,7 @@
     ROS navigation stack with velocity smoother and safety (reactive) controller
 -->
 <launch>
-  <include file="$(find turtlebot_navigation)/launch/includes/velocity_smoother.launch.xml"/>
-  <include file="$(find turtlebot_navigation)/launch/includes/safety_controller.launch.xml"/>
+  <include file="$(find arlobot_navigation)/launch/includes/velocity_smoother.launch.xml"/>
 
   <arg name="odom_topic" default="odom" />
 
