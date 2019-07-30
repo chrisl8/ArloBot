@@ -10,4 +10,4 @@ done
 SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 # echo ${SCRIPTDIR} # For debugging
 
-node ${SCRIPTDIR}/../node/UsbDevice.js "Teensyduino" manufacturer
+node "${SCRIPTDIR}/../node/UsbDevice.js" "Teensyduino" ID_VENDOR
