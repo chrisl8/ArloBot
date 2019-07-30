@@ -149,8 +149,9 @@ Minimum Angular Velocity: 0.3 rad/s (18 TPS) - min_trans_vel
 Below this it is very jerky.
 It sometimes sounds funny at 0.3 rad/s, but it is smooth.
 
-If you make changes, be sure to adjust MAXIMUM_SPEED and MINIMUM_SPEED in per_robot_settings_for_propeller_c_code.h
-
+If you make changes, be sure to adjust
+propellerMaxSpeeds: {abd_speedLimit: 220, abdR_speedLimit: 220}
+in ~/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml
 
 Some snippets:
 From a goal in front of the robot:
