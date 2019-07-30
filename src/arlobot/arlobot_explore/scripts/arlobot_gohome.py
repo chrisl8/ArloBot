@@ -5,7 +5,7 @@ from std_msgs.msg import Bool
 import move_base_msgs.msg
 from nav_msgs.msg import Path
 from nav_msgs.msg import Odometry
-import tf
+import tf2_ros
 import math
 
 # Brings in the SimpleActionClient
@@ -32,7 +32,8 @@ class ArlobotExplore(object):
         self._MoveBaseClient = actionlib.SimpleActionClient('move_base', move_base_msgs.msg.MoveBaseAction)
         
         # Listen to the transforms http://wiki.ros.org/tf/TfUsingPython
-        self.tf_listener = tf.listener.TransformListener()
+        self.tf_Buffer = tf2_ros.Buffer()
+        self.tf_listener = tf2_ros.TransformListener(self.tf_Buffer)
         rospy.sleep(2) # If you call self.tf_listener too soon it has no data in the listener buffer!
         # http://answers.ros.org/question/164911/move_base-and-extrapolation-errors-into-the-future/
         
@@ -173,12 +174,12 @@ class ArlobotExplore(object):
         '''
         #z is UP, so we rotate around taht.
         # 90 degrees = 1.57079633 radians
-        quaternion_difference = tf.transformations.quaternion_about_axis(1.57079633, (0, 0, 1))
+        quaternion_difference = tf2_ros.transformations.quaternion_about_axis(1.57079633, (0, 0, 1))
         #print("quaternion_difference:")
         #print(quaternion_difference)
         #[-0.         -0.         -0.70710678  0.70710678]
         # 0.707 is recognizable as a 90 degree turn in quaternions.
-        new_quaternion = tf.transformations.quaternion_multiply([0.000, 0.000, -0.501, 0.865], quaternion_difference)
+        new_quaternion = tf2_ros.transformations.quaternion_multiply([0.000, 0.000, -0.501, 0.865], quaternion_difference)
         #print(new_quaternion)
         #[0.000, 0.000, -0.422, 0.907]
         # Current location:
@@ -195,8 +196,8 @@ class ArlobotExplore(object):
         # It works, we rotated left 90 degrees!
         
         # Rotate by -90 degrees assuming the same transform location as before:
-        quaternion_difference = tf.transformations.quaternion_about_axis(-1.57079633, (0, 0, 1))
-        new_quaternion = tf.transformations.quaternion_multiply([0.000, 0.000, -0.501, 0.865], quaternion_difference)
+        quaternion_difference = tf2_ros.transformations.quaternion_about_axis(-1.57079633, (0, 0, 1))
+        new_quaternion = tf2_ros.transformations.quaternion_multiply([0.000, 0.000, -0.501, 0.865], quaternion_difference)
         # LOL that was my previous position, so it went -90 from THERE, which was 180 from where I am now. <face palm>
         # Robot is now smarter than me . . . 
         goal.target_pose.pose.position.x = 1.725
@@ -249,8 +250,8 @@ class ArlobotExplore(object):
         #current_odom = self.currentOdom
         #print("New odom:")
         #print(current_odom.pose)
-        t = self.tf_listener.getLatestCommonTime("/map", "/base_link")
-        position, quaternion = self.tf_listener.lookupTransform("/map", "/base_link", t)
+        t = self.tf_listener.getLatestCommonTime("map", "base_link")
+        position, quaternion = self.tf_listener.lookupTransform("map", "base_link", t)
         print "New Position: " + str(position)
         print "New Orientation: " + str(quaternion)
 

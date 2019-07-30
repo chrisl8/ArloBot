@@ -6,7 +6,7 @@ import move_base_msgs.msg
 from nav_msgs.msg import Path
 from nav_msgs.msg import Odometry
 from std_msgs.msg import String
-import tf
+import tf2_ros
 import math
 from arlobot_msgs.srv import go_to_goal
 
@@ -42,7 +42,8 @@ class ArlobotGoTo(object):
         )
 
         # Listen to the transforms http://wiki.ros.org/tf/TfUsingPython
-        self.tf_listener = tf.listener.TransformListener()
+        self.tf_Buffer = tf2_ros.Buffer()
+        self.tf_listener = tf2_ros.TransformListener(self.tf_Buffer)
         # rospy.sleep(2) # If you call self.tf_listener too soon it has no data in the listener buffer!
         # http://answers.ros.org/question/164911/move_base-and-extrapolation-errors-into-the-future/
         # This is taken care of later instead on a loop that checks the status before continuing.
@@ -104,14 +105,16 @@ class ArlobotGoTo(object):
         rospy.loginfo("Waiting for tf_listener to be ready . . . ")
         rospy.sleep(0.1)  # Give it an initial rest just in case ;)
         tf_listener_ready = False
+        # TODO: The new instructions here are slightly different now, does this still work?
+        # http://wiki.ros.org/tf2/Tutorials/Writing%20a%20tf2%20listener%20%28Python%29
         while not tf_listener_ready:
             try:
-                t = self.tf_listener.getLatestCommonTime("/map", "/base_link")
+                t = self.tf_listener.getLatestCommonTime("map", "base_link")
                 position, quaternion = self.tf_listener.lookupTransform(
-                    "/map", "/base_link", t
+                    "map", "base_link", t
                 )
                 tf_listener_ready = True
-            except tf.ExtrapolationException:
+            except tf2_ros.ExtrapolationException:
                 rospy.loginfo("tf_listener not ready . . . ")
                 rospy.sleep(0.1)
         rospy.loginfo("tf_listener READY!")
@@ -211,8 +214,8 @@ class ArlobotGoTo(object):
                     self._MoveBaseClient.cancel_goal()
 
         # current_odom = self.currentOdom
-        t = self.tf_listener.getLatestCommonTime("/map", "/base_link")
-        position, quaternion = self.tf_listener.lookupTransform("/map", "/base_link", t)
+        t = self.tf_listener.getLatestCommonTime("map", "base_link")
+        position, quaternion = self.tf_listener.lookupTransform("map", "base_link", t)
         rospy.loginfo(
             "New Position: " + str(position) + " New Orientation: " + str(quaternion)
         )

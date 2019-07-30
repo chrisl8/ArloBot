@@ -8,7 +8,7 @@ from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Twist
 from std_msgs.msg import String
 from hector_nav_msgs.srv import GetRobotTrajectory # It says 'msgs' but it is a srv!
-import tf
+import tf2_ros
 import math
 from arlobot_msgs.srv import pause_explorer
 
@@ -37,7 +37,8 @@ class ArlobotExplore(object):
         self._MoveBaseClient = actionlib.SimpleActionClient('move_base', move_base_msgs.msg.MoveBaseAction)
 
         # Listen to the transforms http://wiki.ros.org/tf/TfUsingPython
-        self.tf_listener = tf.listener.TransformListener()
+        self.tf_Buffer = tf2_ros.Buffer()
+        self.tf_listener = tf2_ros.TransformListener(self.tf_Buffer)
         #rospy.sleep(2) # If you call self.tf_listener too soon it has no data in the listener buffer!
         # http://answers.ros.org/question/164911/move_base-and-extrapolation-errors-into-the-future/
         # This is taken care of later instead on a loop that checks the status before continuing.
@@ -112,10 +113,10 @@ class ArlobotExplore(object):
         tf_listener_ready = False
         while not tf_listener_ready:
             try:
-                t = self.tf_listener.getLatestCommonTime("/map", "/base_link")
-                position, quaternion = self.tf_listener.lookupTransform("/map", "/base_link", t)
+                t = self.tf_listener.getLatestCommonTime("map", "base_link")
+                position, quaternion = self.tf_listener.lookupTransform("map", "base_link", t)
                 tf_listener_ready = True
-            except tf.ExtrapolationException:
+            except tf2_ros.ExtrapolationException:
                 rospy.loginfo("tf_listener not ready . . . ")
                 rospy.sleep(.1)
         rospy.loginfo("tf_listener READY!")
@@ -236,8 +237,8 @@ class ArlobotExplore(object):
             else:
                 rospy.loginfo('Explorer Paused')
                 rospy.sleep(1)
-        #t = self.tf_listener.getLatestCommonTime("/map", "/base_link")
-        #position, quaternion = self.tf_listener.lookupTransform("/map", "/base_link", t)
+        #t = self.tf_listener.getLatestCommonTime("map", "base_link")
+        #position, quaternion = self.tf_listener.lookupTransform("map", "base_link", t)
         #print "Final Position: " + str(position)
         #print "Final Orientation: " + str(quaternion)
 

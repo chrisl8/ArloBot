@@ -7,7 +7,7 @@ from nav_msgs.msg import Path
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Twist
 from hector_nav_msgs.srv import GetRobotTrajectory # It says 'msgs' but it is a srv!
-import tf
+import tf2_ros
 import math
 
 # Brings in the SimpleActionClient
@@ -44,7 +44,8 @@ class ArlobotExplore(object):
         self._MoveBaseClient = actionlib.SimpleActionClient('move_base', move_base_msgs.msg.MoveBaseAction)
         
         # Listen to the transforms http://wiki.ros.org/tf/TfUsingPython
-        self.tf_listener = tf.listener.TransformListener()
+        self.tf_Buffer = tf2_ros.Buffer()
+        self.tf_listener = tf2_ros.TransformListener(self.tf_Buffer)
         #rospy.sleep(2) # If you call self.tf_listener too soon it has no data in the listener buffer!
         # http://answers.ros.org/question/164911/move_base-and-extrapolation-errors-into-the-future/
         
@@ -57,7 +58,7 @@ class ArlobotExplore(object):
         '''
         rospy.Subscriber("odom", Odometry, self._SetCurrentOdom)
         # Turns out this works great if you have no map and just want to make movements based on odometry,
-        # but if you are using a map, you need the /map to /base_link transform!
+        # but if you are using a map, you need the map to base_link transform!
         
         # I am going to set the AC power status as a parameter, so that it can be checked by low priority nodes,
         # and publish the "safeToGo" as a topic so that it can be subscribed to and acted upon immediately
@@ -113,10 +114,10 @@ class ArlobotExplore(object):
         tf_listener_ready = False
         while not tf_listener_ready:
             try:
-                t = self.tf_listener.getLatestCommonTime("/map", "/base_link")
-                position, quaternion = self.tf_listener.lookupTransform("/map", "/base_link", t)
+                t = self.tf_listener.getLatestCommonTime("map", "base_link")
+                position, quaternion = self.tf_listener.lookupTransform("map", "base_link", t)
                 tf_listener_ready = True
-            except tf.ExtrapolationException:
+            except tf2_ros.ExtrapolationException:
                 print "not ready . . . "
                 rospy.sleep(.1)
         print "tf_listener READY!"
@@ -163,15 +164,15 @@ class ArlobotExplore(object):
         #goal.target_pose.pose.position = current_odom.pose.pose.position
         #goal.target_pose.pose.orientation = current_odom.pose.pose.orientation
         '''
-        If the odometry, which is tied to /base_link, was identical
+        If the odometry, which is tied to base_link, was identical
         to the map location, this would tell it to go nowhere,
         but what we actually end up doing here is telling move_base
-        to move the robot the difference between the odom (/base_link)
+        to move the robot the difference between the odom (base_link)
         and the map. :)
         '''
         '''
-        a quick and easy way to get the transform from the /map to /base_link is to use the command-line tool:
-        rosrun tf tf_echo /map /base_link
+        a quick and easy way to get the transform from the map to base_link is to use the command-line tool:
+        rosrun tf tf_echo map base_link
         So how do I combine this myself?
         '''
         
@@ -179,7 +180,7 @@ class ArlobotExplore(object):
         '''
         If I get the CURRENT position and send it, it should stay still, right?
         
-        chrisl8@ArloBot:~/arlobot$ rosrun tf tf_echo /map /base_link
+        chrisl8@ArloBot:~/arlobot$ rosrun tf tf_echo map base_link
         At time 1410717899.809
         - Translation: [1.777, 0.951, 0.101]
         - Rotation: in Quaternion [0.000, 0.000, -0.501, 0.865]
@@ -220,12 +221,12 @@ class ArlobotExplore(object):
         '''
         #z is UP, so we rotate around taht.
         # 90 degrees = 1.57079633 radians
-        quaternion_difference = tf.transformations.quaternion_about_axis(1.57079633, (0, 0, 1))
+        quaternion_difference = tf2_ros.transformations.quaternion_about_axis(1.57079633, (0, 0, 1))
         #print("quaternion_difference:")
         #print(quaternion_difference)
         #[-0.         -0.         -0.70710678  0.70710678]
         # 0.707 is recognizable as a 90 degree turn in quaternions.
-        new_quaternion = tf.transformations.quaternion_multiply([0.000, 0.000, -0.501, 0.865], quaternion_difference)
+        new_quaternion = tf2_ros.transformations.quaternion_multiply([0.000, 0.000, -0.501, 0.865], quaternion_difference)
         #print(new_quaternion)
         #[0.000, 0.000, -0.422, 0.907]
         # Current location:
@@ -242,8 +243,8 @@ class ArlobotExplore(object):
         # It works, we rotated left 90 degrees!
         
         # Rotate by -90 degrees assuming the same transform location as before:
-        quaternion_difference = tf.transformations.quaternion_about_axis(-1.57079633, (0, 0, 1))
-        new_quaternion = tf.transformations.quaternion_multiply([0.000, 0.000, -0.501, 0.865], quaternion_difference)
+        quaternion_difference = tf2_ros.transformations.quaternion_about_axis(-1.57079633, (0, 0, 1))
+        new_quaternion = tf2_ros.transformations.quaternion_multiply([0.000, 0.000, -0.501, 0.865], quaternion_difference)
         # LOL that was my previous position, so it went -90 from THERE, which was 180 from where I am now. <face palm>
         # Robot is now smarter than me . . . 
         goal.target_pose.pose.position.x = 1.725
@@ -257,7 +258,7 @@ class ArlobotExplore(object):
         # Testing to "zero"
         '''
         This is what I get when I first turn it on:
-        rosrun tf tf_echo /odom /base_link
+        rosrun tf tf_echo /odom base_link
         - Translation: [0.000, 0.000, 0.101]
         - Rotation: in Quaternion [0.000, 0.000, 0.000, 1.000]
         '''
@@ -276,21 +277,21 @@ class ArlobotExplore(object):
         # http://wiki.ros.org/tf/TfUsingPython
 
         #(trans,rot) = listener.lookupTransform('/turtle2', '/turtle1', rospy.Time())
-        #if self.tf_listener.frameExists("/base_link") and self.tf_listener.frameExists("/map"):
+        #if self.tf_listener.frameExists("base_link") and self.tf_listener.frameExists("map"):
         #print "Transforms:"
-        #position, quaternion = self.tf_listener.lookupTransform("/base_link", "/map", t)
-        #self.tf_listener.waitForTransform("/base_link","/map",rospy.Time.now(),rospy.Duration(5.0))
+        #position, quaternion = self.tf_listener.lookupTransform("base_link", "map", t)
+        #self.tf_listener.waitForTransform("base_link","map",rospy.Time.now(),rospy.Duration(5.0))
         #print "Position: " + str(position)
         #print "Orientation: " + str(quaternion)
         
         # Testing stay still
         '''
         If I get the CURRENT position and send it, it should stay still, right?
-        rosrun tf tf_echo /map /base_link
+        rosrun tf tf_echo map base_link
         This works IF you set the goal.target_pose.header.frame_id = "map"
         '''
-        t = self.tf_listener.getLatestCommonTime("/map", "/base_link")
-        position, quaternion = self.tf_listener.lookupTransform("/map", "/base_link", t)
+        t = self.tf_listener.getLatestCommonTime("map", "base_link")
+        position, quaternion = self.tf_listener.lookupTransform("map", "base_link", t)
 
         goal.target_pose.pose.position.x = position[0]
         goal.target_pose.pose.position.y = position[1]
@@ -325,15 +326,15 @@ class ArlobotExplore(object):
         '''
         #z is UP, so we rotate around taht.
         # 90 degrees = 1.57079633 radians
-        quaternion_difference = tf.transformations.quaternion_about_axis(1.57079633, (0, 0, 1))
+        quaternion_difference = tf2_ros.transformations.quaternion_about_axis(1.57079633, (0, 0, 1))
         #print("quaternion_difference:")
         #print(quaternion_difference)
         #[-0.         -0.         -0.70710678  0.70710678]
         # 0.707 is recognizable as a 90 degree turn in quaternions.
         # Get current position:
-        t = self.tf_listener.getLatestCommonTime("/map", "/base_link")
-        position, quaternion = self.tf_listener.lookupTransform("/map", "/base_link", t)
-        new_quaternion = tf.transformations.quaternion_multiply(quaternion, quaternion_difference)
+        t = self.tf_listener.getLatestCommonTime("map", "base_link")
+        position, quaternion = self.tf_listener.lookupTransform("map", "base_link", t)
+        new_quaternion = tf2_ros.transformations.quaternion_multiply(quaternion, quaternion_difference)
         #print(new_quaternion)
         #[0.000, 0.000, -0.422, 0.907]
         # Current location:
@@ -351,11 +352,11 @@ class ArlobotExplore(object):
         # It works, we rotated left 90 degrees!
 
         # Rotate by -90 degrees assuming the same transform location as before:
-        quaternion_difference = tf.transformations.quaternion_about_axis(-1.57079633, (0, 0, 1))
+        quaternion_difference = tf2_ros.transformations.quaternion_about_axis(-1.57079633, (0, 0, 1))
         # Get current position:
-        t = self.tf_listener.getLatestCommonTime("/map", "/base_link")
-        position, quaternion = self.tf_listener.lookupTransform("/map", "/base_link", t)
-        new_quaternion = tf.transformations.quaternion_multiply(quaternion, quaternion_difference)
+        t = self.tf_listener.getLatestCommonTime("map", "base_link")
+        position, quaternion = self.tf_listener.lookupTransform("map", "base_link", t)
+        new_quaternion = tf2_ros.transformations.quaternion_multiply(quaternion, quaternion_difference)
         goal.target_pose.pose.position.x = position[0]
         goal.target_pose.pose.position.y = position[1]
         goal.target_pose.pose.position.z = position[2]
@@ -371,8 +372,8 @@ class ArlobotExplore(object):
         print "quaternion_difference: " + str(quaternion_difference)
         # 1
         # Get current position:
-        t = self.tf_listener.getLatestCommonTime("/map", "/base_link")
-        position, quaternion = self.tf_listener.lookupTransform("/map", "/base_link", t)
+        t = self.tf_listener.getLatestCommonTime("map", "base_link")
+        position, quaternion = self.tf_listener.lookupTransform("map", "base_link", t)
         original_position = position
         original_quaternion = quaternion
         new_quaternion = tf.transformations.quaternion_multiply(quaternion, quaternion_difference)
@@ -390,8 +391,8 @@ class ArlobotExplore(object):
         self._MoveBaseClient.wait_for_result()
         rospy.sleep(1)
         # 2
-        t = self.tf_listener.getLatestCommonTime("/map", "/base_link")
-        position, quaternion = self.tf_listener.lookupTransform("/map", "/base_link", t)
+        t = self.tf_listener.getLatestCommonTime("map", "base_link")
+        position, quaternion = self.tf_listener.lookupTransform("map", "base_link", t)
         new_quaternion = tf.transformations.quaternion_multiply(quaternion, quaternion_difference)
         goal.target_pose.pose.position.x = position[0]
         goal.target_pose.pose.position.y = position[1]
@@ -407,8 +408,8 @@ class ArlobotExplore(object):
         self._MoveBaseClient.wait_for_result()
         rospy.sleep(1)
         # 3
-        t = self.tf_listener.getLatestCommonTime("/map", "/base_link")
-        position, quaternion = self.tf_listener.lookupTransform("/map", "/base_link", t)
+        t = self.tf_listener.getLatestCommonTime("map", "base_link")
+        position, quaternion = self.tf_listener.lookupTransform("map", "base_link", t)
         new_quaternion = tf.transformations.quaternion_multiply(quaternion, quaternion_difference)
         goal.target_pose.pose.position.x = position[0]
         goal.target_pose.pose.position.y = position[1]
@@ -424,8 +425,8 @@ class ArlobotExplore(object):
         self._MoveBaseClient.wait_for_result()
         rospy.sleep(1)
         # 4
-        t = self.tf_listener.getLatestCommonTime("/map", "/base_link")
-        position, quaternion = self.tf_listener.lookupTransform("/map", "/base_link", t)
+        t = self.tf_listener.getLatestCommonTime("map", "base_link")
+        position, quaternion = self.tf_listener.lookupTransform("map", "base_link", t)
         new_quaternion = tf.transformations.quaternion_multiply(quaternion, quaternion_difference)
         goal.target_pose.pose.position.x = position[0]
         goal.target_pose.pose.position.y = position[1]
@@ -470,8 +471,8 @@ class ArlobotExplore(object):
         print "quaternion_difference: " + str(quaternion_difference)
         # 1
         # Get current position:
-        t = self.tf_listener.getLatestCommonTime("/map", "/base_link")
-        position, quaternion = self.tf_listener.lookupTransform("/map", "/base_link", t)
+        t = self.tf_listener.getLatestCommonTime("map", "base_link")
+        position, quaternion = self.tf_listener.lookupTransform("map", "base_link", t)
         original_position = position
         original_quaternion = quaternion
         new_quaternion = tf.transformations.quaternion_multiply(quaternion, quaternion_difference)
@@ -489,8 +490,8 @@ class ArlobotExplore(object):
         self._MoveBaseClient.wait_for_result()
         rospy.sleep(1)
         # 2
-        #t = self.tf_listener.getLatestCommonTime("/map", "/base_link")
-        #position, quaternion = self.tf_listener.lookupTransform("/map", "/base_link", t)
+        #t = self.tf_listener.getLatestCommonTime("map", "base_link")
+        #position, quaternion = self.tf_listener.lookupTransform("map", "base_link", t)
         quaternion = new_quaternion
         new_quaternion = tf.transformations.quaternion_multiply(quaternion, quaternion_difference)
         goal.target_pose.pose.position.x = position[0]
@@ -507,8 +508,8 @@ class ArlobotExplore(object):
         self._MoveBaseClient.wait_for_result()
         rospy.sleep(1)
         # 3
-        #t = self.tf_listener.getLatestCommonTime("/map", "/base_link")
-        #position, quaternion = self.tf_listener.lookupTransform("/map", "/base_link", t)
+        #t = self.tf_listener.getLatestCommonTime("map", "base_link")
+        #position, quaternion = self.tf_listener.lookupTransform("map", "base_link", t)
         quaternion = new_quaternion
         new_quaternion = tf.transformations.quaternion_multiply(quaternion, quaternion_difference)
         goal.target_pose.pose.position.x = position[0]
@@ -525,8 +526,8 @@ class ArlobotExplore(object):
         self._MoveBaseClient.wait_for_result()
         rospy.sleep(1)
         # 4
-        #t = self.tf_listener.getLatestCommonTime("/map", "/base_link")
-        #position, quaternion = self.tf_listener.lookupTransform("/map", "/base_link", t)
+        #t = self.tf_listener.getLatestCommonTime("map", "base_link")
+        #position, quaternion = self.tf_listener.lookupTransform("map", "base_link", t)
         quaternion = new_quaternion
         new_quaternion = tf.transformations.quaternion_multiply(quaternion, quaternion_difference)
         goal.target_pose.pose.position.x = position[0]
@@ -567,8 +568,8 @@ class ArlobotExplore(object):
         rospy.loginfo("Explorer rotating to scan area.")
         rotation_angle = -90 * math.pi / 180; # -90 degree
         quaternion_difference = tf.transformations.quaternion_about_axis(rotation_angle, (0, 0, 1))
-        t = self.tf_listener.getLatestCommonTime("/map", "/base_link")
-        position, quaternion = self.tf_listener.lookupTransform("/map", "/base_link", t)
+        t = self.tf_listener.getLatestCommonTime("map", "base_link")
+        position, quaternion = self.tf_listener.lookupTransform("map", "base_link", t)
         original_position = position
         original_quaternion = quaternion
         count = 1
@@ -710,8 +711,8 @@ class ArlobotExplore(object):
         #current_odom = self.currentOdom
         #print("New odom:")
         #print(current_odom.pose)
-        t = self.tf_listener.getLatestCommonTime("/map", "/base_link")
-        position, quaternion = self.tf_listener.lookupTransform("/map", "/base_link", t)
+        t = self.tf_listener.getLatestCommonTime("map", "base_link")
+        position, quaternion = self.tf_listener.lookupTransform("map", "base_link", t)
         print "Final Position: " + str(position)
         print "Final Orientation: " + str(quaternion)
 

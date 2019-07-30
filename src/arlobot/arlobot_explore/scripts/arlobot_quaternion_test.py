@@ -5,7 +5,7 @@ from std_msgs.msg import Bool
 import move_base_msgs.msg
 from nav_msgs.msg import Path
 from nav_msgs.msg import Odometry
-import tf
+import tf2_ros
 
 # Brings in the SimpleActionClient
 import actionlib
@@ -116,7 +116,7 @@ class ArlobotExplore(object):
         '''
         
         # Rotate currentPose by 90 degrees
-        quaternion_difference = tf.transformations.quaternion_about_axis(0.123, (1, 0, 0))
+        quaternion_difference = tf2_ros.transformations.quaternion_about_axis(0.123, (1, 0, 0))
         #print("quaternion_difference:")
         #print(quaternion_difference)
 
