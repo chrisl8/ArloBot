@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # This will launch RVIZ and the ROS Robot Model
 # on your local system so that you can view the robot
 # model in RVIZ for tweaking the look and part location

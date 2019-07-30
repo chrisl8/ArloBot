@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Manual test of the XV11 Neato Lidar
 
 # Grab and save the path to this script

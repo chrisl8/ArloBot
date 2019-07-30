@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 echo "This is mostly instructions for how to create"
 echo "a user on this system that a remote system"
 echo "can use to log in for setting status, etc."

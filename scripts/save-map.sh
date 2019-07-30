@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 if [[ $# -ne 1 ]]; then
   echo 'Please provide a map name on the command line.'
 else

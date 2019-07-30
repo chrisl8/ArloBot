@@ -35,7 +35,7 @@ for i in $(ls -d ${HOME}/.ros/log/*/); do
   #for j in $(ls ${HOME}/.ros/log/${logFolder})
   for j in $(ls ${logFolder}); do
     logName=$(echo ${j} | sed 's/.log//')
-    if [[ "${firstLine}" = false ]]; then
+    if [[ "${firstLine}" == false ]]; then
       echo "  ]," >>${confFile}
     fi
     firstLine=false
@@ -48,7 +48,7 @@ done
 logFolder=${HOME}/.ros/log
 for j in $(find ${logFolder} -maxdepth 1 -type f | sed 's#.*/##'); do
   logName=$(echo ${j} | sed 's/.log//')
-  if [[ "${firstLine}" = false ]]; then
+  if [[ "${firstLine}" == false ]]; then
     echo "  ]," >>${confFile}
   fi
   firstLine=false

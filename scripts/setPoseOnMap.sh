@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # This will set the pose on whatever map is loaded to the 0 position.
 # This is already done by ROS when you load a map,
 # But this can be useful for resetting for testing, or
