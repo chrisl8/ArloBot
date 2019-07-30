@@ -392,6 +392,11 @@ export NVM_DIR="${HOME}/.nvm"
 [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
 
 printf "\n${YELLOW}[Initializing the Current Node LTS version]${NC}\n"
+export NVM_SYMLINK_CURRENT=true
+if ! (grep NVM_SYMLINK_CURRENT ~/.bashrc >/dev/null); then
+  printf "\n${YELLOW}[Setting the NVM current environment in your .bashrc file]${NC}\n"
+  sh -c "echo \"export NVM_SYMLINK_CURRENT=true\" >> ~/.bashrc"
+fi
 nvm install --lts
 nvm alias default lts/*
 
