@@ -5,7 +5,6 @@ from std_msgs.msg import Bool
 import move_base_msgs.msg
 from nav_msgs.msg import Path
 from nav_msgs.msg import Odometry
-from hector_nav_msgs.srv import GetRobotTrajectory # It says 'msgs' but it is a srv!
 import tf
 import math
 
