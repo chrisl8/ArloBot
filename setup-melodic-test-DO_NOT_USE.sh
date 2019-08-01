@@ -256,7 +256,7 @@ else
   git pull
 fi
 
-printf "$\n{BLUE}Neato XV11 respository${NC}\n"
+printf "\n${BLUE}Neato XV11 respository${NC}\n"
 # Only needed if you have an XV-11 "Neato" Scanner
 cd ~/catkin_ws/src
 if ! [[ -d ~/catkin_ws/src/xv_11_laser_driver ]]; then
@@ -266,7 +266,7 @@ else
   git pull
 fi
 
-printf "$\n{BLUE}Scanse Sweep respository${NC}\n"
+printf "\n${BLUE}Scanse Sweep respository${NC}\n"
 # Only needed if you have a Scanse Sweep, but it doesn't hurt.
 if ! [[ -f /usr/local/lib/cmake/sweep/SweepConfig.cmake ]]; then
   cd
