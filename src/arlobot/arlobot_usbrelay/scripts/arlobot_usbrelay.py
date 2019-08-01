@@ -5,7 +5,6 @@
 # URL: https://github.com/chrisl8/ArloBot
 
 import rospy
-import tf
 import sys
 import time
 
