@@ -53,6 +53,9 @@ RED='\033[0;31m'
 PURPLE='\033[0;35m'
 LIGHT_PURPLE='\033[1;35m'
 YELLOW='\033[1;33m'
+LIGHTCYAN='\033[1;36m'
+LIGHTBLUE='\033[1;34m'
+LIGHTPURPLE='\033[1;35m'
 NC='\033[0m' # NoColor
 
 function finish() {
@@ -103,11 +106,6 @@ case ${version} in
   ;;
 esac
 
-# I never use this, but if you are having time issues maybe uncomment this.
-#printf "${YELLOW}[Installing chrony and setting the ntpdate]${NC}\n"
-#sudo apt-get install -y chrony
-#sudo ntpdate ntp.ubuntu.com
-
 if ! [[ -e /etc/apt/sources.list.d/ros-latest.list ]]; then
   printf "${YELLOW}[Adding the ROS repository]${NC}\n"
   # This should follow the official ROS install instructions closely.
@@ -122,18 +120,19 @@ if ! [[ -e /etc/apt/sources.list.d/ros-latest.list ]]; then
     COMMAND_DONE=1
     COMMAND_LOOPS=0
     while [[ ${COMMAND_DONE} -gt 0 ]]; do
-      if [[ ${COMMAND_LOOPS} -gt 8 ]]; then
+      if [[ ${COMMAND_LOOPS} -gt 10 ]]; then
         printf "${RED}Too many retires attempting to get ROS apt key.${NC}\n"
         rm /etc/apt/sources.list.d/ros-latest.list
         exit 1
       fi
       if [[ ${COMMAND_LOOPS} -gt 0 ]]; then
         printf "${RED}Failed to retrieve ROS apt key. Retrying...${NC}\n"
+        sleep 5
       fi
       sudo apt-key adv --keyserver hkp://${APT_KEY_SERVER}:80 --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 && COMMAND_DONE=$?
       COMMAND_LOOPS=$((COMMAND_LOOPS + 1))
     done
-    printf "${BLUE}^^ He says it is 'OK'.${NC}\n"
+    printf "${BLUE}Finished adding keys for ROS install sources.${NC}\n"
   fi
 fi
 
@@ -155,8 +154,8 @@ if ! (dpkg -s ros-${INSTALLING_ROS_DISTRO}-desktop-full | grep "Status: install 
   rosdep update
   # shellcheck source=/opt/ros/melodic/setup.bash
   source /opt/ros/${INSTALLING_ROS_DISTRO}/setup.bash
-  printf "${BLUE}Installing python-rosinstall:${NC}\n"
-  sudo apt install -y python-rosinstall
+  printf "\n${BLUE}Installing ROS Dependencies for building packages${NC}\n"
+  sudo apt install -y python-rosinstall python-rosinstall-generator python-wstool build-essential
   # END Official ROS Install section
 fi
 
@@ -168,60 +167,43 @@ fi
 
 printf "\n${YELLOW}[Installing additional Ubuntu and ROS Packages for Arlo]${NC}\n"
 printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
-# Notes on what the packages are for:
-
-# build-essential - Needed for building almost anything from source
-# python-serial is required for ROS to talk to the Propeller board
-
+# ### Notes on what the packages are for ###
+# python-serial - required for ROS to talk to the Propeller board
+# python-ftdi, python-pip, libftdi-dev - required by pylibftdi for talking to USB based serial boards like relay boards, etc.
+# https://pylibftdi.readthedocs.io/en/0.15.0/installation.html
 # For 8-CH USB Relay board:
 # Reference: https://code.google.com/p/drcontrol/wiki/Install_RaspberryPi">https://code.google.com/p/drcontrol/wiki/Install_RaspberryPi
-# python-ftdi,  python-pip and sudo pip install pylibftdi
 # TEST:
 #python -m pylibftdi.examples.list_devices
 #Should return:
 #FTDI:FT245R USB FIFO:A9026EI5
 #If you have a USB Relay board attached via USB.
-
-# expect-dev required to get 'unbuffer' which is required by node to spawn ROS commands and get real time stdout data
+# expect - required to get 'unbuffer' which is required by node to spawn ROS commands and get real time stdout data
 # http://stackoverflow.com/a/11337310
 # http://linux.die.net/man/1/unbuffer
-# jq allows shell scripts to read .json formatted config files.
-# festival and fsetvox-en1 are for text to speech
-#libav-tools is for ffmpeg to stream audio to another system.
-#zbar-tools for reading QR codes.
-#libftdi1 is required by SimpleIDE for the Parallax Propeller board
-#libgif-dev is required for roslib in order to build canvas
-#rtabmap is for 3D mapping
-#pulseaudio pavucontrol are for setting the default microphone. I use this for mycroft among other things
-#ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan for Scanse Sweep
-#ros-${INSTALLING_ROS_DISTRO}-geodesy for hector compile, might not need it if I stop using hector_explore
-#libceres-dev for hector compile, might not need it if I stop using hector_explore
-#git allows for cloning of repositories
-#libqtgui4 - Required by simpleide
-#libqtcore4 - Required by simpleide
-#xvfb libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 - For Cypress Testing https://docs.cypress.io/guides/guides/continuous-integration.html#Advanced-setup
+# jq - allows shell scripts to read .json formatted config files.
+# zbar-tools - reading QR codes.
+# libftdi1 -  required by SimpleIDE for the Parallax Propeller board
+# libqtgui4 - Required by simpleide
+# libqtcore4 - Required by simpleide
+# libgif-dev - required for roslib in order to build canvas
+# rtabmap - for 3D mapping RTABMAP
+# pulseaudio & pavucontrol - for setting the default microphone. I use this for mycroft among other things
+# ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan - for Scanse Sweep
+# git - allows for cloning of repositories
+# xvfb libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 - For Cypress Testing https://docs.cypress.io/guides/guides/continuous-integration.html#Advanced-setup
 
-PACKAGE_TO_INSTALL_LIST=(build-essential "ros-${INSTALLING_ROS_DISTRO}-rqt-*" "ros-${INSTALLING_ROS_DISTRO}-kobuki-ftdi" python-ftdi1 python-pip python-serial "ros-${INSTALLING_ROS_DISTRO}-openni-*" "ros-${INSTALLING_ROS_DISTRO}-openni2-*" "ros-${INSTALLING_ROS_DISTRO}-vision-opencv" "ros-${INSTALLING_ROS_DISTRO}-rtabmap-ros" libopencv-dev python-opencv "ros-${INSTALLING_ROS_DISTRO}-rosbridge-server" "ros-${INSTALLING_ROS_DISTRO}-tf2-tools" imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl zbar-tools openssh-server libftdi1 libgif-dev pulseaudio pavucontrol "ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan" git libqtgui4 libqtcore4 "ros-${INSTALLING_ROS_DISTRO}-yocs-cmd-vel-mux" xvfb libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2)
+PACKAGE_TO_INSTALL_LIST=("ros-${INSTALLING_ROS_DISTRO}-rqt-*" "ros-${INSTALLING_ROS_DISTRO}-kobuki-ftdi" python-ftdi1 python-pip python-serial "ros-${INSTALLING_ROS_DISTRO}-openni-*" "ros-${INSTALLING_ROS_DISTRO}-openni2-*" "ros-${INSTALLING_ROS_DISTRO}-vision-opencv" "ros-${INSTALLING_ROS_DISTRO}-rtabmap-ros" libopencv-dev python-opencv "ros-${INSTALLING_ROS_DISTRO}-rosbridge-server" "ros-${INSTALLING_ROS_DISTRO}-tf2-tools" imagemagick fswebcam festvox-en1 libv4l-dev jq expect curl zbar-tools openssh-server libftdi-dev libftdi1 libgif-dev pulseaudio pavucontrol "ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan" git libqtgui4 libqtcore4 "ros-${INSTALLING_ROS_DISTRO}-yocs-*" "ros-${INSTALLING_ROS_DISTRO}-move-base" "ros-${INSTALLING_ROS_DISTRO}-map-server" "ros-${INSTALLING_ROS_DISTRO}-amcl" "ros-${INSTALLING_ROS_DISTRO}-depthimage-to-laserscan" xvfb libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 "ros-${INSTALLING_ROS_DISTRO}-navigation")
 
-# TODO: See http://repositories.ros.org/status_page/compare_kinetic_melodic.html for what is missing
-# TODO: ros-${INSTALLING_ROS_DISTRO}-freenect-* does not exist in Melodic. Does that matter?
-# TODO: ros-${INSTALLING_ROS_DISTRO}-scan-tools does not exist in Melodic. Does that matter?
-# TODO: ros-${INSTALLING_ROS_DISTRO}-explore-lite does not exist in Melodic. Does that matter?
-# TODO: libav-tools does not exist for Ubuntu 18.04 Does it matter?
-
-# TODO: ros-melodic-turtlebot-apps does not exist in Meldocic. Does that matter?
-# TODO: ros-melodic-turtlebot-interactions does not exist in Meldocic. Does that matter?
-# TODO: ros-melodic-turtlebot-simulator does not exist in Meldocic. Does that matter?
-#if ! [[ ${TRAVIS} == "true" ]]; then
-#    PACKAGE_TO_INSTALL_LIST="${PACKAGE_TO_INSTALL_LIST} ros-${INSTALLING_ROS_DISTRO}-turtlebot-apps ros-${INSTALLING_ROS_DISTRO}-turtlebot-interactions ros-${INSTALLING_ROS_DISTRO}-turtlebot-simulator"
-#else
-#    printf "\n${GREEN}Skipping turtlebot bits forTravis CI Testing, because librealsense fails due to uvcvideo in Travis CI environment${NC}\n"
-#fi
+# NOTE: If you are looking for a ROS package and wonder if it exists, but not for Melodic, check here:
+# http://repositories.ros.org/status_page/compare_kinetic_melodic.html
 
 sudo apt install -y "${PACKAGE_TO_INSTALL_LIST[@]}"
+# TODO: Is this required?
+#printf "\n${YELLOW}[Updating pip]${NC}\n"
+#sudo -H pip install --upgrade pip
+#sudo -H python3 -m pip install --upgrade pip
 
-# Update pip?
-sudo -H pip install --upgrade pip
 if [[ -z ${USER} ]]; then
   # This probably only happens in Docker, but note that it isn't just for my own purpose
   # that I need $USER, npm uses it too, else you get weird errors like:
@@ -230,14 +212,26 @@ if [[ -z ${USER} ]]; then
   USER=$(whoami)
   export USER
 fi
-if [[ -d ${HOME}/.cache/ ]]; then
-  sudo chown -R "${USER}" "${HOME}/.cache/"
-fi
+
+# TODO: Is this still required?
+# I think it was caused by odd use of pip?
+#if [[ -d ${HOME}/.cache/ ]]; then
+#  sudo chown -R "${USER}" "${HOME}/.cache/"
+#fi
 
 # For 8-CH USB Relay board:
-sudo -H pip install pylibftdi
+pip install pylibftdi
+# Required by pylibftdi
+# https://pylibftdi.readthedocs.io/en/0.15.0/installation.html
+if ! [[ -f /etc/udev/rules.d/99-libftdi.rules ]]; then
+  printf "\n${YELLOW}[Adding required sudo rule for pylibftdi to access USB based serial ports.]${NC}\n"
+  sudo "${HOME}/catkin_ws/src/ArloBot/scripts/addRuleForUSBRelayBoard.sh"
+  printf "${RED}You may have to reboot before the USB Relay board will function!${NC}\n"
+fi
+
 # As of 4/27/2016 Rosbridge required me to install twisted via pip otherwise it failed.
-sudo -H pip install twisted
+# TODO: Is this still true?
+#sudo -H pip install twisted
 
 if ! [[ -d ~/catkin_ws/src ]]; then
   printf "\n${YELLOW}[Creating the catkin workspace and testing with catkin_make]${NC}\n"
@@ -251,20 +245,10 @@ if ! [[ -d ~/catkin_ws/src ]]; then
   rospack profile
 fi
 
-# TODO: Replace ALL hector junk with:
-# TODO: http://wiki.ros.org/explore_lite
-# TODO: explore_lite has no Melodic candidate, so do we just abandon explore?
 printf "\n${YELLOW}[Cloning or Updating git repositories]${NC}\n"
-#cd ~/catkin_ws/src
-#if ! [[ -d ~/catkin_ws/src/hector_slam ]]
-#    then
-#    git clone https://github.com/tu-darmstadt-ros-pkg/hector_slam.git
-#else
-#    cd ~/catkin_ws/src/hector_slam
-#    git pull
-#fi
 cd ~/catkin_ws/src
 
+printf "${BLUE}ArloBot respository${NC}\n"
 if ! [[ -d ~/catkin_ws/src/ArloBot ]]; then
   git clone -b new-serial-interface https://github.com/chrisl8/ArloBot.git
 else
@@ -272,7 +256,18 @@ else
   git pull
 fi
 
-# If you have a Scanse Sweep Scanner
+printf "$\n{BLUE}Neato XV11 respository${NC}\n"
+# Only needed if you have an XV-11 "Neato" Scanner
+cd ~/catkin_ws/src
+if ! [[ -d ~/catkin_ws/src/xv_11_laser_driver ]]; then
+  git clone https://github.com/chrisl8/xv_11_laser_driver.git
+else
+  cd ~/catkin_ws/src/xv_11_laser_driver
+  git pull
+fi
+
+printf "$\n{BLUE}Scanse Sweep respository${NC}\n"
+# Only needed if you have a Scanse Sweep, but it doesn't hurt.
 if ! [[ -f /usr/local/lib/cmake/sweep/SweepConfig.cmake ]]; then
   cd
   git clone https://github.com/scanse/sweep-sdk.git
@@ -291,6 +286,29 @@ else
   cd ~/catkin_ws/src/sweep-ros
   git pull
 fi
+
+printf "\n${BLUE}OpenKinect for Kinect${NC}\n"
+# If you have a Kinect. Melodic seems to be mising the package
+# https://github.com/ros-drivers/freenect_stack/issues/48#issuecomment-514020969
+if ! [[ -f /usr/local/lib/fakenect/libfakenect.so ]]; then
+  cd
+  git clone https://github.com/OpenKinect/libfreenect.git
+  cd libfreenect
+  mkdir build
+  cd build
+  cmake -L ..
+  make
+  sudo make install
+fi
+cd ~/catkin_ws/src
+if ! [[ -d ~/catkin_ws/src/freenect_stack ]]; then
+  git clone https://github.com/ros-drivers/freenect_stack.git
+else
+  cd ~/catkin_ws/src/freenect_stack
+  git pull
+fi
+
+printf "\n${BLUE}ROS by Example code${NC}\n"
 cd ~/catkin_ws/src
 # If you have the excellent ROS by Example book now is a good time to clone the code for following along in the book:
 if ! [[ -d ~/catkin_ws/src/rbx1 ]]; then
@@ -299,6 +317,8 @@ else
   cd ~/catkin_ws/src/rbx1
   git pull
 fi
+
+printf "\n${BLUE}USB Web Cam code for ROS by Example${NC}\n"
 cd ~/catkin_ws/src
 # If you want to use the USB Camera code from the ROS by Example book:
 if ! [[ -d ~/catkin_ws/src/usb_cam ]]; then
@@ -307,16 +327,20 @@ else
   cd ~/catkin_ws/src/usb_cam
   git pull
 fi
+
 cd ~/catkin_ws/src/ArloBot
 if ! [[ ${TRAVIS} == "true" ]]; then
   if ! [[ -d ~/catkin_ws/src/ArloBot/mycroft-core ]]; then
-    printf "\n${YELLOW}Do you want to install MyCroft on the Robot?${NC}\n"
-    read -n 1 -s -r -p "Press 'y' if this is OK" RESPONSE_TO_MYCROFT_QUERY
+    printf "\n${YELLOW}Do you want to install Mycroft on the Robot?${NC}\n"
+    printf "${BLUE}Mycroft can be used to talk to your robot, and have it talk to you.${NC}\n"
+    printf "${BLUE}Mycroft can be heavy on system resources on older systems though.${NC}\n\n"
+    read -n 1 -s -r -p "Press 'y' to install Mycroft" RESPONSE_TO_MYCROFT_QUERY
     echo ""
 
     if [[ "${RESPONSE_TO_MYCROFT_QUERY}" == "y" ]]; then
       git clone -b master https://github.com/MycroftAI/mycroft-core.git
       cd ~/catkin_ws/src/ArloBot/mycroft-core
+      printf "\n${BLUE}[There will be a lot of questions. I answer Yes to all of them personally.]${NC}\n"
       ./dev_setup.sh
       ./start-mycroft.sh all
       printf "\n${YELLOW}Giving Mycoroft time to download skills.${NC}\n"
@@ -325,12 +349,13 @@ if ! [[ ${TRAVIS} == "true" ]]; then
       #cd mycroft/tts/
       #ln -s ${HOME}/catkin_ws/src/ArloBot/mycroft-things/arlobot_tts.py
 
-      printf "\n${YELLOW}[IF you want to use MyCroft:]${NC}\n"
+      printf "\n${YELLOW}[IF you want to use Mycroft:]${NC}\n"
       printf "\n${YELLOW}[Then see https://docs.mycroft.ai/development/cerberus for configuration info.]${NC}\n"
       printf "\n${YELLOW}[See more info at: https://docs.mycroft.ai/installing.and.running/installation/git.clone.install]${NC}\n"
-      printf "\n${YELLOW}[At the least you will have to register MyCroft if you want full functionality, althoug it does work without registering.]${NC}\n"
+      printf "\n${YELLOW}[At the least you will have to register Mycroft if you want full functionality, althoug it does work without registering.]${NC}\n"
     fi
   else
+    printf "\n${YELLOW}[Updating Mycroft]${NC}\n"
     cd ~/catkin_ws/src/ArloBot/mycroft-core
     ./stop-mycroft.sh || true # Do not let failures crash the script.
     git pull
@@ -338,7 +363,7 @@ if ! [[ ${TRAVIS} == "true" ]]; then
     ./start-mycroft.sh all
   fi
   #cd ~/catkin_ws/src/ArloBot/mycroft-core
-  #printf "\n${YELLO}Patching MyCroft TTS to include Arlobot TTS if we want it.{NC}\n"
+  #printf "\n${YELLO}Patching Mycroft TTS to include Arlobot TTS if we want it.{NC}\n"
   # git diff __init__.py > ~/catkin_ws/src/ArloBot/mycroft-things/tts_source_patch.diff
   #git apply ~/catkin_ws/src/ArloBot/mycroft-things/tts_source_patch.diff
 else
@@ -347,6 +372,7 @@ else
 fi
 
 if [[ -d /opt/mycroft/skills ]]; then
+  printf "${BLUE}Updating ArloBot Mycroft Skills${NC}\n"
   if ! [[ -L /opt/mycroft/skills/arlobot-robot-skill ]]; then
     cd /opt/mycroft/skills/
     ln -s "${HOME}/catkin_ws/src/ArloBot/mycroft-arlobot-skill" arlobot-robot-skill
@@ -364,22 +390,22 @@ catkin_make
 source ~/catkin_ws/devel/setup.bash
 rospack profile
 
-printf "\n${YELLOW}[Setting the ROS environment in your .bashrc file]${NC}\n"
 if ! (grep ROS_HOSTNAME ~/.bashrc >/dev/null); then
+  printf "\n${YELLOW}[Setting the ROS_HOSTNAME in your .bashrc file]${NC}\n"
   sh -c "echo \"export ROS_HOSTNAME=$(uname -n)\" >> ~/.bashrc"
 fi
 if ! (grep ROSLAUNCH_SSH_UNKNOWN ~/.bashrc >/dev/null); then
+  printf "\n${YELLOW}[Setting the ROSLAUNCH_SSH_UNKNOWN in your .bashrc file]${NC}\n"
   sh -c "echo \"export ROSLAUNCH_SSH_UNKNOWN=1\" >> ~/.bashrc"
 fi
 if ! (grep catkin_ws ~/.bashrc >/dev/null); then
+  printf "\n${YELLOW}[Setting the ROS setup.bash source call in your .bashrc file]${NC}\n"
   sh -c "echo \"source ~/catkin_ws/devel/setup.bash\" >> ~/.bashrc"
 fi
 
-printf "\n${YELLOW}[Setting up the Robot Package.]${NC}\n"
-
 printf "\n${YELLOW}[Installing/Updating Node Version Manager]${NC}\n"
 if [[ -e ${HOME}/.nvm/nvm.sh ]]; then
-  printf "${YELLOW}Deactivating existing Node Version Manager:${NC}\n"
+  printf "${BLUE}Deactivating existing Node Version Manager:${NC}\n"
   export NVM_DIR="${HOME}/.nvm"
   # shellcheck source=/home/chrisl8/.nvm/nvm.sh
   [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
@@ -403,22 +429,18 @@ nvm alias default lts/*
 printf "\n${YELLOW}[Updating npm]${NC}\n"
 npm update -g npm
 
-printf "\n${YELLOW}[Grabbing global dependencies for node packages]${NC}\n"
-printf "\n${YELLOW}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
+printf "\n${YELLOW}[Grabbing/Updating global dependencies for node packages]${NC}\n"
+printf "${BLUE}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
 cd
-if ! (command -v forever >/dev/null); then
-  npm install -g forever
-fi
+npm install -g pm2
 if ! (command -v log.io-harvester >/dev/null) && [[ ! "${USER}" == "root" ]]; then
   # Does not work in Docker (testing) on Ubuntu 18.04
+  # No need to update it since it is basically static now.
   npm install -g https://github.com/pruge/Log.io
-fi
-if ! (command -v pm2 >/dev/null); then
-  npm install -g pm2
 fi
 cd "${HOME}/catkin_ws/src/ArloBot/node"
 printf "\n${YELLOW}[Grabbing node dependencies for scripts]${NC}\n"
-printf "\n${YELLOW}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
+printf "${BLUE}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
 npm ci
 
 cd "${HOME}/catkin_ws/src/ArloBot/website"
@@ -431,6 +453,7 @@ cd "${HOME}/catkin_ws/src/ArloBot/cypress-tests"
 printf "\n${YELLOW}[Installing Cypress.io for Tests]$NC\n"
 npm ci
 
+# TODO: Is there a better source for this, like https://github.com/jacksonliam/mjpg-streamer
 if ! (command -v mjpg_streamer >/dev/null); then
   printf "\n${YELLOW}[Installing mjpg_streamer for Web Page camera viewing]${NC}\n"
   cd "${HOME}/catkin_ws/src/ArloBot/scripts"
@@ -445,9 +468,6 @@ if ! (command -v mjpg_streamer >/dev/null); then
   #mjpg_streamer -i "/usr/local/lib/input_uvc.so -d /dev/video0 -f 30 -r 640x480" -o "/usr/local/lib/output_http.so -p 58180 -w ${SCRIPT_DIR}/mjpg-streamer/mjpg-streamer/www"
 fi
 
-printf "\n${YELLOW}[Enable non-root use of Bluetooth 4.0.]${NC}\n"
-sudo setcap cap_net_raw+eip "$(eval readlink -f "$(command -v node)")"
-
 if ! [[ -f ${HOME}/Desktop/arlobot.desktop ]]; then
   printf "\n${YELLOW}[Creating Desktop Icon]${NC}\n"
   if [[ ! -d ${HOME}/Desktop ]]; then
@@ -458,9 +478,9 @@ if ! [[ -f ${HOME}/Desktop/arlobot.desktop ]]; then
   echo "Name=ArloBot" >>"${HOME}/Desktop/arlobot.desktop"
   echo "GenericName=ArloBot" >>"${HOME}/Desktop/arlobot.desktop"
   echo "Comment=Start the robot" >>"${HOME}/Desktop/arlobot.desktop"
-  if (command -v lxterminal); then
+  if (command -v lxterminal >/dev/null); then
     echo "Exec=lxterminal --command \"${HOME}/catkin_ws/src/ArloBot/scripts/arlobotXwindows.sh\"" >>"${HOME}/Desktop/arlobot.desktop"
-  elif (command -v gnome-terminal); then
+  elif (command -v gnome-terminal >/dev/null); then
     echo "Exec=gnome-terminal --command \"${HOME}/catkin_ws/src/ArloBot/scripts/arlobotXwindows.sh\"" >>"${HOME}/Desktop/arlobot.desktop"
   fi
   echo "Icon=${HOME}/catkin_ws/src/ArloBot/icon-70x70.png" >>"${HOME}/Desktop/arlobot.desktop"
@@ -509,16 +529,8 @@ if [[ ! -d ${ARLO_HOME}/status/doors ]]; then
 fi
 sudo chmod -R 777 "${ARLO_HOME}/status/doors"
 
-if ! [[ -f /etc/udev/rules.d/99-libftdi.rules ]]; then
-  printf "\n${YELLOW}[Adding required sudo rule to reset USB ports.]${NC}\n"
-  sudo "${HOME}/catkin_ws/src/ArloBot/scripts/addRuleForUSBRelayBoard.sh"
-  printf "${RED}You may have to reboot before the USB Relay board will function!${NC}\n"
-fi
-
-# Arlobot Specific settings:
-
 if ! (id | grep dialout >/dev/null); then
-  printf "\n${GREEN}Adding your user to the 'dialout' group.${NC}\n"
+  printf "\n${GREEN}Adding your user to the 'dialout' group for serial port access.${NC}\n"
   sudo adduser "${USER}" dialout >/dev/null
   printf "${RED}You may have to reboot before you can use the Propeller Board.${NC}\n"
 fi
@@ -534,11 +546,6 @@ if ! (command -v simpleide >/dev/null); then
   wget https://web.archive.org/web/20161005174013/http://downloads.parallax.com/plx/software/side/101rc1/simple-ide_1-0-1-rc1_amd64.deb
   sudo dpkg -i /tmp/simple-ide_1-0-1-rc1_amd64.deb
   rm /tmp/simple-ide_1-0-1-rc1_amd64.deb
-fi
-
-if ! [[ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/Arlo/libarlodrive/arlodrive.c ]]; then
-  printf "\n${YELLOW}[You must Update your SimpleIDE Learn Folder using the instructions here!]${NC}\n"
-  printf "\n${GREEN}http://learn.parallax.com/tutorials/language/propeller-c/propeller-c-set-simpleide/update-your-learn-folder${NC}\n"
 fi
 
 # We will use ~/.arlobot to store "private" data
@@ -588,6 +595,17 @@ for i in "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/"*; do
   fi
 done
 
+if [[ ! -e /etc/cron.d/arlobot ]]; then
+  printf "\n${YELLOW}[Adding cron job to start web server on system reboot.]${NC}\n"
+  echo "@reboot $(whoami) ${HOME}/catkin_ws/src/ArloBot/startpm2.sh > ${HOME}/crontab.log" | sudo tee -a /etc/cron.d/arlobot >/dev/null
+fi
+
+printf "\n${LIGHTPURPLE}[Flushing PM2 logs and starting/restarting web server.]${NC}\n"
+pm2 flush
+if ! pm2 restart Robot; then
+  "${HOME}/catkin_ws/src/ArloBot/startpm2.sh"
+fi
+
 if [[ "${USER}" == chrisl8 ]]; then
   # NOTE: It is OK if this section "crashes" the script on a failure,
   # because it ONLY runs for me, not end users.
@@ -602,15 +620,8 @@ if [[ "${USER}" == chrisl8 ]]; then
     printf "${RED}vim .ssh/authorized_keys${NC}\n"
     printf "${GREEN}(This is NOT required for Arlobot, just a personal thing.)${NC}\n"
   fi
-  # For use with the paid text to speech engine I use
-  #if ! (command -v aoss > /dev/null)
-  #    then
-  #    printf "\n${YELLOW}[Adding aoss for Text To Speech.]${NC}\n"
-  #    sudo apt install -y alsa-oss
-  #    printf "\n${GREEN}Don't for get to insatll Cepstral Voice!${NC}\n"
-  #fi
 
-  # Special notices for the developer himself to keep his stuff up to date!
+  # Special notices for the developer himself to keep his stuff up to date. =)
   cd "${HOME}/catkin_ws/src/ArloBot/node"
   printf "\n${RED}[Hey ${USER} please make sure the below items are up to date!]${NC}\n"
   printf "\n${GREEN}[Hey ${USER} please make sure the below items are up to date!]${NC}\n"
@@ -638,7 +649,19 @@ printf "\n${PURPLE}Anytime you want to update ArloBot code from the web you can 
 
 printf "\n${YELLOW}-----------------------------------${NC}\n"
 printf "${YELLOW}ALL DONE! REBOOT AND START TESTING!${NC}\n"
+printf "\n"
+printf "${LIGHTCYAN}Go to ${LIGHTBLUE}http://$(node "${HOME}/catkin_ws/src/ArloBot/node/ipAddress.js"):$(jq '.webServerPort' "${HOME}/.arlobot/personalDataForBehavior.json")${LIGHTCYAN} to see the Arlobot web interface.${NC}\n"
+printf "\n"
+# TODO: Find another pretty color and remind about editting files.
 printf "${BLUE}I have a list of tests here: cat ${HOME}/catkin_ws/src/ArloBot/manualTests.txt${NC}\n"
 printf "${GREEN}Look at README.md for testing ideas.${NC}\n"
 printf "${GREEN}See here for your next step: ${BLUE}http://ekpyroticfrood.net/?p=165\n${NC}\n"
+
+if ! [[ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/Arlo/libarlodrive/arlodrive.c ]]; then
+  printf "\n${YELLOW}------------------------------------------------------------${NC}\n"
+  printf "\n${YELLOW}!!! You must Update your SimpleIDE Learn Folder using the instructions here:${NC}\n"
+  printf "${GREEN}http://learn.parallax.com/tutorials/language/propeller-c/propeller-c-set-simpleide/update-your-learn-folder${NC}\n"
+  printf "\n${PURPLE}Remember: You MUST install the Propeller code on your Propeller board too!{$NC}\n"
+  printf "\n${YELLOW}------------------------------------------------------------${NC}\n"
+fi
 INSTALL_FINISHED="true"
