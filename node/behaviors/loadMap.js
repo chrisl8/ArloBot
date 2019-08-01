@@ -97,7 +97,8 @@ async function loadMap() {
         return false;
       }
       if (robotModel.mapLoadTime === undefined) {
-        webModelFunctions.update('status', 'Map is Loaded.');
+        webModelFunctions.update('status', 'Map load complete.');
+        webModelFunctions.behaviorStatusUpdate('Map is Loaded.');
         robotModel.mapLoadTime = new Date(); // Time that map was loaded.
       }
       // Whether we return 'RUNNING' or 'SUCCESS',
