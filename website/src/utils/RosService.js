@@ -4,8 +4,7 @@ class RosService {
   constructor() {
     this.socket = new ROSLIB.Ros();
     this.Message = ROSLIB.Message;
-    // this.hostname = 'ws://' + location.hostname + ':9090';
-    this.hostname = 'ws://192.168.7.33:9090';
+    this.hostname = `ws://${window.location.hostname}:9090`;
   }
 
   emit(type) {
