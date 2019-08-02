@@ -385,7 +385,11 @@ if ! (grep catkin_ws ~/.bashrc >/dev/null); then
 fi
 
 # For 8-CH USB Relay board:
-pip install pylibftdi
+if [[ ${TRAVIS} == "true" ]]; then
+  pip install --user pylibftdi
+else
+  pip install pylibftdi
+fi
 # Required by pylibftdi
 # https://pylibftdi.readthedocs.io/en/0.15.0/installation.html
 if ! [[ -f /etc/udev/rules.d/99-libftdi.rules ]]; then
@@ -544,7 +548,7 @@ fi
 
 if ! [[ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/Arlo/libarlodrive/arlodrive.c ]]; then
   if ! [[ -d ~/Documents/SimpleIDE/ ]]; then
-    mkdir ~/Documents/SimpleIDE/
+    mkdir -p ~/Documents/SimpleIDE/
   fi
   cd ~/Documents/SimpleIDE/
   wget https://www.parallax.com/sites/default/files/downloads/Learn-Folder-Updated-2019.07.02_0.zip

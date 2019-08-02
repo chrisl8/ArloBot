@@ -553,7 +553,7 @@ fi
 
 if ! [[ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/Arlo/libarlodrive/arlodrive.c ]]; then
   if ! [[ -d ~/Documents/SimpleIDE/ ]]; then
-    mkdir ~/Documents/SimpleIDE/
+    mkdir -p ~/Documents/SimpleIDE/
   fi
   cd ~/Documents/SimpleIDE/
   wget https://www.parallax.com/sites/default/files/downloads/Learn-Folder-Updated-2019.07.02_0.zip
