@@ -71,6 +71,7 @@ printf "\n${YELLOW}SETTING UP ROS ${INSTALLING_ROS_DISTRO} FOR YOUR ARLOBOT!${NC
 printf "${YELLOW}---------------------------------------------------${NC}\n"
 printf "${GREEN}You will be asked for your password for running commands as root!${NC}\n"
 
+DOCKER_TEST_INSTALL=false
 if [[ ! -e /etc/localtime ]]; then
   # These steps are to allow this script to work in a minimal Docker container for testing.
   printf "${YELLOW}[This looks like a Docker setup.]${NC}\n"
@@ -85,8 +86,9 @@ if [[ ! -e /etc/localtime ]]; then
   # rather than letting it get picked up later as a pre-req,
   # and add the other things we know Docker is missing too while we are at it.
   apt update
-  apt install -y tzdata sudo lsb-release
+  apt install -y tzdata sudo lsb-release gnupg cron
   # Now the rest of the script should work as if it was in a normal Ubuntu install.
+  DOCKER_TEST_INSTALL=true
 fi
 
 version=$(lsb_release -sc)
@@ -198,9 +200,9 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 # libceres-dev for hector compile, might not need it if I stop using hector_explore
 # xvfb libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 - For Cypress Testing https://docs.cypress.io/guides/guides/continuous-integration.html#Advanced-setup
 
-PACKAGE_TO_INSTALL_LIST=("ros-${INSTALLING_ROS_DISTRO}-rqt-*" "ros-${INSTALLING_ROS_DISTRO}-kobuki-ftdi" python-ftdi1 python-pip python-serial "ros-${INSTALLING_ROS_DISTRO}-openni-*" "ros-${INSTALLING_ROS_DISTRO}-openni2-*" "ros-${INSTALLING_ROS_DISTRO}-freenect-*" "ros-${INSTALLING_ROS_DISTRO}-vision-opencv" "ros-${INSTALLING_ROS_DISTRO}-rtabmap-ros" "ros-${INSTALLING_ROS_DISTRO}-scan-tools" "ros-${INSTALLING_ROS_DISTRO}-explore-lite" libopencv-dev python-opencv "ros-${INSTALLING_ROS_DISTRO}-rosbridge-server" "ros-${INSTALLING_ROS_DISTRO}-tf2-tools" imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi-dev libftdi1 libgif-dev pulseaudio pavucontrol "ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan" git libqtgui4 libqtcore4 xvfb libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2)
+PACKAGE_TO_INSTALL_LIST=("ros-${INSTALLING_ROS_DISTRO}-rqt-*" "ros-${INSTALLING_ROS_DISTRO}-kobuki-ftdi" python-ftdi1 python-pip python-serial "ros-${INSTALLING_ROS_DISTRO}-openni-*" "ros-${INSTALLING_ROS_DISTRO}-openni2-*" "ros-${INSTALLING_ROS_DISTRO}-vision-opencv" "ros-${INSTALLING_ROS_DISTRO}-rtabmap-ros" "ros-${INSTALLING_ROS_DISTRO}-scan-tools" "ros-${INSTALLING_ROS_DISTRO}-freenect-*" "ros-${INSTALLING_ROS_DISTRO}-explore-lite" libopencv-dev python-opencv "ros-${INSTALLING_ROS_DISTRO}-rosbridge-server" "ros-${INSTALLING_ROS_DISTRO}-tf2-tools" imagemagick fswebcam festival festvox-en1 libv4l-dev jq expect-dev curl libav-tools zbar-tools openssh-server libftdi-dev libftdi1 libgif-dev pulseaudio pavucontrol "ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan" git libqtgui4 libqtcore4 xvfb libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2)
 
-if ! [[ ${TRAVIS} == "true" ]]; then
+if ! [[ ${TRAVIS} == "true" ]] && ! [[ ${DOCKER_TEST_INSTALL} == "true" ]]; then
   PACKAGE_TO_INSTALL_LIST=("${PACKAGE_TO_INSTALL_LIST[@]}" "ros-${INSTALLING_ROS_DISTRO}-turtlebot-apps" "ros-${INSTALLING_ROS_DISTRO}-turtlebot-interactions" "ros-${INSTALLING_ROS_DISTRO}-turtlebot-simulator")
 else
   printf "\n${GREEN}Skipping turtlebot bits forTravis CI Testing, because librealsense fails due to uvcvideo in Travis CI environment${NC}\n"
@@ -219,16 +221,6 @@ if [[ -z ${USER} ]]; then
 fi
 if [[ -d ${HOME}/.cache/ ]]; then
   sudo chown -R "${USER}" "${HOME}/.cache/"
-fi
-
-# For 8-CH USB Relay board:
-pip install pylibftdi
-# Required by pylibftdi
-# https://pylibftdi.readthedocs.io/en/0.15.0/installation.html
-if ! [[ -f /etc/udev/rules.d/99-libftdi.rules ]]; then
-  printf "\n${YELLOW}[Adding required sudo rule for pylibftdi to access USB based serial ports.]${NC}\n"
-  sudo "${HOME}/catkin_ws/src/ArloBot/scripts/addRuleForUSBRelayBoard.sh"
-  printf "${RED}You may have to reboot before the USB Relay board will function!${NC}\n"
 fi
 
 # As of 4/27/2016 Rosbridge required me to install twisted via pip otherwise it failed.
@@ -392,7 +384,19 @@ if ! (grep catkin_ws ~/.bashrc >/dev/null); then
   sh -c "echo \"source ~/catkin_ws/devel/setup.bash\" >> ~/.bashrc"
 fi
 
-printf "\n${YELLOW}[Installing/Updating Node Version Manager]${NC}\n"
+# For 8-CH USB Relay board:
+pip install pylibftdi
+# Required by pylibftdi
+# https://pylibftdi.readthedocs.io/en/0.15.0/installation.html
+if ! [[ -f /etc/udev/rules.d/99-libftdi.rules ]]; then
+  printf "\n${YELLOW}[Adding required sudo rule for pylibftdi to access USB based serial ports.]${NC}\n"
+  sudo "${HOME}/catkin_ws/src/ArloBot/scripts/addRuleForUSBRelayBoard.sh"
+  printf "${RED}You may have to reboot before the USB Relay board will function!${NC}\n"
+fi
+
+printf "\n${YELLOW}[Installing and Initializing the Current Node LTS version]${NC}\n"
+
+printf "${BLUE}[Installing/Updating Node Version Manager]${NC}\n"
 if [[ -e ${HOME}/.nvm/nvm.sh ]]; then
   printf "${BLUE}Deactivating existing Node Version Manager:${NC}\n"
   export NVM_DIR="${HOME}/.nvm"
@@ -406,7 +410,6 @@ export NVM_DIR="${HOME}/.nvm"
 # shellcheck source=/home/chrisl8/.nvm/nvm.sh
 [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
 
-printf "\n${YELLOW}[Initializing the Current Node LTS version]${NC}\n"
 export NVM_SYMLINK_CURRENT=true
 if ! (grep NVM_SYMLINK_CURRENT ~/.bashrc >/dev/null); then
   printf "\n${YELLOW}[Setting the NVM current environment in your .bashrc file]${NC}\n"
@@ -422,7 +425,7 @@ printf "\n${YELLOW}[Grabbing/Updating global dependencies for node packages]${NC
 printf "${BLUE}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
 cd
 npm install -g pm2
-if ! (command -v log.io-harvester >/dev/null) && [[ ! "${USER}" == "root" ]]; then
+if ! (command -v log.io-harvester >/dev/null) && ! [[ ${DOCKER_TEST_INSTALL} == "true" ]]; then
   # Does not work in Docker (testing) on Ubuntu 18.04
   # No need to update it since it is basically static now.
   npm install -g https://github.com/pruge/Log.io
@@ -537,6 +540,16 @@ if ! (command -v simpleide >/dev/null); then
   wget https://web.archive.org/web/20161005174013/http://downloads.parallax.com/plx/software/side/101rc1/simple-ide_1-0-1-rc1_amd64.deb
   sudo dpkg -i /tmp/simple-ide_1-0-1-rc1_amd64.deb
   rm /tmp/simple-ide_1-0-1-rc1_amd64.deb
+fi
+
+if ! [[ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/Arlo/libarlodrive/arlodrive.c ]]; then
+  if ! [[ -d ~/Documents/SimpleIDE/ ]]; then
+    mkdir ~/Documents/SimpleIDE/
+  fi
+  cd ~/Documents/SimpleIDE/
+  wget https://www.parallax.com/sites/default/files/downloads/Learn-Folder-Updated-2019.07.02_0.zip
+  unzip Learn-Folder-Updated-2019.07.02_0.zip
+  cd
 fi
 
 # We will use ~/.arlobot to store "private" data
@@ -655,11 +668,9 @@ printf "${BLUE}I have a list of tests here: cat ${HOME}/catkin_ws/src/ArloBot/ma
 printf "${GREEN}Look at README.md for testing ideas.${NC}\n"
 printf "${GREEN}See here for your next step: ${BLUE}http://ekpyroticfrood.net/?p=165\n${NC}\n"
 
-if ! [[ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/Arlo/libarlodrive/arlodrive.c ]]; then
-  printf "\n${YELLOW}------------------------------------------------------------${NC}\n"
-  printf "\n${YELLOW}!!! You must Update your SimpleIDE Learn Folder using the instructions here:${NC}\n"
-  printf "${GREEN}http://learn.parallax.com/tutorials/language/propeller-c/propeller-c-set-simpleide/update-your-learn-folder${NC}\n"
-  printf "\n${PURPLE}Remember: You MUST install the Propeller code on your Propeller board too!{$NC}\n"
-  printf "\n${YELLOW}------------------------------------------------------------${NC}\n"
-fi
+printf "\n${YELLOW}------------------------------------------------------------${NC}\n"
+printf "${YELLOW}Remember: You MUST install the Propeller code on your Propeller board too!${NC}\n"
+printf "${GREEN}See: ${BLUE}https://ekpyroticfrood.net/?p=165${NC}\n"
+printf "${GREEN}for more information on getting SimpleIDE set up.${NC}\n"
+printf "${YELLOW}------------------------------------------------------------${NC}\n"
 INSTALL_FINISHED="true"
