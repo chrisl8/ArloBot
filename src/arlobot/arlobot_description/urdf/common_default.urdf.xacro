@@ -9,23 +9,16 @@
   <!-- It is required by asus_xtion_pro.urdf.xacro -->
   <xacro:property name="M_PI" value="3.1415926535897931" /> 
 
-  <!-- 
-    These properties must be observed by any machine
-    that wants to be defined as a turtlebot. Refer
-    to the REP for more details.
-    http://www.ros.org/reps/rep-0119.html
-   -->
-  <!-- This is where the Xtion location is set. I do not think it has any other function. -->
-  <xacro:include filename="$(find arlobot_description)/urdf/turtlebot_properties.urdf.xacro"/>
+  <!-- This is where the 3D camera location is set. -->
+  <xacro:include filename="$(find arlobot_description)/urdf/3d_camera_position.urdf.xacro"/>
 
   <!-- ArloBot -->
-  <!-- There is no actual ArloBot model, I never made one. -->
   <xacro:include filename="$(find arlobot_description)/urdf/arlo.urdf.xacro"/>
 
   <!-- 3D Sensor -->
   <xacro:include filename="$(find arlobot_description)/urdf/asus_xtion_pro.urdf.xacro"/>
 
-  <create/>
+  <arlobot/>
   <stack_circles parent="base_link"/>
   <sensor_asus_xtion_pro  parent="base_link"/>
 </robot>

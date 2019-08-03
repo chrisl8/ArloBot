@@ -6,7 +6,7 @@
   <xacro:property name="base_x" value="0.33" />
   <xacro:property name="base_y" value="0.33" />
 
-  <xacro:macro name="create">
+  <xacro:macro name="arlobot">
     <material name="Green">
       <color rgba="0.0 0.8 0.0 1.0"/>
     </material>
@@ -323,8 +323,8 @@
 
   <!-- XV11 Neato Laser scanner. Hopefully it is exactly in the center. :) -->
   <joint name="neato_laser_joint" type="fixed">
-    <!-- Minor adjustments based on ligning up XV11 output with 3D Sensor output -->
-    <!-- So if the 3D sensor is misallgined the XV11 is off by the same amount -->
+    <!-- Minor adjustments based on lining up XV11 output with 3D Sensor output -->
+    <!-- So if the 3D sensor is misaligned the XV11 is off by the same amount -->
     <origin xyz="0.015 -0.02 0.11875" rpy="-0.025 0 0" />
     <parent link="base_link" />
     <child link="neato_laser" />
@@ -346,7 +346,7 @@
   </link>
   </xacro:macro>
 
-  <xacro:macro name="turtlebot_standoff_5in" params="parent number x_loc y_loc z_loc">
+  <xacro:macro name="arlobot_standoff_5in" params="parent number x_loc y_loc z_loc">
     <joint name="standoff_5in_${number}_joint" type="fixed">
       <origin xyz="${x_loc} ${y_loc} ${z_loc}" rpy="0 0 0" />
       <parent link="${parent}"/>
@@ -415,9 +415,9 @@
       </collision>
     </link>
 
-    <turtlebot_standoff_5in parent="${parent}" number="0" x_loc="0.0676402" y_loc="0.1314196" z_loc="0.06825"/>
-    <turtlebot_standoff_5in parent="${parent}" number="1" x_loc="0.0676402" y_loc="-0.1314196" z_loc="0.06825"/>
-    <turtlebot_standoff_5in parent="${parent}" number="2" x_loc="-0.052832" y_loc="-0.1314196" z_loc="0.06825"/>
-    <turtlebot_standoff_5in parent="${parent}" number="3" x_loc="-0.052832" y_loc="0.1314196" z_loc="0.06825"/>
+    <arlobot_standoff_5in parent="${parent}" number="0" x_loc="0.0676402" y_loc="0.1314196" z_loc="0.06825"/>
+    <arlobot_standoff_5in parent="${parent}" number="1" x_loc="0.0676402" y_loc="-0.1314196" z_loc="0.06825"/>
+    <arlobot_standoff_5in parent="${parent}" number="2" x_loc="-0.052832" y_loc="-0.1314196" z_loc="0.06825"/>
+    <arlobot_standoff_5in parent="${parent}" number="3" x_loc="-0.052832" y_loc="0.1314196" z_loc="0.06825"/>
   </xacro:macro>
 </robot>
