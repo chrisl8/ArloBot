@@ -31,6 +31,10 @@ Panels:
     Name: Time
     SyncMode: 0
     SyncSource: UltraSonic
+Preferences:
+  PromptSaveOnExit: false
+Toolbars:
+  toolButtonStyle: 2
 Visualization Manager:
   Class: ""
   Displays:
@@ -336,7 +340,7 @@ Visualization Manager:
       Max Intensity: 4096
       Min Color: 0; 0; 0
       Min Intensity: 0
-      Name: ASUS Xtion PRO Live
+      Name: 3D Camera (Asus, Kinect, etc.)
       Position Transformer: XYZ
       Queue Size: 10
       Selectable: true

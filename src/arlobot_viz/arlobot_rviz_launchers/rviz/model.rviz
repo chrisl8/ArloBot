@@ -25,6 +25,10 @@ Panels:
     Splitter Ratio: 0.5
   - Class: rviz/Time
     Name: Time
+Preferences:
+  PromptSaveOnExit: false
+Toolbars:
+  toolButtonStyle: 2
 Visualization Manager:
   Class: ""
   Displays:
