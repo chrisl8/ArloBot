@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package>
+<package format="2">
   <name>arlobot_rviz_launchers</name>
   <version>0.1.0</version>
   <description>
@@ -14,7 +14,7 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <run_depend>joint_state_publisher</run_depend>
-  <run_depend>rviz</run_depend>
-  <run_depend>arlobot_bringup</run_depend>
+  <depend>joint_state_publisher</depend>
+  <depend>rviz</depend>
+  <depend>arlobot_bringup</depend>
 </package>

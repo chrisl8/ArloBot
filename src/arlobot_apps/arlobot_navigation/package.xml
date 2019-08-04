@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package>
+<package format="2">
   <name>arlobot_navigation</name>
   <version>0.1.0</version>
   <description>
@@ -11,22 +11,14 @@
   <author email="ekpyroticfrood@gmail.com">Chris L8</author>
 
   <buildtool_depend>catkin</buildtool_depend>
-  
-  <build_depend>tf</build_depend>
-  <build_depend>roscpp</build_depend>
-  <build_depend>sensor_msgs</build_depend>
 
-  <run_depend>tf</run_depend>
-  <run_depend>roscpp</run_depend>
-  <run_depend>sensor_msgs</run_depend>
-  <run_depend>move_base</run_depend>
-  <run_depend>map_server</run_depend>  
-  <run_depend>amcl</run_depend>
-  <run_depend>gmapping</run_depend>
-  <run_depend>arlobot_bringup</run_depend>
-  <run_depend>dwa_local_planner</run_depend>
-
-  <export>
-
-  </export>
+  <depend>roscpp</depend>
+  <depend>tf2_ros</depend>
+  <depend>sensor_msgs</depend>
+  <depend>move_base</depend>
+  <depend>map_server</depend>
+  <depend>amcl</depend>
+  <depend>gmapping</depend>
+  <depend>arlobot_bringup</depend>
+  <depend>dwa_local_planner</depend>
 </package>
