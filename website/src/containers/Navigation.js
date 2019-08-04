@@ -72,6 +72,7 @@ class Navigation extends Component {
         listItem = (
           <li key={map}>
             <button
+              id={`load-map-button-${map}`}
               type="button"
               className="btn btn-primary"
               onClick={() => this.props.sendDataToRobot('setMap', map)}
@@ -111,6 +112,7 @@ class Navigation extends Component {
               {this.props.mapName === '' && !this.props.makeMap && (
                 <div>
                   <button
+                    id="make-map-button"
                     type="button"
                     className="btn btn-warning"
                     onClick={() => this.props.sendDataToRobot('makeMap')}
@@ -119,6 +121,7 @@ class Navigation extends Component {
                   </button>
                   &nbsp;or&nbsp;
                   <button
+                    id="load-map-button"
                     type="button"
                     className="btn btn-warning"
                     onClick={this.handleLoadMapButton}
@@ -130,6 +133,8 @@ class Navigation extends Component {
 
               {this.state.showMapPicker &&
                 this.props.mapName === '' &&
+                !this.props.makeMap &&
+                !this.props.makeMapRunning &&
                 !this.props.autoExplore && (
                   <div>
                     <h3>Pick a map to load:</h3>
