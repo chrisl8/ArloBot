@@ -259,6 +259,8 @@ function pollROS() {
     webModelFunctions.scrollingStatusUpdate('ROSLIB Websocket connected.');
     // Set last movement to now to initiate the idle timer
     robotModel.lastMovementTime = Date.now();
+    // Tell the system that ROS is up, even if it wasn't started via the script in Node
+    webModelFunctions.update('ROSisRunning', true);
     // connectRequested = true;
     // updateConnectedButton();
     // checkROSServices();
