@@ -159,83 +159,126 @@ the robot whenever the laptop is plugged into AC power
 
 If you want to disable AC connection monitoring in real time, while ROS is running, run `rosparam set /arlobot/monitorACconnection False`
 
-## Basic ROS based usage instructions: ##
+# Basic ROS based usage instructions #
 Depending on what you want to do there are different ways to "bring up" the robot with just ROS.<br/>These are the "recipes" that are well tested so far:
 
+### Basic TeleOp with 3D sensor use ###
 ```
-Basic TeleOp with 3D sensor use:
 roslaunch arlobot_bringup minimal.launch --screen
-<New Terminal>
+# In a new Terminal:
 roslaunch arlobot_teleop keyboard_teleop.launch
-<New Terminal>
+# In a new Terminal:
+# Replace "kinect" with "asus" or "astra", depending on what sensor you have
+export ARLOBOT_3D_SENSOR=kinect
 roslaunch arlobot_bringup 3dsensor.launch
-<GUI based Terminal>
+# From a Terminal in the desktop (NOT over SSH):
 roslaunch arlobot_rviz_launchers view_robot.launch
-Tests from this setup:
+# Do this:
   Set your Global Options->Fixed Frame to "odom
     Drive and see if the robot appears to move properly on the grid.
   Turn on LaserScan and set the Decay Time to 650
     Move around, spin in circles and see if you get a reasonable picture of the room.
   Turn off Laser Scan and turn on Registered DepthCloud to see if you get a picture of the room overlaied properly onto the 3D virtual world in RVIZ.
+```
 
-
-Remote Control with an xBox 360 joystick:
+### Remote Control with an xBox 360 joystick ###
 http://ekpyroticfrood.net/?p=115
+```
 roslaunch arlobot_bringup minimal.launch --screen
-<New Terminal>
+# In a new Terminal:
 rosparam set /joystick/dev "/dev/input/js0"
 roslaunch turtlebot_teleop xbox360_teleop.launch --screen
+```
 
-Follow a person or object:
-http://wiki.ros.org/turtlebot_follower/Tutorials/Demo
-roslaunch arlobot_bringup minimal.launch --screen
-<New Terminal>
-roslaunch arlobot_bringup follower.launch --screen
-
-Gmapping Demo (SLAM Map building):
+### Gmapping Demo (SLAM Map building) ###
 http://wiki.ros.org/turtlebot_navigation/Tutorials/Build%20a%20map%20with%20SLAM
+```
 roslaunch arlobot_bringup minimal.launch --screen
-<New Terminal>
+# In a new Terminal:
 roslaunch arlobot_navigation gmapping_demo.launch --screen
-<New Terminal>
+# In a new Terminal:
 roslaunch arlobot_teleop keyboard_teleop.launch
-<GUI based Terminal>
+# From a Terminal in the desktop (NOT over SSH):
 roslaunch arlobot_rviz_launchers view_navigation.launch
-When you are done, save your map!
+# When you are done, save your map!
 rosrun map_server map_saver -f ~/rosmaps/my_map1
-Tests from thsi setup:
-  Make sure that obstacles in the Asus view are shown in the local costmap
+# Do this:
+  Make sure that obstacles in the 3D Camera view are shown in the local costmap
     It is possible to map walls, while the 3D is ignored by the costmap!
     I find this is caused by the max_obstacle_height being set below the 3D Sensor's height
     in costmap_common_params.yaml on the "scan:" line
+```
 
-AMCL (Navigating the map we built above:
+### AMCL (Navigating the map we built above ###
 http://wiki.ros.org/turtlebot_navigation/Tutorials/Autonomously%20navigate%20in%20a%20known%20map
+```
 roslaunch arlobot_bringup minimal.launch --screen
-<New Terminal>
+# In a new Terminal:
 roslaunch arlobot_navigation amcl_demo.launch map_file:=~/rosmaps/my_map1.yaml
-<GUI based Terminal>
+# From a Terminal in the desktop (NOT over SSH):
 roslaunch arlobot_rviz_launchers view_navigation.launch --screen
-NOTE: This is still in progress. It works pretty well, but needs a little tweaking.
-
-Autonomous Map Making (Exploration):
-roslaunch arlobot_bringup minimal.launch --screen
-<New Terminal>
-roslaunch arlobot_explore gmapping_explore.launch --screen
-<New Terminal>
-roslaunch arlobot_explore exploration_planner.launch --screen
-<GUI based Terminal>
-roslaunch arlobot_rviz_launchers view_navigation.launch
-<New Terminal>
-roslaunch arlobot_explore arlobot_explore.launch --screen
-When you are done, save your map!
-rosrun map_server map_saver -f ~/rosmaps/my_map1
-
 ```
 
 Please report an issue for any problems or if you need me to clarify anything!  
  Ask questions in the [Parallax Forums](http://forums.parallax.com/ "Parallax Forums"), on [GitHub](https://github.com/chrisl8/ArloBot/issues "Create an Issue"), on the [ROS for Arlobot Google Group](https://groups.google.com/forum/?utm_medium=email&utm_source=footer#!forum/ros-for-arlobot "ROS for Arlobot"), and on my [blog](http://ekpyroticfrood.net/ "My Blog"). We will write more documentation as we answer questions, and I hope you will also write instructions when you do your build!
 
+
+# Script Based Operation #
+
+All of the functions above also have quick launch scripts.
+`cd ~/catkin_ws/src/ArloBot/scripts`
+
+### Start ROS ###
+Start just the most basic pieces  
+`start-arlobot-only.sh`  
+OR  
+Start everything  
+`start-robot.sh`
+### Basic TeleOp ###
+`keyboard-teleop.sh`
+### Automatically unplug itself ###
+`unPlug.sh`
+### Remote Control with an xBox 360 joystick ###
+This is built into the `start-robot.sh` script.
+### Gmapping Demo (SLAM Map building) ###
+`make-map.sh`  
+View with rviz:  
+`view-navigation.sh`  
+Save the map:  
+`save-map.sh`
+### AMCL (Navigating the map we built above ###
+List available maps:  
+`listMaps.sh`  
+Load the map:  
+`load-map.sh`  
+View with rviz:
+`view-navigation.sh`
+### Shut down ROS and everything related to it ###
+`kill_ros.sh`
+
+The scripts call ROS files, so you can modify the ROS files listed in the scripts to modify how ROS operates.
+
+Note that xBox 360 Controller operation is always live when ROS is running this way.
+
+
+# Web Based Operation #
+
+Finally the entire robot can be operated from the web.  
+Go to http://<robot_ip_address>:8080/
+
+All of the basic robot operations are available.  
+- Use the Startup/Shutdown Panel to start ROS.
+- Use the Navigation Panel to:
+  - Make a new Map
+  - Load an existing Map
+  - Add waypoints to a map
+- Use the Remote Control Panel to control the robot from the web site
+  - This works well from a smartphone
+- Explore all of the other options. 
+
+The web site uses the same scripts from above, so you can modify them or the ROS files that they call to modify how ROS operates.
+
+Note that xBox 360 Controller operation is always live when ROS is running from the web site.
 
 ## Convenience Scripts ##
 Look in the scripts folder for a set of handy scripts for starting up and shutting down various aspects of Arlobot.

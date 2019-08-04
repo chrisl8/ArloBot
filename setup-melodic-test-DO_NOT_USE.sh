@@ -248,6 +248,17 @@ else
   git pull
 fi
 
+printf "${BLUE}TurtleBot respository${NC}\n"
+printf "${BLUE}TurtleBot has not been ported to Melodic${NC}\n"
+printf "${BLUE}Rather than copying all of the required code to ArloBot,${NC}\n"
+printf "${BLUE}I am cloning it by hand. So far it compiles in Melodic.${NC}\n"
+if ! [[ -d ~/catkin_ws/src/turtlebot ]]; then
+  git clone https://github.com/turtlebot/turtlebot.git
+else
+  cd ~/catkin_ws/src/turtlebot
+  git pull
+fi
+
 printf "\n${BLUE}Neato XV11 respository${NC}\n"
 # Only needed if you have an XV-11 "Neato" Scanner
 cd ~/catkin_ws/src
