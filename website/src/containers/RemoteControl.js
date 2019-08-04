@@ -52,6 +52,7 @@ class RemoteControl extends Component {
         try {
           this.RosService.socket.connect(this.RosService.hostname);
         } catch (e) {
+          // eslint-disable-next-line no-console
           console.log(e);
         }
       }
@@ -152,10 +153,7 @@ class RemoteControl extends Component {
         <CardHeader onClick={this.toggle}>
           <CardTitle>Remote Control</CardTitle>
         </CardHeader>
-        <Collapse
-          id="remote-control-card-body"
-          isOpen={this.state.isOpen}
-        >
+        <Collapse id="remote-control-card-body" isOpen={this.state.isOpen}>
           <CardBody>
             {!this.props.ROSisRunning && (
               <button
