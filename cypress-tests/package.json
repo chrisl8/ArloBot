@@ -10,6 +10,6 @@
   "author": "ChrisL8",
   "license": "ISC",
   "dependencies": {
-    "cypress": "3.4.0"
+    "cypress": "3.4.1"
   }
 }
