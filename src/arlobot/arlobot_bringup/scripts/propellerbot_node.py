@@ -131,11 +131,14 @@ class PropellerComm(object):
         self._ledRequestedState_from_ROS = []
 
         # Subscriptions
+        rospy.Subscriber("cmd_vel", Twist, self._handle_velocity_command, queue_size=1)
+        # NOTE: Keep the cmd_vel subscription queue_size to 1, because we never want to allow a backlog of twist commands. Always just send the most recent one.
+        # Otherwise strange behavior occurs, even the robot responding to commands very late, like stopping and then starting a command given moments ago!
         rospy.Subscriber(
-            "cmd_vel", Twist, self._handle_velocity_command
-        )  # Is this line or the below bad redundancy?
-        rospy.Subscriber(
-            "arlobot_safety/safetyStatus", arloSafety, self._safety_shutdown
+            "arlobot_safety/safetyStatus",
+            arloSafety,
+            self._safety_shutdown,
+            queue_size=1,
         )  # Safety Shutdown
 
         # Publishers
