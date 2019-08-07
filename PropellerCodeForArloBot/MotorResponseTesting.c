@@ -87,7 +87,7 @@ It shouldn't run away from you very far at this rate. :)
 In theory you can just set the result below in m/s,
 but ROS will send it in rad/s and the tunable
 parameters for rotation are in rad/s, not m/s
-because m/s requires knowing the geometry of the roobt,
+because m/s requires knowing the geometry of the robot,
 as the formula below illustrates. */
 
 #include "fdserial.h"
@@ -97,7 +97,7 @@ as the formula below illustrates. */
 Full details on how to use the DHB-10 Motor Controller on the Parallax Arlo
 Robot platform with a Propeller Activity Board can be found here:
 http://learn.parallax.com/tutorials/robot/arlo/arlo-activity-board-brain
-I highly suggets you work through the instructions there and run the example
+I highly suggest you work through the instructions there and run the example
 programs and tests before using this code.
 */
 #include "arlodrive.h"

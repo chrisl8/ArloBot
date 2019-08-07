@@ -85,9 +85,10 @@ void broadcastOdometryAndRunMotors(void *par) {
 
       // Send resulting speed to wheels IF it is different from last time
       if (newLeftSpeed != oldLeftSpeed || newRightSpeed != oldRightSpeed) {
-        dprint(term, "%c%ceGOSPD: previous %d,%d new %d,%d%c", START_MARKER,
-               SPECIAL_BYTE, oldLeftSpeed, oldRightSpeed, newLeftSpeed,
-               newRightSpeed, END_MARKER); // For Debugging
+        // For Debugging:
+        // dprint(term, "%c%ceGOSPD: previous %d,%d new %d,%d%c", START_MARKER,
+        //        SPECIAL_BYTE, oldLeftSpeed, oldRightSpeed, newLeftSpeed,
+        //        newRightSpeed, END_MARKER); // For Debugging
         sprint(s, "GOSPD %d %d\r", newLeftSpeed, newRightSpeed);
         dhb10_com(s);
         pause(dhb10OverloadPause);
@@ -143,6 +144,9 @@ void broadcastOdometryAndRunMotors(void *par) {
 
       deltaTicksLeft = ticksLeft - ticksLeftOld;
       deltaTicksRight = ticksRight - ticksRightOld;
+      // For Debugging
+      // dprint(term, "%c%ceDELTA: ticksLeft: %d, ticksRight: %d%c", START_MARKER,
+      //   SPECIAL_BYTE, deltaTicksLeft, deltaTicksRight, END_MARKER);
       deltaDistance =
           0.5f * (float)(deltaTicksLeft + deltaTicksRight) * distancePerCount;
       deltaX = deltaDistance * cos(Heading);
@@ -167,7 +171,7 @@ void broadcastOdometryAndRunMotors(void *par) {
 
       // Odometry for ROS
       /*
-        I sending ALL of the proximity data (IR and PING sensors) to ROS
+        I am sending ALL of the proximity data (IR and PING sensors) to ROS
         over the "odometry" line, since it is real time data which is just as
         important as the odometry, and it seems like it would be faster to send
         and deal with one packet per cycle rather than two.
@@ -180,7 +184,7 @@ void broadcastOdometryAndRunMotors(void *par) {
         surfaces near the sides.
         2. I also want to use at least some of this for obstacle avoidance in
         AMCL. Note that I do not think that IR and PING data will be useful for
-        gmapping, however introductin the PING and IR data into AMCL as
+        gmapping, however introducing the PING and IR data into AMCL as
         obstacles helps with path planning around obstacles that are not seen by
         the 3D Kinect/ASUS camera.
         */
@@ -254,7 +258,7 @@ void broadcastOdometryAndRunMotors(void *par) {
     } else {
       // Without a pause() line here, this cog locks up.
       // The only issue is to make sure the sleep is short enough to not
-      // interfeer with the clock based timing.
+      // interfere with the clock based timing.
       // clkfreq / 10 = Clock ticks per 0.1 seconds (100 ms)
       // So a pause of 1 or even 10 should leave plenty of granularity.
       pause(1);
