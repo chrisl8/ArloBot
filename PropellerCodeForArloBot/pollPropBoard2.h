@@ -51,7 +51,12 @@ void pollPropBoard2(void *par) {
         uint8_t pingSensorNumber = strtol(token, &unconverted, 10);
         token = strtok(NULL, delimiter);
         if (pingSensorNumber < NUMBER_OF_PING_SENSORS) {
-          pingArray[pingSensorNumber] = strtol(token, &unconverted, 10);
+          int pingSensorData = strtol(token, &unconverted, 10);
+          if (pingSensorData < 255) {
+            pingArray[pingSensorNumber] = pingSensorData;
+          } else {
+            pingArray[pingSensorNumber] = 255;
+          }
         }
       } else if (buf[0] == 'i') {
         char *token;
@@ -61,7 +66,12 @@ void pollPropBoard2(void *par) {
         uint8_t irSensorNumber = strtol(token, &unconverted, 10);
         token = strtok(NULL, delimiter);
         if (irSensorNumber < NUMBER_OF_IR_SENSORS) {
-          irArray[irSensorNumber] = strtol(token, &unconverted, 10);
+          int irSensorData = strtol(token, &unconverted, 10);
+          if (irSensorData < 255) {
+            irArray[irSensorNumber] = irSensorData;
+          } else {
+            irArray[irSensorNumber] = 255;
+          }
         }
       } else if (buf[0] == 'b') {
         char *token;

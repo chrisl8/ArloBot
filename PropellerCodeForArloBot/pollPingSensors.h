@@ -13,11 +13,21 @@ void pollPingSensors(void *par) {
   while (1) // Repeat indefinitely
   {
     for (i = 0; i < NUMBER_OF_PING_SENSORS; i++) {
-      pingArray[i] = ping_cm(FIRST_PING_SENSOR_PIN + i);
+      int pingSensorData = ping_cm(FIRST_PING_SENSOR_PIN + i);
+      if (pingSensorData < 255) {
+        pingArray[i] = pingSensorData;
+      } else {
+        pingArray[i] = 255;
+      }
 #ifdef hasMCP3208
       // If there is also an IR sensor at this number check it too
       if (i < NUMBER_OF_IR_ON_MCP3208) {
-        irArray[i] = mcp3208_IR_cm(i);
+        int irSensorData = mcp3208_IR_cm(i);
+        if (irSensorData < 255) {
+          irArray[i] = irSensorData;
+        } else {
+          irArray[i] = 255;
+        }
       }
 #endif
     }
