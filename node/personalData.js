@@ -29,7 +29,7 @@ function DumpObjectIndented(obj, indent = '') {
         } else {
           // Recursive dump
           // (replace "  " by "\t" or something else if you prefer)
-          const od = DumpObjectIndented(value, `${indent}    `);
+          const od = DumpObjectIndented(value, `${indent}${indent}`);
           // If you like { on the same line as the key
           value = `{\n${od}\n${indent}}`;
           // If you prefer { and } to be aligned
@@ -52,7 +52,7 @@ for (const prop in defaultData) {
   }
 }
 if (updateNeeded) {
-  const newFileOutputData = `{\n${DumpObjectIndented(personalData, '    ')}\n}`;
+  const newFileOutputData = `{\n${DumpObjectIndented(personalData, '  ')}\n}`;
   // console.log(newFileOutputData);
   fs.writeFile(personalDataFile, newFileOutputData, (err) => {
     if (err) console.log('error', err);

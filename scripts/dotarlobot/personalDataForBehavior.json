@@ -20,12 +20,6 @@
     "my_phone_number": "",
     "smsWebhook": ""
   },
-  "_ngrok": "This allows you to use a consistent ngrok so twilio can find it but you have to pay for it. I no longer use ngrok.",
-  "ngrok": {
-    "authtoken": "",
-    "subdomain": "",
-    "port": 8080
-  },
   "_cloudServer": "For use if you have a cloud based server that the robot communicates with for various online functions.",
   "cloudServer": {
     "exists": false,
@@ -49,6 +43,8 @@
   "useUSBrelay": false,
   "_use_xv11": "Set to true if you have an XV11 neato scanner connected.",
   "use_xv11": false,
+  "_hasScanseSweep": "Set to true if you have a Scanse Sweep installed on the robot.",
+  "hasScanseSweep": false,
   "_camera0": "Set to true if you have a USB camera.",
   "camera0": false,
   "_camera0name": "Run 'fswebcam --verbose --device=/dev/video0 2>&1|grep cap.card' and set this to a unique part of the resulting string.",
@@ -67,8 +63,6 @@
   "door_list": [],
   "_hasXboxController": "Set to true if you have a USB wireless xBox joystick receiver.",
   "hasXboxController": false,
-  "_hasScanseSweep": "Set to true if you have a Scanse Sweep installed on the robot.",
-  "hasScanseSweep": false,
   "_arlobotModel": "Use this to use an alternate URD file, otherwise use set to default",
   "arlobotModel": "default",
   "_hasActivityBoard": "This can only be false for a 'dummy' test system that has no actual hardware.",
@@ -77,12 +71,8 @@
   "hasQuickStartBoard": false,
   "_speechVolumeLevelDefault": "Default volume level for speech. 0 to 100",
   "speechVolumeLevelDefault": 100,
-  "defaultMicrophoneName": "",
   "_speechProgram": "Set this to a script that will convert text to speech and play it. Use 'espeak' if you do not have one.",
   "speechProgram": "espeak",
-  "speech_engine": "~/catkin_ws/src/ArloBot/scripts/tts.sh",
-  "use_external_speaker": false,
-  "script_location": "~/catkin_ws/src/ArloBot/scripts",
   "web_folder": "~/catkin_ws/src/ArloBot/website/build",
   "webServerPort": 8080,
   "webSiteSettings": {
