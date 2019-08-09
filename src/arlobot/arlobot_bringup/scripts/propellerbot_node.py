@@ -117,7 +117,7 @@ class PropellerComm(object):
         self._config_from_propeller = {
             "trackWidth": 0,
             "distancePerCount": 0,
-            # Set to opposites to  of self._settings
+            # Set to opposites of self._settings
             # to ensure _settingsUpdateRequired stays true
             # until we get the data from the board.
             "ignoreProximity": not self._settings_from_ros["ignoreProximity"],
@@ -154,15 +154,15 @@ class PropellerComm(object):
         # REMOVE this line if you use robot_pose_ekf
         self._OdometryTransformBroadcaster = tf.TransformBroadcaster()
 
-        self._OdometryPublisher = rospy.Publisher("odom", Odometry, queue_size=10)
+        self._OdometryPublisher = rospy.Publisher("odom", Odometry, queue_size=1)
 
         # We don't need to broadcast a transform, as it is static and contained within the URDF files
         # self._SonarTransformBroadcaster = tf.TransformBroadcaster()
         self._UltraSonicPublisher = rospy.Publisher(
-            "ultrasonic_scan", LaserScan, queue_size=10
+            "ultrasonic_scan", LaserScan, queue_size=1
         )
         self._InfraredPublisher = rospy.Publisher(
-            "infrared_scan", LaserScan, queue_size=10
+            "infrared_scan", LaserScan, queue_size=1
         )
 
         # Create a service that can be called to send robot to a map based goal
@@ -508,7 +508,7 @@ class PropellerComm(object):
 
         # max_range_accepted Testing:
         # I think it is a trade-off, so there is no end to the adjustment that could be done.
-        # I did a lot of testing with gmappinng while building a map.
+        # I did a lot of testing with gmapping while building a map.
         # Obviously this would be slightly different from using a map we do not update.
         # It seems there are so many variables here that testing is difficult.
         # We could find one number works great in one situation but is hopeless in another.

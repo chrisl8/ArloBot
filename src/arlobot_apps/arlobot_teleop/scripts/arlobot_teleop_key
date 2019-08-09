@@ -83,8 +83,7 @@ def getKey():
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
     return key
 
-#speed = .2
-speed = 1
+speed = .3 # This is a sane starting max speed for Arlobot
 turn = 1
 
 def vels(speed,turn):
@@ -94,7 +93,7 @@ if __name__=="__main__":
     settings = termios.tcgetattr(sys.stdin)
     
     rospy.init_node('arlobot_teleop')
-    pub = rospy.Publisher('~cmd_vel', Twist, queue_size=5)
+    pub = rospy.Publisher('~cmd_vel', Twist, queue_size=1)
 
     x = 0
     th = 0

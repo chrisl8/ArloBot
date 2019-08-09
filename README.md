@@ -157,7 +157,14 @@ Edit `~/.arlobot/arlobot.yaml`
 Set `monitorACconnection: True` to have ROS monitor the power connection and FREEZE  
 the robot whenever the laptop is plugged into AC power  
 
-If you want to disable AC connection monitoring in real time, while ROS is running, run `rosparam set /arlobot/monitorACconnection False`
+If you want to disable AC connection monitoring in real time, while ROS is running, run:  
+`rosparam set /arlobot/monitorACconnection False`
+
+## NOTE: Robot may be stuck or moving in reponse to sensors
+The Infrared, PING, and "plugged in" state of the robot can prevent it from moving or cause it to move by itself.  
+Once ROS is running, if you want to ensure that ONLY ROS input causes movement, and that the robot responds to ROS even if the PING or IR sensors sense an obstacle, you can quickly tell it to ignore all sensor input by running:  
+`~/catkin_ws/src/ArloBot/scripts/ignoreAllSensors.sh`  
+Notice that you must run that **AFTER ROS is started**, and run it every time you start ROS when testing with sensors ignored.
 
 # Basic ROS based usage instructions #
 Depending on what you want to do there are different ways to "bring up" the robot with just ROS.<br/>These are the "recipes" that are well tested so far:
@@ -168,7 +175,7 @@ roslaunch arlobot_bringup minimal.launch --screen
 # In a new Terminal:
 roslaunch arlobot_teleop keyboard_teleop.launch
 # In a new Terminal:
-# Replace "kinect" with "asus" or "astra", depending on what sensor you have
+# Replace "kinect" with "asus_xtion_pro" or "astra", depending on what sensor you have
 export ARLOBOT_3D_SENSOR=kinect
 roslaunch arlobot_bringup 3dsensor.launch
 # From a Terminal in the desktop (NOT over SSH):
@@ -177,7 +184,7 @@ roslaunch arlobot_rviz_launchers view_robot.launch
   Set your Global Options->Fixed Frame to "odom
     Drive and see if the robot appears to move properly on the grid.
   Turn on LaserScan and set the Decay Time to 650
-    Move around, spin in circles and see if you get a reasonable picture of the room.
+    Rotate the robot in a circle, and see if you get a reasonable picture of the room.
   Turn off Laser Scan and turn on Registered DepthCloud to see if you get a picture of the room overlaied properly onto the 3D virtual world in RVIZ.
 ```
 
