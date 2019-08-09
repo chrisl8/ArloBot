@@ -15,5 +15,12 @@ done
 SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 # echo ${SCRIPTDIR} # For debugging
 
-cd "${SCRIPTDIR}"/node || exist 1
-node index.js
+if ! command -v pm2; then
+  echo "The robot is not 'installed'. Please run setup-kinetic.sh to get everything installed first."
+  exit 1
+fi
+
+pm2 flush
+if ! pm2 restart Robot; then
+  "${SCRIPTDIR}/startpm2.sh"
+fi
