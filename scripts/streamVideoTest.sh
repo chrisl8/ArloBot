@@ -2,19 +2,27 @@
 if [[ $# -eq 0 ]]; then
   echo "You must provide a video device,"
   echo "such as /dev/video0 or /dev/video1 on the command line."
+  echo
+  echo "You can use ./find_camera.sh to get the device"
   exit
 fi
 echo "Go to http://${HOSTNAME}:58180 to see video stream."
 
-# Grab and save the path to this script
-# http://stackoverflow.com/a/246128
-SOURCE="${BASH_SOURCE[0]}"
-while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
-  DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
-  SOURCE="$(readlink "$SOURCE")"
-  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
-done
-SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
-# echo ${SCRIPTDIR} # For debugging
+# mjpg_streamer usage example:
+#mjpg_streamer -i "/usr/local/lib/mjpg-streamer/input_uvc.so -n -d /dev/video0 -f 30 -r 640x480" -o "/usr/local/lib/mjpg-streamer/output_http.so -p 58180 -w /usr/local/share/mjpg-streamer/www"
+# -n supresses the attempt to start the Pan/Tilt/Zoom (PTZ) controls.
+# -r is the resolution, which you can adjust to reduce bandwidth usage.
+# -f is the fremerate, which can also be adjusted to reduce bandwidth usage.
+# -p is the port
+# Then you can go to http://<robot-ip>:58180 to see the control panel with options to view and change camera settings.
+# The direct video stream that the web site uses is http://<robot-ip>:58180/?action=stream
+# Note that the entire point of mjpg_steamer is that it uses almost no resources on the sending system,
+# but it is heavy on the network and receiving system.
 
-mjpg_streamer -i "/usr/local/lib/input_uvc.so -d ${1} -f 30 -r 640x480" -o "/usr/local/lib/output_http.so -p 58180 -w ${SCRIPTDIR}/mjpg-streamer/mjpg-streamer/www"
+# My Logitech c615 resolution is 1280 x 720 (or HD if you want but I don't want to eat the bandwidth)
+# http://www.logitech.com/en-us/product/hd-webcam-c615
+
+# Note that if you use the camera feature on the web interface, the frame rate and resolution are
+# set in ~/.arlobot/personalDataForBehavior.json
+
+mjpg_streamer -i "/usr/local/lib/mjpg-streamer/input_uvc.so -n -d ${1} -f 30 -r 1280x720" -o "/usr/local/lib/mjpg-streamer/output_http.so -p 58180 -w /usr/local/share/mjpg-streamer/www"

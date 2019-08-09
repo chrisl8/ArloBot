@@ -451,16 +451,13 @@ npm ci
 
 if ! (command -v mjpg_streamer >/dev/null); then
   printf "\n${YELLOW}[Installing mjpg_streamer for Web Page camera viewing]${NC}\n"
-  cd "${HOME}/catkin_ws/src/ArloBot/scripts"
-  svn co https://svn.code.sf.net/p/mjpg-streamer/code mjpg-streamer
-  cd mjpg-streamer/mjpg-streamer
-  # https://www.raspberrypi.org/forums/viewtopic.php?f=28&t=109352
-  patch -p0 <../../../patches/input_uvc.patch
-  # sudo apt-get install libv4l-dev # Installed earlier, left here for documentation of why
-  make USE_LIBV4L2=true clean all
+  cd "${HOME}/catkin_ws/src/ArloBot/"
+  git clone https://github.com/jacksonliam/mjpg-streamer.git
+  cd ${HOME}/catkin_ws/src/ArloBot/mjpg-streamer/mjpg-streamer-experimental
+  make distclean
+  make
   sudo make install
-  # mjpg_streamer usage example:
-  #mjpg_streamer -i "/usr/local/lib/input_uvc.so -d /dev/video0 -f 30 -r 640x480" -o "/usr/local/lib/output_http.so -p 58180 -w ${SCRIPT_DIR}/mjpg-streamer/mjpg-streamer/www"
+  # See scripts/streamVideoTest.sh for details on mjpg_streamer usage.
 fi
 
 printf "\n${YELLOW}[Enable non-root use of Bluetooth 4.0.]${NC}\n"

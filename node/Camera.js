@@ -15,6 +15,8 @@ class Camera {
     this.video = '/dev/video0'; // Default, but findAndSwitchOn() will set this.
     this.robotIP = ipAddress.ipAddress();
     this.originalVideoSource = webModel.videoSource;
+    this.resolution = personalData.camera0resolutionForWeb || '640x480';
+    this.frameRate = personalData.camera0fpsForWeb || 30;
   }
 
   toggle() {
@@ -32,14 +34,14 @@ class Camera {
   switchOn() {
     webModelFunctions.update('cameraOn', true);
     webModelFunctions.scrollingStatusUpdate(`Starting ${this.cameraName}`);
-    /* Logitech c615 resolution is 1280 x 720 (or HD if you want but I don't want to eat the bandwidth)
-       http://www.logitech.com/en-us/product/hd-webcam-c615
-    */
+    // See scripts/streamVideoTest.sh for details on mjpg_streamer usage.
     const process = spawn('/usr/local/bin/mjpg_streamer', [
       '-i',
-      `/usr/local/lib/input_uvc.so -d ${this.video} -n -f 30 -r 1280x720`,
+      `/usr/local/lib/mjpg-streamer/input_uvc.so -d ${this.video} -n -f ${
+        this.frameRate
+      } -r ${this.resolution}`,
       '-o',
-      '/usr/local/lib/output_http.so -p 58180 -w ../scripts/mjpg-streamer/mjpg-streamer/www',
+      '/usr/local/lib/mjpg-streamer/output_http.so -p 58180 -w /usr/local/share/mjpg-streamer/www',
     ]);
     process.stdout.on('data', (data) => {
       console.log(`${this.cameraName} stdout: ${data}`);
@@ -105,7 +107,7 @@ class Camera {
       process.on('close', (code) => {
         // console.log(`child process exited with code ${code}`);
         if (code === 0) {
-          this.video = this.dataHolder;
+          this.video = `${this.dataHolder}`.trim();
           this.switchOn();
         } else {
           webModelFunctions.scrollingStatusUpdate(
