@@ -1,5 +1,4 @@
 const exec = require('child_process').exec;
-const say = require('say');
 const Push = require('pushover-notifications');
 const personalData = require('./personalData');
 const webModel = require('./webModel');
@@ -44,10 +43,6 @@ async function tts(sound) {
       exec(`/usr/bin/mplayer -quiet ${sound} > /dev/null 2>&1`);
     } else if (personalData.useMyCroft) {
       myCroft.sayText(sound);
-    } else if (personalData.speechProgram === 'nodeSay') {
-      // https://github.com/marak/say.js/
-      // no callback, fire and forget
-      say.speak(sound);
     } else if (personalData.speechProgram) {
       exec(`${personalData.speechProgram} "${sound}"`);
     }
