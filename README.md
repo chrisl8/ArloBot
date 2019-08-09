@@ -291,6 +291,16 @@ Note that xBox 360 Controller operation is always live when ROS is running from 
 Look in the scripts folder for a set of handy scripts for starting up and shutting down various aspects of Arlobot.
 
 
+## Freenect warnings
+
+These warnings are normal if you are using a Kinect. You can ignore them.
+```
+[ WARN] [1564761452.151374277]: Could not find any compatible depth output mode for 1. Falling back to default depth output mode 1.
+[ WARN] [1564761452.222812571]: Camera calibration file /home/chrisl8/.ros/camera_info/rgb_B00$64729659136B.yaml not found.
+[ WARN] [1564761452.230197119]: Using default parameters for RGB camera calibration.   [ WARN] [1564761452.230247519]: Camera calibration file /home/chrisl8/.ros/camera_info/depth_B00364729659136B.yaml not found.
+[ WARN] [1564761452.230264691]: Using default parameters for IR camera calibration.
+```
+
 ## HB-25 Motor Controller Support Gone! ##
 Parallax has updated the Arlo platform to use their new DHB-10 Dual H-Bridge controller.  
 My robot now uses the DHB-10 motor controller.  
