@@ -94,9 +94,9 @@ Since we are on blocks, let's turn this off so it won't run the motors unless we
 Pres `s` for Settings and then `a` to ignore All proximity sensors.  
 The line next to `Settings` that says `ignoreAllProximitySensors:No` will change to `ignoreAllProximitySensors:Yes`.
 3. Next note along the `Settings` line that `pluggedIn` is `Yes`. This will prevent the Propeller Activity Board code from sending any commands to the motor. Normally the only way to override this is through ROS. It is a safety measure that prevents the robot from ever moving if ROS is not running. We will override this now. If you left the Settings menu press `s` to get back in. Then `p` for Plugged in to turn that off.  `pluggedIn:Yes` will change to `pluggedIn:Yes` Now the robot can move.  
-4. Now `q` to get out of Settings and `m` to send Move commands.  Use the letters `i` to to make the wheels move the robot forword.  
+4. Now `q` to get out of Settings and `m` to send Move commands.  Use the letters `i` to to make the wheels move the robot forward.  
 ** IT WORKS!  **
-You should probably test all of the functions available, but this has at least shown you how to use the test program and that your hardware is working.  You can use the Sensor outupt data to ensure your sensors work and diagnose issues with your hardware or code settings.  
+You should probably test all of the functions available, but this has at least shown you how to use the test program and that your hardware is working.  You can use the Sensor output data to ensure your sensors work and diagnose issues with your hardware or code settings.  
 There is also the ability to send Test packets to the robot to check for serious serial errors.  
 Note that if you do the `r - Run speed test` there will be errors. It basically tests the ability for the code to slow down the transfer rate until the connection is stable, so errors will pop up as it attempts to go too fast and then backs off and retries. This is normal.  
 
@@ -135,7 +135,7 @@ bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/ne
 
 and your system will be set up to use as a "remote" station.  
 
-Once you have ROS running with a map loaded (or building) then you can run RVIZ on your worksattion.  
+Once you have ROS running with a map loaded (or building) then you can run RVIZ on your workstation.  
 Look for the RVIZ icon on your desktop or in your Gnome Menu.  
 If that isn't there you can run this script to start RVIZ on your workstation:  
 `~/catkin_ws/src/ArloBot/scripts/view-navigation.sh`  
@@ -160,7 +160,7 @@ the robot whenever the laptop is plugged into AC power
 If you want to disable AC connection monitoring in real time, while ROS is running, run:  
 `rosparam set /arlobot/monitorACconnection False`
 
-## NOTE: Robot may be stuck or moving in reponse to sensors
+## NOTE: Robot may be stuck or moving in response to sensors
 The Infrared, PING, and "plugged in" state of the robot can prevent it from moving or cause it to move by itself.  
 Once ROS is running, if you want to ensure that ONLY ROS input causes movement, and that the robot responds to ROS even if the PING or IR sensors sense an obstacle, you can quickly tell it to ignore all sensor input by running:  
 `~/catkin_ws/src/ArloBot/scripts/ignoreAllSensors.sh`  
