@@ -87,7 +87,7 @@ describe("site initial layout and page function", () => {
     cy.get("#settings").should("not.exist");
 
     cy.contains("robotName:").should("be.visible");
-    cy.contains("idleTimeoutInMinutes: 15").should("be.visible");
+    cy.contains("idleTimeoutInMinutes:").should("be.visible");
     cy.contains("useMyCroft:").should("be.visible");
     cy.contains("rosLibDelay:").should("be.visible");
     cy.contains("useMasterPowerRelay:").should("be.visible");
@@ -101,22 +101,21 @@ describe("site initial layout and page function", () => {
     cy.contains("arduinoStringLocation:").should("be.visible");
     cy.contains("useUSBrelay:").should("be.visible");
     cy.contains("use_xv11:").should("be.visible");
+    cy.contains("hasScanseSweep:").should("be.visible");
+    cy.contains("createMultiScanTopic:").should("be.visible");
     cy.contains("camera0:").should("be.visible");
     cy.contains("camera0name:").should("be.visible");
+    cy.contains("camera0resolutionForWeb:").should("be.visible");
+    cy.contains("camera0fpsForWeb:").should("be.visible");
     cy.contains("camera1:").should("be.visible");
     cy.contains("camera1name:").should("be.visible");
     cy.contains("wait_for_door_confirmation:").should("be.visible");
     cy.contains("hasXboxController:").should("be.visible");
-    cy.contains("hasScanseSweep:").should("be.visible");
     cy.contains("arlobotModel:").should("be.visible");
     cy.contains("hasActivityBoard:").should("be.visible");
     cy.contains("hasQuickStartBoard:").should("be.visible");
     cy.contains("speechVolumeLevelDefault:").should("be.visible");
-    cy.contains("defaultMicrophoneName:").should("be.visible");
     cy.contains("speechProgram:").should("be.visible");
-    cy.contains("speech_engine:").should("be.visible");
-    cy.contains("use_external_speaker:").should("be.visible");
-    cy.contains("script_location:").should("be.visible");
     cy.contains("web_folder:").should("be.visible");
     cy.contains("webServerPort:").should("be.visible");
     cy.contains("launchBrowser:").should("be.visible");
@@ -124,6 +123,8 @@ describe("site initial layout and page function", () => {
     cy.contains("qrCameraName:").should("be.visible");
     cy.contains("batteryConsideredFullAt:").should("be.visible");
     cy.contains("maxPingRangeAccepted:").should("be.visible");
+    cy.contains("socketEmitterThrottle:").should("be.visible");
+    cy.contains("rosSensor:").should("be.visible");
     cy.contains("hasBeenEdited:").should("be.visible");
 
     cy.get("#control").click();
