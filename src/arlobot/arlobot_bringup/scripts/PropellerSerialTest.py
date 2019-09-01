@@ -20,7 +20,7 @@ import struct
 import time
 import curses
 import threading
-from math import sqrt, pow
+from math import sqrt, pow, radians, pi
 from PropellerSerialInterface import PropellerSerialInterface
 from PropellerSerialDataPacketTypes import PropellerSerialDataPacketTypes
 from PropellerSerialTestCursesInterface import Screen
@@ -173,16 +173,21 @@ class PropellerSerialTest(object):
         self._ledUpdateRequired = False
 
         self._previous_position = {"X": 0.0, "Y": 0.0}
+        self._previous_heading = 0
         self._navigating_distance = False
         self._navigating_rotation = False
         self._goal_distance = 0.0
         self._goal_rotation = 0.0
+        self._previous_difference = 0.0
+        self._current_maneuver_command = "stop"
+        self._maneuver_rotation_reversed = False
 
         # Starting minimum move speed
         # 20 ticks per second (TPS) is about 0.07 meters per second,
         # and is about the slowest the Arlo platform can work reliably at.
-        self.last_move_speed = 0.07
-        self.last_move_turn = 0.1
+        self.last_move_speed = 0.08
+        self.last_move_turn = 0.3
+        self._saved_move_turn = 0.0
 
         self.run()
 
@@ -315,7 +320,7 @@ class PropellerSerialTest(object):
             self._telemetry["cliff"] = data[14]
             self._telemetry["floorO"] = data[15]
 
-            # Check if any maneuvers are in progress
+            # Check if any maneuvers are in progress and keep them going or stop when done
             if self._navigating_distance or self._navigating_rotation:
                 self.checkManeuverProgress()
 
@@ -1124,11 +1129,20 @@ class PropellerSerialTest(object):
             self.screen.addLine(
                 "Move key "
                 + str(key)
-                + " received. New Move speed: "
+                + " received. New Move speed: Linear: "
                 + str(self.last_move_speed)
-                + " "
+                + " Angular: "
                 + str(self.last_move_turn)
             )
+
+    def sameSign(self, num1, num2):
+        return num1 >= 0 and num2 >= 0 or num1 < 0 and num2 < 0
+
+    def smallestSignedAngleBetween(self, x, y):
+        TAU = 2 * pi
+        a = (x - y) % TAU
+        b = (y - x) % TAU
+        return -a if a < b else b
 
     def checkManeuverProgress(self):
         if self._navigating_distance:
@@ -1136,9 +1150,70 @@ class PropellerSerialTest(object):
                 pow((self._telemetry["X"] - self._previous_position["X"]), 2)
                 + pow((self._telemetry["Y"] - self._previous_position["Y"]), 2)
             )
+            self.screen.addLine("Distance Traveled: " + str(distance) + " meters")
             if distance >= self._goal_distance:
                 self.screen.addLine("Maneuver complete.")
                 self.performManeuvers("maneuvers_cancel")
+            else:
+                self.sendMoveCommands(self._current_maneuver_command)
+        elif self._navigating_rotation:
+            angle_difference = self.smallestSignedAngleBetween(
+                self._telemetry["Heading"], self._goal_rotation
+            )
+            self.screen.addLine(
+                "Hed: "
+                + str(self._telemetry["Heading"])
+                + " Goal: "
+                + str(self._goal_rotation)
+                + " Traveled: "
+                + str(angle_difference - self._previous_difference)
+                + " Remaining: "
+                # str(self._previous_heading)
+                # + " "
+                # + " "
+                + str(angle_difference)
+                + " rad"
+                # + " "
+                # + str(self._goal_rotation)
+            )
+            if self._previous_difference == 0.0:
+                # Initial setting after rotation starts
+                self._previous_difference = angle_difference
+            # Check that the difference is sufficiently small (it will never be 0)
+            # ************************************************************************* #
+            # You can use this calculator: https://www.omnicalculator.com/math/arc-length
+            # use the trackWidth (from arlobot.yaml) for the Diameter,
+            # and the distancePerCount for the Arc Length
+            # Central Angle is the minimum measurement resolution.
+            # although you may get half that intermittently as one wheel moves,
+            # and then the other, sort of "wiggling" to the next full point,
+            # (Remember, if only one wheel has moved, we aren't exactly in the circle,
+            # until the other one catches up)
+            # For driveGeometry: {trackWidth: 0.403, distancePerCount: 0.00338}
+            # resolution is 0.0167742 rad or 0.96109 deg
+            # ************************************************************************* #
+
+            # or if it has crossed, changing signs, however the sign is often wrong at the
+            # beginning of the maneuver, so only check for sign changes when we are close to done.
+            if abs(angle_difference) < 0.0167742 or (
+                abs(angle_difference) < 1
+                and not self.sameSign(angle_difference, self._previous_difference)
+            ):
+                self.screen.addLine("Maneuver complete.")
+                self.performManeuvers("maneuvers_cancel")
+            else:
+                start_slow_down_angle = 0.2  # rad
+                if abs(angle_difference) < start_slow_down_angle:
+                    if self._saved_move_turn == 0.0:
+                        self._saved_move_turn = self.last_move_turn
+                    # Slow down as we approach the goal
+                    new_move_speed = (
+                        (self._saved_move_turn - 0) / (start_slow_down_angle - 0.01)
+                    ) * abs(angle_difference) - 0.01
+                    if new_move_speed > 0.06:
+                        self.last_move_turn = new_move_speed
+                self.sendMoveCommands(self._current_maneuver_command)
+                self._previous_difference = angle_difference
 
     def performManeuvers(self, inputCommand):
         command = inputCommand.split("_")[1]
@@ -1147,23 +1222,49 @@ class PropellerSerialTest(object):
         if command == "cancel":
             self._navigating_distance = False
             self._navigating_rotation = False
-            self._goal_distance = 1.0
-            self._goal_rotation = 1.0
+            self._goal_distance = 0.0
+            self._goal_rotation = 0.0
+            self._previous_difference = 0.0
+            if not self._saved_move_turn == 0.0:
+                self.last_move_turn = self._saved_move_turn
             self._previous_position["X"] = self._telemetry["X"]
             self._previous_position["Y"] = self._telemetry["Y"]
             self.sendMoveCommands("stop")
+            self._current_maneuver_command = "stop"
+        elif command == "reverse":
+            self._maneuver_rotation_reversed = not self._maneuver_rotation_reversed
+        elif command == "rotate":
+            rotationAmount = inputCommand.split("_")[2]
+            self._current_maneuver_command = "j"
+            if self._maneuver_rotation_reversed:
+                self._current_maneuver_command = "l"
+            self._previous_heading = self._telemetry["Heading"]
+            self._navigating_rotation = True
+            goal_rotation = self._telemetry["Heading"] + radians(int(rotationAmount))
+            if self._maneuver_rotation_reversed:
+                goal_rotation = self._telemetry["Heading"] - radians(
+                    int(rotationAmount)
+                )
+            if goal_rotation > pi:
+                goal_rotation -= 2 * pi
+            if goal_rotation < -pi:
+                goal_rotation += 2 * pi
+            self._goal_rotation = goal_rotation
+            self.sendMoveCommands(self._current_maneuver_command)
         elif command == "forward":
             self._previous_position["X"] = self._telemetry["X"]
             self._previous_position["Y"] = self._telemetry["Y"]
             self._navigating_distance = True
             self._goal_distance = 1.0  # TODO: make this configurable
             self.sendMoveCommands("i")
+            self._current_maneuver_command = "i"
         elif command == "backward":
             self._previous_position["X"] = self._telemetry["X"]
             self._previous_position["Y"] = self._telemetry["Y"]
             self._navigating_distance = True
             self._goal_distance = 1.0  # TODO: make this configurable
             self.sendMoveCommands(",")
+            self._current_maneuver_command = ","
 
     def sendSettingsUpdate(self):
         self._settingsUpdateRequired = False
@@ -1249,20 +1350,6 @@ class PropellerSerialTest(object):
         self.serialInterface.SendToPropellerOverSerial(
             "abdOverride", abdOverrideData, True
         )
-
-    def sendSettingsUpdate(self):
-        self._settingsUpdateRequired = False
-        self.screen.addLine("Updating settings.")
-        settingsData = self.dataTypes.SettingsDataPacket(
-            self._settings["trackWidth"],
-            self._settings["distancePerCount"],
-            self._settings["ignoreProximity"],
-            self._settings["ignoreCliffSensors"],
-            self._settings["ignoreIRSensors"],
-            self._settings["ignoreFloorSensors"],
-            self._settings["pluggedIn"],
-        )
-        self.serialInterface.SendToPropellerOverSerial("settings", settingsData, True)
 
     def _updateLED(self, led_number):
         if len(self._settings["ledStatus"]) > led_number:

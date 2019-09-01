@@ -239,8 +239,30 @@ class Screen(object):
                     self.sendCommandsToSerialTester("maneuvers_forward")
                 elif ch == ord("b"):
                     self.sendCommandsToSerialTester("maneuvers_backward")
-                elif ch == ord("c"):
+                elif ch == ord("i"):
                     self.sendCommandsToSerialTester("maneuvers_cancel")
+                elif ch == ord("4"):
+                    self.sendCommandsToSerialTester("maneuvers_rotate_45")
+                elif ch == ord("9"):
+                    self.sendCommandsToSerialTester("maneuvers_rotate_90")
+                elif ch == ord("8"):
+                    self.sendCommandsToSerialTester("maneuvers_rotate_180")
+                elif ch == ord("3"):
+                    self.sendCommandsToSerialTester("maneuvers_rotate_360")
+                elif ch == ord("r"):
+                    self.sendCommandsToSerialTester("maneuvers_reverse")
+                elif ch == ord("a"):
+                    self.sendCommandsToSerialTester("movea")
+                elif ch == ord("z"):
+                    self.sendCommandsToSerialTester("movez")
+                elif ch == ord("s"):
+                    self.sendCommandsToSerialTester("moves")
+                elif ch == ord("x"):
+                    self.sendCommandsToSerialTester("movex")
+                elif ch == ord("d"):
+                    self.sendCommandsToSerialTester("moved")
+                elif ch == ord("c"):
+                    self.sendCommandsToSerialTester("movec")
                 elif ch == ord("q"):
                     self._performingTestManeuvers = False
             elif self._overridingPosition:
@@ -497,17 +519,28 @@ class Screen(object):
             rowNumber = self.displayRow(rowNumber, "q - Quit updating settings")
         if self._performingTestManeuvers:
             rowNumber = self.displayRow(rowNumber, "Test Maneuvers:")
-            rowNumber = self.displayRow(rowNumber, "f - Forward 1 meter")
-            rowNumber = self.displayRow(rowNumber, "b - Backward 1 meter")
+            rowNumber = self.displayRow(
+                rowNumber, "f - Forward 1 meter\t\tb - Backward 1 meter"
+            )
             rowNumber = self.displayRow(rowNumber, "4 - rotate 45 degrees")
             rowNumber = self.displayRow(rowNumber, "9 - rotate 90 degrees")
             rowNumber = self.displayRow(rowNumber, "8 - rotate 180 degrees")
             rowNumber = self.displayRow(rowNumber, "3 - rotate 360 degrees")
+            rowNumber = self.displayRow(rowNumber, "r - reverse Rotation direction")
             # TODO: Options to customize distance and rotation amounts
             # TODO: Full operations, like "forward and back, "out and back", and "square" and other shapes.
             # TODO: maybe even the ability to make custom shapes,
             # TODO: Some help with dealing with the results of maneuver failures.
-            rowNumber = self.displayRow(rowNumber, "c - Cancel maneuvers")
+            rowNumber = self.displayRow(rowNumber, "i - Interrupt maneuvers")
+            rowNumber = self.displayRow(
+                rowNumber, "a / z: increase / decrease max speeds by 10%"
+            )
+            rowNumber = self.displayRow(
+                rowNumber, "s / x: increase / decrease only linear speed by 10%"
+            )
+            rowNumber = self.displayRow(
+                rowNumber, "d / c: increase / decrease only angular speed by 10%"
+            )
             rowNumber = self.displayRow(rowNumber, "q - Quit test maneuvers")
         if self._sendingLedCommands:
             # TODO: These are hard coded in the test, but you may or may not even have these.
