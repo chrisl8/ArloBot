@@ -1,4 +1,5 @@
 const express = require('express');
+const redis = require('redis');
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 // Because Express.js says not to use their session store for production.
@@ -36,6 +37,15 @@ const updateMapList = require('./updateMapList');
 
 updateMapList();
 
+const client = redis.createClient({
+  host: 'localhost',
+  // The default TTL is 24 hours
+  // Plus the cookies themselves will die when the browser is closed.
+  prefix: 'website-sessions:', // The ':' makes it a "folder" in redis
+});
+client.unref();
+client.on('error', console.error);
+
 const app = express();
 app.use(cookieParser());
 const hour = 3600000;
@@ -44,12 +54,7 @@ const hour = 3600000;
 /** @namespace personalData.webSiteSettings.sessionSecret */
 app.use(
   session({
-    store: new RedisStore({
-      host: 'localhost',
-      // The default TTL is 24 hours
-      // Plus the cookies themselves will die when the browser is closed.
-      prefix: 'website-sessions:', // The ':' makes it a "folder" in redis
-    }),
+    store: new RedisStore({ client }),
     cookie: { maxAge: hour },
     rolling: true,
     secret: personalData.webSiteSettings.sessionSecret,
