@@ -429,11 +429,7 @@ printf "\n${YELLOW}[Grabbing/Updating global dependencies for node packages]${NC
 printf "${BLUE}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
 cd
 npm install -g pm2
-if ! (command -v log.io-harvester >/dev/null) && ! [[ ${DOCKER_TEST_INSTALL} == "true" ]]; then
-  # Does not work in Docker (testing) on Ubuntu 18.04
-  # No need to update it since it is basically static now.
-  npm install -g https://github.com/pruge/Log.io
-fi
+
 cd "${HOME}/catkin_ws/src/ArloBot/node"
 printf "\n${YELLOW}[Grabbing node dependencies for scripts]${NC}\n"
 printf "${BLUE}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
@@ -447,6 +443,19 @@ npm run build
 
 cd "${HOME}/catkin_ws/src/ArloBot/cypress-tests"
 printf "\n${YELLOW}[Installing Cypress.io for Tests]$NC\n"
+npm ci
+
+cd "${HOME}/catkin_ws/src/ArloBot/"
+printf "${BLUE}Log.io Log Streamer for Website${NC}\n"
+if ! [[ -d ~/catkin_ws/src/ArloBot/Log.io ]]; then
+  git clone https://github.com/chrisl8/Log.io.git
+else
+  cd "${HOME}/catkin_ws/src/ArloBot/Log.io"
+  git pull
+fi
+
+cd "${HOME}/catkin_ws/src/ArloBot/Log.io"
+printf "\n${YELLOW}[Installing Log.io Log Streamer for Website]$NC\n"
 npm ci
 
 if ! (command -v mjpg_streamer >/dev/null); then
