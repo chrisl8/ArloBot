@@ -9,11 +9,11 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
   [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 done
 SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
-# echo ${SCRIPTDIR} # For debugging
+# echo "${SCRIPTDIR}" # For debugging
 
 # Save time by not looking up the Relay serial number twice
 
-SERIAL_NUMBER=$(${SCRIPTDIR}/find_relay_serial_number.sh)
+SERIAL_NUMBER=$("${SCRIPTDIR}/find_relay_serial_number.sh")
 
-${SCRIPTDIR}/switch_relay_name.sh leftMotor on ${SERIAL_NUMBER}
-${SCRIPTDIR}/switch_relay_name.sh rightMotor on ${SERIAL_NUMBER}
+"${SCRIPTDIR}/switch_relay_name.sh" leftMotor on "${SERIAL_NUMBER}"
+"${SCRIPTDIR}/switch_relay_name.sh" rightMotor on "${SERIAL_NUMBER}"

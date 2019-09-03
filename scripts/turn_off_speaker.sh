@@ -9,8 +9,8 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
   [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 done
 SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
-# echo ${SCRIPTDIR} # For debugging
+# echo "${SCRIPTDIR}" # For debugging
 
-${SCRIPTDIR}/switch_relay_name.sh speaker on
+"${SCRIPTDIR}/switch_relay_name.sh" speaker on
 sleep 1 # Holding the switch down turns it off
-${SCRIPTDIR}/switch_relay_name.sh speaker off
+"${SCRIPTDIR}/switch_relay_name.sh" speaker off

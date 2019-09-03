@@ -8,7 +8,7 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
   [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 done
 SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
-# echo ${SCRIPTDIR} # For debugging
+# echo "${SCRIPTDIR}" # For debugging
 
 if [[ $# -lt 2 ]]; then
   echo "You must provide the relay name, and"
@@ -30,9 +30,9 @@ elif [[ ${1} =~ ^[0-9]+$ ]]; then
   RELAY_NUMBER=${1}
 else
   HAS_RELAY_ENTRY="has_${1}"
-  if [[ $(jq ".relays.${HAS_RELAY_ENTRY}" ${HOME}/.arlobot/personalDataForBehavior.json) == true ]]; then
+  if [[ $(jq ".relays.${HAS_RELAY_ENTRY}" "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
     RELAY_ENTRY="${1}"
-    RELAY_NUMBER=$(jq ".relays.${RELAY_ENTRY}" ${HOME}/.arlobot/personalDataForBehavior.json)
+    RELAY_NUMBER=$(jq ".relays.${RELAY_ENTRY}" "${HOME}/.arlobot/personalDataForBehavior.json")
   else
     exit
   fi
@@ -41,16 +41,15 @@ if [[ $# -ne 3 ]]; then
   if [[ -f /tmp/usb_relay_serial_number ]]; then
     SERIAL_NUMBER=$(cat /tmp/usb_relay_serial_number)
   else
-    SERIAL_NUMBER=$(${SCRIPTDIR}/find_relay_serial_number.sh)
-    if [[ $? != 0 ]]; then
+    if ! SERIAL_NUMBER=$("${SCRIPTDIR}/find_relay_serial_number.sh"); then
       exit 1
     else
       # Store the serial number to speed up future runs.
       # But use $TMPDIR so it goes away on reboot.
-      echo ${SERIAL_NUMBER} >/tmp/usb_relay_serial_number
+      echo "${SERIAL_NUMBER}" >/tmp/usb_relay_serial_number
     fi
   fi
 else
   SERIAL_NUMBER=${3}
 fi
-${SCRIPTDIR}/drcontrol.py -d ${SERIAL_NUMBER} -r ${RELAY_NUMBER} -c ${2}
+"${SCRIPTDIR}/drcontrol.py" -d "${SERIAL_NUMBER}" -r "${RELAY_NUMBER}" -c "${2}"

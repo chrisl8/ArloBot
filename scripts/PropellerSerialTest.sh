@@ -17,7 +17,7 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
   [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 done
 SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
-# echo ${SCRIPTDIR} # For debugging
+# echo "${SCRIPTDIR}" # For debugging
 
 if (pgrep -f simpleide >/dev/null); then
   echo "SimpleIDE is running,"
@@ -26,11 +26,11 @@ if (pgrep -f simpleide >/dev/null); then
 fi
 
 # Check to make sure required hardware is present
-if ! (${SCRIPTDIR}/check_hardware.sh); then
+if ! ("${SCRIPTDIR}/check_hardware.sh"); then
   echo "ERROR: Hardware failed to come on line:"
   exit 1
 fi
 
-USB_PORT=$(${SCRIPTDIR}/find_ActivityBoard.sh)
+USB_PORT=$("${SCRIPTDIR}/find_ActivityBoard.sh")
 
-python ${SCRIPTDIR}/../src/arlobot/arlobot_bringup/scripts/PropellerSerialTest.py ${USB_PORT}
+python "${SCRIPTDIR}/../src/arlobot/arlobot_bringup/scripts/PropellerSerialTest.py" "${USB_PORT}"

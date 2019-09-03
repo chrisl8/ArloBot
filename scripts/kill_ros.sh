@@ -10,7 +10,7 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
   [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 done
 SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
-# echo ${SCRIPTDIR} # For debugging
+# echo "${SCRIPTDIR}" # For debugging
 
 echo "Killing everything, please wait..."
 if (pkill -f log.io); then
@@ -72,14 +72,18 @@ if [[ -f nohup.out ]]; then
   rm nohup.out
 fi
 
+if [[ $(jq '.use_xv11' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
+  "${SCRIPTDIR}/XVLidar.sh" stop
+fi
+
 # USB Relay Controller
-if [[ $(jq '.useUSBrelay' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]]; then
+if [[ $(jq '.useUSBrelay' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
   echo "Turning off all relays"
-  ${SCRIPTDIR}/switch_relay_name.sh all off
+  "${SCRIPTDIR}/switch_relay_name.sh" all off
 fi
 
 # Master Power Relay
-if [[ $(jq '.useMasterPowerRelay' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]]; then
+if [[ $(jq '.useMasterPowerRelay' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
   echo "Turning off Arlo Power."
-  ${SCRIPTDIR}/switch_master_relay.sh off
+  "${SCRIPTDIR}/switch_master_relay.sh" off
 fi

@@ -10,9 +10,8 @@ if [[ $# -eq 0 ]]; then
 fi
 FOUND=1
 for i in $(/usr/bin/pacmd list-sources | grep 'name:' | awk '{ print $2 }' 2>/dev/null); do
-  echo ${i} | grep -i ${1} >/dev/null
-  if [[ $? -eq 0 ]]; then
-    echo $i | tr -d '<' | tr -d '>'
+  if echo "${i}" | grep -i "${1}" >/dev/null; then
+    echo "${i}" | tr -d '<' | tr -d '>'
     FOUND=0
   fi
 done

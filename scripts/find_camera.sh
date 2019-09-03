@@ -8,10 +8,9 @@ if [[ $# -eq 0 ]]; then
   exit
 fi
 FOUND=1
-for i in $(ls /dev/video* 2>/dev/null); do
-  fswebcam --verbose --device=${i} 2>&1 | grep cap.card | grep ${1} >/dev/null
-  if [[ $? -eq 0 ]]; then
-    echo $i
+for i in /dev/video*; do
+  if fswebcam --verbose --device="${i}" 2>&1 | grep cap.card | grep "${1}" >/dev/null; then
+    echo "${i}"
     FOUND=0
   fi
 done

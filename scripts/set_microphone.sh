@@ -16,11 +16,9 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
   [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 done
 SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
-# echo ${SCRIPTDIR} # For debugging
+# echo "${SCRIPTDIR}" # For debugging
 
-DEVICE_NAME=$(${SCRIPTDIR}/find_microphone.sh ${1})
-
-if [[ $? -eq 0 ]]; then
+if DEVICE_NAME=$("${SCRIPTDIR}/find_microphone.sh" "${1}"); then
   /usr/bin/pacmd "set-default-source ${DEVICE_NAME}" &>/dev/null
 else
   exit 1

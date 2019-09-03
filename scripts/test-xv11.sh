@@ -11,13 +11,13 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
   [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 done
 SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
-# echo ${SCRIPTDIR} # For debugging
+# echo "${SCRIPTDIR}" # For debugging
 
-/opt/ros/${ROS_DISTRO}/bin/roscore &
+"/opt/ros/${ROS_DISTRO}/bin/roscore" &
 while ! (rosparam list &>/dev/null); do
   echo "Waiting for roscore to start . . ."
   sleep 1
 done
-rosrun xv_11_laser_driver neato_laser_publisher _port:=$(${SCRIPTDIR}/find_XVLidar.sh) _firmware_version:=2 &
+rosrun xv_11_laser_driver neato_laser_publisher _port:="$("${SCRIPTDIR}/find_XVLidar.sh")" _firmware_version:=2 &
 roslaunch arlobot_rviz_launchers view_xv11.launch --screen
-${SCRIPTDIR}/kill_ros.sh
+"${SCRIPTDIR}/kill_ros.sh"

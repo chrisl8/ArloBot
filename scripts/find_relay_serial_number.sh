@@ -9,12 +9,11 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
   [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 done
 SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
-# echo ${SCRIPTDIR} # For debugging
+# echo "${SCRIPTDIR}" # For debugging
 
-RELAY_LIST=$(${SCRIPTDIR}/drcontrol.py -l | grep FTDI)
-if [[ $? != 0 ]]; then
+if ! RELAY_LIST=$("${SCRIPTDIR}/drcontrol.py" -l | grep FTDI); then
   exit 1
 else
   SERIAL_NUMBER=$(echo "${RELAY_LIST}" | tr -d ' ' | awk '{ print $3 }')
-  echo ${SERIAL_NUMBER}
+  echo "${SERIAL_NUMBER}"
 fi

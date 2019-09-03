@@ -12,34 +12,33 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
   [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 done
 SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
-# echo ${SCRIPTDIR} # For debugging
-
-XV11PORT=$(${SCRIPTDIR}/find_XVLidar.sh)
+# echo "${SCRIPTDIR}" # For debugging
 
 setupPort() {
-  stty -F ${XV11PORT} cs8 115200 ignbrk -brkint -icrnl -imaxbel -opost -onlcr -isig -icanon -iexten -echo -echoe -echok -echoctl -echoke noflsh -ixon -crtscts
+  stty -F "${XV11PORT}" cs8 115200 ignbrk -brkint -icrnl -imaxbel -opost -onlcr -isig -icanon -iexten -echo -echoe -echok -echoctl -echoke noflsh -ixon -crtscts
 }
-if [[ $? -eq 0 ]]; then
+
+if XV11PORT=$("${SCRIPTDIR}/find_XVLidar.sh"); then
   case ${1} in
   'start')
     setupPort
-    echo "ResetConfig" >${XV11PORT}
+    echo "ResetConfig" >"${XV11PORT}"
     ;;
   'stop')
     setupPort
-    echo "MotorOff" >${XV11PORT}
+    echo "MotorOff" >"${XV11PORT}"
     # Experience tells me one time is not enough.
     sleep 1
     setupPort
-    echo "MotorOff" >${XV11PORT}
+    echo "MotorOff" >"${XV11PORT}"
     sleep 1
     setupPort
-    echo "MotorOff" >${XV11PORT}
+    echo "MotorOff" >"${XV11PORT}"
     ;;
   'check')
     # Just run ONE 'stop' to check if it is ready to accept commands.
     setupPort
-    echo "MotorOff" >${XV11PORT}
+    echo "MotorOff" >"${XV11PORT}"
     ;;
   *)
     echo 'Usage:'

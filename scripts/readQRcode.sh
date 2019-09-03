@@ -15,11 +15,11 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
   [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 done
 SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
-# echo ${SCRIPTDIR} # For debugging
+# echo "${SCRIPTDIR}" # For debugging
 
-if [[ $(jq '.camera1' ${HOME}/.arlobot/personalDataForBehavior.json) == true ]]; then
-  CAMERANAME=$(jq '.camera0name' ${HOME}/.arlobot/personalDataForBehavior.json | tr -d \")
-  VIDEODEVICE=$(${SCRIPTDIR}/find_camera.sh ${CAMERANAME})
+if [[ $(jq '.camera1' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
+  CAMERANAME=$(jq '.camera0name' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d \")
+  VIDEODEVICE=$("${SCRIPTDIR}/find_camera.sh" "${CAMERANAME}")
   #echo "You will have to kill this with Ctrl+c once you have the output you want."
-  zbarcam -q --raw --nodisplay ${VIDEODEVICE}
+  zbarcam -q --raw --nodisplay "${VIDEODEVICE}"
 fi

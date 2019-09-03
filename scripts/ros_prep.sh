@@ -11,7 +11,7 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
   [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 done
 SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
-# echo ${SCRIPTDIR} # For debugging
+# echo "${SCRIPTDIR}" # For debugging
 
 if (pgrep -f simpleide >/dev/null); then
   echo "SimpleIDE is running,"
@@ -68,13 +68,20 @@ else
 fi
 
 if [[ $(jq '.use_xv11' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-  rosparam set /xv11/port "$("${SCRIPTDIR}/find_XVLidar.sh")"
+  "${SCRIPTDIR}/XVLidar.sh" start
+  export HAS_XV11=true
+  XV11_SERIAL_PORT=$("${SCRIPTDIR}/find_XVLidar.sh")
+  export XV11_SERIAL_PORT
 fi
 
 if [[ $(jq '.hasScanseSweep' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
   export HAS_SCANSE_SWEEP=true
   SCANSE_SWEEP_SERIAL_PORT=$("${SCRIPTDIR}/find_ScanseSweep.sh")
   export SCANSE_SWEEP_SERIAL_PORT
+fi
+
+if [[ $(jq '.createMultiScanTopic' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
+  export ENABLE_COMBINED_SCAN_TOPIC=true
 fi
 
 if [[ $(jq '.hasXboxController' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
