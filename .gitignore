@@ -21,3 +21,4 @@ website/app/*.js.map
 PropellerCodeForArloBot/ROSInterfaceForArloBotWithDHB10.binary
 PropellerCodeForArloBot/ROSInterfaceForArloBotWithDHB10.elf
 .ropeproject/
+/Log.io
