@@ -64,7 +64,7 @@ have no friction, even passing the requested speed.
 /* This is a bit more of a judgement call.
 Basically find a speed where it will operate continuously
 without being jerky.
-It is pretty obvious when it is surging, vs. when it cna
+It is pretty obvious when it is surging, vs. when it can
 actually maintain the speed.
 I suggest you COMMENT OUT the line toward the bottom that
 stops the robot when it reaches speed so that it will just run at the
