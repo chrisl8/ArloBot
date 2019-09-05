@@ -295,6 +295,7 @@ class PropellerSerialTest(object):
             self._config["ignoreFloorSensors"] = data[5]
             self._config["pluggedIn"] = data[6]
 
+    # noinspection Duplicates
     def _propellerOdomDataHandler(self, data):
         # This is only intended for testing. Your calling script should provide
         # an odomResponseFunction to deal with incoming odometry data.
@@ -328,25 +329,25 @@ class PropellerSerialTest(object):
             """
             if self._telemetry['trackWidth'] != self._settings['trackWidth']:
                 self.screen.addLine(
-                    str(self._telemetry['trackWidt']h) + ' ' + str(self._settings['trackWidth']))
+                    str(self._telemetry['trackWidth']) + ' ' + str(self._settings['trackWidth']))
             if self._telemetry['distancePerCount'] != self._settings['distancePerCount']:
                 self.screen.addLine(
-                    str(self._telemetry['distancePerCoun']t) + ' ' + str(self._settings['distancePerCount']))
+                    str(self._telemetry['distancePerCount']) + ' ' + str(self._settings['distancePerCount']))
             if self._telemetry['ignoreProximity'] != self._settings['ignoreProximity']:
                 self.screen.addLine(
-                    str(self._telemetry['ignoreProximit']y) + ' ' + str(self._settings['ignoreProximity']))
+                    str(self._telemetry['ignoreProximity']) + ' ' + str(self._settings['ignoreProximity']))
             if self._telemetry['ignoreCliffSensors'] != self._settings['ignoreCliffSensors']:
                 self.screen.addLine(str(self._telemetry['ignoreCliffSensor']s) + ' ' + str(
                     self._settings['ignoreCliffSensors']))
             if self._telemetry['ignoreIRSensors'] != self._settings['ignoreIRSensors']:
                 self.screen.addLine(
-                    str(self._telemetry['ignoreIRSensor']s) + ' ' + str(self._settings['ignoreIRSensors']))
+                    str(self._telemetry['ignoreIRSensors']) + ' ' + str(self._settings['ignoreIRSensors']))
             if self._telemetry['ignoreFloorSensors'] != self._settings['ignoreFloorSensors']:
                 self.screen.addLine(str(self._telemetry['ignoreFloorSensor']s) + ' ' + str(
                     self._settings['ignoreFloorSensors']))
             if self._telemetry['pluggedIn'] != self._settings['pluggedIn']:
                 self.screen.addLine(
-                    str(self._telemetry['pluggedI']n) + ' ' + str(self._settings['pluggedIn']))
+                    str(self._telemetry['pluggedIn']) + ' ' + str(self._settings['pluggedIn']))
             """
 
             # Fill sensory arrays with sensor data
@@ -503,24 +504,54 @@ class PropellerSerialTest(object):
         if self._printIncomingTestPackets:
             self.screen.addLine("i: " + str(data))
 
+    def CreateTestBadDataPacket(self, title):
+        self.screen.addLine("-----------------------------------")
+        self.screen.addLine(title + ":")
+        self.testByte += 1
+        badData = struct.pack(
+            self.dataTypes.FormatTest,
+            self.testUnsignedLong,
+            self.testIntOne,
+            self.testIntTwo,
+            self.testIntThree,
+            self.testByte,
+            self.testCharacter,
+            self.testFloat,
+        )
+        self.screen.addLine(
+            "o: " + str(struct.unpack(self.dataTypes.FormatTest, badData))
+        )
+        return badData
+
+    def SendGoodDataTestPacket(self):
+        self.screen.addLine("-----------------------------------")
+        self.screen.addLine("Good data:")
+        self.testByte += 1
+        self.testData = self.dataTypes.TestDataPacket(
+            self.testUnsignedLong,
+            self.testIntOne,
+            self.testIntTwo,
+            self.testIntThree,
+            self.testByte,
+            self.testCharacter,
+            self.testFloat,
+        )
+        self.serialInterface.SendToPropellerOverSerial("test", self.testData, True)
+        time.sleep(0.1)
+
+    # We DO call protected members in this code,
+    # because it is directly testing an interface,
+    # that is normally never called directly,
+    # in order to force various errors.
+    # noinspection PyProtectedMember
+    # noinspection Duplicates
     def _genericSerialTest(self):
+        # NOTE: Test functions below perform operations that should not normally be carried out directly, like calculating checksum and building data packets
         self.screen.addLine("-----------------------------------")
         self.screen.addLine("Starting General Serial Test")
         numLoops = 0
         while numLoops < 10:
-            self.screen.addLine("Good data:")
-            self.testByte += 1
-            self.testData = self.dataTypes.TestDataPacket(
-                self.testUnsignedLong,
-                self.testIntOne,
-                self.testIntTwo,
-                self.testIntThree,
-                self.testByte,
-                self.testCharacter,
-                self.testFloat,
-            )
-            self.serialInterface.SendToPropellerOverSerial("test", self.testData, True)
-            time.sleep(0.1)
+            self.SendGoodDataTestPacket()
             numLoops += 1
 
         # Test some bad data writes
@@ -551,20 +582,8 @@ class PropellerSerialTest(object):
         )
         self.serialInterface._SerialDataGateway.Write(badData)
         time.sleep(0.3)
-        self.screen.addLine("-----------------------------------")
-        self.screen.addLine("Good data again:")
-        self.testByte += 1
-        self.testData = self.dataTypes.TestDataPacket(
-            self.testUnsignedLong,
-            self.testIntOne,
-            self.testIntTwo,
-            self.testIntThree,
-            self.testByte,
-            self.testCharacter,
-            self.testFloat,
-        )
-        self.serialInterface.SendToPropellerOverSerial("test", self.testData, True)
-        time.sleep(0.1)
+
+        self.SendGoodDataTestPacket()
 
         self.screen.addLine("-----------------------------------")
         self.screen.addLine("Good start/end markers, but too long:")
@@ -592,37 +611,10 @@ class PropellerSerialTest(object):
         )
         self.serialInterface._SerialDataGateway.Write(badData)
         time.sleep(0.1)
-        self.screen.addLine("-----------------------------------")
-        self.screen.addLine("Good data again:")
-        self.testByte += 1
-        self.testData = self.dataTypes.TestDataPacket(
-            self.testUnsignedLong,
-            self.testIntOne,
-            self.testIntTwo,
-            self.testIntThree,
-            self.testByte,
-            self.testCharacter,
-            self.testFloat,
-        )
-        self.serialInterface.SendToPropellerOverSerial("test", self.testData, True)
-        time.sleep(0.1)
 
-        self.screen.addLine("-----------------------------------")
-        self.screen.addLine("Bad start marker:")
-        self.testByte += 1
-        badData = struct.pack(
-            self.dataTypes.FormatTest,
-            self.testUnsignedLong,
-            self.testIntOne,
-            self.testIntTwo,
-            self.testIntThree,
-            self.testByte,
-            self.testCharacter,
-            self.testFloat,
-        )
-        self.screen.addLine(
-            "o: " + str(struct.unpack(self.dataTypes.FormatTest, badData))
-        )
+        self.SendGoodDataTestPacket()
+
+        badData = self.CreateTestBadDataPacket("Bad start marker")
         badData = self.serialInterface._AddCheckSum(badData)
         badData = self.serialInterface._EncodeHighBytes(badData)
         txLen = chr(len(badData))
@@ -636,37 +628,9 @@ class PropellerSerialTest(object):
         self.serialInterface._SerialDataGateway.Write(badData)
         time.sleep(0.1)
 
-        self.screen.addLine("-----------------------------------")
-        self.screen.addLine("Good data again:")
-        self.testByte += 1
-        self.testData = self.dataTypes.TestDataPacket(
-            self.testUnsignedLong,
-            self.testIntOne,
-            self.testIntTwo,
-            self.testIntThree,
-            self.testByte,
-            self.testCharacter,
-            self.testFloat,
-        )
-        self.serialInterface.SendToPropellerOverSerial("test", self.testData, True)
-        time.sleep(0.1)
+        self.SendGoodDataTestPacket()
 
-        self.screen.addLine("-----------------------------------")
-        self.screen.addLine("Bad end marker")
-        self.testByte += 1
-        badData = struct.pack(
-            self.dataTypes.FormatTest,
-            self.testUnsignedLong,
-            self.testIntOne,
-            self.testIntTwo,
-            self.testIntThree,
-            self.testByte,
-            self.testCharacter,
-            self.testFloat,
-        )
-        self.screen.addLine(
-            "o: " + str(struct.unpack(self.dataTypes.FormatTest, badData))
-        )
+        badData = self.CreateTestBadDataPacket("Bad end marker")
         badData = self.serialInterface._AddCheckSum(badData)
         badData = self.serialInterface._EncodeHighBytes(badData)
         txLen = chr(len(badData))
@@ -680,51 +644,10 @@ class PropellerSerialTest(object):
         self.serialInterface._SerialDataGateway.Write(badData)
         time.sleep(0.1)
 
-        self.screen.addLine("-----------------------------------")
-        self.screen.addLine("Good data again:")
-        self.testByte += 1
-        self.testData = self.dataTypes.TestDataPacket(
-            self.testUnsignedLong,
-            self.testIntOne,
-            self.testIntTwo,
-            self.testIntThree,
-            self.testByte,
-            self.testCharacter,
-            self.testFloat,
-        )
-        self.serialInterface.SendToPropellerOverSerial("test", self.testData, True)
-        time.sleep(0.1)
-        self.screen.addLine("-----------------------------------")
-        self.screen.addLine("Good data again:")
-        self.testByte += 1
-        self.testData = self.dataTypes.TestDataPacket(
-            self.testUnsignedLong,
-            self.testIntOne,
-            self.testIntTwo,
-            self.testIntThree,
-            self.testByte,
-            self.testCharacter,
-            self.testFloat,
-        )
-        self.serialInterface.SendToPropellerOverSerial("test", self.testData, True)
-        time.sleep(0.1)
+        self.SendGoodDataTestPacket()
+        self.SendGoodDataTestPacket()
 
-        self.screen.addLine("-----------------------------------")
-        self.screen.addLine("No start marker:")
-        self.testByte += 1
-        badData = struct.pack(
-            self.dataTypes.FormatTest,
-            self.testUnsignedLong,
-            self.testIntOne,
-            self.testIntTwo,
-            self.testIntThree,
-            self.testByte,
-            self.testCharacter,
-            self.testFloat,
-        )
-        self.screen.addLine(
-            "o: " + str(struct.unpack(self.dataTypes.FormatTest, badData))
-        )
+        badData = self.CreateTestBadDataPacket("No start marker")
         badData = self.serialInterface._AddCheckSum(badData)
         badData = self.serialInterface._EncodeHighBytes(badData)
         txLen = chr(len(badData))
@@ -732,37 +655,9 @@ class PropellerSerialTest(object):
         self.serialInterface._SerialDataGateway.Write(badData)
         time.sleep(0.1)
 
-        self.screen.addLine("-----------------------------------")
-        self.screen.addLine("Good data again:")
-        self.testByte += 1
-        self.testData = self.dataTypes.TestDataPacket(
-            self.testUnsignedLong,
-            self.testIntOne,
-            self.testIntTwo,
-            self.testIntThree,
-            self.testByte,
-            self.testCharacter,
-            self.testFloat,
-        )
-        self.serialInterface.SendToPropellerOverSerial("test", self.testData, True)
-        time.sleep(0.1)
+        self.SendGoodDataTestPacket()
 
-        self.screen.addLine("-----------------------------------")
-        self.screen.addLine("Length shorter than we claim:")
-        self.testByte += 1
-        badData = struct.pack(
-            self.dataTypes.FormatTest,
-            self.testUnsignedLong,
-            self.testIntOne,
-            self.testIntTwo,
-            self.testIntThree,
-            self.testByte,
-            self.testCharacter,
-            self.testFloat,
-        )
-        self.screen.addLine(
-            "o: " + str(struct.unpack(self.dataTypes.FormatTest, badData))
-        )
+        badData = self.CreateTestBadDataPacket("Length shorter than we claim")
         badData = self.serialInterface._AddCheckSum(badData)
         badData = self.serialInterface._EncodeHighBytes(badData)
         txLen = chr(len(badData) + 1)
@@ -776,37 +671,9 @@ class PropellerSerialTest(object):
         self.serialInterface._SerialDataGateway.Write(badData)
         time.sleep(0.1)
 
-        self.screen.addLine("-----------------------------------")
-        self.screen.addLine("Good data again:")
-        self.testByte += 1
-        self.testData = self.dataTypes.TestDataPacket(
-            self.testUnsignedLong,
-            self.testIntOne,
-            self.testIntTwo,
-            self.testIntThree,
-            self.testByte,
-            self.testCharacter,
-            self.testFloat,
-        )
-        self.serialInterface.SendToPropellerOverSerial("test", self.testData, True)
-        time.sleep(0.1)
+        self.SendGoodDataTestPacket()
 
-        self.screen.addLine("-----------------------------------")
-        self.screen.addLine("Length longer than we claim:")
-        self.testByte += 1
-        badData = struct.pack(
-            self.dataTypes.FormatTest,
-            self.testUnsignedLong,
-            self.testIntOne,
-            self.testIntTwo,
-            self.testIntThree,
-            self.testByte,
-            self.testCharacter,
-            self.testFloat,
-        )
-        self.screen.addLine(
-            "o: " + str(struct.unpack(self.dataTypes.FormatTest, badData))
-        )
+        badData = self.CreateTestBadDataPacket("Length longer than we claim")
         badData = self.serialInterface._AddCheckSum(badData)
         badData = self.serialInterface._EncodeHighBytes(badData)
         txLen = chr(len(badData) - 1)
@@ -820,37 +687,9 @@ class PropellerSerialTest(object):
         self.serialInterface._SerialDataGateway.Write(badData)
         time.sleep(0.1)
 
-        self.screen.addLine("-----------------------------------")
-        self.screen.addLine("Good data again:")
-        self.testByte += 1
-        self.testData = self.dataTypes.TestDataPacket(
-            self.testUnsignedLong,
-            self.testIntOne,
-            self.testIntTwo,
-            self.testIntThree,
-            self.testByte,
-            self.testCharacter,
-            self.testFloat,
-        )
-        self.serialInterface.SendToPropellerOverSerial("test", self.testData, True)
-        time.sleep(0.1)
+        self.SendGoodDataTestPacket()
 
-        self.screen.addLine("-----------------------------------")
-        self.screen.addLine("Good data split into two writes, one:")
-        self.testByte += 1
-        badData = struct.pack(
-            self.dataTypes.FormatTest,
-            self.testUnsignedLong,
-            self.testIntOne,
-            self.testIntTwo,
-            self.testIntThree,
-            self.testByte,
-            self.testCharacter,
-            self.testFloat,
-        )
-        self.screen.addLine(
-            "o: " + str(struct.unpack(self.dataTypes.FormatTest, badData))
-        )
+        badData = self.CreateTestBadDataPacket("Good data split into two writes, one")
         badData = self.serialInterface._AddCheckSum(badData)
         badData = self.serialInterface._EncodeHighBytes(badData)
         txLen = chr(len(badData))
@@ -889,39 +728,11 @@ class PropellerSerialTest(object):
         self.serialInterface._SerialDataGateway.Write(dataToSend)
         time.sleep(0.1)
 
-        self.screen.addLine("-----------------------------------")
-        self.screen.addLine("Good data again:")
-        self.testByte += 1
-        self.testData = self.dataTypes.TestDataPacket(
-            self.testUnsignedLong,
-            self.testIntOne,
-            self.testIntTwo,
-            self.testIntThree,
-            self.testByte,
-            self.testCharacter,
-            self.testFloat,
-        )
-        self.serialInterface.SendToPropellerOverSerial("test", self.testData, True)
-        time.sleep(0.1)
+        self.SendGoodDataTestPacket()
 
-        self.screen.addLine("-----------------------------------")
-        self.screen.addLine("Bad checksum:")
-        self.testByte += 1
-        badData = struct.pack(
-            self.dataTypes.FormatTest,
-            self.testUnsignedLong,
-            self.testIntOne,
-            self.testIntTwo,
-            self.testIntThree,
-            self.testByte,
-            self.testCharacter,
-            self.testFloat,
-        )
-        self.screen.addLine(
-            "o: " + str(struct.unpack(self.dataTypes.FormatTest, badData))
-        )
+        badData = self.CreateTestBadDataPacket("Bad checksum")
         # Manually add bogus checksum to packet
-        badData = badData + chr(25)
+        badData = badData + chr(24)
         badData = self.serialInterface._EncodeHighBytes(badData)
         txLen = chr(len(badData))
         badData = (
@@ -934,80 +745,16 @@ class PropellerSerialTest(object):
         self.serialInterface._SerialDataGateway.Write(badData)
         time.sleep(0.1)
 
-        self.screen.addLine("-----------------------------------")
-        self.screen.addLine("Good data again:")
-        self.testByte += 1
-        self.testData = self.dataTypes.TestDataPacket(
-            self.testUnsignedLong,
-            self.testIntOne,
-            self.testIntTwo,
-            self.testIntThree,
-            self.testByte,
-            self.testCharacter,
-            self.testFloat,
-        )
-        self.serialInterface.SendToPropellerOverSerial("test", self.testData, True)
-        time.sleep(0.1)
+        self.SendGoodDataTestPacket()
 
-        self.screen.addLine("-----------------------------------")
-        self.screen.addLine("Good data again:")
-        self.testByte += 1
-        self.testData = self.dataTypes.TestDataPacket(
-            self.testUnsignedLong,
-            self.testIntOne,
-            self.testIntTwo,
-            self.testIntThree,
-            self.testByte,
-            self.testCharacter,
-            self.testFloat,
-        )
-        self.serialInterface.SendToPropellerOverSerial("test", self.testData, True)
-        time.sleep(0.1)
+        self.SendGoodDataTestPacket()
 
-        self.screen.addLine("-----------------------------------")
-        self.screen.addLine("Good data again:")
-        self.testByte += 1
-        self.testData = self.dataTypes.TestDataPacket(
-            self.testUnsignedLong,
-            self.testIntOne,
-            self.testIntTwo,
-            self.testIntThree,
-            self.testByte,
-            self.testCharacter,
-            self.testFloat,
-        )
-        self.serialInterface.SendToPropellerOverSerial("test", self.testData, True)
-        time.sleep(0.1)
+        self.SendGoodDataTestPacket()
 
-        self.screen.addLine("-----------------------------------")
-        self.screen.addLine("Good data again:")
-        self.testByte += 1
-        self.testData = self.dataTypes.TestDataPacket(
-            self.testUnsignedLong,
-            self.testIntOne,
-            self.testIntTwo,
-            self.testIntThree,
-            self.testByte,
-            self.testCharacter,
-            self.testFloat,
-        )
-        self.serialInterface.SendToPropellerOverSerial("test", self.testData, True)
-        time.sleep(0.1)
+        self.SendGoodDataTestPacket()
 
-        self.screen.addLine("-----------------------------------")
-        self.screen.addLine("Good data again:")
-        self.testByte += 1
-        self.testData = self.dataTypes.TestDataPacket(
-            self.testUnsignedLong,
-            self.testIntOne,
-            self.testIntTwo,
-            self.testIntThree,
-            self.testByte,
-            self.testCharacter,
-            self.testFloat,
-        )
-        self.serialInterface.SendToPropellerOverSerial("test", self.testData, True)
-        time.sleep(0.1)
+        self.SendGoodDataTestPacket()
+
         self.screen.addLine("-----------------------------------")
         self.screen.addLine("General Serial Test Complete")
 
@@ -1043,6 +790,7 @@ class PropellerSerialTest(object):
             if self._lastInputCommand == "quit":
                 break
             if self._lastInputCommand == "interrupt":
+                # noinspection PyStatementEffect
                 self._lastInputCommand == "Received"
                 break
             while self._stallForInit:
@@ -1385,6 +1133,7 @@ class PropellerSerialTest(object):
         data = self.dataTypes.PositionUpdateDataPacket(x, y, heading)
         self.serialInterface.SendToPropellerOverSerial("positionUpdate", data, True)
 
+    # noinspection Duplicates
     def run(self):
         t = threading.Thread(target=curses.wrapper, args=(self.screen.run,))
         t.setDaemon(True)
@@ -1452,8 +1201,6 @@ class PropellerSerialTest(object):
                 # self.screen.addLine(str('bob'))
                 time.sleep(0.5)
 
-        # NOTE: Test functions below perform operations that should not normally be carried out directly, like calculating checksums and building data packets
-
         """
         TODO:
         3. Guides user through test routines:
@@ -1461,7 +1208,6 @@ class PropellerSerialTest(object):
         Still needs:
         Better formatting so we can see the data more clearly.
         Color code "good"/"bad" things like a Escaping, etc.
-         - Using True/False may be more clear than 1/0
         Help screen to show what the options are.
         
         Build in tests for odometry,
