@@ -3,7 +3,7 @@ import threading
 import rospy
 
 
-def _EmptyInputHandler(line):
+def _EmptyInputHandler():
     print("OdomStationaryBroadcaster called.")
 
 
@@ -16,6 +16,7 @@ class OdomStationaryBroadcaster(object):
         self.r = rospy.Rate(5)  # refresh rate in Hz
         self._StaticOdometrySender = broadcaster
         self._KeepRunning = False
+        self._ReceiverThread = None
 
     def Start(self):
         rospy.loginfo("Starting OdomStationaryBroadcaster")

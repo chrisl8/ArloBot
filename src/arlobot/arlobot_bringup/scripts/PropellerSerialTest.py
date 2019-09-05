@@ -508,6 +508,8 @@ class PropellerSerialTest(object):
         self.screen.addLine("-----------------------------------")
         self.screen.addLine(title + ":")
         self.testByte += 1
+        if self.testByte > 255:
+            self.testByte = 0
         badData = struct.pack(
             self.dataTypes.FormatTest,
             self.testUnsignedLong,
@@ -527,6 +529,8 @@ class PropellerSerialTest(object):
         self.screen.addLine("-----------------------------------")
         self.screen.addLine("Good data:")
         self.testByte += 1
+        if self.testByte > 255:
+            self.testByte = 0
         self.testData = self.dataTypes.TestDataPacket(
             self.testUnsignedLong,
             self.testIntOne,

@@ -71,7 +71,7 @@ class Screen(object):
         self._updatingSettings = False
         self._performingTestManeuvers = False
         self._overridingPosition = False
-        self._enteringPositionOverride = False
+        self._enteringPositionOverride = None
         self._acceptablePositionCharacters = [
             ord("."),
             ord("1"),
@@ -86,9 +86,11 @@ class Screen(object):
             ord("0"),
         ]
         self._positionOverrideData = ""
-        self._scrollingOutputWindow = ""
+        self._scrollingOutputWindow = None
         self._stayAtEnd = True
-        self._max_lines = ""
+        self._max_lines = None
+        self.window = None
+        self.maximumScrollPage = None
 
     def init_curses(self):
         """Setup the curses"""
@@ -129,6 +131,8 @@ class Screen(object):
 
             ch = self.window.getch()
             curses.flushinp()
+            # curses does not have an __all__ statement.
+            # noinspection PyUnresolvedReferences
             if ch == curses.KEY_RESIZE:
                 self.height, self.width = self.window.getmaxyx()
                 if self.height > self.headerHeight:
@@ -266,13 +270,13 @@ class Screen(object):
                 elif ch == ord("q"):
                     self._performingTestManeuvers = False
             elif self._overridingPosition:
-                if self._enteringPositionOverride:
+                if self._enteringPositionOverride is not None:
                     if ch in self._acceptablePositionCharacters:
                         self._positionOverrideData = self._positionOverrideData + chr(
                             ch
                         )
                     elif ch == ord("q"):
-                        self._enteringPositionOverride = False
+                        self._enteringPositionOverride = None
                     elif ch == 10 or ch == curses.KEY_ENTER:
                         self.sendCommandsToSerialTester(
                             "overridePosition_"
@@ -280,7 +284,7 @@ class Screen(object):
                             + "_"
                             + self._positionOverrideData
                         )
-                        self._enteringPositionOverride = False
+                        self._enteringPositionOverride = None
                 elif ch == ord("x"):
                     self._positionOverrideData = ""
                     self._enteringPositionOverride = "X"
@@ -320,7 +324,7 @@ class Screen(object):
         if len(self.items) >= self.maximumLines:
             self.items = self.items[1:]  # Shift
         self.items.append(line)
-        if self._max_lines != "" and self._max_lines() > 0:
+        if self._max_lines is not None and self._max_lines() > 0:
             self.maximumScrollPage = len(self.items) // self._max_lines()
 
     def setStatusLine(self, line):
@@ -443,22 +447,9 @@ class Screen(object):
         """Display the items on window"""
         self.window.erase()
         rowNumber = 0
-        if (
-            self._sendingTwistCommands
-            or self._updatingSettings
-            or self._performingTestManeuvers
-            or self._sendingLedCommands
-            or self._overridingPosition
-        ):
-            rowNumber = self.displayRow(
-                rowNumber,
-                "t - send Test data | r - Run speed test | i - Interrupt speed test",
-            )
-        else:
-            rowNumber = self.displayRow(
-                rowNumber,
-                "t - send Test data | r - Run speed test | i - Interrupt speed test | m - send Move commands | s - Settings | a - mAneuvers | p - Position override | l - Led | q - Quit",
-            )
+        rowNumber = self.displayRow(
+            rowNumber, "\tArloBot Propeller Serial Interface Test Program"
+        )
         rowNumber = self.displayRow(rowNumber, self._statusLine)
         rowNumber = self.displayRow(
             rowNumber,
@@ -479,7 +470,7 @@ class Screen(object):
         rowNumber = self.displayRow(rowNumber, self._odomLineFour)
         rowNumber = self.displayRow(rowNumber, self._odomLineFive)
         if self._sendingTwistCommands:
-            rowNumber = self.displayRow(rowNumber, "Moving around:")
+            rowNumber = self.displayRow(rowNumber, "\tMoving around:")
             rowNumber = self.displayRow(rowNumber, "u\ti\to")
             rowNumber = self.displayRow(rowNumber, "j\tk\tl")
             rowNumber = self.displayRow(rowNumber, "m\t,\t.")
@@ -493,8 +484,8 @@ class Screen(object):
                 rowNumber, "d / c: increase / decrease only angular speed by 10%"
             )
             rowNumber = self.displayRow(rowNumber, "q - quit sending twist commands")
-        if self._updatingSettings:
-            rowNumber = self.displayRow(rowNumber, "Update Settings:")
+        elif self._updatingSettings:
+            rowNumber = self.displayRow(rowNumber, "\tUpdate Settings:")
             rowNumber = self.displayRow(
                 rowNumber,
                 "w - trackWidth decrease by 0.001\tW - trackWidth increase by 0.001",
@@ -517,8 +508,8 @@ class Screen(object):
             rowNumber = self.displayRow(rowNumber, "f - toggle ignore Floor sensors")
             rowNumber = self.displayRow(rowNumber, "p - toggle Plugged in")
             rowNumber = self.displayRow(rowNumber, "q - Quit updating settings")
-        if self._performingTestManeuvers:
-            rowNumber = self.displayRow(rowNumber, "Test Maneuvers:")
+        elif self._performingTestManeuvers:
+            rowNumber = self.displayRow(rowNumber, "\tTest Maneuvers:")
             rowNumber = self.displayRow(
                 rowNumber, "f - Forward 1 meter\t\tb - Backward 1 meter"
             )
@@ -542,27 +533,33 @@ class Screen(object):
                 rowNumber, "d / c: increase / decrease only angular speed by 10%"
             )
             rowNumber = self.displayRow(rowNumber, "q - Quit test maneuvers")
-        if self._sendingLedCommands:
+        elif self._sendingLedCommands:
             # TODO: These are hard coded in the test, but you may or may not even have these.
-            rowNumber = self.displayRow(rowNumber, "Toggle LEDs:")
+            rowNumber = self.displayRow(rowNumber, "\tToggle LEDs:")
             rowNumber = self.displayRow(rowNumber, "0 - LED 0")
             rowNumber = self.displayRow(rowNumber, "1 - LED 1")
             rowNumber = self.displayRow(rowNumber, "2 - LED 2")
             rowNumber = self.displayRow(rowNumber, "3 - LED 3")
             rowNumber = self.displayRow(rowNumber, "4 - LED 4")
             rowNumber = self.displayRow(rowNumber, "q - Quit LED toggling")
-        if self._overridingPosition:
-            if self._enteringPositionOverride:
+        elif self._overridingPosition:
+            if self._enteringPositionOverride is not None:
                 rowNumber = self.displayRow(
                     rowNumber,
                     self._enteringPositionOverride + " " + self._positionOverrideData,
                 )
             else:
-                rowNumber = self.displayRow(rowNumber, "Set Robot Position:")
+                rowNumber = self.displayRow(rowNumber, "\tSet Robot Position:")
                 rowNumber = self.displayRow(rowNumber, "x - X Position")
                 rowNumber = self.displayRow(rowNumber, "y - Y Position")
                 rowNumber = self.displayRow(rowNumber, "h - Heading")
                 rowNumber = self.displayRow(rowNumber, "q - Quit Position Override")
+        else:
+            rowNumber = self.displayRow(rowNumber, "\tMain Menu:")
+            rowNumber = self.displayRow(
+                rowNumber,
+                "t - send Test data | r - Run speed test | i - Interrupt speed test | m - send Move commands | s - Settings | a - mAneuvers | p - Position override | l - Led | q/Esc - Quit",
+            )
         if rowNumber != self.headerHeight and self.height > 3:
             self.headerHeight = rowNumber
             self._scrollingOutputWindow = self.window.subwin(self.headerHeight, 0)
@@ -616,6 +613,7 @@ class Screen(object):
         self.window.refresh()
 
 
+# noinspection PyUnusedLocal
 def ignoreReturnData(data):
     return
 

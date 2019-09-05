@@ -25,8 +25,8 @@ driveGeometry: {trackWidth: 0.403, distancePerCount: 0.00338}
 usbRelayInstalled: False
 #
 # The other usbRelay... settings do not matter if usbRelayInstalled is False
-# For the port numbers and other specics about the USB Realy setup see and chnage arlobot_usbrelay/param/usbrelay.yaml
-# Get this serial number running ~/arlobot/src/arlobot/arlobot_bringup/scripts/drcontrol.py -l
+# For the port numbers and other specifics about the USB Relay setup see and change arlobot_usbrelay/param/usbrelay.yaml
+# Get this serial number running ~/catkin_ws/src/ArloBot/scripts/drcontrol.py -l
 # Actually the serial number is now pulled programmatically.
 #usbRelaySerialNumber: "A9026EI5"
 # You can connect the motors to any relay you want, and just put them here.
