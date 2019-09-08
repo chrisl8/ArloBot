@@ -4,6 +4,13 @@
 ArloBot Package for ROS
 =======================
 
+# Out of Commission
+This project is out of commission until I can solve this problem:  
+https://answers.ros.org/question/332538/laser-scan-walls-moving-with-robot/  
+
+![Alt text](/screenshots/LaserScanIssues.png "Web Interface")
+
+
 # THIS BRANCH HAS SOME NEW FEATURES!
 ### **You MUST replace the code on your Propeller Board if you were using a previous branch!**
 ### Please create issues if you discover my new code is not working.
