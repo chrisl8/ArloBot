@@ -97,11 +97,11 @@ This provides an interface to send all controls, commands, and settings directly
 0. Make sure the robot is on blocks off of the floor so when the motors run it will stay still and not run into anything.  
 1. On the robot run `~/catkin_ws/src/ArloBot/scripts/PropellerSerialTest.sh` It will not start moving or doing anything yet, but it may soon! 
 2. The Proximity Sensors, that is the PING and/or InfraRed (IR) sensors, can cause the robot to move to avoid obstacles or refuse to move when commanded to. The bottom row of the status shows their measurements. The second from the bottom row shows if the Propeller Activity Board's built in safety code has determined if it is safe to move forward or backward or not at all.  There is also the line `Escaping:False` which indicates if the code is attempting to move to get away from something too close.  
-Since we are on blocks, let's turn this off so it won't run the motors unless we tell it tell it to. This will prevent it from just driving the wheels in response to you or something close to your test setup.  
+Since we are on blocks, let's turn this off so it won't run the motors unless we tell it to. This will prevent it from just driving the wheels in response to you or something close to your test setup.  
 Pres `s` for Settings and then `a` to ignore All proximity sensors.  
 The line next to `Settings` that says `ignoreAllProximitySensors:No` will change to `ignoreAllProximitySensors:Yes`.
 3. Next note along the `Settings` line that `pluggedIn` is `Yes`. This will prevent the Propeller Activity Board code from sending any commands to the motor. Normally the only way to override this is through ROS. It is a safety measure that prevents the robot from ever moving if ROS is not running. We will override this now. If you left the Settings menu press `s` to get back in. Then `p` for Plugged in to turn that off.  `pluggedIn:Yes` will change to `pluggedIn:Yes` Now the robot can move.  
-4. Now `q` to get out of Settings and `m` to send Move commands.  Use the letters `i` to to make the wheels move the robot forward.  
+4. Now `q` to get out of Settings and `m` to send Move commands.  Use the letters `i` to make the wheels move the robot forward.  
 ** IT WORKS!  **
 You should probably test all of the functions available, but this has at least shown you how to use the test program and that your hardware is working.  You can use the Sensor output data to ensure your sensors work and diagnose issues with your hardware or code settings.  
 There is also the ability to send Test packets to the robot to check for serious serial errors.  
@@ -192,7 +192,7 @@ roslaunch arlobot_rviz_launchers view_robot.launch
     Drive and see if the robot appears to move properly on the grid.
   Turn on LaserScan and set the Decay Time to 650
     Rotate the robot in a circle, and see if you get a reasonable picture of the room.
-  Turn off Laser Scan and turn on Registered DepthCloud to see if you get a picture of the room overlaied properly onto the 3D virtual world in RVIZ.
+  Turn off Laser Scan and turn on Registered DepthCloud to see if you get a picture of the room overlayed properly onto the 3D virtual world in RVIZ.
 ```
 
 ### Remote Control with an xBox 360 joystick ###
