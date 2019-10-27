@@ -18,7 +18,7 @@
     "package-lock.json": "1.0.0",
     "package.json": "2.0.1",
     "ps-tree": "1.2.0",
-    "pushover-notifications": "1.2.0",
+    "pushover-notifications": "1.2.1",
     "redis": "2.8.0",
     "request": "2.88.0",
     "roslib": "1.0.1",
