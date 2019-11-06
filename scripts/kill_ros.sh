@@ -43,6 +43,12 @@ if (pkill zbarcam); then
     sleep 1
   done
 fi
+if (pkill rostopic); then
+  while (pgrep rostopic); do
+    echo "Waiting for rostopic to close . . ."
+    sleep 1
+  done
+fi
 if (pkill roslaunch); then
   while (pgrep roslaunch); do
     echo "Waiting for roslaunch to close . . ."
@@ -52,6 +58,12 @@ fi
 if (pkill roscore); then
   while (pgrep roscore); do
     echo "Waiting for roscore to close . . ."
+    sleep 1
+  done
+fi
+if (pkill -f static_transform_publisher); then
+  while (pgrep -f static_transform_publisher); do
+    echo "Waiting for static_transform_publisher to close . . ."
     sleep 1
   done
 fi
