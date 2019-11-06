@@ -27,7 +27,7 @@
     "socket.io-client": "2.2.0",
     "stochator": "0.6.2",
     "twilio": "3.37.0",
-    "websocket": "1.0.29"
+    "websocket": "1.0.30"
   },
   "devDependencies": {
     "jasmine": "3.4.0"
