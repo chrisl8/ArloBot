@@ -268,7 +268,7 @@ ARLO_HOME=${HOME}/.arlobot
 if ! (command -v node >/dev/null); then
   printf "\n${YELLOW}[Installing the Current Node LTS version]${NC}\n"
   # Install nvm
-  wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
+  wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.35.1/install.sh | bash
   # Initialize nvm without logging out and back in
   export NVM_DIR="${HOME}/.nvm"
   # shellcheck source=/home/chrisl8/.nvm/nvm.sh

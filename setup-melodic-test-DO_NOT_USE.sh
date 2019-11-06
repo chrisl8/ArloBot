@@ -427,7 +427,7 @@ if [[ -e ${HOME}/.nvm/nvm.sh ]]; then
   nvm deactivate
 fi
 
-wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
+wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.35.1/install.sh | bash
 export NVM_DIR="${HOME}/.nvm"
 # shellcheck source=/home/chrisl8/.nvm/nvm.sh
 [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
@@ -464,6 +464,7 @@ printf "\n${YELLOW}[Installing Cypress.io for Tests]$NC\n"
 npm ci
 
 cd "${HOME}/catkin_ws/src/ArloBot/"
+printf "\n"
 printf "${BLUE}Log.io Log Streamer for Website${NC}\n"
 if ! [[ -d ~/catkin_ws/src/ArloBot/Log.io ]]; then
   git clone https://github.com/chrisl8/Log.io.git
