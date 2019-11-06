@@ -4,6 +4,9 @@ class RosService {
   constructor() {
     this.socket = new ROSLIB.Ros();
     this.Message = ROSLIB.Message;
+    // For testing running locally while connecting site to a remote robot:
+    // this.hostname = `ws://twoflower.local:8080`;
+    // For production:
     this.hostname = `ws://${window.location.hostname}:9090`;
   }
 

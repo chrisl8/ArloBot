@@ -79,8 +79,10 @@ and the measured value `DISPERCOUNT` for `distancePerCount` (see below).
 A typical calibration method can be found in
 "[Borenstein, J., & Feng, L. (1995). UMBmark: A benchmark test for measuring odometry errors in mobile robots](http://dx.doi.org/10.1117/12.228968). Ann Arbor, 1001, 48109-2110."
 
-To be more specific, the systematic error can mainly be classified into three categories: unequal wheel diameters `Ed`,
-uncertainty about the wheelbase `Eb`, and uncertainty about the wheel diameter `Es`.
+To be more specific, the systematic error can mainly be classified into three categories:  
+- Unequal wheel diameters: `Ed`  
+- Uncertainty about the wheelbase `Eb`
+- Uncertainty about the wheel diameter `Es`  
 The errors can be calibrated by `DIAERROR`, `TRACKWIDTH`, and `DISPERCOUNT`, respectively.
 
 `Es` can be measured by just an ordinary tape measure, with an iterative dichotomy. For instance, the `DISPERCOUNT` should be larger if the robot travels less than programmed.

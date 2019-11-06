@@ -128,30 +128,8 @@ go to a way-point.
 
 14. Follow me. Does this have to be an object?
 
-15. Conversational speech.
+15. Conversational speech. (Mycroft)
 
 16. Face detection and recognition with either camera while navigating the map, presumably with the XV11 (so that the ASUS xTion is free).
     * Could the robot wander the house to find a person?
     * Could it find a specific person, either by facial recognition or by conversation to figure out who someone is?
-
-17. NEOPIXELS!
-
-18. Movable platform for Kinect sensor with Dynamixels!
-
-19. AN ARM?!
-
-20. Make it taller?!
-
-21. Jasper? https://jasperproject.github.io/
-
-22. Check for Turtlebot improvements that might affect me.
-    * Might this be an issue? http://blog.yujinrobot.com/2015/03/the-quest-for-accurate-navigation-i-my.html
-
-## Done! ##
-
-0. Can it not ask "where am I" if the QR code is there?
-    Seems maybe it is just asking too soon or something?
-
-0. Need to add "ignore floor sensors" to web intarface.
-
-0. Still doesn't move if there are files in doors even if they do not correlate to a map.
