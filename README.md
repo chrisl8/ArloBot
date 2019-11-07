@@ -1,8 +1,15 @@
-[![Build Status](https://travis-ci.com/chrisl8/ArloBot.png)](https://travis-ci.com/chrisl8/ArloBot)
+[![Build Status](https://travis-ci.com/chrisl8/ArloBot.svg)](https://travis-ci.com/chrisl8/ArloBot)
 [![codecov](https://codecov.io/gh/chrisl8/ArloBot/branch/new-serial-interface/graph/badge.svg)](https://codecov.io/gh/chrisl8/ArloBot)
 
 ArloBot Package for ROS
 =======================
+
+# Transition to Melodic and Ubuntu 18.04 LTS
+
+FYI: I am in the process of tranisitioning to ROS Melodic on Ubuntu 18.04 LTS.  
+As soon as I have it 100% working on my robot, I will start a new default branch called 'melodic'.  
+
+Until then, see below that there *IS* a script to install Melodic to Ubuntu 18.04 LTS now. It has "DO_NOT_USE" in the name to remind you that it is experimental, but feel free TO USE it and report issues back to me.  Thank you.
 
 # Out of Commission
 This project is out of commission until I can solve this problem:  
@@ -76,9 +83,16 @@ If you put a fresh copy of Lubuntu 16.04 LTS on your robot's laptop then you can
 ## Quick Install: ##
 There is now a script to install everything. Just run:
 
+For ROS Kinetic on Ubunut 16.04 LTS use:  
 ```
 bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/setup-kinetic.sh)
 ```
+
+For ROS Melodic on Ubuntu 18.04 LTS (EXPERIMENTAL!) use:  
+```
+bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/setup-melodic-test-DO_NOT_USE.sh)
+```
+NOTE: When this is no longer "experimental", I will move Melodic to a new default branch on this git repository.
 
 Be sure to read the instructions that the script will print at the end about editing the config files in ~/.arlobot/
 
