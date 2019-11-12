@@ -18,7 +18,7 @@
        into the "camera" namespace, and it is prepended to tf frame ids. -->
   <arg name="camera"      default="camera"/>
   <arg name="publish_tf"  default="false"/>
-  <arg name="3d_sensor"   default="$(env ARLOBOT_3D_SENSOR)"/>  <!-- kinect, asus_xtion_pro -->
+  <arg name="3d_sensor"   default="$(optenv ARLOBOT_3D_SENSOR kinect)"/>  <!-- kinect, asus_xtion_pro -->
 
   <!-- Factory-calibrated depth registration -->
   <arg name="depth_registration"              default="true"/>

@@ -1,6 +1,6 @@
 <launch>
 
-  <arg name="3d_sensor"  default="$(optenv ARLOBOT_3D_SENSOR)"/>
+  <arg name="3d_sensor"  default="$(optenv ARLOBOT_3D_SENSOR kinect)"/>
 
   <arg name="arlobot_model" value="$(optenv ARLOBOT_MODEL default)" />
   <arg name="urdf_file" default="xacro --inorder '$(find arlobot_description)/urdf/common_$(arg arlobot_model).urdf.xacro'" />
