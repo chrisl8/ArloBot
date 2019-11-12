@@ -272,6 +272,8 @@ class PropellerComm(object):
         Broadcast all data from propeller monitored sensors on the appropriate topics.
         """
 
+        now = rospy.Time.now()
+
         self._odometry_broadcast_timeout = 0
         self._broadcast_static_odometry = False
 
@@ -299,68 +301,56 @@ class PropellerComm(object):
         vx = data[4]
         omega = data[5]
 
-        quaternion = Quaternion()
-        quaternion.x = 0.0
-        quaternion.y = 0.0
-        quaternion.z = sin(theta / 2.0)
-        quaternion.w = cos(theta / 2.0)
+        # This robot has no vy or vz (velocity y or velocity z) because it can only move forward,
+        # and backward. It cannot move sideways or up and down.
 
-        ros_now = rospy.Time.now()
+        # For Debugging:
+        # rospy.logwarn(
+        #     "x: "
+        #     + str(x)
+        #     + " y: "
+        #     + str(y)
+        #     + " theta: "
+        #     + str(theta)
+        #     + " vx: "
+        #     + str(vx)
+        #     + " omega: "
+        #     + str(omega)
+        # )
 
-        # First, we'll publish the transform from frame odom to frame base_link over tf
-        # Note that sendTransform requires that 'to' is passed in before 'from' while
-        # the TransformListener' lookupTransform function expects 'from' first followed by 'to'.
-        # This transform conflicts with transforms built into the Turtle stack
-        # http://wiki.ros.org/tf/Tutorials/Writing%20a%20tf%20broadcaster%20%28Python%29
-        # This is done in/with the robot_pose_ekf because it can integrate IMU/gyro data
-        # using an "extended Kalman filter"
-        # REMOVE this "line" if you use robot_pose_ekf
-        self._OdometryTransformBroadcaster.sendTransform(
-            (x, y, 0),
-            (quaternion.x, quaternion.y, quaternion.z, quaternion.w),
-            ros_now,
-            "base_footprint",
-            "odom",
-        )
+        self._broadcast_odometry(x, y, theta, vx, omega, now)
 
-        # next, we will publish the odometry message over ROS
-        odometry = Odometry()
-        odometry.header.frame_id = "odom"
-        odometry.header.stamp = ros_now
-        odometry.pose.pose.position.x = x
-        odometry.pose.pose.position.y = y
-        odometry.pose.pose.position.z = 0
-        odometry.pose.pose.orientation = quaternion
-
-        odometry.child_frame_id = "base_link"
-        odometry.twist.twist.linear.x = vx
-        odometry.twist.twist.linear.y = 0
-        odometry.twist.twist.angular.z = omega
+        # Debugging speed out of sync with actual position changes
+        # rospy.logwarn("vx: " + str(vx) + " omega: " + str(omega))
+        # if self.lastHeading == theta and abs(vx) > 0:
+        #     rospy.logwarn("No movement recorded but vx = " + str(vx))
+        #     rospy.logwarn(
+        #         str(self.lastX)
+        #         + " "
+        #         + str(x)
+        #         + " "
+        #         + str(self.lastY)
+        #         + " "
+        #         + str(y)
+        #         + " "
+        #         + str(self.lastHeading)
+        #         + " "
+        #         + str(theta)
+        #         + " "
+        #         + str(self.alternate_heading)
+        #         + " "
+        #         + str(alternate_theta)
+        #         + " "
+        #         + str(vx)
+        #         + " "
+        #         + str(omega)
+        #     )
 
         # Save last X, Y and Heading for reuse if we have to reset:
         self.lastX = x
         self.lastY = y
         self.lastHeading = theta
         self.alternate_heading = alternate_theta
-
-        # robot_pose_ekf needs these covariances and we may need to adjust them.
-        # From: ~/turtlebot/src/turtlebot_create/create_node/src/create_node/covariances.py
-        # However, this is not needed because we are not using robot_pose_ekf
-        # odometry.pose.covariance = [1e-3, 0, 0, 0, 0, 0,
-        # 0, 1e-3, 0, 0, 0, 0,
-        #                         0, 0, 1e6, 0, 0, 0,
-        #                         0, 0, 0, 1e6, 0, 0,
-        #                         0, 0, 0, 0, 1e6, 0,
-        #                         0, 0, 0, 0, 0, 1e3]
-        #
-        # odometry.twist.covariance = [1e-3, 0, 0, 0, 0, 0,
-        #                          0, 1e-3, 0, 0, 0, 0,
-        #                          0, 0, 1e6, 0, 0, 0,
-        #                          0, 0, 0, 1e6, 0, 0,
-        #                          0, 0, 0, 0, 1e6, 0,
-        #                          0, 0, 0, 0, 0, 1e3]
-
-        self._OdometryPublisher.publish(odometry)
 
         # Get and publish other telemetry data
         arlo_status = arloStatus()
@@ -691,8 +681,8 @@ class PropellerComm(object):
         # LaserScan: http://docs.ros.org/api/sensor_msgs/html/msg/LaserScan.html
         ultrasonic_scan = LaserScan()
         infrared_scan = LaserScan()
-        ultrasonic_scan.header.stamp = ros_now
-        infrared_scan.header.stamp = ros_now
+        ultrasonic_scan.header.stamp = now
+        infrared_scan.header.stamp = now
         ultrasonic_scan.header.frame_id = "ping_sensor_array"
         infrared_scan.header.frame_id = "ir_sensor_array"
         # For example:
@@ -783,6 +773,13 @@ class PropellerComm(object):
                 twist_command.linear.x, twist_command.angular.z
             )
             self.serialInterface.SendToPropellerOverSerial("move", moveData)
+            # For debugging
+            # rospy.logwarn(
+            #     "SENT MOVE: "
+            #     + str(twist_command.linear.x)
+            #     + " "
+            #     + str(twist_command.linear.y)
+            # )
         elif self._clear_to_go("to_stop"):
             moveData = self.dataTypes.MoveDataPacket(0.0, 0.0)
             self.serialInterface.SendToPropellerOverSerial("move", moveData)
@@ -885,6 +882,60 @@ class PropellerComm(object):
         Otherwise things like gmapping will fail when we loose our transform and publishing topics
         """
 
+    def _broadcast_odometry(self, x, y, theta, vx, omega, now):
+        quaternion = Quaternion()
+        quaternion.x = 0.0
+        quaternion.y = 0.0
+        quaternion.z = sin(theta / 2.0)
+        quaternion.w = cos(theta / 2.0)
+
+        # First, we'll publish the transform from frame odom to frame base_link over tf
+        # Note that sendTransform requires that 'to' is passed in before 'from' while
+        # the TransformListener' lookupTransform function expects 'from' first followed by 'to'.
+        # This transform conflicts with transforms built into the Turtle stack
+        # http://wiki.ros.org/tf/Tutorials/Writing%20a%20tf%20broadcaster%20%28Python%29
+        # This is done in/with the robot_pose_ekf because it can integrate IMU/gyro data
+        # using an "extended Kalman filter"
+        # REMOVE this "line" if you use robot_pose_ekf
+
+        t = TransformStamped()
+        t.header.stamp = now
+        t.header.frame_id = "odom"
+        t.child_frame_id = "base_footprint"
+        t.transform.translation.x = x
+        t.transform.translation.y = y
+        t.transform.translation.z = 0.0
+        # q = tf_conversions.transformations.quaternion_from_euler(0, 0, msg.theta)
+        t.transform.rotation.x = quaternion.x
+        t.transform.rotation.y = quaternion.y
+        t.transform.rotation.z = quaternion.z
+        t.transform.rotation.w = quaternion.w
+
+        self._OdometryTransformBroadcaster.sendTransform(t)
+
+        # next, we will publish the odometry message over ROS
+        odometry = Odometry()
+        odometry.header.frame_id = "odom"
+        odometry.header.stamp = now
+        odometry.pose.pose.position.x = x
+        odometry.pose.pose.position.y = y
+        odometry.pose.pose.position.z = 0
+        odometry.pose.pose.orientation = quaternion
+
+        odometry.child_frame_id = "base_link"
+        odometry.twist.twist.linear.x = vx
+        odometry.twist.twist.linear.y = 0
+        odometry.twist.twist.angular.z = omega
+
+        self._OdometryPublisher.publish(odometry)
+
+    def _broadcast_static_odometry_info(self):
+        """
+        Broadcast last known odometry and transform while propeller board is offline
+        so that ROS can continue to track status
+        Otherwise things like gmapping will fail when we loose our transform and publishing topics
+        """
+
         if (
             self._broadcast_static_odometry
         ):  # Use motor status to decide when to broadcast static odometry:
@@ -894,46 +945,7 @@ class PropellerComm(object):
             # If the Propeller Board is not updating the odometry we will assume the robot is still.
             vx = 0
             omega = 0
-
-            quaternion = Quaternion()
-            quaternion.x = 0.0
-            quaternion.y = 0.0
-            quaternion.z = sin(theta / 2.0)
-            quaternion.w = cos(theta / 2.0)
-
-            ros_now = rospy.Time.now()
-
-            # First, we'll publish the transform from frame odom to frame base_link over tf
-            # Note that sendTransform requires that 'to' is passed in before 'from' while
-            # the TransformListener' lookupTransform function expects 'from' first followed by 'to'.
-            # This transform conflicts with transforms built into the Turtle stack
-            # http://wiki.ros.org/tf/Tutorials/Writing%20a%20tf%20broadcaster%20%28Python%29
-            # This is done in/with the robot_pose_ekf because it can integrate IMU/gyro data
-            # using an "extended Kalman filter"
-            # REMOVE this "line" if you use robot_pose_ekf
-            self._OdometryTransformBroadcaster.sendTransform(
-                (x, y, 0),
-                (quaternion.x, quaternion.y, quaternion.z, quaternion.w),
-                ros_now,
-                "base_footprint",
-                "odom",
-            )
-
-            # next, we will publish the odometry message over ROS
-            odometry = Odometry()
-            odometry.header.frame_id = "odom"
-            odometry.header.stamp = ros_now
-            odometry.pose.pose.position.x = x
-            odometry.pose.pose.position.y = y
-            odometry.pose.pose.position.z = 0
-            odometry.pose.pose.orientation = quaternion
-
-            odometry.child_frame_id = "base_link"
-            odometry.twist.twist.linear.x = vx
-            odometry.twist.twist.linear.y = 0
-            odometry.twist.twist.angular.z = omega
-
-            self._OdometryPublisher.publish(odometry)
+            self._broadcast_odometry(x, y, theta, vx, omega, rospy.Time.now())
 
     def _switch_motors(self, state):
         """ Switch Motors on and off as needed. """
