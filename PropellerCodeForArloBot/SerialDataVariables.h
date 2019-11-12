@@ -197,7 +197,7 @@ initUnion initData;
 // * Settings Data *
 // This is the data used to set robot parameters
 // that are stored on the PC side both before
-// the robot is iniitalized, and in real time
+// the robot is initialized, and in real time
 // as the robot operates.
 // =============================================== //
 

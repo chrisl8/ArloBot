@@ -106,7 +106,7 @@ IR sensors. */
 Full details on how to use the DHB-10 Motor Controller on the Parallax Arlo
 Robot platform with a Propeller Activity Board can be found here:
 http://learn.parallax.com/tutorials/robot/arlo/arlo-activity-board-brain
-I highly suggets you work through the instructions there and run the example
+I highly suggest you work through the instructions there and run the example
 programs and tests before using this code.
 */
 #include "arlodrive.h"
@@ -245,8 +245,8 @@ int main() {
   float angularVelocityOffset = 0.0;
   float expectedLeftSpeed;
   float expectedRightSpeed;
-  int newLeftSpeed = 0;
-  int newRightSpeed = 0;
+  int newInputLeftSpeed = 0;
+  int newInputRightSpeed = 0;
 
   int ROStimeout = ROS_TIMEOUT * 100;
   int timeoutCounter = 0;
@@ -433,20 +433,20 @@ int main() {
       }
 
       if (Escaping) {
-        newLeftSpeed = escapeLeftSpeed;
-        newRightSpeed = escapeRightSpeed;
+        newInputLeftSpeed = escapeLeftSpeed;
+        newInputRightSpeed = escapeRightSpeed;
         clearTwistRequest(&CommandedVelocity, &angularVelocityOffset);
         wasEscaping = true;
       } else if (wasEscaping) {
         // Halt robot before continuing normally if we were escaping before now.
-        newLeftSpeed = 0;
-        newRightSpeed = 0;
+        newInputLeftSpeed = 0;
+        newInputRightSpeed = 0;
         clearTwistRequest(&CommandedVelocity, &angularVelocityOffset);
         wasEscaping = false;
       } else if (CommandedVelocity >= 0 && (cliff || floorO)) {
         // Cliffs and cats are no joke!
-        newLeftSpeed = 0;
-        newRightSpeed = 0;
+        newInputLeftSpeed = 0;
+        newInputRightSpeed = 0;
         clearTwistRequest(&CommandedVelocity, &angularVelocityOffset);
       } else if ((CommandedVelocity > 0 && safeToProceed) ||
                  (CommandedVelocity < 0 && safeToRecede) ||
@@ -488,29 +488,29 @@ int main() {
         expectedLeftSpeed = expectedLeftSpeed / distancePerCount;
         expectedRightSpeed = expectedRightSpeed / distancePerCount;
 
-        newLeftSpeed = (int)expectedLeftSpeed;
-        newRightSpeed = (int)expectedRightSpeed;
+        newInputLeftSpeed = (int)expectedLeftSpeed;
+        newInputRightSpeed = (int)expectedRightSpeed;
 
       } else {
         // Not safe to proceed in the requested direction, but also not
         // escaping, so just be still until somebody tells us to "back out" of
         // the situation.
-        newLeftSpeed = 0;
-        newRightSpeed = 0;
+        newInputLeftSpeed = 0;
+        newInputRightSpeed = 0;
         clearTwistRequest(&CommandedVelocity, &angularVelocityOffset);
       }
 
       // DHB10 controller only works in even numbers, so let's make life easy on
       // it and ourselves if we are doing any comparisons.
-      if (newLeftSpeed != 0 && newLeftSpeed % 2) {
-        newLeftSpeed >= 0 ? newLeftSpeed++ : newLeftSpeed--;
+      if (newInputLeftSpeed != 0 && newInputLeftSpeed % 2) {
+        newInputLeftSpeed >= 0 ? newInputLeftSpeed++ : newInputLeftSpeed--;
       }
-      if (newRightSpeed != 0 && newRightSpeed % 2) {
-        newRightSpeed >= 0 ? newRightSpeed++ : newRightSpeed--;
+      if (newInputRightSpeed != 0 && newInputRightSpeed % 2) {
+        newInputRightSpeed >= 0 ? newInputRightSpeed++ : newInputRightSpeed--;
       }
 
-      broadcastSpeedLeft = newLeftSpeed;
-      broadcastSpeedRight = newRightSpeed;
+      broadcastSpeedLeft = newInputLeftSpeed;
+      broadcastSpeedRight = newInputRightSpeed;
 
       // Avoid locking up the Propeller by looping too fast
       pause(1);

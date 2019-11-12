@@ -97,7 +97,7 @@ void broadcastOdometryAndRunMotors(void *par) {
       // Broadcast Odometry
       /* Some of the code below came from Dr. Rainer Hessmer's robot.pde
          The rest was heavily inspired/copied from here:
-      http://forums.parallax.com/showthread.php/154963-measuring-speed-of-the-ActivityBot?p=1260800&viewfull=1#post1260800
+      https://forums.parallax.com/discussion/154963/measuring-speed-of-the-activitybot
       */
       ticksLeftOld = ticksLeft;
       ticksRightOld = ticksRight;
