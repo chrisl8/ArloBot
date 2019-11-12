@@ -163,6 +163,21 @@ If that isn't there you can run this script to start RVIZ on your workstation:
 There are also other things you can do, like look at the Transform Graph:  
 `~/catkin_ws/src/Arlobot/scripts/tf2pdf.sh`
 
+## Workstation via [x11docker](https://github.com/mviereck/x11docker)
+If you do not have any of the supported versions of Ubuntu on your laptop you can try using [x11docker](https://github.com/mviereck/x11docker):
+
+```
+bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/workstation-via-x11docker.sh)
+```  
+Then use these commands to run various remote functions via Docker:  
+`docker-view-navigation.sh`  
+`docker-ros-view-robot.sh`  
+`docker-ros-xterm.sh`  
+
+The above works for me on Ubuntu 19.10.
+
+## Updating Code
+
 To update your code just run the same script again and it will pull down and compile anything new without erasing custom settings.
 
 ## Full Arlobot Setup Instructions: ##
