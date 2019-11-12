@@ -165,6 +165,11 @@ class PropellerComm(object):
             "infrared_scan", LaserScan, queue_size=1
         )
 
+        # For Camera Joint Testing
+        # self._JointStatePublisher = rospy.Publisher(
+        #     "joint_states", JointState, queue_size=1
+        # )
+
         # Create a service that can be called to send robot to a map based goal
         # http://wiki.ros.org/ROS/Tutorials/CreatingMsgAndSrv
         # http://wiki.ros.org/ROS/Tutorials/WritingServiceClient%28python%29
@@ -261,6 +266,7 @@ class PropellerComm(object):
 
         self._laptop_battery_percent = status.laptopBatteryPercent
 
+    # noinspection Duplicates
     def _propellerOdomDataHandler(self, data):
         """
         Broadcast all data from propeller monitored sensors on the appropriate topics.
@@ -270,7 +276,7 @@ class PropellerComm(object):
         self._broadcast_static_odometry = False
 
         # If we got this far, we can assume that the Propeller board is initialized and the motors should be on.
-        # The _switch_motors() function will deal with the _SafeToOparete issue
+        # The _switch_motors() function will deal with the _SafeToOperate issue
         if not self._motorsOn:
             self._switch_motors(True)
 
@@ -412,6 +418,24 @@ class PropellerComm(object):
         # js.header.stamp = ros_now
         # self.joint_states_pub.publish(js)
 
+        # Test publishing the camera_rgb_joint so that we can adjust it dynamically until we get it right:
+
+        # js = JointState(
+        #     name=["camera_rgb_joint"],
+        #     position=[0, 1, 0, 0],
+        #     velocity=[0, 0, 0, 0],
+        #     effort=[0, 0, 0, 0],
+        # )
+        # js.header.stamp = ros_now
+
+        # js = JointState()
+        # # js.header = Header()
+        # js.header.stamp = rospy.Time.now()
+        # js.header.frame_id = "camera_rgb_joint"
+        # js.name = ["camera_rgb_joint"]
+        # js.position = [3]
+        # self._JointStatePublisher.publish(js)
+
         # Fake laser from "PING" Ultrasonic Sensor and IR Distance Sensor input:
         # http://wiki.ros.org/navigation/Tutorials/RobotSetup/TF
         # Use:
@@ -450,8 +474,8 @@ class PropellerComm(object):
         # I just don't know how to create and fill an array with "Radians"
         # since they are not rational numbers, but multiples of PI, thus the degrees.
         num_readings = 360  # How about 1 per degree?
-        # num_reeading_multiple = 2 # We have to track this so we know where to put the readings!
-        # num_readings = 360 * num_reeading_multiple
+        # num_reading_multiple = 2 # We have to track this so we know where to put the readings!
+        # num_readings = 360 * num_reading_multiple
         laser_frequency = 100  # I'm not sure how to decide what to use here.
         # This is the fake distance to set all empty slots, and slots we consider "out of range"
         artificial_far_distance = 10
@@ -482,7 +506,7 @@ class PropellerComm(object):
         # otherwise costmap will not clear items!
         # Also, 0 does not clear anything! So if we rotate, then it gets 0 at that point, and ignores it,
         # so we need to fill the unused slots with long distances.
-        # NOTE: This does cause a "circle" to be drawn around the robot at the "artificalFarDistance",
+        # NOTE: This does cause a "circle" to be drawn around the robot at the "artificialFarDistance",
         # but it shouldn't be a problem because we set
         # artificial_far_distance to a distance greater than the planner uses.
         # So while it clears things, it shouldn't cause a problem, and the Kinect should override it for things
@@ -522,7 +546,7 @@ class PropellerComm(object):
         # causing undue wandering.
         # 2 - This producing less wandering due to things popping in and out of the field of view,
         # BUT it also shows that we get odd affects at longer distances. i.e.
-        #     A doorframe almost always has a hit right in the middle of it.
+        #     A door frame almost always has a hit right in the middle of it.
         #     In a hallway there is often a hit in the middle about 1.5 meters out.
         # .5 - This works very well to have the PING data ONLY provide obstacle avoidance,
         # and immediately forget about said obstacles.
@@ -565,7 +589,7 @@ class PropellerComm(object):
         telemetry_irData = data[start:end]
         start = end
         end = start + self.serialInterface.floorSensorCount
-        telemetry_floorSensorData = data[start:end]
+        # telemetry_floorSensorData = data[start:end]
         start = end
         end = start + self.serialInterface.buttonCount
         telemetry_buttonInputData = data[start:end]
@@ -957,6 +981,7 @@ class PropellerComm(object):
             self._updateSettingsFromROS()
 
             # Check if any settings need to be updated
+            # noinspection Duplicates
             if (
                 self._config_from_propeller["trackWidth"]
                 != self._settings_from_ros["trackWidth"]
@@ -1057,10 +1082,10 @@ class PropellerComm(object):
                 return_value = False
         # Special Cases
         if forWhat == "to_stop":
-            # handle_velocity_command can send a STOP if it is unsafe to do anythging else,
+            # handle_velocity_command can send a STOP if it is unsafe to do anything else,
             # but the serial connection is up,
             # as long as the unplugging operation is not in progress
-            # This should bring the robot to a halt in response to any other requset,
+            # This should bring the robot to a halt in response to any other request,
             # if anything is amiss.
             if self._serialAvailable and not self._wasUnplugging:
                 return_value = True
