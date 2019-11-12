@@ -3,7 +3,7 @@
 /* This is ONLY used if the encoder pins
 are connected directly to the Propeller board.
 See #define encoderConnectedToPropeller
-in per_robot_settings_for_prpeller_c_code.h
+in per_robot_settings_for_propeller_c_code.h
 */
 
 // Add encoders to the propeller board and start a cog to count the ticks
