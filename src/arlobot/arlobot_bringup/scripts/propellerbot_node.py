@@ -16,7 +16,7 @@
 
 from __future__ import print_function
 import rospy
-import tf
+import tf2_ros
 from math import sin, cos
 import time
 
@@ -152,12 +152,12 @@ class PropellerComm(object):
         # IF the Odometry Transform is done with the robot_pose_ekf do not publish it,
         # but we are not using robot_pose_ekf, because it does nothing for us if you don't have a full IMU!
         # REMOVE this line if you use robot_pose_ekf
-        self._OdometryTransformBroadcaster = tf.TransformBroadcaster()
+        self._OdometryTransformBroadcaster = tf2_ros.TransformBroadcaster()
 
         self._OdometryPublisher = rospy.Publisher("odom", Odometry, queue_size=1)
 
         # We don't need to broadcast a transform, as it is static and contained within the URDF files
-        # self._SonarTransformBroadcaster = tf.TransformBroadcaster()
+        # self._SonarTransformBroadcaster = tf2_ros.TransformBroadcaster()
         self._UltraSonicPublisher = rospy.Publisher(
             "ultrasonic_scan", LaserScan, queue_size=1
         )
