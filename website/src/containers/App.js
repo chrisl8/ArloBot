@@ -22,9 +22,9 @@ class App extends Component {
     // For local testing on the robot:
     // this.socket = openSocket(`http://${window.location.hostname}:8080`);
     // For testing running locally while connecting site to a remote robot:
-    // this.socket = openSocket(`http://twoflower.local:8080`);
+    this.socket = openSocket(`http://twoflower.local:8080`);
     // For production:
-    this.socket = openSocket();
+    // this.socket = openSocket();
 
     this.socket.on('startup', (data) => {
       this.setState({
@@ -122,7 +122,8 @@ class App extends Component {
               this.state.webModel.rosParameters.ignoreFloorSensors
             }
             ignoreProximity={this.state.webModel.rosParameters.ignoreProximity}
-            makeMap={this.state.webModel.makeMap}
+            makeMapGmapping={this.state.webModel.makeMapGmapping}
+            makeMapCartographer={this.state.webModel.makeMapCartographer}
             makeMapRunning={this.state.webModel.makeMapRunning}
             mapList={this.state.webModel.mapList}
             wayPoints={this.state.webModel.wayPoints}

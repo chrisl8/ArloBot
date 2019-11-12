@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# This is the primary script to
-# Start the entire robot
 
 # Grab and save the path to this script
 # http://stackoverflow.com/a/246128
@@ -16,17 +14,18 @@ SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 # shellcheck source=/home/chrisl8/catkin_ws/src/ArloBot/scripts/rosEnvironmentSetup.sh
 source "${SCRIPTDIR}/rosEnvironmentSetup.sh"
 
-# shellcheck source=/home/chrisl8/catkin_ws/src/ArloBot/scripts/ros_prep.sh
-source "${SCRIPTDIR}/ros_prep.sh"
-
-echo "Use kill_ros.sh to close."
-
-ARLOBOT_MODEL=$(jq '.arlobotModel' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
-export ARLOBOT_MODEL
-
+if pgrep -f robot.launch > /dev/null; then
+  echo "When you are done, save your map!"
+  echo "Please run './save-map.sh mapname' from another terminal when your map is done before closing this!"
+  if [[ $(jq '.hasScanseSweep' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
+    export HAS_SCANSE_SWEEP=true
+  fi
+  unbuffer roslaunch arlobot_cartographer 2d_cartograper.launch
+else
+  echo "Robot must be running to start this."
+fi
 # 'unbuffer' is required for running this from the node based 'behavior'
 # scripts. Otherwise stdout data is buffered until ROS exits,
 # which makes monitoring status impossible.
 # http://stackoverflow.com/a/11337310
 # http://linux.die.net/man/1/unbuffer
-unbuffer roslaunch arlobot_launchers robot.launch --screen

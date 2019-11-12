@@ -1,6 +1,17 @@
 #!/usr/bin/env bash
-export ROS_HOSTNAME=$(uname -n)
-export ROS_MASTER_URI=http://localhost:11311
-export ROSLAUNCH_SSH_UNKNOWN=1
-source ~/catkin_ws/devel/setup.bash
-eval ${1}
+
+# Grab and save the path to this script
+# http://stackoverflow.com/a/246128
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+# echo "${SCRIPTDIR}" # For debugging
+
+# shellcheck source=/home/chrisl8/catkin_ws/src/ArloBot/scripts/rosEnvironmentSetup.sh
+source "${SCRIPTDIR}/../scripts/rosEnvironmentSetup.sh"
+
+eval "${1}"

@@ -294,8 +294,12 @@ async function start() {
       }
     });
 
-    socket.on('makeMap', () => {
-      webModelFunctions.update('makeMap', true);
+    socket.on('makeMapGmapping', () => {
+      webModelFunctions.update('makeMapGmapping', true);
+    });
+
+    socket.on('makeMapCartographer', () => {
+      webModelFunctions.update('makeMapCartographer', true);
     });
 
     socket.on('clearMap', () => {

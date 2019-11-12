@@ -8,7 +8,8 @@ module.exports = {
   bootTime: new Date(), // Time the node script was initialized (Can I do this?)
   startROSTime: undefined, // Time that ROS start was completed.
   mapLoadTime: undefined, // Time that map load was complete
-  makeMap: undefined,
+  makeMapGmapping: undefined,
+  makeMapCartographer: undefined,
   master: {
     isClose: false, // Eddy Beackon === 1
     isInRoom: false, // Eddy Beacon < 1

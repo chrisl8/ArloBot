@@ -20,7 +20,8 @@ module.exports = {
   pluggedIn: true, // Assume the most restrictive setting.
   autoExplore: false,
   pauseExplore: false,
-  makeMap: false,
+  makeMapGmapping: false,
+  makeMapCartographer: false,
   makeMapRunning: false,
   idleTimeout: true,
   beQuiet: false,

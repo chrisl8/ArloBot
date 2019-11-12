@@ -42,16 +42,37 @@ class Navigation extends Component {
   render() {
     let cardTitleText = <span>Navigation</span>;
     if (this.props.makeMapRunning) {
-      cardTitleText = (
-        <span>
-          Navigation - <span style={{ fontWeight: 'bold' }}>Making a Map</span>
-        </span>
-      );
-    } else if (this.props.makeMap) {
+      if (this.props.makeMapGmapping) {
+        cardTitleText = (
+          <span>
+            Navigation -{' '}
+            <span style={{ fontWeight: 'bold' }}>
+              Making a Map with Gmapping
+            </span>
+          </span>
+        );
+      } else {
+        cardTitleText = (
+          <span>
+            Navigation -{' '}
+            <span style={{ fontWeight: 'bold' }}>
+              Making a Map with Cartographer
+            </span>
+          </span>
+        );
+      }
+    } else if (this.props.makeMapGmapping) {
       cardTitleText = (
         <span>
           Navigation -{' '}
           <span style={{ fontWeight: 'bold' }}>Loading Gmapping . . .</span>
+        </span>
+      );
+    } else if (this.props.makeMapCartographer) {
+      cardTitleText = (
+        <span>
+          Navigation -{' '}
+          <span style={{ fontWeight: 'bold' }}>Loading Cartographer . . .</span>
         </span>
       );
     } else if (this.props.mapName !== '') {
@@ -109,31 +130,46 @@ class Navigation extends Component {
           </CardHeader>
           <Collapse id="navigation-card-body" isOpen={this.props.isOpen}>
             <CardBody>
-              {this.props.mapName === '' && !this.props.makeMap && (
-                <div>
-                  <button
-                    id="make-map-button"
-                    type="button"
-                    className="btn btn-warning"
-                    onClick={() => this.props.sendDataToRobot('makeMap')}
-                  >
-                    Make Map
-                  </button>
-                  &nbsp;or&nbsp;
-                  <button
-                    id="load-map-button"
-                    type="button"
-                    className="btn btn-warning"
-                    onClick={this.handleLoadMapButton}
-                  >
-                    Load Map
-                  </button>
-                </div>
-              )}
+              {this.props.mapName === '' &&
+                !this.props.makeMapGmapping &&
+                !this.props.makeMapCartographer && (
+                  <div>
+                    <button
+                      id="make-map-button"
+                      type="button"
+                      className="btn btn-warning"
+                      onClick={() =>
+                        this.props.sendDataToRobot('makeMapGmapping')
+                      }
+                    >
+                      Make Map - Gmapping
+                    </button>
+                    <button
+                      id="make-map-button"
+                      type="button"
+                      className="btn btn-warning"
+                      onClick={() =>
+                        this.props.sendDataToRobot('makeMapCartographer')
+                      }
+                    >
+                      Make Map - Cartographer
+                    </button>
+                    &nbsp;or&nbsp;
+                    <button
+                      id="load-map-button"
+                      type="button"
+                      className="btn btn-warning"
+                      onClick={this.handleLoadMapButton}
+                    >
+                      Load Map
+                    </button>
+                  </div>
+                )}
 
               {this.state.showMapPicker &&
                 this.props.mapName === '' &&
-                !this.props.makeMap &&
+                !this.props.makeMapGmapping &&
+                !this.props.makeMapCartographer &&
                 !this.props.makeMapRunning &&
                 !this.props.autoExplore && (
                   <div>
@@ -216,6 +252,15 @@ class Navigation extends Component {
                       className="btn btn-primary"
                     />
                   </form>
+                  {this.state.newMapName &&
+                    this.props.mapList.indexOf(this.state.newMapName) > -1 && (
+                      <p>
+                        <strong>
+                          Map &quot;{this.state.newMapName}&quot; has been
+                          saved.
+                        </strong>
+                      </p>
+                    )}
                 </div>
               )}
               <p>

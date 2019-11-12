@@ -145,7 +145,8 @@ class AccordionGroup extends Component {
           <Navigation
             isOpen={this.state.navigationIsOpen}
             toggle={this.toggle}
-            makeMap={this.props.makeMap}
+            makeMapGmapping={this.props.makeMapGmapping}
+            makeMapCartographer={this.props.makeMapCartographer}
             makeMapRunning={this.props.makeMapRunning}
             mapName={this.props.mapName}
             mapList={this.props.mapList}

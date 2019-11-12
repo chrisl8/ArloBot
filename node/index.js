@@ -141,9 +141,15 @@ async function main() {
     successString: 'odom received',
   });
 
-  robotModel.makeMap = new LaunchScript({
-    name: 'MakeMap',
-    ROScommand: 'unbuffer roslaunch arlobot_navigation gmapping_demo.launch',
+  robotModel.makeMapGmapping = new LaunchScript({
+    name: 'MakeMapGmapping',
+    scriptName: '../scripts/make-map-gmapping.sh',
+    successString: 'odom received',
+  });
+
+  robotModel.makeMapCartographer = new LaunchScript({
+    name: 'MakeMapCartographer',
+    scriptName: '../scripts/make-map-cartographer.sh',
     successString: 'odom received',
   });
 
