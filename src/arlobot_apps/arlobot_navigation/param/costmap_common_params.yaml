@@ -25,7 +25,7 @@ obstacle_layer:
   z_resolution: 0.2
   z_voxels: 2
   publish_voxel_map: false
-  observation_sources: scan ultrasonic rtab # Not using IR, though the data is there.
+  observation_sources: scan ultrasonic # Not using IR, though the data is there.
   scan:
     data_type: LaserScan
     topic: scan
