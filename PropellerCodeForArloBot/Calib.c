@@ -5,6 +5,16 @@ Fwd() and Turn() functions are used to drive the robot to a certain distance or 
 A typical cablibration method can be found in "Borenstein, J., & Feng, L. (1995). UMBmark: A benchmark test for measuring odometry errors in mobile robots. Ann Arbor, 1001, 48109-2110."
 ********************************************************************/
 
+/* If you want to Connect Encoder Pins directly to the Propeller board,
+instead of using the DHB10 then uncomment the #define line below.
+The DBH10 reads the encoder pins to give the wheel speed,
+however, some user have found the DBH10 to be unreliable, so they hook
+the encoder pins to the Propeller directly.
+*/
+// #define encoderConnectedToPropeller
+
+// TODO: Usage of this to calibrate with the DHB10 is only partly implemented.
+
 #include "simpletools.h"
 #include "arlodrive.h"
 
@@ -103,10 +113,17 @@ int main()
   Park();
 }
 
+char dhb10_reply[DHB10_LEN];
+char *reply = dhb10_reply;
+
 void Encoder(void *par)
 {
   while(1)
   {
+  pause(2);
+
+#ifdef encoderConnectedToPropeller
+    // Use encoder values from Propeller board
     int left_A = input(LEFT_A);
     int left_B = input(LEFT_B);
     int right_A = input(RIGHT_A);
@@ -172,6 +189,21 @@ void Encoder(void *par)
     }   
     last_right_A = right_A;    
     
+#else
+      // Else use DHB10 for DIST data
+      int64_t dhb10_ticksLeft, dhb10_ticksRight;
+      reply = dhb10_com("DIST\r");
+      if (*reply == '\r') {
+        // Wrong response
+        dhb10_ticksLeft = 0;
+        dhb10_ticksRight = 0;
+      } else {
+        sscan(reply, "%d%d", &dhb10_ticksLeft, &dhb10_ticksRight);
+      }
+      left_ticks = dhb10_ticksLeft;
+      right_ticks = dhb10_ticksRight;
+#endif
+
     double deltaDistance, deltaTheta, deltaX, deltaY;
     int deltaTicksLeft, deltaTicksRight;
     
