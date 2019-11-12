@@ -28,10 +28,12 @@ function finish() {
 }
 trap finish EXIT
 
-if ! (command -v docker >/dev/null); then
-  printf "${RED}[You must first install Docker to use this tool]${NC}\n"
-  printf "${YELLOW}https://docs.docker.com/install/linux/docker-ce/ubuntu/${NC}\n"
-  exit 1
+if ! [[ ${TRAVIS} == "true" ]]; then
+  if ! (command -v docker >/dev/null); then
+    printf "${RED}[You must first install Docker to use this tool]${NC}\n"
+    printf "${YELLOW}https://docs.docker.com/install/linux/docker-ce/ubuntu/${NC}\n"
+    exit 1
+  fi
 fi
 
 if ! (command -v xpra >/dev/null); then
