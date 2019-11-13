@@ -571,7 +571,7 @@ class PropellerComm(object):
         # but costmap isn't watching it at the moment. I think it is too erratic for that.
 
         # Fill sensory arrays with sensor data
-        start = 23
+        start = 16
         end = start + self.serialInterface.pingCount
         telemetry_pingData = data[start:end]
         start = end
