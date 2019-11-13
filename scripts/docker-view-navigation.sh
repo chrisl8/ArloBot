@@ -11,4 +11,6 @@ done
 SCRIPT_DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 #echo "${SCRIPT_DIR}" # For debugging
 
+echo "NOTE: Sometimes being on a different network than normal,"
+echo "like WiFi vs. LAN can break this, or parts of it like 2D Nav Goals."
 "${SCRIPT_DIR}/../docker-rviz/call-via-x11docker.sh" "/view-navigation.sh"
