@@ -104,7 +104,9 @@ fi
 
 printf "\n${YELLOW}[Building Docker Image]${NC}\n"
 cd ~/catkin_ws/src/ArloBot/docker-rviz/
-sudo docker build -t ros:gui . # Run again if you change any settings
+if ! [[ ${TRAVIS} == "true" ]]; then
+  sudo docker build -t ros:gui . # Run again if you change any settings
+fi
 
 printf "\n${YELLOW}-----------------------------------${NC}\n"
 printf "${YELLOW}ALL DONE! TRY RVIZ NOW${NC}\n"
