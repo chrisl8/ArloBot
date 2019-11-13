@@ -394,17 +394,42 @@ catkin_make
 source ~/catkin_ws/devel/setup.bash
 rospack profile
 
-if ! (grep ROS_HOSTNAME ~/.bashrc >/dev/null); then
-  printf "\n${YELLOW}[Setting the ROS_HOSTNAME in your .bashrc file]${NC}\n"
-  sh -c "echo \"export ROS_HOSTNAME=$(uname -n)\" >> ~/.bashrc"
+if [[ -f ~/.bashrc ]]; then
+  if ! (grep ROS_HOSTNAME ~/.bashrc >/dev/null); then
+    printf "\n${YELLOW}[Setting the ROS_HOSTNAME in your .bashrc file]${NC}\n"
+    sh -c "echo \"export ROS_HOSTNAME=$(uname -n)\" >> ~/.bashrc"
+  fi
+  if ! (grep ROSLAUNCH_SSH_UNKNOWN ~/.bashrc >/dev/null); then
+    printf "\n${YELLOW}[Setting the ROSLAUNCH_SSH_UNKNOWN in your .bashrc file]${NC}\n"
+    sh -c "echo \"export ROSLAUNCH_SSH_UNKNOWN=1\" >> ~/.bashrc"
+  fi
+  if ! (grep catkin_ws ~/.bashrc >/dev/null); then
+    printf "\n${YELLOW}[Setting the ROS setup.bash source call in your .bashrc file]${NC}\n"
+    sh -c "echo \"source ~/catkin_ws/devel/setup.bash\" >> ~/.bashrc"
+  fi
+  if ! (grep "${HOME}/catkin_ws/src/ArloBot/scripts" ~/.bashrc >/dev/null); then
+    printf "\n${YELLOW}[Adding ArloBot Scripts folder to your path in .bashrc]${NC}\n"
+    sh -c "echo \"export PATH=\\\$PATH:${HOME}/catkin_ws/src/ArloBot/scripts\" >> ~/.bashrc"
+  fi
 fi
-if ! (grep ROSLAUNCH_SSH_UNKNOWN ~/.bashrc >/dev/null); then
-  printf "\n${YELLOW}[Setting the ROSLAUNCH_SSH_UNKNOWN in your .bashrc file]${NC}\n"
-  sh -c "echo \"export ROSLAUNCH_SSH_UNKNOWN=1\" >> ~/.bashrc"
-fi
-if ! (grep catkin_ws ~/.bashrc >/dev/null); then
-  printf "\n${YELLOW}[Setting the ROS setup.bash source call in your .bashrc file]${NC}\n"
-  sh -c "echo \"source ~/catkin_ws/devel/setup.bash\" >> ~/.bashrc"
+
+if [[ -f ~/.zshrc ]]; then
+  if ! (grep ROS_HOSTNAME ~/.zshrc >/dev/null); then
+    printf "\n${YELLOW}[Setting the ROS_HOSTNAME in your .zshrc file]${NC}\n"
+    sh -c "echo \"export ROS_HOSTNAME=$(uname -n)\" >> ~/.zshrc"
+  fi
+  if ! (grep ROSLAUNCH_SSH_UNKNOWN ~/.zshrc >/dev/null); then
+    printf "\n${YELLOW}[Setting the ROSLAUNCH_SSH_UNKNOWN in your .zshrc file]${NC}\n"
+    sh -c "echo \"export ROSLAUNCH_SSH_UNKNOWN=1\" >> ~/.zshrc"
+  fi
+  if ! (grep catkin_ws ~/.zshrc >/dev/null); then
+    printf "\n${YELLOW}[Setting the ROS setup.bash source call in your .zshrc file]${NC}\n"
+    sh -c "echo \"source ~/catkin_ws/devel/setup.bash\" >> ~/.zshrc"
+  fi
+  if ! (grep "${HOME}/catkin_ws/src/ArloBot/scripts" ~/.zshrc >/dev/null); then
+    printf "\n${YELLOW}[Adding ArloBot Scripts folder to your path in .zshrc]${NC}\n"
+    sh -c "echo \"export PATH=\\\$PATH:${HOME}/catkin_ws/src/ArloBot/scripts\" >> ~/.zshrc"
+  fi
 fi
 
 # For 8-CH USB Relay board:
