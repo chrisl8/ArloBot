@@ -28,6 +28,12 @@ function finish() {
 }
 trap finish EXIT
 
+if [[ ${TRAVIS} == "true" ]]; then
+  # For testing in Travis CI
+  apt update
+  apt install -y sudo
+fi
+
 if ! [[ ${TRAVIS} == "true" ]]; then
   if ! (command -v docker >/dev/null); then
     printf "${RED}[You must first install Docker to use this tool]${NC}\n"
