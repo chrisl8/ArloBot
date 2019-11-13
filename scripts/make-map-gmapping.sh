@@ -14,7 +14,7 @@ SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 # shellcheck source=/home/chrisl8/catkin_ws/src/ArloBot/scripts/rosEnvironmentSetup.sh
 source "${SCRIPTDIR}/rosEnvironmentSetup.sh"
 
-if pgrep -f robot.launch; then
+if pgrep -f robot.launch > /dev/null; then
   echo "When you are done, save your map!"
   echo "Please run './save-map.sh mapname' from another terminal when your map is done before closing this!"
   if [[ $(jq '.use_xv11' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
