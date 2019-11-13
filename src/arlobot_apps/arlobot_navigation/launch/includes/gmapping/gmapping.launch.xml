@@ -39,7 +39,10 @@
     <param name="xmax" value="1.0"/>
     <param name="ymax" value="1.0"/>
 
-    <param name="delta" value="0.05"/>
+    <!-- Increase resolution (Default is 0.05) -->
+    <!-- DO NOT SET THIS BELOW 0.01!!! -->
+    <!-- Mapping is TERRIBLE if this value is increased! -->
+    <param name="delta" value="0.01"/>
     <param name="llsamplerange" value="0.01"/>
     <param name="llsamplestep" value="0.01"/>
     <param name="lasamplerange" value="0.005"/>
