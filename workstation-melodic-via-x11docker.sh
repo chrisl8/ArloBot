@@ -28,18 +28,10 @@ function finish() {
 }
 trap finish EXIT
 
-if [[ ${TRAVIS} == "true" ]]; then
-  # For testing in Travis CI
-  apt update
-  apt install -y sudo
-fi
-
-if ! [[ ${TRAVIS} == "true" ]]; then
-  if ! (command -v docker >/dev/null); then
-    printf "${RED}[You must first install Docker to use this tool]${NC}\n"
-    printf "${YELLOW}https://docs.docker.com/install/linux/docker-ce/ubuntu/${NC}\n"
-    exit 1
-  fi
+if ! (command -v docker >/dev/null); then
+  printf "${RED}[You must first install Docker to use this tool]${NC}\n"
+  printf "${YELLOW}https://docs.docker.com/install/linux/docker-ce/ubuntu/${NC}\n"
+  exit 1
 fi
 
 if ! (command -v xpra >/dev/null); then
@@ -71,12 +63,7 @@ fi
 if [[ -f ~/.bashrc ]]; then
   printf "\n${YELLOW}[Setting the ROS environment in your .bashrc file]${NC}\n"
   if ! (grep ROS_MASTER_URI ~/.bashrc >/dev/null); then
-    if ! [[ ${TRAVIS} == "true" ]]; then
-      read -rp "What is the host name or IP of your robot? " answer
-    else
-      # Dummy data for testing
-      answer=localhost
-    fi
+    read -rp "What is the host name or IP of your robot? " answer
     sh -c "echo \"export ROS_MASTER_URI=http://${answer}:11311\" >> ~/.bashrc"
   fi
   if ! (grep ROS_HOSTNAME ~/.bashrc >/dev/null); then
@@ -91,12 +78,8 @@ fi
 if [[ -f ~/.zshrc ]]; then
   printf "\n${YELLOW}[Setting the ROS environment in your .zshrc file]${NC}\n"
   if ! (grep ROS_MASTER_URI ~/.zshrc >/dev/null); then
-    if ! [[ ${TRAVIS} == "true" ]]; then
-      read -rp "What is the host name or IP of your robot? " answer
-    else
-      # Dummy data for testing
-      answer=localhost
-    fi
+    # TODO: Use the answer from above if it exists, instead of asking twice.
+    read -rp "What is the host name or IP of your robot? " answer
     sh -c "echo \"export ROS_MASTER_URI=http://${answer}:11311\" >> ~/.zshrc"
   fi
   if ! (grep ROS_HOSTNAME ~/.zshrc >/dev/null); then
@@ -110,9 +93,7 @@ fi
 
 printf "\n${YELLOW}[Building Docker Image]${NC}\n"
 cd ~/catkin_ws/src/ArloBot/docker-rviz/
-if ! [[ ${TRAVIS} == "true" ]]; then
-  sudo docker build -t ros:gui . # Run again if you change any settings
-fi
+sudo docker build -t ros:gui . # Run again if you change any settings
 
 printf "\n${YELLOW}-----------------------------------${NC}\n"
 printf "${YELLOW}ALL DONE! TRY RVIZ NOW${NC}\n"
