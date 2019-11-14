@@ -11,17 +11,6 @@ As soon as I have it 100% working on my robot, I will start a new default branch
 
 Until then, see below that there *IS* a script to install Melodic to Ubuntu 18.04 LTS now. It has "DO_NOT_USE" in the name to remind you that it is experimental, but feel free TO USE it and report issues back to me.  Thank you.
 
-# Out of Commission
-This project is out of commission until I can solve this problem:  
-https://answers.ros.org/question/332538/laser-scan-walls-moving-with-robot/  
-
-![Alt text](/screenshots/LaserScanIssues.png "Web Interface")
-
-
-# THIS BRANCH HAS SOME NEW FEATURES!
-### **You MUST replace the code on your Propeller Board if you were using a previous branch!**
-### Please create issues if you discover my new code is not working.
-
 ## New Propeller C Code with new Serial Interface
 
 * Entirely new Propeller C code. Based on original but with many changes
@@ -43,7 +32,7 @@ the data.
 ### Mobile Friendly Web Interface  
 ![Alt text](/screenshots/arlobotNewWebInterface.png "Web Interface")
 
-### New Curses Serial Testing Interface:  
+### Curses Serial Testing Interface:  
 `~/catkin_ws/src/ArloBot/scripts/PropellerSerialTest.sh`  
 ![Alt text](/screenshots/PropellerSerialTest.png "Serial Test Program")
 
@@ -58,7 +47,7 @@ First you need to build a robot!
 * On board computer
 * 3D Sensor
 
-Unlike when I built my robot, the Arlo Robotic Platform now comes as a complete kit, which I recommend buying from Parallax: [Arlo Complete Robot System](https://www.parallax.com/product/28966)
+The Arlo Robotic Platform now comes as a complete kit, which I recommend buying from Parallax: [Arlo Complete Robot System](https://www.parallax.com/product/28966)
 
 You will also need a few other items (laptop and 3D sensor) which I have some details about on the [Parts List Wiki Page](https://github.com/chrisl8/ArloBot/wiki/Parts-List " Parts List")
 
@@ -164,7 +153,7 @@ There are also other things you can do, like look at the Transform Graph:
 `~/catkin_ws/src/Arlobot/scripts/tf2pdf.sh`
 
 ## Workstation via [x11docker](https://github.com/mviereck/x11docker)
-If you do not have any of the supported versions of Ubuntu on your laptop you can try using [x11docker](https://github.com/mviereck/x11docker):
+If you do not have any of the supported versions of Ubuntu on your workstation laptop you can try using [x11docker](https://github.com/mviereck/x11docker):
 
 ```
 bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/workstation-via-x11docker.sh)
@@ -328,6 +317,8 @@ Note that xBox 360 Controller operation is always live when ROS is running from 
 ## Convenience Scripts ##
 Look in the scripts folder for a set of handy scripts for starting up and shutting down various aspects of Arlobot.
 
+## Tuning
+See the [RobotTuningNotes](RobotTuningNotes.md) for guidance on tuning robot parameters.
 
 ## Freenect warnings
 
