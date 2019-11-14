@@ -108,6 +108,7 @@ class PropellerComm(object):
         self._settings_from_ros = {
             "trackWidth": 0.0,
             "distancePerCount": 0.0,
+            "wheelSymmetryError": 0.0,
             "ignoreProximity": False,
             "ignoreCliffSensors": False,
             "ignoreIRSensors": False,
@@ -121,6 +122,7 @@ class PropellerComm(object):
         self._config_from_propeller = {
             "trackWidth": 0,
             "distancePerCount": 0,
+            "wheelSymmetryError": 0,
             # Set to opposites of self._settings
             # to ensure _settingsUpdateRequired stays true
             # until we get the data from the board.
@@ -225,6 +227,9 @@ class PropellerComm(object):
         )
         self._settings_from_ros["distancePerCount"] = rospy.get_param(
             "~driveGeometry/distancePerCount", "0"
+        )
+        self._settings_from_ros["wheelSymmetryError"] = rospy.get_param(
+            "~driveGeometry/wheelSymmetryError", "0"
         )
         self._settings_from_ros["ignoreProximity"] = rospy.get_param(
             "~ignoreProximity", False
@@ -849,6 +854,7 @@ class PropellerComm(object):
         # forcing it to send until it is reset.
         self._config_from_propeller["trackWidth"] = 0
         self._config_from_propeller["distancePerCount"] = 0
+        self._config_from_propeller["wheelSymmetryError"] = 0
         # Set to opposites to  of self._settings_from_ros
         # to ensure we keep sending the settings
         # until we get the data from the board.
@@ -873,36 +879,35 @@ class PropellerComm(object):
         # self._pirPublisher.publish(False)
 
     def _propellerConfigDataHandler(self, data):
-        if len(data) > 6:  # Ignore short packets
+        if len(data) > 7:  # Ignore short packets
             # Round these to the same precision as the input was given at
-            # Round these to the same precision as the input was given at
+            # noinspection PyTypeChecker
             self._config_from_propeller["trackWidth"] = round(
                 data[0], len(str(self._settings_from_ros["trackWidth"]).split(".")[1])
             )
+            # noinspection PyTypeChecker
             self._config_from_propeller["distancePerCount"] = round(
                 data[1],
                 len(str(self._settings_from_ros["distancePerCount"]).split(".")[1]),
             )
-            self._config_from_propeller["ignoreProximity"] = (
-                True if data[2] == 1 else False
+            # noinspection PyTypeChecker
+            self._config_from_propeller["wheelSymmetryError"] = round(
+                data[2],
+                len(str(self._settings_from_ros["wheelSymmetryError"]).split(".")[1]),
             )
-            self._config_from_propeller["ignoreCliffSensors"] = (
+            self._config_from_propeller["ignoreProximity"] = (
                 True if data[3] == 1 else False
             )
-            self._config_from_propeller["ignoreIRSensors"] = (
+            self._config_from_propeller["ignoreCliffSensors"] = (
                 True if data[4] == 1 else False
             )
-            self._config_from_propeller["ignoreFloorSensors"] = (
+            self._config_from_propeller["ignoreIRSensors"] = (
                 True if data[5] == 1 else False
             )
-            self._config_from_propeller["pluggedIn"] = True if data[6] == 1 else False
-
-    def _broadcast_static_odometry_info(self):
-        """
-        Broadcast last known odometry and transform while propeller board is offline
-        so that ROS can continue to track status
-        Otherwise things like gmapping will fail when we loose our transform and publishing topics
-        """
+            self._config_from_propeller["ignoreFloorSensors"] = (
+                True if data[6] == 1 else False
+            )
+            self._config_from_propeller["pluggedIn"] = True if data[7] == 1 else False
 
     def _broadcast_odometry(self, x, y, theta, vx, omega, now):
         quaternion = Quaternion()
@@ -1021,6 +1026,8 @@ class PropellerComm(object):
                 != self._settings_from_ros["trackWidth"]
                 or self._config_from_propeller["distancePerCount"]
                 != self._settings_from_ros["distancePerCount"]
+                or self._config_from_propeller["wheelSymmetryError"]
+                != self._settings_from_ros["wheelSymmetryError"]
                 or self._config_from_propeller["ignoreProximity"]
                 != self._settings_from_ros["ignoreProximity"]
                 or self._config_from_propeller["ignoreCliffSensors"]
@@ -1035,6 +1042,7 @@ class PropellerComm(object):
                 settingsData = self.dataTypes.SettingsDataPacket(
                     self._settings_from_ros["trackWidth"],
                     self._settings_from_ros["distancePerCount"],
+                    self._settings_from_ros["wheelSymmetryError"],
                     1 if self._settings_from_ros["ignoreProximity"] else 0,
                     1 if self._settings_from_ros["ignoreCliffSensors"] else 0,
                     1 if self._settings_from_ros["ignoreIRSensors"] else 0,

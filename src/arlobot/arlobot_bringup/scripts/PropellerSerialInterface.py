@@ -563,6 +563,7 @@ class PropellerSerialInterface(object):
             self._DataTypes.FormatSettings,
             data.trackWidth,
             data.distancePerCount,
+            data.wheelSymmetryError,
             data.ignoreProximity,
             data.ignoreCliffSensors,
             data.ignoreIRSensors,

@@ -116,17 +116,18 @@ readyUnion readyData;
 #define configDataCharacter 'c'
 
 typedef struct configStruct_st {
-  float trackWidth;        //  4
-  float distancePerCount;  //  4
-  bool ignoreProximity;    //  1
-  bool ignoreCliffSensors; //  1
-  bool ignoreIRSensors;    //  1
-  bool ignoreFloorSensors; //  1
-  bool pluggedIn;          //  1
-  uint8_t dataCheckSum;    //  1 - Remember to include the checksum
-} configStruct_t;          // 14 Total length
+  float trackWidth;         //  4
+  float distancePerCount;   //  4
+  float wheelSymmetryError; //  4
+  bool ignoreProximity;     //  1
+  bool ignoreCliffSensors;  //  1
+  bool ignoreIRSensors;     //  1
+  bool ignoreFloorSensors;  //  1
+  bool pluggedIn;           //  1
+  uint8_t dataCheckSum;     //  1 - Remember to include the checksum
+} configStruct_t;           // 18 Total length
 
-#define configDataLength 14
+#define configDataLength 18
 
 typedef union {
   configStruct_t dataStruct;
@@ -212,17 +213,18 @@ initUnion initData;
 #define settingsDataCharacter 's'
 
 typedef struct settingsStruct_st {
-  float trackWidth;        //  4
-  float distancePerCount;  //  4
-  bool ignoreProximity;    //  1
-  bool ignoreCliffSensors; //  1
-  bool ignoreIRSensors;    //  1
-  bool ignoreFloorSensors; //  1
-  bool pluggedIn;          //  1
-  uint8_t dataCheckSum;    //  1 - Remember to include the checksum
-} settingsStruct_t;        // 14 Total length
+  float trackWidth;         //  4
+  float distancePerCount;   //  4
+  float wheelSymmetryError; //  4
+  bool ignoreProximity;     //  1
+  bool ignoreCliffSensors;  //  1
+  bool ignoreIRSensors;     //  1
+  bool ignoreFloorSensors;  //  1
+  bool pluggedIn;           //  1
+  uint8_t dataCheckSum;     //  1 - Remember to include the checksum
+} settingsStruct_t;         // 18 Total length
 
-#define settingsDataLength 14
+#define settingsDataLength 18
 
 typedef union {
   settingsStruct_t dataStruct;

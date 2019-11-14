@@ -127,6 +127,7 @@ class PropellerSerialTest(object):
             "Heading": 0.0,
             "trackWidth": self._driveGeometry["trackWidth"],
             "distancePerCount": self._driveGeometry["distancePerCount"],
+            "wheelSymmetryError": self._driveGeometry["wheelSymmetryError"],
             "ignoreProximity": 0,
             "ignoreCliffSensors": 0,
             "ignoreIRSensors": 0,
@@ -141,6 +142,7 @@ class PropellerSerialTest(object):
         self._config = {
             "trackWidth": 0,
             "distancePerCount": 0,
+            "wheelSymmetryError": 0,
             # Set to opposites to  of self._settings
             # to ensure _settingsUpdateRequired stays true
             # until we get the data from the board.
@@ -261,7 +263,8 @@ class PropellerSerialTest(object):
         # forcing it to send until it is reset.
         self._config["trackWidth"] = 0
         self._config["distancePerCount"] = 0
-        # Set to opposites to  of self._settings
+        self._config["wheelSymmetryError"] = 0
+        # Set to opposites of self._settings
         # to ensure _settingsUpdateRequired stays true
         # until we get the data from the board.
         self._config["ignoreProximity"] = 1 - self._settings["ignoreProximity"]
@@ -290,6 +293,7 @@ class PropellerSerialTest(object):
         settingsData = self.dataTypes.SettingsDataPacket(
             self._settings["trackWidth"],
             self._settings["distancePerCount"],
+            self._settings["wheelSymmetryError"],
             self._settings["ignoreProximity"],
             self._settings["ignoreCliffSensors"],
             self._settings["ignoreIRSensors"],
@@ -299,7 +303,8 @@ class PropellerSerialTest(object):
         self.serialInterface.SendToPropellerOverSerial("settings", settingsData, False)
 
     def _propellerConfigDataHandler(self, data):
-        if len(data) > 6:  # Ignore short packets
+        self.screen.addLine(str(data))
+        if len(data) > 7:  # Ignore short packets
             # Round these to the same precision as the input was given at
             self._config["trackWidth"] = round(
                 data[0], len(str(self._settings["trackWidth"]).split(".")[1])
@@ -307,11 +312,14 @@ class PropellerSerialTest(object):
             self._config["distancePerCount"] = round(
                 data[1], len(str(self._settings["distancePerCount"]).split(".")[1])
             )
-            self._config["ignoreProximity"] = data[2]
-            self._config["ignoreCliffSensors"] = data[3]
-            self._config["ignoreIRSensors"] = data[4]
-            self._config["ignoreFloorSensors"] = data[5]
-            self._config["pluggedIn"] = data[6]
+            self._config["wheelSymmetryError"] = round(
+                data[2], len(str(self._settings["wheelSymmetryError"]).split(".")[1])
+            )
+            self._config["ignoreProximity"] = data[3]
+            self._config["ignoreCliffSensors"] = data[4]
+            self._config["ignoreIRSensors"] = data[5]
+            self._config["ignoreFloorSensors"] = data[6]
+            self._config["pluggedIn"] = data[7]
 
     # noinspection Duplicates
     def _propellerOdomDataHandler(self, data):
@@ -448,6 +456,11 @@ class PropellerSerialTest(object):
                 odomLineTwo
                 + " | distancePerCount:"
                 + str(self._config["distancePerCount"])
+            )
+            odomLineTwo = (
+                odomLineTwo
+                + " | wheelSymmetryError:"
+                + str(self._config["wheelSymmetryError"])
             )
             odomLineThree = (
                 "Status abd_speedLimit:"
@@ -1042,6 +1055,7 @@ class PropellerSerialTest(object):
         settingsData = self.dataTypes.SettingsDataPacket(
             self._settings["trackWidth"],
             self._settings["distancePerCount"],
+            self._settings["wheelSymmetryError"],
             self._settings["ignoreProximity"],
             self._settings["ignoreCliffSensors"],
             self._settings["ignoreIRSensors"],
@@ -1086,6 +1100,14 @@ class PropellerSerialTest(object):
         elif command == "distancePerCountUp":
             self._settings["distancePerCount"] = (
                 self._settings["distancePerCount"] + 0.00001
+            )
+        elif command == "wheelSymmetryErrorDown":
+            self._settings["wheelSymmetryError"] = (
+                self._settings["wheelSymmetryError"] - 0.01
+            )
+        elif command == "wheelSymmetryErrorUp":
+            self._settings["wheelSymmetryError"] = (
+                self._settings["wheelSymmetryError"] + 0.01
             )
         elif command == "ignoreProximity":
             self._settings["ignoreProximity"] = (1, 0)[
@@ -1208,6 +1230,8 @@ class PropellerSerialTest(object):
                     self._config["trackWidth"] != self._settings["trackWidth"]
                     or self._config["distancePerCount"]
                     != self._settings["distancePerCount"]
+                    or self._config["wheelSymmetryError"]
+                    != self._settings["wheelSymmetryError"]
                     or self._config["ignoreProximity"]
                     != self._settings["ignoreProximity"]
                     or self._config["ignoreCliffSensors"]

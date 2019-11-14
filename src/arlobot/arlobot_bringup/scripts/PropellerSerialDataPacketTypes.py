@@ -83,7 +83,7 @@ class PropellerSerialDataPacketTypes(object):
         #       If these do not not match what ROS intends, then ROS sends the settings
         #       to the Propeller Board until they match.
         self.CharacterConfig = "c"
-        self.FormatConfig = "<ffBBBBB"
+        self.FormatConfig = "<fffBBBBB"
 
         #   t - Test: Test message
         #       This is the only message type that is sent BOTH ways.
@@ -132,21 +132,21 @@ class PropellerSerialDataPacketTypes(object):
         #   s - Settings: Set options for the robot:
         #         trackWidth
         #         distancePerCount
+        #         wheelSymmetryError
         #         ignoreProximity
         #         ignoreCliffSensors
         #         ignoreIRSensors
         #         ignoreFloorSensors
         #         pluggedIn
-        #       NOTE: This was 'd' after Robot Initialized. I'd rather keep them distinct,
-        #             and just start fresh to avoid confusion.
         self.CharacterSettings = "s"
-        self.FormatSettings = "<ffBBBBB"  # Settings Packet Format
+        self.FormatSettings = "<fffBBBBB"  # Settings Packet Format
 
         class SettingsDataPacket:
             def __init__(
                 self,
                 trackWidth=0.0,
                 distancePerCount=0.0,
+                wheelSymmetryError=0.0,
                 ignoreProximity=0,
                 ignoreCliffSensors=0,
                 ignoreIRSensors=0,
@@ -155,6 +155,7 @@ class PropellerSerialDataPacketTypes(object):
             ):
                 self.trackWidth = trackWidth
                 self.distancePerCount = distancePerCount
+                self.wheelSymmetryError = wheelSymmetryError
                 self.ignoreProximity = ignoreProximity
                 self.ignoreCliffSensors = ignoreCliffSensors
                 self.ignoreIRSensors = ignoreIRSensors

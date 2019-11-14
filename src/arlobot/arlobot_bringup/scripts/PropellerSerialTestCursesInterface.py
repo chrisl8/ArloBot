@@ -91,6 +91,7 @@ class Screen(object):
         self._max_lines = None
         self.window = None
         self.maximumScrollPage = None
+        self._rotatingCounterClockwise = True
 
     def init_curses(self):
         """Setup the curses"""
@@ -172,6 +173,10 @@ class Screen(object):
                     self.sendCommandsToSerialTester("settings_distancePerCountDown")
                 elif ch == ord("D"):
                     self.sendCommandsToSerialTester("settings_distancePerCountUp")
+                elif ch == ord("s"):
+                    self.sendCommandsToSerialTester("settings_wheelSymmetryErrorDown")
+                elif ch == ord("S"):
+                    self.sendCommandsToSerialTester("settings_wheelSymmetryErrorUp")
                 elif ch == ord("o"):
                     self.sendCommandsToSerialTester("settings_abdSpeedLimitDown")
                 elif ch == ord("O"):
@@ -254,6 +259,7 @@ class Screen(object):
                 elif ch == ord("3"):
                     self.sendCommandsToSerialTester("maneuvers_rotate_360")
                 elif ch == ord("r"):
+                    self._rotatingCounterClockwise = not self._rotatingCounterClockwise
                     self.sendCommandsToSerialTester("maneuvers_reverse")
                 elif ch == ord("a"):
                     self.sendCommandsToSerialTester("movea")
@@ -492,8 +498,9 @@ class Screen(object):
             )
             rowNumber = self.displayRow(
                 rowNumber,
-                "d - distancePerCountDown decrease by 0.00001\tD - distancePerCountUp increase by 0.00001",
+                "d - distancePerCount decrease by 0.00001\tD - distancePerCount increase by 0.00001",
             )
+            rowNumber = self.displayRow(rowNumber, "s - wheelSymmetryError decrease by 0.00001\tS = wheelSymmetryError increase by 0.00001")
             rowNumber = self.displayRow(
                 rowNumber, "o / O: increase / decrease abd_speedLimit"
             )
@@ -513,6 +520,10 @@ class Screen(object):
             rowNumber = self.displayRow(
                 rowNumber, "f - Forward 1 meter\t\tb - Backward 1 meter"
             )
+            if self._rotatingCounterClockwise:
+                rowNumber, "Rotation: (Counterclockwise - Left)"
+            else:
+                rowNumber, "Rotation: (Clockwise - Right)"
             rowNumber = self.displayRow(rowNumber, "4 - rotate 45 degrees")
             rowNumber = self.displayRow(rowNumber, "9 - rotate 90 degrees")
             rowNumber = self.displayRow(rowNumber, "8 - rotate 180 degrees")

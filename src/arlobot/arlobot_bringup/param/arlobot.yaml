@@ -15,8 +15,10 @@ baudRate: 115200
 # HB-25 numbers;
 #driveGeometry: {trackWidth: 0.403, distancePerCount: 0.00676}
 # DHB-10 numbers:
-driveGeometry: {trackWidth: 0.403, distancePerCount: 0.00338}
+driveGeometry: {trackWidth: 0.403, distancePerCount: 0.00338, wheelSymmetryError: 1.0}
 # Note that updates to trackWidth & distancePerCount will be sent to the robot in real time.
+# A wheelSymmetryError of 1.0 means no error. See README.md about calibration for help on setting it,
+# but in short it accounts for a difference in left/right wheel diameter.
 #
 # Set usbRelayInstalled to False if you do not have a USB Relay installed to turn your motors on and off,
 # In which case it will be assumed they are always on, or at least that you turn them on by hand

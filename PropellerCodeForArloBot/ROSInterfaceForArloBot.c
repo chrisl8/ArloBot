@@ -140,7 +140,8 @@ fdserial *term;
 // http://learn.parallax.com/activitybot/calculating-angles-rotation
 static float distancePerCount = 0.0;
 static float trackWidth = 0.0;
-/* See ~/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml
+static float wheelSymmetryError = 0.0;
+/* See ~/.arlobot/arlobot.yaml
    to set or change these values
 */
 
@@ -345,6 +346,7 @@ int main() {
         // These are settings that can change
         trackWidth = settingsData.dataStruct.trackWidth;
         distancePerCount = settingsData.dataStruct.distancePerCount;
+        wheelSymmetryError = settingsData.dataStruct.wheelSymmetryError;
         ignoreProximity = settingsData.dataStruct.ignoreProximity;
         ignoreIRSensors = settingsData.dataStruct.ignoreIRSensors;
         ignoreFloorSensors = settingsData.dataStruct.ignoreFloorSensors;
@@ -355,6 +357,7 @@ int main() {
         // ROS will keep sending this data until we do this.
         configData.dataStruct.trackWidth = trackWidth;
         configData.dataStruct.distancePerCount = distancePerCount;
+        configData.dataStruct.wheelSymmetryError = wheelSymmetryError;
         configData.dataStruct.ignoreProximity = ignoreProximity;
         configData.dataStruct.ignoreCliffSensors = ignoreCliffSensors;
         configData.dataStruct.ignoreIRSensors = ignoreIRSensors;
@@ -489,7 +492,8 @@ int main() {
         expectedRightSpeed = newCommandedVelocity + angularVelocityOffset;
 
         expectedLeftSpeed = expectedLeftSpeed / distancePerCount;
-        expectedRightSpeed = expectedRightSpeed / distancePerCount;
+        expectedRightSpeed =
+            expectedRightSpeed / distancePerCount * wheelSymmetryError;
 
         newInputLeftSpeed = (int)expectedLeftSpeed;
         newInputRightSpeed = (int)expectedRightSpeed;
