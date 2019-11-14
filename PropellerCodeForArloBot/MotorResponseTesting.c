@@ -115,7 +115,7 @@ int main() {
     // tweak between runs without reloading the Propeller EEPROM.
     // http://learn.parallax.com/activitybot/calculating-angles-rotation
     // See
-    // ~/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml to
+    // ~/.arlobot/arlobot.yaml to
     // set or change this value
     double distancePerCount = 0.0, trackWidth = 0.0;
 
@@ -150,7 +150,7 @@ int main() {
 
     // For Debugging without ROS:
     // See
-    // ~/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml
+    // ~/.arlobot/arlobot.yaml
     // for most up to date values
     trackWidth = 0.403000; // from measurement and then testing
     distancePerCount = 0.00338;

@@ -65,7 +65,7 @@ class PropellerSerialTest(object):
         self._usbPort = usbPort
 
         configFilename = (
-            os.path.dirname(os.path.realpath(__file__)) + "/../param/arlobot.yaml"
+                os.getenv("HOME") + "/.arlobot/arlobot.yaml"
         )
 
         with open(configFilename, "r") as stream:
