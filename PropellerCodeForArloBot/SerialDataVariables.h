@@ -10,6 +10,13 @@
 // =============================================== //
 
 // =============================================== //
+// This is a companion file to
+// src/arlobot/arlobot_bringup/scripts/PropellerSerialDataPacketTypes.py
+// where the data types are defined for the ROS side
+// Python code.
+// =============================================== //
+
+// =============================================== //
 // * Test Data *
 // Data used to test serial communications with Propeller
 // Test Data is the ONLY packet that is both
@@ -81,10 +88,11 @@ typedef struct readyStruct_st {
   uint8_t floorCount;      // 1
   uint8_t buttonCount;     // 1
   uint8_t ledCount;        // 1
+  uint8_t version;         // 1
   uint8_t dataCheckSum;    // 1 - Remember to include the checksum
-} readyStruct_t;           // 8 Total length
+} readyStruct_t;           // 9 Total length
 
-#define readyDataLength 8
+#define readyDataLength 9
 
 typedef union {
   readyStruct_t dataStruct;

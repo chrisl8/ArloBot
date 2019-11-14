@@ -12,13 +12,16 @@
 # Special thanks to arduino.py by Dr. Rainer Hessmer
 # https://code.google.com/p/drh-robotics-ros/
 #
-# NOTE: This script requires parameters to be loaded from param/arlobot.yaml!
+# NOTE: This script requires parameters to be loaded from ~/.arlobot/arlobot.yaml!
 
 from __future__ import print_function
 import rospy
 import tf2_ros
 from math import sin, cos
 import time
+import numpy.ma as ma
+import os
+import subprocess
 
 from geometry_msgs.msg import Quaternion
 from geometry_msgs.msg import Twist
@@ -27,6 +30,7 @@ from nav_msgs.msg import Odometry
 from arlobot_msgs.msg import usbRelayStatus, arloStatus, arloSafety, arloButtons
 from arlobot_msgs.srv import FindRelay, ToggleRelay, ToggleLED
 
+from checkPropellerCodeVersionNumber import checkPropellerCodeVersionNumber
 from PropellerSerialInterface import PropellerSerialInterface
 from PropellerSerialDataPacketTypes import PropellerSerialDataPacketTypes
 from OdomStationaryBroadcaster import OdomStationaryBroadcaster
@@ -814,6 +818,24 @@ class PropellerComm(object):
         # When the Propeller Board first boots it will send a 'ready' message
         # until it gets init data.
         rospy.logdebug(data)
+
+        # The Ready data includes a version number.
+        # Now we should compare it to the version number in the code
+        # on this computer to ensure that any updates made here
+        # were sent to the Propeller board before this code was run.
+        # If not, fail and display an error.
+        propellerVersionNumber = checkPropellerCodeVersionNumber()
+        if not self.serialInterface.propellerCodeVersion == propellerVersionNumber:
+            rospy.logfatal("ERROR: Propeller Code does not match ROS Code!!!")
+            rospy.logfatal(
+                "Please use SimpleIDE to install the latest Propeller code to your Propeller Board: https://ekpyroticfrood.net/?p=165"
+            )
+            killScriptName = (
+                os.path.dirname(os.path.realpath(__file__))
+                + "/../../../../scripts/kill_ros.sh"
+            )
+            subprocess.call([killScriptName])
+
         rospy.logdebug("Initialising Propeller Board.")
         initData = self.dataTypes.InitDataPacket(
             self.lastX, self.lastY, self.lastHeading

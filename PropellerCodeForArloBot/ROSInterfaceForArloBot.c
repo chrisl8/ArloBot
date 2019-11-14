@@ -79,6 +79,8 @@ https://forum.arduino.cc/index.php?topic=225329
 https://forum.arduino.cc/index.php?topic=416340.0
 */
 
+#include "versionNumber.h"
+
 #include "fdserial.h"
 #include "simpletools.h"
 #include <stdbool.h> // This is how you get bool, true/false to work in c99!
@@ -408,6 +410,7 @@ int main() {
         readyData.dataStruct.floorCount = NUMBER_OF_FLOOR_SENSORS;
         readyData.dataStruct.buttonCount = NUMBER_OF_BUTTON_SENSORS;
         readyData.dataStruct.ledCount = NUMBER_OF_LEDS;
+        readyData.dataStruct.version = PROPELLER_CODE_VERSION_NUMBER;
 
         // Add/update checksum in struct for outgoing data
         readyData.dataStruct.dataCheckSum =

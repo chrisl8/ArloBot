@@ -24,6 +24,7 @@ from math import sqrt, pow, radians, pi
 from PropellerSerialInterface import PropellerSerialInterface
 from PropellerSerialDataPacketTypes import PropellerSerialDataPacketTypes
 from PropellerSerialTestCursesInterface import Screen
+from checkPropellerCodeVersionNumber import checkPropellerCodeVersionNumber
 
 
 class Linear(object):
@@ -114,6 +115,7 @@ class PropellerSerialTest(object):
         self._printOutgoingTestPackets = True
 
         self._lastInputCommand = "none"
+        self._closingMessageToDisplay = ""
         self.screen = Screen([], self.inputFromScreen)
 
         self._stallForInit = False
@@ -223,12 +225,28 @@ class PropellerSerialTest(object):
         # This is only intended for testing. Your calling script should provide
         # an initResponseFunction to provide the proper data to initialize the robot.
         # Initialize so it stops sending the 'r' Ready signal, and stops the pre-init pause
+
         self._stallForInit = True
-        # NOTE: Other fast writing functions should have at least  1 second sleep
+        # NOTE: Other fast writing functions should have at least a 1 second sleep
         # if they see self._stallForInit, otherwise they can saturate the interface
         # so badly that an init can never get through if needed after
         # an unexpected board reset or disconnect
-        self.screen.addLine("i: Init Request Received:" + str(data))
+        self.screen.addLine("Ready Packet Received:" + str(data))
+
+        # The Ready data includes a version number.
+        # Now we should compare it to the version number in the code
+        # on this computer to ensure that any updates made here
+        # were sent to the Propeller board before this code was run.
+        # If not, fail and display an error.
+        propellerVersionNumber = checkPropellerCodeVersionNumber()
+        self.screen.addLine(
+            "Version matches: "
+            + str(self.serialInterface.propellerCodeVersion == propellerVersionNumber)
+        )
+        if not self.serialInterface.propellerCodeVersion == propellerVersionNumber:
+            self._closingMessageToDisplay = "ERROR: Propeller Code does not match ROS Code!!!\nPlease use SimpleIDE to install the latest Propeller code to your Propeller Board: https://ekpyroticfrood.net/?p=165"
+            self._lastInputCommand = "quit"
+
         initData = self.dataTypes.InitDataPacket(
             self._settings["X"], self._settings["Y"], self._settings["Heading"]
         )
@@ -1204,6 +1222,10 @@ class PropellerSerialTest(object):
 
                 # self.screen.addLine(str('bob'))
                 time.sleep(0.5)
+
+        if self._closingMessageToDisplay != "":
+            print("\n\n\n\n")
+            print(self._closingMessageToDisplay)
 
         """
         TODO:

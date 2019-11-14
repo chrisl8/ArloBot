@@ -5,7 +5,7 @@
 # ======================================
 """
 These are the Packet Types that can be sent
-to and from the Propeller Board.
+to and received from the Propeller Board.
 """
 
 
@@ -16,9 +16,11 @@ class PropellerSerialDataPacketTypes(object):
         # SO on the Python side use 'f' NOT 'd'!! Or you get a mismatch between pack and the struct,
         # because 'd' is 64 bits normally!
 
-        # The idea is that we send an agreed upon packet format that both sides understand to always be the same.
-        # This may get tricky if we want to have variable numbers of sensors, etc.
-        # Either we have to make the code more flexible, or generate this packet format string at run time.
+        # This is a companion file to PropellerCodeForArloBot/SerialDataVariables.h
+        # in which the data types for the Propeller board should match these
+
+        # The idea here is that we send an agreed upon packet format that both sides understand
+        # to always be the same.
 
         # the <Lhhhb  is interpreted as follows
         #   see https://docs.python.org/2/library/struct.html
@@ -28,11 +30,6 @@ class PropellerSerialDataPacketTypes(object):
         #     H   unsigned short uint16_t
         #     B   unsigned char - same as Propeller uint8_t
         #     f   float - Note, don't use d, it doesn't work.
-
-        # WARNING: In SimpleIDE there is a box that says "32bit Double" FLOAT is 32 bit!
-        # So what this means is there is no double, double === float
-        # SO on the Python side use 'f' NOT 'd'!! Or you get a mismatch between pack and the struct,
-        # because 'd' is 64 bits normally!
 
         # the following lines of code can be used to explore the packed data
         # print goodDataPacket
@@ -48,7 +45,7 @@ class PropellerSerialDataPacketTypes(object):
 
         # Data format options:
 
-        #  Incoming: (form Propeller Board)
+        #  Incoming: (Received form Propeller Board)
         #   e - Error: Error message
         #       This is also set by using 253, the "Special Byte" as the length,
         #       so the 'e' may be ignored, but if you don't fill this slot before the
@@ -59,19 +56,15 @@ class PropellerSerialDataPacketTypes(object):
         #       without any unpacking, so there is no code here for this data type.
 
         #   r - Ready: Propeller board is ready, but not initialized, replaces i
-        #       The only parameter this has is a single
+        #       This includes a single
         #       uint8_t loopCount
         #       that counts up as it loops, and will of course cycle back to 0
         #       every so often, but it gives some indication of time passing,
         #       and some data to checksum to verify serial functioning.
-        #       NOTE: We COULD set it up to just "ALWAYS RUN". Not sure what the drawbacks are.
-        #         Initially this period was to let the HB-25's start up, which is not an issue anymore.
-        #           This would run the QuickStartBoard 24x7, or could we kind of "detect" it?
-        #           This would run the gyro 24x7.
-        #         We would need sane default values, or some way to store the last values.
-        #           Can we save variables to the Propeller EEPROM?
+        #       This also includes the "variable" settings from the Propeller
+        #       such as sensor counts and the version of the Propeller code.
         self.CharacterReady = "r"
-        self.FormatReady = "<BBBBBBB"  # Ready Packet Format
+        self.FormatReady = "<BBBBBBBB"  # Ready Packet Format
 
         class ReadyDataPacket:
             def __init__(self, loopCount=0):
@@ -80,9 +73,7 @@ class PropellerSerialDataPacketTypes(object):
         self.ReadyDataPacket = ReadyDataPacket  # 1 byte Total + checksum
 
         #   o - Odometry: This includes odometry and ping/ir sensor data
-        #       NOTE: We will need to account for varying number of sensors per robot somehow.
-        #       NOTE: We also had an 's' option, but I want to combine that with the odometry
-        #       NOTE: We also had a 'b' option for buttons, but I also want to combine that.
+        #       NOTE: We need to account for varying number of sensors per robot.
         self.CharacterOdom = "o"
         self.FormatOdomBase = "<ffffffffBBBBBBBB"
         self.FormatOdom = self.FormatOdomBase
@@ -122,12 +113,11 @@ class PropellerSerialDataPacketTypes(object):
 
         self.TestDataPacket = TestDataPacket  # 16 bytes Total + checksum
 
-        #  Outgoing: (to Propeller Board)
+        #  Outgoing: (Sent to Propeller Board)
         #   t - Test: Test message intended to elicit a pre-formatted response
-        #       This is the only message type that is sent BOTH ways.
+        #       This is the only message type that is sent BOTH directions.
         #   i - Initialize: Data sent to Propeller in "Ready" state to tell it how to start up
-        #       NOTE: This was 'd' before Robot Initialized. I'd rather make then clearly distinct.
-        #       NOTE: We could send all init data in every speed (twist) update if that doesn't slow things down.
+        #       NOTE: This was 'd' before in the old system.
         self.CharacterInit = "i"
         self.FormatInit = "<fff"  # Init Packet Format
 
@@ -176,7 +166,7 @@ class PropellerSerialDataPacketTypes(object):
         #   m - Move messages: This is the requests to move, taken from Twist messages
         #         CommandedVelocity
         #         CommandedAngularVelocity
-        #       NOTE: This used to be 's' for Speed
+        #       NOTE: This used to be 's' for Speed in the old system.
         #       NOTE: These are expected to come in continually. If they stop, the robot
         #             should come to a stop, given enough timeout to account for normal
         #             delays between updates.
@@ -231,7 +221,8 @@ class PropellerSerialDataPacketTypes(object):
         #             maximum forward and reverse speed in Ticks Per Second (TPS).
         #             The code on the Propeller Board initially pegs these to the
         #             MAXIMUM_SPEED. Then the code adjusts these down and back up
-        #             in real time based on input from the sensors. When all sensors
+        #             in real time based on input from the sensors connected to the
+        #             Propeller board itself (PING and InfraRed). When all sensors
         #             indicate the way is clear, the variables are set back to equal
         #             MAXIMUM_SPEED. So setting these by hand is not only unusual,
         #             but you are literally fighting with the code on the Propeller

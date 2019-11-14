@@ -96,6 +96,7 @@ class PropellerSerialInterface(object):
         self.floorSensorCount = 0
         self.buttonCount = 0
         self.ledCount = 0
+        self.propellerCodeVersion = 0
 
     def Start(self):
         self._SerialDataGateway.Start()
@@ -423,6 +424,7 @@ class PropellerSerialInterface(object):
                             self.floorSensorCount = data[4]
                             self.buttonCount = data[5]
                             self.ledCount = data[6]
+                            self.propellerCodeVersion = data[7]
                             self._DataTypes.setFormatOdom(self.sensorDataCount)
 
                             self._readyResponseFunction(data)
