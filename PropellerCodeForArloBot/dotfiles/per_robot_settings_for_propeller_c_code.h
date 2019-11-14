@@ -5,7 +5,8 @@ For each QUESTION:
 UNCOMMENT '#define' lines for any included items,
 COMMENT '#define' lines for anything that is not included.
 For each SETTING:
-Set the variable as required, noting that usually these are ignored if the preceding QUESTION is commented out.
+Set the variable as required, noting that usually these are ignored if the
+preceding QUESTION is commented out.
 
 Example, My robot has a "Thing1", but not a "Thing2"
 */
@@ -13,20 +14,23 @@ Example, My robot has a "Thing1", but not a "Thing2"
 //#define hasTHingTwo
 
 /* Just like that, comment out the "has" line for things you do not have,
-and if you do have the thing, adjust the numbers on the other definition as needed.
-By using the #define lines, code for items you do not have is never seen by the compiler and is never even loaded on the Propeller bard, saving memory. */
+and if you do have the thing, adjust the numbers on the other definition as
+needed.
+By using the #define lines, code for items you do not have is never seen by the
+compiler and is never even loaded on the Propeller bard, saving memory. */
 
 /* NOTICE NOTICE NOTICE
-Changes to this file will NOT have any affect until you RELOAD the C code onto the
-propeller board with SimpleIDE!!!
+Changes to this file will NOT have any affect until you RELOAD the C code onto
+the propeller board with SimpleIDE!!!
 */
 
 // PROXIMITY SENSOR TUNING
 // Use these to tune the robots responses!
 // What is the maximum distance at which sensor readings should be noticed?
 #define MAX_DISTANCE 70
-// What is the maximum distance at which IR (Infrared) sensor readings should be noticed?
-// IR sensors tend to be less reliable, so make this shorter than the MAX_DISTANCE, which applies to PING sensors.
+// What is the maximum distance at which IR (Infrared) sensor readings should be
+// noticed? IR sensors tend to be less reliable, so make this shorter than the
+// MAX_DISTANCE, which applies to PING sensors.
 #define IR_MAX_DISTANCE 50
 // What is the minimum speed that the speed limiter should set the robot to?
 #define MINIMUM_SPEED 20
@@ -35,22 +39,26 @@ propeller board with SimpleIDE!!!
 #define INCREASE_THROTTLE_RATE 50
 #define DECREASE_THROTTLE_RATE 5
 
-// QUESTION: Does your robot have a 2nd Propeller "QuickStart" board where the PING sensors are connected?
+// QUESTION: Does your robot have a 2nd Propeller "QuickStart" board where the
+// PING sensors are connected?
 //#define hasQuickStartBoard
 // WARNING WARNING WARNING!
-// You must ALSO open up "2nd Board Code.c" and make changes there if you are using the QuickStart board!
-// Settings for QuickStart Board - IGNORE IF YOU DON'T HAVE ONE!
-// SETTING: Which pin on the Activity Board is the RX pin connected out to the QuickStart board?
+// You must ALSO open up "2nd Board Code.c" and make changes there if you are
+// using the QuickStart board! Settings for QuickStart Board - IGNORE IF YOU
+// DON'T HAVE ONE! SETTING: Which pin on the Activity Board is the RX pin
+// connected out to the QuickStart board?
 #define QUICKSTART_RX_PIN 5
-// SETTING: Which pin on the Activity Board is the TX pin connected in from the QuickStart board?
+// SETTING: Which pin on the Activity Board is the TX pin connected in from the
+// QuickStart board?
 #define QUICKSTART_TX_PIN 6
 
-// Settings for PING and IR (Infrared) sensors connected DIRECTLY to the Activity Board:
-// SETTING: Which pin on the Activity Board is the first PING sensor connected to?
-// Also used by the 2nd Quickstart board in my code.
+// Settings for PING and IR (Infrared) sensors connected DIRECTLY to the
+// Activity Board: SETTING: Which pin on the Activity Board is the first PING
+// sensor connected to? Also used by the 2nd Quickstart board in my code.
 #define FIRST_PING_SENSOR_PIN 5
 
-// QUESTION: Are you using an MCP3208 chip to read poll analog sensors from the Activity Board?
+// QUESTION: Are you using an MCP3208 chip to read poll analog sensors from the
+// Activity Board?
 //#define hasMCP3208
 // Settings for MCP3208, if it has one:
 // SETTING: How many IR sensors (if any) are connected to your MCP3208?
@@ -58,7 +66,8 @@ propeller board with SimpleIDE!!!
 #define MCP3208_DINOUT_PIN 3
 #define MCP3208_CLK_PIN 4
 #define MCP3208_CS_PIN 2
-// MCP3208 reference voltage setting. I use 5.0v for the 5.0v IR sensors from Parallax
+// MCP3208 reference voltage setting. I use 5.0v for the 5.0v IR sensors from
+// Parallax
 #define MCP3208_REFERENCE_VOLTAGE 5.0
 
 // PROXIMITY SENSORS:
@@ -111,11 +120,15 @@ All of these will be assumed to face forward. */
    in to your board.
    WARNING: Be sure the array has the correct number of entries! */
 const int haltDistance[NUMBER_OF_PING_SENSORS] = {12};
-//const int haltDistance[NUMBER_OF_PING_SENSORS] = {5, 10, 12, 10, 5, 5, 10, 12, 10, 5, 10, 12, 10, 12};
+// const int haltDistance[NUMBER_OF_PING_SENSORS] = {5, 10, 12, 10, 5, 5, 10,
+// 12, 10, 5, 10, 12, 10, 12};
 const int startSlowDownDistance[NUMBER_OF_PING_SENSORS] = {MAX_DISTANCE};
-//const int startSlowDownDistance[NUMBER_OF_PING_SENSORS] = {8, 40, MAX_DISTANCE, 40, 8, 8, 40, MAX_DISTANCE, 40, 8, 40, MAX_DISTANCE, 40, MAX_DISTANCE};
+// const int startSlowDownDistance[NUMBER_OF_PING_SENSORS] = {8, 40,
+// MAX_DISTANCE, 40, 8, 8, 40, MAX_DISTANCE, 40, 8, 40, MAX_DISTANCE, 40,
+// MAX_DISTANCE};
 // Set shorter distances for IR sensors because they are less reliable.
-const int IRstartSlowDownDistance[NUMBER_OF_IR_SENSORS] = {8, 20, IR_MAX_DISTANCE, 20, 8, IR_MAX_DISTANCE, 0, 0};
+const int IRstartSlowDownDistance[NUMBER_OF_IR_SENSORS] = {
+    8, 20, IR_MAX_DISTANCE, 20, 8, IR_MAX_DISTANCE, 0, 0};
 /* My last two IR sensors are cliff sensors, thus the "0, 0" because slowdown
 does not apply to them. */
 
@@ -123,8 +136,9 @@ does not apply to them. */
 // Put the sensor number by each label
 // Comment out any sensor you do not have
 #define FRONT_CENTER_SENSOR 2
-// NOTE: IF you comment out the FRONT_CENTER_SENSOR, then ALL Front sensors are ignored for escaping!
-// "Left" refers to the ROBOT's left, assuming he faces the way he drives "forward"
+// NOTE: IF you comment out the FRONT_CENTER_SENSOR, then ALL Front sensors are
+// ignored for escaping! "Left" refers to the ROBOT's left, assuming he faces
+// the way he drives "forward"
 //#define FRONT_NEAR_LEFT_SENSOR 1
 //#define FRONT_FAR_LEFT_SENSOR 0
 //#define FRONT_NEAR_RIGHT_SENSOR 3
@@ -132,7 +146,8 @@ does not apply to them. */
 //#define REAR_FAR_RIGHT_SENSOR 5
 //#define REAR_NEAR_RIGHT_SENSOR 6
 //#define REAR_CENTER_SENSOR 7
-// NOTE: IF you comment out the REAR_CENTER_SENSOR, then ALL Rear sensors are ignored for escaping!
+// NOTE: IF you comment out the REAR_CENTER_SENSOR, then ALL Rear sensors are
+// ignored for escaping!
 //#define REAR_NEAR_LEFT_SENSOR 8
 //#define REAR_FAR_LEFT_SENSOR 9
 //#define FRONT_UPPER_DECK_NEAR_LEFT_SENSOR 10
@@ -151,8 +166,8 @@ If you don't want to do this, just comment this setting out:
 */
 //#define RENAME_REAR_IR_SENSOR REAR_CENTER_SENSOR
 
-
-// QUESTION: Does your robot have a PIR (Passive Infrared) sensor connected to the Activity Board?
+// QUESTION: Does your robot have a PIR (Passive Infrared) sensor connected to
+// the Activity Board?
 /* NOTE: I got this PIR sensor for free, and it is fun,
    but it doesn't do much for you when the robot is moving
    and sending out IR signals with the Kinect/Xtion
@@ -176,16 +191,20 @@ If you don't want to do this, just comment this setting out:
 #define GYRO_SDA_PIN 0
 
 // VOLTAGE MONITORING:
-// QUESTION: Do you have a voltage divider connected to the Activity Board's built in ADC to monitor voltage at the left and right motors?
+// QUESTION: Do you have a voltage divider connected to the Activity Board's
+// built in ADC to monitor voltage at the left and right motors?
 //#define hasMotorPowerMonitorCircuit
 // Settings for Motor Power Monitor Circuit, if it has one:
 // If these get flipped just flip the wires, or the numbers.
 #define LEFT_MOTOR_ADC_PIN 0
 #define RIGHT_MOTOR_ADC_PIN 1
-// Value for reported left and right motor ADC voltage when hasMotorPowerMonitorCircuit is not defined.
-// A value less than 1 will prevent the robot from moving under ROS control in propellerbot_node.py unless that file is modified.
-// In propellerbot_node.py, the ratio 15/4.69 is used to convert the right motor ADC voltage to measured and reported robot battery voltage.
-#define DEFAULT_MOTOR_ADC_VOLTAGE (12.0 *(4.69/15.0))
+// Value for reported left and right motor ADC voltage when
+// hasMotorPowerMonitorCircuit is not defined. A value less than 1 will prevent
+// the robot from moving under ROS control in propellerbot_node.py unless that
+// file is modified. In propellerbot_node.py, the ratio 15/4.69 is used to
+// convert the right motor ADC voltage to measured and reported robot battery
+// voltage.
+#define DEFAULT_MOTOR_ADC_VOLTAGE (12.0 * (4.69 / 15.0))
 
 // CLIFF SENSORS:
 // QUESTION: Do you have IR "cliff" sensors mounted to the front of the robot?
@@ -194,8 +213,8 @@ If you don't want to do this, just comment this setting out:
 #define FIRST_CLIFF_SENSOR 5
 // SETTING: How many cliff sensors are there?
 #define NUMBER_OF_CLIFF_SENSORS 2
-// SETTING: What is the maximum distance before the robot should consider it to be a cliff?
-// at 30 it was stalling when crossing half inch bumps.
+// SETTING: What is the maximum distance before the robot should consider it to
+// be a cliff? at 30 it was stalling when crossing half inch bumps.
 #define FLOOR_DISTANCE 40
 
 // FLOOR OBSTACLE SENSORS:
@@ -205,10 +224,12 @@ If you don't want to do this, just comment this setting out:
 #define NUMBER_OF_FLOOR_SENSORS 4
 
 // Quickstart Board Settings
-// I have a SECOND Propeller chip on a Quickstart board that polls the PING and IR sensors, so this is settings for that.
-// Which pin on the QuickStart Board is the RX pin connected out to the Activity board?
+// I have a SECOND Propeller chip on a Quickstart board that polls the PING and
+// IR sensors, so this is settings for that. Which pin on the QuickStart Board
+// is the RX pin connected out to the Activity board?
 #define ACTIVITYBOARD_RX_PIN 0
-// Which pin on the QuickStart Board is the TX pin connected in from the Activity board?
+// Which pin on the QuickStart Board is the TX pin connected in from the
+// Activity board?
 #define ACTIVITYBOARD_TX_PIN 1
 
 // Buttons:
@@ -226,20 +247,25 @@ That is all, you are ready to attempt to build this code and load it
 onto your Propeller Activity board!
 */
 
-// Maximum speed in ticks per second. Even if ROS asks us to go faster, we will not.
-// This is used to set the abd_speedLimit and abdR_speedLimit
-#define MAXIMUM_SPEED 220 // Two TPS faster than what we are telling ROS is the maximum speed.
+// Maximum speed in ticks per second. Even if ROS asks us to go faster, we will
+// not. This is used to set the abd_speedLimit and abdR_speedLimit
+// Two TPS faster than what we are telling ROS is the maximum speed:
+#define MAXIMUM_SPEED 220
 // Use MotorResponseTesting.c if you want to test/adjust this,
-// And be sure to edit the ROS config files with the maximum linear (m/s) and angular (rad/s) velocity
+// And be sure to edit the ROS config files with the maximum linear (m/s) and
+// angular (rad/s) velocity
 
 // Acceleration rate for DBH-10
 // The range is 0 to 32767 with a default of 512
-// according to https://www.parallax.com/sites/default/files/downloads/28231-DHB-10-Arlo-Firmware-Guide-v1.0.pdf
-// ROS DWA doesn't like it when the robot throttles acceleration. So we are ramping it up a bit from the default.
+// according to
+// https://www.parallax.com/sites/default/files/downloads/28231-DHB-10-Arlo-Firmware-Guide-v1.0.pdf
+// ROS DWA doesn't like it when the robot throttles acceleration. So we are
+// ramping it up a bit from the default.
 #define DHB10_ACC 1024
-// Use MotorReponseTesting.c if you want to test/adjust this,
-// And be sure to edit the ROS config files with the maximum linear (m/s^2) and angular (rad/s^2) acceleration
-// Calculator: http://www.smartconversion.com/unit_calculation/Acceleration_calculator.aspx
+// Use MotorResponseTesting.c if you want to test/adjust this,
+// And be sure to edit the ROS config files with the maximum linear (m/s^2) and
+// angular (rad/s^2) acceleration Calculator:
+// http://www.smartconversion.com/unit_calculation/Acceleration_calculator.aspx
 
 /* Connect Encoder Pins directly to the Propeller board,
 instead of using the DHB10.
@@ -261,18 +287,21 @@ but it may help in some other way too. */
 #define cogStartupDelay 100
 
 /* These settings affect the speed at which the "loop" on the robot runs.
-If it runs too fast we overwhelm serial connections and crash things or get garbage.
-Running too slow will reduce the responsiveness of the robot.
-Remember though that going faster and "hanging" isn't more responsive.
+If it runs too fast we overwhelm serial connections and crash things or get
+garbage. Running too slow will reduce the responsiveness of the robot. Remember
+though that going faster and "hanging" isn't more responsive.
 */
-#define dhb10OverloadPause 2 // Pause before each read/write to DHB10 to avoid overloading it.
-// 1 seems to work fine. 2 seems perfectly safe without any ill affects. I suggest filing a github issue before increasing this.
+#define dhb10OverloadPause                                                     \
+  2 // Pause before each read/write to DHB10 to avoid overloading it.
+// 1 seems to work fine. 2 seems perfectly safe without any ill affects. I
+// suggest filing a github issue before increasing this.
 
 /* Timeout setting. After this many seconds the robot will stop if it
 has not received a twist command from ROS.
 
 It is often desirable to set this longer when doing direct to serial testing.
 
-However, ROS typically updates the robot frequently, so this should work with ROS.
+However, ROS typically updates the robot frequently, so this should work with
+ROS.
 */
 #define ROS_TIMEOUT 5
