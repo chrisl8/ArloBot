@@ -4,6 +4,9 @@
 ArloBot Package for ROS
 =======================
 
+# OUT OF DATE! #
+This branch is no longer maintained! If you are using Ubuntu 16.04 Kinetic, please use the [new-serial-interface](https://github.com/chrisl8/ArloBot/tree/new-serial-interface) branch instead!
+
 ## and SO MUCH MORE! ##
 
 1. This package provides a set of ROS packages for using a [Parallax Arlo Platform](http://www.parallax.com/product/arlo-robotic-platform-system "Parallax") robot to run all of the demonstration projects for the [Robot Operating System (ROS)](http://www.ros.org/ "ROS") based [TurtleBot](http://wiki.ros.org/Robots/TurtleBot "TurtleBot")
