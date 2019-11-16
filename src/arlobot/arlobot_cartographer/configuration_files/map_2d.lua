@@ -12,6 +12,8 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+-- NOTE: Kinetic and Melodic config options are different!
+
 include "map_builder.lua"
 include "trajectory_builder.lua"
 
@@ -36,6 +38,6 @@ options = {
 MAP_BUILDER.use_trajectory_builder_2d = true
 
 TRAJECTORY_BUILDER_2D.use_imu_data = false
--- TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.angular_search_window = math.rad(35.) -- Removed in to let default take over instead
+-- TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.angular_search_window = math.rad(35.) -- Removed in order to let default take over instead
 
 return options
