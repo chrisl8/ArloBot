@@ -549,6 +549,17 @@ if ! (id | grep video >/dev/null); then
   sudo adduser "${USER}" video >/dev/null
 fi
 
+if ! (sudo -nl|grep resetUSB > /dev/null && sudo -nl|grep modprobe > /dev/null)
+    then
+    printf "\n${YELLOW}[Setting up required sudo entries.]${NC}\n"
+    echo "${USER} ALL = NOPASSWD: ${SCRIPTDIR}/resetUSB.sh" > /tmp/arlobot_sudoers
+    echo "${USER} ALL = NOPASSWD: /sbin/modprobe" >> /tmp/arlobot_sudoers
+    chmod 0440 /tmp/arlobot_sudoers
+    sudo chown root:root /tmp/arlobot_sudoers
+    sudo mv /tmp/arlobot_sudoers /etc/sudoers.d/
+    sudo chown root:root /etc/sudoers.d/arlobot_sudoers
+fi
+
 if ! (command -v simpleide >/dev/null); then
   printf "\n${YELLOW}[Setting up Parallax SimpleIDE for putting code on Activity Board.]${NC}\n"
   cd /tmp
