@@ -666,9 +666,9 @@ for i in "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/"*; do
   fi
 done
 
-if [[ ! -e /etc/cron.d/arlobot ]]; then
+if ! (crontab -l >/dev/null 2>&1) || ! (crontab -l | grep startpm2 > /dev/null 2>&1);then
   printf "\n${YELLOW}[Adding cron job to start web server on system reboot.]${NC}\n"
-  echo "@reboot $(whoami) ${HOME}/catkin_ws/src/ArloBot/startpm2.sh > ${HOME}/crontab.log" | sudo tee -a /etc/cron.d/arlobot >/dev/null
+  (crontab -l 2>/dev/null; echo "@reboot $(whoami) ${HOME}/catkin_ws/src/ArloBot/startpm2.sh > ${HOME}/crontab.log") | crontab -
 fi
 
 printf "\n${LIGHTPURPLE}[Flushing PM2 logs and starting/restarting web server.]${NC}\n"
