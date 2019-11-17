@@ -1,4 +1,4 @@
-dist: xenial
+dist: bionic
 notifications:
   email:
     on_success: change
@@ -6,13 +6,13 @@ notifications:
 matrix:
   include:
     - language: minimal
-      name: "Kinetic Robot Setup Script"
+      name: "Melodic Robot Setup Script"
       cache:
         directories:
           - ~/.npm
           - ~/.cache
       script:
-        - ./setup-kinetic.sh
+        - ./setup-melodic.sh
 
     - language: node_js
       name: "Node Scripts"
@@ -60,29 +60,3 @@ matrix:
         - npm run build
       before_install:
         - cd website
-
-    - language: minimal
-      name: "Cosmic Workstation Setup"
-      cache:
-        directories:
-          - ~/.npm
-          - ~/.cache
-      services:
-        - docker
-      before_install:
-        - docker pull ubuntu:18.10
-      script:
-        - docker run -ti -e TRAVIS=${TRAVIS} -v $PWD:/home/user ubuntu:18.10 /bin/bash -c "/home/user/workstation-melodic-on-cosmic.sh"
-
-    - language: minimal
-      name: "Melodic Robot Setup Script Beta Test"
-      cache:
-        directories:
-          - ~/.npm
-          - ~/.cache
-      services:
-        - docker
-      before_install:
-        - docker pull ubuntu:18.04
-      script:
-        - docker run -ti -e TRAVIS=${TRAVIS} -v $PWD:/home/user ubuntu:18.04 /bin/bash -c "/home/user/setup-melodic-test-DO_NOT_USE.sh"
