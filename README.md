@@ -1,33 +1,14 @@
 [![Build Status](https://travis-ci.com/chrisl8/ArloBot.svg)](https://travis-ci.com/chrisl8/ArloBot)
-[![codecov](https://codecov.io/gh/chrisl8/ArloBot/branch/new-serial-interface/graph/badge.svg)](https://codecov.io/gh/chrisl8/ArloBot)
+[![codecov](https://codecov.io/gh/chrisl8/ArloBot/branch/melodic/graph/badge.svg)](https://codecov.io/gh/chrisl8/ArloBot)
 
 ArloBot Package for ROS
 =======================
 
-# Transition to Melodic and Ubuntu 18.04 LTS
-
-FYI: I am in the process of tranisitioning to ROS Melodic on Ubuntu 18.04 LTS.  
-As soon as I have it 100% working on my robot, I will start a new default branch called 'melodic'.  
-
-Until then, see below that there *IS* a script to install Melodic to Ubuntu 18.04 LTS now. It has "DO_NOT_USE" in the name to remind you that it is experimental, but feel free TO USE it and report issues back to me.  Thank you.
-
-## New Propeller C Code with new Serial Interface
-
-* Entirely new Propeller C code. Based on original but with many changes
-and modularized into .h files to help with organization.
-Also using clangformat to format code.
-
-* An entirely new serial interface has been written, using "binary" data
-transmission that includes strict checks for length and checksums on
-the data.
-
-* An new python curses based serial communications test program now allows testing of ALL Propeller board functions over serial with zero use of ROS to more easily ensure the hardware is working before starting ROS.
-
 ## and SO MUCH MORE! ##
 
-1. This package provides a set of ROS packages for using a [Parallax Arlo Platform](http://www.parallax.com/product/arlo-robotic-platform-system "Parallax") robot to run all of the demonstration projects for the [Robot Operating System (ROS)](http://www.ros.org/ "ROS") based [TurtleBot](http://wiki.ros.org/Robots/TurtleBot "TurtleBot")
+1. This package provides a set of ROS packages for using a [Parallax Arlo Platform](http://www.parallax.com/product/arlo-robotic-platform-system "Parallax") robot to run all of the demonstration projects for the [Robot Operating System (ROS)](http://www.ros.org/ "ROS") based on the old [TurtleBot](http://wiki.ros.org/Robots/TurtleBot "TurtleBot")
 
-2. This package also installs a node.js based front end GUI for the robot, complete with Twilio and Pushover integration and push button access to ROS functions:
+2. This package also installs a node.js based front end GUI for the robot, complete with Twilio and Pushover integration and push button access to ROS functions.
 
 ### Mobile Friendly Web Interface  
 ![Alt text](/screenshots/arlobotNewWebInterface.png "Web Interface")
@@ -36,8 +17,7 @@ the data.
 `~/catkin_ws/src/ArloBot/scripts/PropellerSerialTest.sh`  
 ![Alt text](/screenshots/PropellerSerialTest.png "Serial Test Program")
 
-An old demonstration video of this code on my ArloBot:
-http://youtu.be/7qJaA6K_WPE
+* An python curses based serial communications test program allows testing of ALL Propeller board functions over serial with zero use of ROS to more easily ensure the hardware is working before starting ROS.
 
 # Build a Robot! #
 First you need to build a robot!
@@ -65,23 +45,16 @@ Ask questions in the [Parallax Forums](http://forums.parallax.com/ "Parallax For
 Once your robot is built, you can use this package.
 
 ## Requirements ##
-Arlobot operates on ROS Kinetic which requires Ubuntu *16.04 LTS*, or Xbuntu or Lubuntu of the same version. I personally use Lubuntu on my robot's on board computer.
+Arlobot operates on ROS Melodic which requires Ubuntu *18.04 LTS*.
 
-If you put a fresh copy of Lubuntu 16.04 LTS on your robot's laptop then you can use the quick install script below.
+If you put a fresh copy of Ubuntu 18.04 LTS on your robot's laptop then you can use the quick install script below.
 
 ## Quick Install: ##
 There is now a script to install everything. Just run:
 
-For ROS Kinetic on Ubunut 16.04 LTS use:  
 ```
-bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/setup-kinetic.sh)
+bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/melodic/setup-melodic.sh)
 ```
-
-For ROS Melodic on Ubuntu 18.04 LTS (EXPERIMENTAL!) use:  
-```
-bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/setup-melodic-test-DO_NOT_USE.sh)
-```
-NOTE: When this is no longer "experimental", I will move Melodic to a new default branch on this git repository.
 
 Be sure to read the instructions that the script will print at the end about editing the config files in ~/.arlobot/
 
@@ -119,44 +92,11 @@ and point your web browser at the URL it gives you.
 
 If you use Ubuntu or Lubuntu there should also be a desktop icon on the robot's desktop that you can run to do the same thing and bring up this web page on the robot itself.
 
-## Workstation Install: ##
-If you have a desktop or another laptop computer running Ubuntu that you just want to run
-RVIZ, rqt_graph, etc. on, you can run this script to set up enough of ROS to do that, without
-attempting to compile the robot code.  
-
-**NOTE: These "workstation" installs will NOT run the robot! These are only for REMOTE work from another system.**
-
-For Ubuntu Wily (15.10) and Xenial (16.04):
-```
-bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/workstation-kinetic.sh)
-```  
-
-For Ubuntu Zesty (17.04), Yakkety (16.10), and Xenial (16.04):  
-
-```
-bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/workstation-lunar.sh)
-```  
-
-For Ubuntu Cosmic (18.10):  
-
-```
-bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/workstation-melodic-on-cosmic.sh)
-```  
-
-and your system will be set up to use as a "remote" station.  
-
-Once you have ROS running with a map loaded (or building) then you can run RVIZ on your workstation.  
-Look for the RVIZ icon on your desktop or in your Gnome Menu.  
-If that isn't there you can run this script to start RVIZ on your workstation:  
-`~/catkin_ws/src/ArloBot/scripts/view-navigation.sh`  
-There are also other things you can do, like look at the Transform Graph:  
-`~/catkin_ws/src/Arlobot/scripts/tf2pdf.sh`
-
 ## Workstation via [x11docker](https://github.com/mviereck/x11docker)
-If you do not have any of the supported versions of Ubuntu on your workstation laptop you can try using [x11docker](https://github.com/mviereck/x11docker):
+If you want to run RVIZ or other ROS tools from a remote Linux workstation, you do not have to install ROS on it. Instead try using [x11docker](https://github.com/mviereck/x11docker) via this setup script:
 
 ```
-bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/workstation-via-x11docker.sh)
+bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/melodic/workstation-via-x11docker.sh)
 ```  
 Then use these commands to run various remote functions via Docker:  
 `docker-view-navigation.sh`  
