@@ -44,12 +44,13 @@ async function polling() {
   if (intervalCount === 5) {
     publishRobotURL.updateRobotURL();
   }
-  if (intervalCount % 2 === 0) {
+  if (intervalCount === 0) {
     checkBattery();
   }
-  if (intervalCount % 2 === 1) {
-    masterRelay('read');
+  if (intervalCount === 5) {
     robotModel.usbRelay.updateAllRelayState();
+  } else if (intervalCount === 10) {
+    masterRelay('read');
   }
   if (intervalCount === intervalTop) {
     if (!webModel.cameraOn) {

@@ -2,6 +2,7 @@ const spawn = require('child_process').spawn;
 const personalData = require('./personalData');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
+const robotModel = require('./robotModel');
 
 /*
  To get the state of all relays:
@@ -14,7 +15,7 @@ const webModelFunctions = require('./webModelFunctions');
 class UsbRelay {
   constructor() {
     this.dataHolder = '';
-    this.busy = false;
+    robotModel.usbRelayControlBusy = false;
     this.script = `${__dirname}/../scripts/switch_relay_name.sh`;
     this.updateAllRelayState();
   }
@@ -31,8 +32,13 @@ class UsbRelay {
   }
 
   updateAllRelayState() {
-    if (!personalData.demoWebSite && personalData.useUSBrelay && !this.busy) {
-      this.busy = true;
+    if (
+      !personalData.demoWebSite &&
+      personalData.useUSBrelay &&
+      !robotModel.masterRelayBusy &&
+      !robotModel.usbRelayControlBusy
+    ) {
+      robotModel.usbRelayControlBusy = true;
       const process = spawn(this.script, ['all', 'state']);
       process.stdout.on('data', (data) => {
         if (data !== '') {
@@ -69,7 +75,7 @@ class UsbRelay {
           console.log(`UsbRelay State collection failed with code: ${code}`);
           console.log(this.dataHolder);
         }
-        this.busy = false;
+        robotModel.usbRelayControlBusy = false;
       });
     } else if (personalData.demoWebSite) {
       const demoRelayCount = 10;
@@ -102,8 +108,8 @@ class UsbRelay {
       const timeout = 20; // loops
       let triedSoFar = 0;
       const checkBusyOrSwitch = () => {
-        if (!this.busy) {
-          this.busy = true;
+        if (!robotModel.usbRelayControlBusy && !robotModel.masterRelayBusy) {
+          robotModel.usbRelayControlBusy = true;
           const state = onOrOff.toLowerCase();
           if (state !== 'on' && state !== 'off') {
             return;
@@ -125,8 +131,13 @@ class UsbRelay {
               );
               console.log(`UsbRelay Switch failed with code: ${code}`);
             }
-            this.busy = false;
-            this.updateAllRelayState();
+            const relayName = UsbRelay.findRelayName(relayNumber);
+            webModelFunctions.publishRelayState(
+              relayNumber,
+              onOrOff.toUpperCase(),
+              relayName,
+            );
+            robotModel.usbRelayControlBusy = false;
           });
         } else {
           triedSoFar++;

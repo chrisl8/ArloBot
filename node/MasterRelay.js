@@ -6,8 +6,7 @@ const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
 const UsbDevice = require('./UsbDevice.js');
 const personalData = require('./personalData');
-
-let working = false; // Prevent multiple instances from running at once in the same program
+const robotModel = require('./robotModel');
 
 function getPortName() {
   /** @namespace personalData.masterPowerRelayStringLocation */
@@ -25,10 +24,14 @@ function usbRelay(operation, runFromCommandLine) {
       console.error(`Failed to write to port: ${error}`);
       process.exit(1);
     }
-    working = false;
+    robotModel.masterRelayBusy = false;
   };
-  if (!personalData.demoWebSite && (operation !== 'read' || !working)) {
-    working = true;
+  if (
+    !personalData.demoWebSite &&
+    !robotModel.usbRelayControlBusy &&
+    !robotModel.masterRelayBusy
+  ) {
+    robotModel.masterRelayBusy = true;
     getPortName()
       .then((port) => {
         if (webModel.debugging) {

@@ -28,4 +28,6 @@ module.exports = {
   wayPointNavigator: {
     destinaitonWaypoint: undefined, // This will be the place we want the robot to go to.
   },
+  usbRelayControlBusy: false,
+  masterRelayBusy: false,
 };
