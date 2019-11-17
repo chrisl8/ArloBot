@@ -5,11 +5,7 @@
 INSTALLING_ROS_DISTRO=melodic
 
 # Run this straight off of github like this:
-# bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/setup-melodic-test-DO_NOT_USE.sh)
-
-# TODO: This is a test to start moving toward conversion from Kinetic to Melodic
-# TODO: Compare this script to setup-kinetic.sh to see if I need to add any changes made there.
-# TODO: Actually use this on the robot!
+# bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/melodic/setup-melodic.sh)
 
 #   TESTING
 #
@@ -20,11 +16,11 @@ INSTALLING_ROS_DISTRO=melodic
 # cd ~/catkin_ws/src/ArloBot
 #
 # Then either kick it off all in one shot:
-# sudo docker run -ti -v $PWD:/home/user ubuntu:18.04 /bin/bash -c "/home/user/setup-melodic-test-DO_NOT_USE.sh"
+# sudo docker run -ti -v $PWD:/home/user ubuntu:18.04 /bin/bash -c "/home/user/setup-melodic.sh"
 #
 # Or start an interactive shell in Docker and run it, with the ability to make changes and start it again when it finishes:
 # sudo docker run -ti -v $PWD:/home/user ubuntu:18.04 /bin/bash
-# /home/user/setup-melodic-test-DO_NOT_USE.sh
+# /home/user/setup-melodic.sh
 #
 # If you started a non-interactive ("one shot") build and then it crashed and you want to get in and look around:
 # https://docs.docker.com/engine/reference/commandline/commit/
@@ -243,9 +239,10 @@ cd ~/catkin_ws/src
 
 printf "${BLUE}ArloBot respository${NC}\n"
 if ! [[ -d ~/catkin_ws/src/ArloBot ]]; then
-  git clone -b new-serial-interface https://github.com/chrisl8/ArloBot.git
+  git clone -b melodic https://github.com/chrisl8/ArloBot.git
 else
   cd ~/catkin_ws/src/ArloBot
+  git checkout melodic
   git pull
 fi
 
