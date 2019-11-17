@@ -73,16 +73,3 @@ matrix:
         - docker pull ubuntu:18.10
       script:
         - docker run -ti -e TRAVIS=${TRAVIS} -v $PWD:/home/user ubuntu:18.10 /bin/bash -c "/home/user/workstation-melodic-on-cosmic.sh"
-
-    - language: minimal
-      name: "Melodic Robot Setup Script Beta Test"
-      cache:
-        directories:
-          - ~/.npm
-          - ~/.cache
-      services:
-        - docker
-      before_install:
-        - docker pull ubuntu:18.04
-      script:
-        - docker run -ti -e TRAVIS=${TRAVIS} -v $PWD:/home/user ubuntu:18.04 /bin/bash -c "/home/user/setup-melodic-test-DO_NOT_USE.sh"
