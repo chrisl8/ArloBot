@@ -28,7 +28,7 @@ if [[ "$(jq '.useMasterPowerRelay' "${HOME}"/.arlobot/personalDataForBehavior.js
   "${HOME}"/catkin_ws/src/ArloBot/scripts/switch_master_relay.sh off
 fi
 
-if [[ "$(jq '.useMyCroft' "${HOME}"/.arlobot/personalDataForBehavior.json)" == true ]]; then
+if [[ -d /home/chrisl8/catkin_ws/src/ArloBot/mycroft-core ]] && [[ "$(jq '.useMyCroft' "${HOME}"/.arlobot/personalDataForBehavior.json)" == true ]]; then
   cd "${HOME}"/catkin_ws/src/ArloBot/mycroft-core || exit 1
   ./start-mycroft.sh all
 fi
