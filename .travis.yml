@@ -11,8 +11,12 @@ matrix:
         directories:
           - ~/.npm
           - ~/.cache
+      services:
+        - docker
+      before_install:
+        - docker pull ubuntu:18.04
       script:
-        - ./setup-melodic.sh
+        - docker run -ti -e TRAVIS=${TRAVIS} -v $PWD:/home/user ubuntu:18.04 /bin/bash -c "/home/user/setup-melodic.sh"
 
     - language: node_js
       name: "Node Scripts"
