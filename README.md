@@ -4,12 +4,10 @@
 ArloBot Package for ROS
 =======================
 
-# Transition to Melodic and Ubuntu 18.04 LTS
-
-FYI: I am in the process of tranisitioning to ROS Melodic on Ubuntu 18.04 LTS.  
-As soon as I have it 100% working on my robot, I will start a new default branch called 'melodic'.  
-
-Until then, see below that there *IS* a script to install Melodic to Ubuntu 18.04 LTS now. It has "DO_NOT_USE" in the name to remind you that it is experimental, but feel free TO USE it and report issues back to me.  Thank you.
+# Kinetic Branch
+NOTE: This is the old branch for ROS Kinetic on Ubuntu 16.04. Please switch to the [melodic](https://github.com/chrisl8/ArloBot/tree/melodic) branch unless you have a reason to keep using this older branch.  
+This branch is no longer maintained, so bug fixes or new features will be missing.  
+If you need me to port a fix or feature over from [Melodic](https://github.com/chrisl8/ArloBot/tree/melodic) to the Kinetic branch please open an issue.
 
 ## New Propeller C Code with new Serial Interface
 
@@ -76,12 +74,6 @@ For ROS Kinetic on Ubunut 16.04 LTS use:
 ```
 bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/setup-kinetic.sh)
 ```
-
-For ROS Melodic on Ubuntu 18.04 LTS (EXPERIMENTAL!) use:  
-```
-bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/new-serial-interface/setup-melodic-test-DO_NOT_USE.sh)
-```
-NOTE: When this is no longer "experimental", I will move Melodic to a new default branch on this git repository.
 
 Be sure to read the instructions that the script will print at the end about editing the config files in ~/.arlobot/
 
