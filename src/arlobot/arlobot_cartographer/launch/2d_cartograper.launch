@@ -15,6 +15,35 @@
   limitations under the License.
 -->
 
+<!--
+Note that Kinetic used a different version of Cartographer than Melodic does,
+so lots of things changed.
+
+Documentation and example sources:
+https://google-cartographer.readthedocs.io/en/latest/
+
+Remember we are using ROS
+https://google-cartographer-ros.readthedocs.io/en/latest/your_bag.html#create-launch-files-for-your-slam-scenarios
+
+Note that you do NOT need to compile from source, the Ubuntu packages work fine.Cartographer
+
+Excellent example here:
+https://www.wilselby.com/2019/06/ouster-os-1-lidar-and-google-cartographer-integration/
+and their launch files:
+https://github.com/wilselby/diy_driverless_car_ROS/blob/master/rover_2dnav/cartographer_ros/launch/rover_2d.launch
+and their config files:
+
+Cartographer itself has their own examples:
+https://github.com/googlecartographer/cartographer_ros/tree/master/cartographer_ros
+you can also find these in the cartographer folders on the robot.
+
+The Clearpath Robot has a good example of using Cartographer
+https://www.clearpathrobotics.com/assets/guides/jackal/cartographer.html
+Github
+https://github.com/jackal/jackal_cartographer_navigation/blob/master/config/jackal.lua
+
+-->
+
 <launch>
 
   <node name="cartographer_node" pkg="cartographer_ros"
@@ -29,6 +58,9 @@
       <!-- TODO: This should be configurable -->
       <remap from ="points2" to="/scanse_sweep/pc2" />
   </node>
+
+  <node name="cartographer_occupancy_grid_node" pkg="cartographer_ros"
+    type="cartographer_occupancy_grid_node" args="-resolution 0.05" />
 
   <!-- TODO: This should work with whatever scanner, not be binary -->
   <arg name="loadScanseSweep" value="$(optenv HAS_SCANSE_SWEEP false)" />

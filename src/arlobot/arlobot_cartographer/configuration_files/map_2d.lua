@@ -26,13 +26,25 @@ options = {
   odom_frame = "odom",
   provide_odom_frame = false,
   use_odometry = true,
-  use_laser_scan = false, -- Cartographer cannot use a laser scan AND a point cloud
-  use_multi_echo_laser_scan = false,
+  -- use_laser_scan = false, -- Melodic does not use the use_laser_scan option.
+  -- use_multi_echo_laser_scan = false, -- Melodic does not use this option
   num_point_clouds = 1,
   lookup_transform_timeout_sec = 0.2,
   submap_publish_period_sec = 0.3,
   pose_publish_period_sec = 5e-3,
   trajectory_publish_period_sec = 30e-3,
+  -- New required config lines for melodic
+  use_nav_sat = false,
+  use_landmarks = false,
+  publish_frame_projected_to_2d = false,
+  num_laser_scans = 0, -- Using point cloud, not laser scan
+  num_multi_echo_laser_scans = 0,
+  num_subdivisions_per_laser_scan = 10, -- default, but also only applies to multi-echo scans
+  rangefinder_sampling_ratio = 1.,
+  odometry_sampling_ratio = 1.,
+  fixed_frame_pose_sampling_ratio = 1.,
+  imu_sampling_ratio = 1.,
+  landmarks_sampling_ratio = 1.,
 }
 
 MAP_BUILDER.use_trajectory_builder_2d = true
