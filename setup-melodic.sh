@@ -402,7 +402,14 @@ if [[ "${RESPONSE_TO_KINECT_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
 fi
 
 if [[ "${RESPONSE_TO_RPLIDAR_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then # Always test in Travis
-  printf "\n${BLUE}RPLIDAR Setup Coming Soon...${NC}\n"
+  printf "\n${BLUE}Slamtec RPLIDAR${NC}\n"
+  cd ~/catkin_ws/src
+  if ! [[ -d ~/catkin_ws/src/rplidar_ros ]]; then
+    git clone -b update_sdk_to1.12.0 https://github.com/Slamtec/rplidar_ros.git
+  else
+    cd ~/catkin_ws/src/rplidar_ros
+    git pull
+  fi
 fi
 
 printf "\n${BLUE}ROS by Example code${NC}\n"
