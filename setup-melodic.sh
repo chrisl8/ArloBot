@@ -663,7 +663,7 @@ if ! (crontab -l >/dev/null 2>&1) || ! (crontab -l | grep startpm2 >/dev/null 2>
   printf "\n${YELLOW}[Adding cron job to start web server on system reboot.]${NC}\n"
   # https://stackoverflow.com/questions/4880290/how-do-i-create-a-crontab-through-a-script
   (
-    echo "@reboot $(whoami) ${HOME}/catkin_ws/src/ArloBot/startpm2.sh > ${HOME}/crontab.log"
+    echo "@reboot ${HOME}/catkin_ws/src/ArloBot/startpm2.sh > ${HOME}/crontab.log"
   ) | crontab -
 fi
 
