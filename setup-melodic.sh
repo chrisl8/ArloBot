@@ -463,9 +463,6 @@ fi
 nvm install --lts
 nvm alias default lts/*
 
-printf "\n${YELLOW}[Updating npm]${NC}\n"
-npm update -g npm
-
 printf "\n${YELLOW}[Grabbing/Updating global dependencies for node packages]${NC}\n"
 printf "${BLUE}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
 cd
@@ -587,15 +584,14 @@ if ! (id | grep video >/dev/null); then
   sudo adduser "${USER}" video >/dev/null
 fi
 
-if ! (sudo -nl|grep resetUSB > /dev/null && sudo -nl|grep modprobe > /dev/null)
-    then
-    printf "\n${YELLOW}[Setting up required sudo entries.]${NC}\n"
-    echo "${USER} ALL = NOPASSWD: ${SCRIPTDIR}/resetUSB.sh" > /tmp/arlobot_sudoers
-    echo "${USER} ALL = NOPASSWD: /sbin/modprobe" >> /tmp/arlobot_sudoers
-    chmod 0440 /tmp/arlobot_sudoers
-    sudo chown root:root /tmp/arlobot_sudoers
-    sudo mv /tmp/arlobot_sudoers /etc/sudoers.d/
-    sudo chown root:root /etc/sudoers.d/arlobot_sudoers
+if ! (sudo -nl | grep resetUSB >/dev/null && sudo -nl | grep modprobe >/dev/null); then
+  printf "\n${YELLOW}[Setting up required sudo entries.]${NC}\n"
+  echo "${USER} ALL = NOPASSWD: ${SCRIPTDIR}/resetUSB.sh" >/tmp/arlobot_sudoers
+  echo "${USER} ALL = NOPASSWD: /sbin/modprobe" >>/tmp/arlobot_sudoers
+  chmod 0440 /tmp/arlobot_sudoers
+  sudo chown root:root /tmp/arlobot_sudoers
+  sudo mv /tmp/arlobot_sudoers /etc/sudoers.d/
+  sudo chown root:root /etc/sudoers.d/arlobot_sudoers
 fi
 
 if ! (command -v simpleide >/dev/null); then
@@ -663,9 +659,12 @@ for i in "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/"*; do
   fi
 done
 
-if ! (crontab -l >/dev/null 2>&1) || ! (crontab -l | grep startpm2 > /dev/null 2>&1);then
+if ! (crontab -l >/dev/null 2>&1) || ! (crontab -l | grep startpm2 >/dev/null 2>&1); then
   printf "\n${YELLOW}[Adding cron job to start web server on system reboot.]${NC}\n"
-  (crontab -l 2>/dev/null; echo "@reboot $(whoami) ${HOME}/catkin_ws/src/ArloBot/startpm2.sh > ${HOME}/crontab.log") | crontab -
+  # https://stackoverflow.com/questions/4880290/how-do-i-create-a-crontab-through-a-script
+  (
+    echo "@reboot $(whoami) ${HOME}/catkin_ws/src/ArloBot/startpm2.sh > ${HOME}/crontab.log"
+  ) | crontab -
 fi
 
 printf "\n${LIGHTPURPLE}[Flushing PM2 logs and starting/restarting web server.]${NC}\n"
