@@ -54,6 +54,8 @@ LIGHTBLUE='\033[1;34m'
 LIGHTPURPLE='\033[1;35m'
 NC='\033[0m' # NoColor
 
+ARLO_HOME=${HOME}/.arlobot
+
 function finish() {
   if [[ -z ${INSTALL_FINISHED} ]]; then
     printf "\n"
@@ -198,10 +200,6 @@ PACKAGE_TO_INSTALL_LIST=("ros-${INSTALLING_ROS_DISTRO}-rqt-*" "ros-${INSTALLING_
 # http://repositories.ros.org/status_page/compare_kinetic_melodic.html
 
 sudo apt install -y "${PACKAGE_TO_INSTALL_LIST[@]}"
-# TODO: Is this required?
-#printf "\n${YELLOW}[Updating pip]${NC}\n"
-#sudo -H pip install --upgrade pip
-#sudo -H python3 -m pip install --upgrade pip
 
 if [[ -z ${USER} ]]; then
   # This probably only happens in Docker, but note that it isn't just for my own purpose
@@ -212,15 +210,103 @@ if [[ -z ${USER} ]]; then
   export USER
 fi
 
-# TODO: Is this still required?
-# I think it was caused by odd use of pip?
-#if [[ -d ${HOME}/.cache/ ]]; then
-#  sudo chown -R "${USER}" "${HOME}/.cache/"
-#fi
+if [[ ! -d ${ARLO_HOME} ]]; then
+  printf "\n${YELLOW}[Creating .arlobot folder]${NC}\n"
+  printf "${GREEN}This holds personal data for your robot.${NC}\n"
+  # We will use ~/.arlobot to store "private" data
+  # That is data that doesn't need to be part of
+  # the public github repo like user tokens,
+  # sounds, and room maps and per robot settings
+  mkdir "${ARLO_HOME}"
+fi
 
-# As of 4/27/2016 Rosbridge required me to install twisted via pip otherwise it failed.
-# TODO: Is this still true?
-#sudo -H pip install twisted
+# Collect and save responses about what to install or not
+# NOTE: This uses jq, so place this section after the installation of jq
+
+SETUP_RESPONSE_FILE=${ARLO_HOME}/setupResponses.json
+
+function saveResponseData() {
+  jq --arg p "${1}" ".${2} = \$p" <"${SETUP_RESPONSE_FILE}" >"${ARLO_HOME}/setupResponses.temp"
+  mv "${ARLO_HOME}/setupResponses.temp" "${SETUP_RESPONSE_FILE}"
+}
+
+if ! [[ -e ${SETUP_RESPONSE_FILE} ]]; then
+  echo "{}" >"${SETUP_RESPONSE_FILE}"
+  printf "\n${YELLOW}You will be asked about whether or not to install several things now.${NC}\n"
+  printf "${BLUE}Your answers depend on what hardware you have.${NC}\n"
+  printf "${BLUE}It will not hurt to install things you do not need.${NC}\n\n"
+  printf "${BLUE}Your responses will be saved and used on future runs of this script.${NC}\n\n"
+  printf "${BLUE}If you want to erase your answers and answer again run:${NC}\n"
+  printf "${BLUE}rm ${SETUP_RESPONSE_FILE}${NC}\n"
+  printf "${BLUE}before running this script.${NC}\n\n"
+  if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
+    read -n 1 -s -r -p "Press any key to continue"
+  fi
+fi
+
+RESPONSE_TO_MYCROFT_QUERY=$(jq -r '.responseToMycroftQuery' "${SETUP_RESPONSE_FILE}")
+if [[ ${RESPONSE_TO_MYCROFT_QUERY} == 'null' ]]; then
+  printf "\n${YELLOW}Do you want to install Mycroft on the Robot?${NC}\n"
+  printf "${BLUE}Mycroft can be used to talk to your robot, and have it talk to you.${NC}\n"
+  printf "${BLUE}Mycroft can be heavy on system resources on older systems though.${NC}\n\n"
+  printf "${BLUE}Mycroft is NOT hardware related, it is a software application.${NC}\n\n"
+  if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
+    read -n 1 -s -r -p "Press 'y' to install Mycroft" RESPONSE_TO_MYCROFT_QUERY
+  fi
+  printf "\n"
+fi
+saveResponseData "${RESPONSE_TO_MYCROFT_QUERY}" 'responseToMycroftQuery'
+
+RESPONSE_TO_SWEEP_QUERY=$(jq -r '.responseToSweepQuery' "${SETUP_RESPONSE_FILE}")
+if [[ ${RESPONSE_TO_SWEEP_QUERY} == 'null' ]]; then
+  printf "\n${YELLOW}Do you want to code for Scanse Sweep?${NC}\n"
+  printf "${BLUE}The Scanse Sweep is a rotating laser scanner.${NC}\n"
+  printf "${BLUE}It is no longer available.${NC}\n\n"
+  printf "${BLUE}https://scanse.io/home/${NC}\n\n"
+  if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
+    read -n 1 -s -r -p "Press 'y' to install Sanse Sweep code" RESPONSE_TO_SWEEP_QUERY
+  fi
+  printf "\n"
+fi
+saveResponseData "${RESPONSE_TO_SWEEP_QUERY}" 'responseToSweepQuery'
+
+RESPONSE_TO_XV11_QUERY=$(jq -r '.responseToXv11Query' "${SETUP_RESPONSE_FILE}")
+if [[ ${RESPONSE_TO_XV11_QUERY} == 'null' ]]; then
+  printf "\n${YELLOW}Do you want to code for Neato XV11?${NC}\n"
+  printf "${BLUE}The XV11 was a rotating laser scanner pulled from old vacuum cleaners.${NC}\n"
+  printf "${BLUE}If you have one you will need this code.${NC}\n\n"
+  if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
+    read -n 1 -s -r -p "Press 'y' to install Neato XV11 code" RESPONSE_TO_XV11_QUERY
+  fi
+  printf "\n"
+fi
+saveResponseData "${RESPONSE_TO_XV11_QUERY}" 'responseToXv11Query'
+
+RESPONSE_TO_RPLIDAR_QUERY=$(jq -r '.responseToRplidarQuery' "${SETUP_RESPONSE_FILE}")
+if [[ ${RESPONSE_TO_RPLIDAR_QUERY} == 'null' ]]; then
+  printf "\n${YELLOW}Do you want to code for Slamtec RPLIDAR?${NC}\n"
+  printf "${BLUE}The RPLIDAR is a series of commercially available, low cost rotating laser scanners.${NC}\n"
+  printf "${BLUE}This should work for the A1, A2, and A3 models.${NC}\n"
+  printf "${BLUE}https://www.slamtec.com/en${NC}\n\n"
+  if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
+    read -n 1 -s -r -p "Press 'y' to install Slamtec RPLIDAR code" RESPONSE_TO_RPLIDAR_QUERY
+  fi
+  printf "\n"
+fi
+saveResponseData "${RESPONSE_TO_RPLIDAR_QUERY}" 'responseToRplidarQuery'
+
+RESPONSE_TO_KINECT_QUERY=$(jq -r '.responseToKinectQuery' "${SETUP_RESPONSE_FILE}")
+if [[ ${RESPONSE_TO_KINECT_QUERY} == 'null' ]]; then
+  printf "\n${YELLOW}Do you want to code for Xbox 360 Kinect?${NC}\n"
+  printf "${BLUE}If you are using an Xbox 360 Kinect, extra code must be installed.${NC}\n"
+  if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
+    read -n 1 -s -r -p "Press 'y' to install Xbox 360 Kinect code" RESPONSE_TO_KINECT_QUERY
+  fi
+  printf "\n"
+fi
+saveResponseData "${RESPONSE_TO_KINECT_QUERY}" 'responseToKinectQuery'
+
+# End response collection section
 
 if ! [[ -d ~/catkin_ws/src ]]; then
   printf "\n${YELLOW}[Creating the catkin workspace and testing with catkin_make]${NC}\n"
@@ -257,56 +343,66 @@ else
   git pull
 fi
 
-printf "\n${BLUE}Neato XV11 respository${NC}\n"
-# Only needed if you have an XV-11 "Neato" Scanner
-cd ~/catkin_ws/src
-if ! [[ -d ~/catkin_ws/src/xv_11_laser_driver ]]; then
-  git clone https://github.com/chrisl8/xv_11_laser_driver.git
-else
-  cd ~/catkin_ws/src/xv_11_laser_driver
-  git pull
+if [[ "${RESPONSE_TO_XV11_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then # Always test in Travis
+  printf "\n${BLUE}Neato XV11 respository${NC}\n"
+  # Only needed if you have an XV-11 "Neato" Scanner
+  cd ~/catkin_ws/src
+  if ! [[ -d ~/catkin_ws/src/xv_11_laser_driver ]]; then
+    git clone https://github.com/chrisl8/xv_11_laser_driver.git
+  else
+    cd ~/catkin_ws/src/xv_11_laser_driver
+    git pull
+  fi
 fi
 
-printf "\n${BLUE}Scanse Sweep respository${NC}\n"
-# Only needed if you have a Scanse Sweep, but it doesn't hurt.
-if ! [[ -f /usr/local/lib/cmake/sweep/SweepConfig.cmake ]]; then
-  cd
-  git clone https://github.com/scanse/sweep-sdk.git
-  cd "${HOME}/sweep-sdk/libsweep"
-  mkdir build
-  cd build
-  cmake .. -DCMAKE_BUILD_TYPE=Release
-  cmake --build .
-  sudo cmake --build . --target install
-  sudo ldconfig
-fi
-cd ~/catkin_ws/src
-if ! [[ -d ~/catkin_ws/src/sweep-ros ]]; then
-  git clone https://github.com/scanse/sweep-ros.git
-else
-  cd ~/catkin_ws/src/sweep-ros
-  git pull
+if [[ "${RESPONSE_TO_SWEEP_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then # Always test in Travis
+  printf "\n${BLUE}Scanse Sweep respository${NC}\n"
+  # Only needed if you have a Scanse Sweep
+  if ! [[ -f /usr/local/lib/cmake/sweep/SweepConfig.cmake ]]; then
+    cd
+    git clone https://github.com/scanse/sweep-sdk.git
+    cd "${HOME}/sweep-sdk/libsweep"
+    mkdir build
+    cd build
+    cmake .. -DCMAKE_BUILD_TYPE=Release
+    cmake --build .
+    sudo cmake --build . --target install
+    sudo ldconfig
+  fi
+  cd ~/catkin_ws/src
+  if ! [[ -d ~/catkin_ws/src/sweep-ros ]]; then
+    git clone https://github.com/scanse/sweep-ros.git
+  else
+    cd ~/catkin_ws/src/sweep-ros
+    git pull
+  fi
 fi
 
-printf "\n${BLUE}OpenKinect for Kinect${NC}\n"
-# If you have a Kinect. Melodic seems to be mising the package
-# https://github.com/ros-drivers/freenect_stack/issues/48#issuecomment-514020969
-if ! [[ -f /usr/local/lib/fakenect/libfakenect.so ]]; then
-  cd
-  git clone https://github.com/OpenKinect/libfreenect.git
-  cd libfreenect
-  mkdir build
-  cd build
-  cmake -L ..
-  make
-  sudo make install
+if [[ "${RESPONSE_TO_KINECT_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then # Always test in Travis
+  printf "\n${BLUE}OpenKinect for Kinect${NC}\n"
+  # If you have a Kinect. Melodic seems to be mising the package
+  # https://github.com/ros-drivers/freenect_stack/issues/48#issuecomment-514020969
+  if ! [[ -f /usr/local/lib/fakenect/libfakenect.so ]]; then
+    cd
+    git clone https://github.com/OpenKinect/libfreenect.git
+    cd libfreenect
+    mkdir build
+    cd build
+    cmake -L ..
+    make
+    sudo make install
+  fi
+  cd ~/catkin_ws/src
+  if ! [[ -d ~/catkin_ws/src/freenect_stack ]]; then
+    git clone https://github.com/ros-drivers/freenect_stack.git
+  else
+    cd ~/catkin_ws/src/freenect_stack
+    git pull
+  fi
 fi
-cd ~/catkin_ws/src
-if ! [[ -d ~/catkin_ws/src/freenect_stack ]]; then
-  git clone https://github.com/ros-drivers/freenect_stack.git
-else
-  cd ~/catkin_ws/src/freenect_stack
-  git pull
+
+if [[ "${RESPONSE_TO_RPLIDAR_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then # Always test in Travis
+  printf "\n${BLUE}RPLIDAR Setup Coming Soon...${NC}\n"
 fi
 
 printf "\n${BLUE}ROS by Example code${NC}\n"
@@ -329,47 +425,32 @@ else
   git pull
 fi
 
-cd ~/catkin_ws/src/ArloBot
-if ! [[ ${TRAVIS} == "true" ]]; then
-  if ! [[ -d ~/catkin_ws/src/ArloBot/mycroft-core ]]; then
-    printf "\n${YELLOW}Do you want to install Mycroft on the Robot?${NC}\n"
-    printf "${BLUE}Mycroft can be used to talk to your robot, and have it talk to you.${NC}\n"
-    printf "${BLUE}Mycroft can be heavy on system resources on older systems though.${NC}\n\n"
-    read -n 1 -s -r -p "Press 'y' to install Mycroft" RESPONSE_TO_MYCROFT_QUERY
-    echo ""
-
-    if [[ "${RESPONSE_TO_MYCROFT_QUERY}" == "y" ]]; then
-      git clone -b master https://github.com/MycroftAI/mycroft-core.git
-      cd ~/catkin_ws/src/ArloBot/mycroft-core
-      printf "\n${BLUE}[There will be a lot of questions. I answer Yes to all of them personally.]${NC}\n"
-      ./dev_setup.sh
-      ./start-mycroft.sh all
-      printf "\n${YELLOW}Giving Mycoroft time to download skills.${NC}\n"
-      #sleep 60
-      #./stop-mycroft.sh
-      #cd mycroft/tts/
-      #ln -s ${HOME}/catkin_ws/src/ArloBot/mycroft-things/arlobot_tts.py
-
-      printf "\n${YELLOW}[IF you want to use Mycroft:]${NC}\n"
-      printf "\n${YELLOW}[Then see https://docs.mycroft.ai/development/cerberus for configuration info.]${NC}\n"
-      printf "\n${YELLOW}[See more info at: https://docs.mycroft.ai/installing.and.running/installation/git.clone.install]${NC}\n"
-      printf "\n${YELLOW}[At the least you will have to register Mycroft if you want full functionality, althoug it does work without registering.]${NC}\n"
-    fi
-  else
-    printf "\n${YELLOW}[Updating Mycroft]${NC}\n"
+if [[ -d ~/catkin_ws/src/ArloBot/mycroft-core ]]; then
+  printf "\n${YELLOW}[Updating Mycroft]${NC}\n"
+  cd ~/catkin_ws/src/ArloBot/mycroft-core
+  ./stop-mycroft.sh || true # Do not let failures crash the script.
+  git pull
+  ./dev_setup.sh
+  ./start-mycroft.sh all
+else
+  if [[ "${RESPONSE_TO_MYCROFT_QUERY}" == "y" ]]; then # Anything other than 'y' is NO (including null)
+    cd ~/catkin_ws/src/ArloBot
+    git clone -b master https://github.com/MycroftAI/mycroft-core.git
     cd ~/catkin_ws/src/ArloBot/mycroft-core
-    ./stop-mycroft.sh || true # Do not let failures crash the script.
-    git pull
+    printf "\n${BLUE}[There will be a lot of questions. I answer Yes to all of them personally.]${NC}\n"
     ./dev_setup.sh
     ./start-mycroft.sh all
+    printf "\n${YELLOW}Giving Mycoroft time to download skills.${NC}\n"
+    #sleep 60
+    #./stop-mycroft.sh
+    #cd mycroft/tts/
+    #ln -s ${HOME}/catkin_ws/src/ArloBot/mycroft-things/arlobot_tts.py
+
+    printf "\n${YELLOW}[IF you want to use Mycroft:]${NC}\n"
+    printf "\n${YELLOW}[Then see https://docs.mycroft.ai/development/cerberus for configuration info.]${NC}\n"
+    printf "\n${YELLOW}[See more info at: https://docs.mycroft.ai/installing.and.running/installation/git.clone.install]${NC}\n"
+    printf "\n${YELLOW}[At the least you will have to register Mycroft if you want full functionality, althoug it does work without registering.]${NC}\n"
   fi
-  #cd ~/catkin_ws/src/ArloBot/mycroft-core
-  #printf "\n${YELLO}Patching Mycroft TTS to include Arlobot TTS if we want it.{NC}\n"
-  # git diff __init__.py > ~/catkin_ws/src/ArloBot/mycroft-things/tts_source_patch.diff
-  #git apply ~/catkin_ws/src/ArloBot/mycroft-things/tts_source_patch.diff
-else
-  printf "\n${GREEN}Skipping Mycroft entirely for Travis CI Testing${NC}\n"
-  # ./dev_setup.sh asks interactive questions!
 fi
 
 if [[ -d /opt/mycroft/skills ]]; then
@@ -534,18 +615,6 @@ if ! [[ -f ${HOME}/Desktop/arlobot.desktop ]]; then
   chmod +x "${HOME}/Desktop/arlobot.desktop"
 fi
 
-if [[ ! -d ${HOME}/.arlobot ]]; then
-  printf "\n${YELLOW}[Setting up .arlobot folder]${NC}\n"
-  printf "${GREEN}This holds personal data for your robot.${NC}\n"
-  # We will use ~/.arlobot to store "private" data
-  # That is data that doesn't need to be part of
-  # the public github repo like user tokens,
-  # sounds, and room maps and per robot settings
-  mkdir "${HOME}/.arlobot"
-fi
-
-ARLO_HOME=${HOME}/.arlobot
-
 if [[ -e ${ARLO_HOME}/personalDataForBehavior.json ]]; then
   node "${HOME}/catkin_ws/src/ArloBot/node/personalData.js"
 else
@@ -611,16 +680,6 @@ if ! [[ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/Arlo/libarlodr
   unzip Learn-Folder-Updated-2019.07.02_0.zip
   cd
 fi
-
-# We will use ~/.arlobot to store "private" data
-# That is data that doesn't need to be part of
-# the public github repo like user tokens,
-# sounds, and room maps and per robot settings
-if ! [[ -d ${HOME}/.arlobot ]]; then
-  mkdir "${HOME}/.arlobot"
-fi
-
-ARLO_HOME=${HOME}/.arlobot
 
 if [[ -e ${ARLO_HOME}/arlobot.yaml ]]; then
   if ! (diff "${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml" "${ARLO_HOME}/arlobot.yaml" >/dev/null); then
@@ -715,18 +774,16 @@ fi
 printf "\n${PURPLE}Anytime you want to update ArloBot code from the web you can run this same script again. It will pull down and compile new code without wiping out custom configs in ~/.arlarbot. I run this script myself almost every day.${NC}\n"
 
 printf "\n${YELLOW}-----------------------------------${NC}\n"
-printf "${YELLOW}ALL DONE! REBOOT AND START TESTING!${NC}\n"
+printf "${YELLOW}ALL DONE! REBOOT, EDIT FILES, AND START TESTING!${NC}\n\n"
+printf "${GREEN}Remember to edit the config files in ~/.arlobot${NC}\n\n"
+printf "${LIGHTCYAN}Go to ${LIGHTBLUE}http://$(node "${HOME}/catkin_ws/src/ArloBot/node/ipAddress.js"):$(jq '.webServerPort' "${ARLO_HOME}/personalDataForBehavior.json")${LIGHTCYAN} to see the Arlobot web interface.${NC}\n"
 printf "\n"
-printf "${LIGHTCYAN}Go to ${LIGHTBLUE}http://$(node "${HOME}/catkin_ws/src/ArloBot/node/ipAddress.js"):$(jq '.webServerPort' "${HOME}/.arlobot/personalDataForBehavior.json")${LIGHTCYAN} to see the Arlobot web interface.${NC}\n"
-printf "\n"
-# TODO: Find another pretty color and remind about editting files.
-printf "${BLUE}I have a list of tests here: cat ${HOME}/catkin_ws/src/ArloBot/manualTests.txt${NC}\n"
 printf "${GREEN}Look at README.md for testing ideas.${NC}\n"
-printf "${GREEN}See here for your next step: ${BLUE}http://ekpyroticfrood.net/?p=165\n${NC}\n"
 
 printf "\n${YELLOW}------------------------------------------------------------${NC}\n"
 printf "${YELLOW}Remember: You MUST install the Propeller code on your Propeller board too!${NC}\n"
 printf "${GREEN}See: ${BLUE}https://ekpyroticfrood.net/?p=165${NC}\n"
-printf "${GREEN}for more information on getting SimpleIDE set up.${NC}\n"
+printf "${GREEN}for more information on getting SimpleIDE set up,${NC}\n"
+printf "${GREEN}and installing code on your Propeller board.${NC}\n"
 printf "${YELLOW}------------------------------------------------------------${NC}\n"
 INSTALL_FINISHED="true"
