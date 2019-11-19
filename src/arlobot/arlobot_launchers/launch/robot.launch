@@ -7,7 +7,11 @@
         <include file="$(find turtlebot_teleop)/launch/xbox360_teleop.launch" />
     </group>
 
-    <include file="$(find arlobot_navigation)/launch/3dsensor_only.launch" />
+    <arg name="3d_sensor" default="$(optenv ARLOBOT_3D_SENSOR none)"/>  <!-- kinect, asus_xtion_pro -->
+
+    <group unless="$(eval arg(3d_sensor) == 'none')">
+      <include file="$(find arlobot_navigation)/launch/3dsensor_only.launch" />
+    </group>
 
     <arg name="loadScanseSweep" value="$(optenv HAS_SCANSE_SWEEP false)" />
     <group if="$(arg loadScanseSweep)">

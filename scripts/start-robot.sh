@@ -30,3 +30,6 @@ export ARLOBOT_MODEL
 # http://stackoverflow.com/a/11337310
 # http://linux.die.net/man/1/unbuffer
 unbuffer roslaunch arlobot_launchers robot.launch --screen
+
+# TODO: Check on what sensor is in use and just start that one here,
+#       instead of in the launch file?

@@ -124,7 +124,7 @@ describe("site initial layout and page function", () => {
     cy.contains("batteryConsideredFullAt:").should("be.visible");
     cy.contains("maxPingRangeAccepted:").should("be.visible");
     cy.contains("socketEmitterThrottle:").should("be.visible");
-    cy.contains("rosSensor:").should("be.visible");
+    cy.contains("3dSensor:").should("be.visible");
     cy.contains("hasBeenEdited:").should("be.visible");
 
     cy.get("#control").click();
