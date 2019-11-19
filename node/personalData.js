@@ -1,12 +1,8 @@
 // Load personal settings not included in git repo
 const fs = require('fs');
 
-const personalDataFile = `${
-  process.env.HOME
-}/.arlobot/personalDataForBehavior.json`;
-const defaultDataFile = `${
-  process.env.HOME
-}/catkin_ws/src/ArloBot/scripts/dotarlobot/personalDataForBehavior.json`;
+const personalDataFile = `${process.env.HOME}/.arlobot/personalDataForBehavior.json`;
+const defaultDataFile = `${process.env.HOME}/catkin_ws/src/ArloBot/scripts/dotarlobot/personalDataForBehavior.json`;
 const personalData = JSON.parse(fs.readFileSync(personalDataFile, 'utf8'));
 const defaultData = JSON.parse(fs.readFileSync(defaultDataFile, 'utf8'));
 
@@ -36,7 +32,7 @@ function DumpObjectIndented(obj, indent = '') {
           // value = "\n" + indent + "{\n" + od + "\n" + indent + "}";
         }
       }
-      result += `${indent}"${property}" : ${value},\n`;
+      result += `${indent}"${property}": ${value},\n`;
     }
   }
   return result.replace(/,\n$/, '');
