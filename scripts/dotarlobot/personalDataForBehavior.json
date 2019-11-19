@@ -117,8 +117,8 @@
   },
   "maxPingRangeAccepted": 0.5,
   "socketEmitterThrottle": 500,
-  "_3dSensor": "ARLOBOT_3D_SENSOR setting for ROS: none, kinect, asus_xtion_pro, or astra - NOTE: astra has not been tested",
-  "3dSensor": "none",
+  "_ros3dSensor": "ARLOBOT_3D_SENSOR setting for ROS: none, kinect, asus_xtion_pro, or astra - NOTE: astra has not been tested",
+  "ros3dSensor": "none",
   "_hasBeenEdited": "Set to true once you have put your settings in this file to let the program know that you did it.",
   "hasBeenEdited": false
 }

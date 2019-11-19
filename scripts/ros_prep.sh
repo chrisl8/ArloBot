@@ -31,7 +31,7 @@ if ! ("${SCRIPTDIR}/check_hardware.sh"); then
 fi
 
 # Set 3D Sensor variable from settings file.
-ARLOBOT_3D_SENSOR=$(jq -r '.3dSensor' "${HOME}/.arlobot/personalDataForBehavior.json")
+ARLOBOT_3D_SENSOR=$(jq -r '.ros3dSensor' "${HOME}/.arlobot/personalDataForBehavior.json")
 export ARLOBOT_3D_SENSOR
 
 # Start roscore separately so that we can set parameters
