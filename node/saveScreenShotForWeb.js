@@ -26,9 +26,9 @@ const saveScreenShotForWeb = () => {
     try {
       fs.renameSync(newFileName, oldFileName);
     } catch (err) {
-      console.log("Old screenshot doens't exist yet!");
+      console.log('Old screenshot does not exist yet!');
     }
-    const command = `DISPLAY=:0.0 /usr/bin/import -window root ${newFileName}`;
+    const command = `DISPLAY=:0.0 /usr/bin/import -silent -window root ${newFileName}`;
     exec(command, () => {
       // Argument options: error, stdout, stderr
       const compare = `compare -metric RMSE ${newFileName} ${oldFileName} /dev/null`;
