@@ -21,13 +21,13 @@ from adapt.intent import IntentBuilder
 from mycroft.skills.core import MycroftSkill
 from mycroft.util.log import getLogger
 
-__author__ = 'chrisl8'
+__author__ = "chrisl8"
 # Based on helloworld by eward
 
 LOG = getLogger(__name__)
 
-class SmallTalkSkill(MycroftSkill):
 
+class SmallTalkSkill(MycroftSkill):
     def __init__(self):
         super(SmallTalkSkill, self).__init__(name="SmallTalkSkill")
 
@@ -43,22 +43,23 @@ class SmallTalkSkill(MycroftSkill):
         # self.register_intent(how_are_you_intent,
         #                      self.handle_how_are_you_intent)
 
-        hi_intent = IntentBuilder("HiIntent").\
-            require("HiKeyword").build()
-        self.register_intent(hi_intent,
-                             self.handle_hi_intent)
+        hi_intent = IntentBuilder("HiIntent").require("HiKeyword").build()
+        self.register_intent(hi_intent, self.handle_hi_intent)
 
-        good_morning_intent = IntentBuilder("GoodMorningIntent"). \
-            require("GoodMorningKeyword").build()
-        self.register_intent(good_morning_intent,
-                             self.handle_good_morning_intent)
+        good_morning_intent = (
+            IntentBuilder("GoodMorningIntent").require("GoodMorningKeyword").build()
+        )
+        self.register_intent(good_morning_intent, self.handle_good_morning_intent)
 
-        do_you_have_my_glasses = IntentBuilder("GlassesIntent"). \
-            require("GlassesKeyword").build()
-        self.register_intent(do_you_have_my_glasses,
-                             self.handle_do_you_have_my_glasses)
+        do_you_have_my_glasses = (
+            IntentBuilder("GlassesIntent").require("GlassesKeyword").build()
+        )
+        self.register_intent(do_you_have_my_glasses, self.handle_do_you_have_my_glasses)
 
-        self.emitter.on('fallback_failure', self.handle_fallback)
+        # This does not work in Mycroft now.
+        # I'm not sure what the replacment is yet, but commenting out
+        # until I have time to look into it
+        # self.emitter.on('fallback_failure', self.handle_fallback)
 
     # def handle_thank_you_intent(self, message):
     #     self.speak_dialog("welcome")
@@ -76,10 +77,9 @@ class SmallTalkSkill(MycroftSkill):
         self.speak_dialog("glasses")
 
     def handle_fallback(self, message):
-        utt = message.data.get('utterance')
+        utt = message.data.get("utterance")
         LOG.debug("SmallTalk fallback attempt: " + utt)
-        self.speak_dialog("fallback", data={'phrase': utt})
-
+        self.speak_dialog("fallback", data={"phrase": utt})
 
     def stop(self):
         pass
