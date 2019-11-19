@@ -441,6 +441,7 @@ if [[ -d ~/catkin_ws/src/ArloBot/mycroft-core ]]; then
   ./start-mycroft.sh all
 else
   if [[ "${RESPONSE_TO_MYCROFT_QUERY}" == "y" ]]; then # Anything other than 'y' is NO (including null)
+    printf "\n${YELLOW}[Installing Mycroft]${NC}\n"
     cd ~/catkin_ws/src/ArloBot
     git clone -b master https://github.com/MycroftAI/mycroft-core.git
     cd ~/catkin_ws/src/ArloBot/mycroft-core
