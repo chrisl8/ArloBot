@@ -600,28 +600,6 @@ if ! (command -v mjpg_streamer >/dev/null); then
   # See scripts/streamVideoTest.sh for details on mjpg_streamer usage.
 fi
 
-if ! [[ -f ${HOME}/Desktop/arlobot.desktop ]]; then
-  printf "\n${YELLOW}[Creating Desktop Icon]${NC}\n"
-  if [[ ! -d ${HOME}/Desktop ]]; then
-    mkdir "${HOME}/Desktop"
-  fi
-  echo "[Desktop Entry]" >"${HOME}/Desktop/arlobot.desktop"
-  echo "Encoding=UTF-8" >>"${HOME}/Desktop/arlobot.desktop"
-  echo "Name=ArloBot" >>"${HOME}/Desktop/arlobot.desktop"
-  echo "GenericName=ArloBot" >>"${HOME}/Desktop/arlobot.desktop"
-  echo "Comment=Start the robot" >>"${HOME}/Desktop/arlobot.desktop"
-  if (command -v lxterminal >/dev/null); then
-    echo "Exec=lxterminal --command \"${HOME}/catkin_ws/src/ArloBot/scripts/arlobotXwindows.sh\"" >>"${HOME}/Desktop/arlobot.desktop"
-  elif (command -v gnome-terminal >/dev/null); then
-    echo "Exec=gnome-terminal --command \"${HOME}/catkin_ws/src/ArloBot/scripts/arlobotXwindows.sh\"" >>"${HOME}/Desktop/arlobot.desktop"
-  fi
-  echo "Icon=${HOME}/catkin_ws/src/ArloBot/icon-70x70.png" >>"${HOME}/Desktop/arlobot.desktop"
-  echo "Type=Application" >>"${HOME}/Desktop/arlobot.desktop"
-  echo "Path=${HOME}/catkin_ws/src/ArloBot/scripts/" >>"${HOME}/Desktop/arlobot.desktop"
-  echo "Terminal=false" >>"${HOME}/Desktop/arlobot.desktop"
-  chmod +x "${HOME}/Desktop/arlobot.desktop"
-fi
-
 if [[ -e ${ARLO_HOME}/personalDataForBehavior.json ]]; then
   node "${HOME}/catkin_ws/src/ArloBot/node/personalData.js"
 else
