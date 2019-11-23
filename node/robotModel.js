@@ -30,4 +30,5 @@ module.exports = {
   },
   usbRelayControlBusy: false,
   masterRelayBusy: false,
+  volumeHasBeenSet: false,
 };

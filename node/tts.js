@@ -5,6 +5,7 @@ const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
 const handleSemaphoreFiles = require('./handleSemaphoreFiles');
 const myCroft = require('./MyCroft');
+const robotModel = require('./robotModel');
 
 async function tts(sound) {
   // It is fine to call this without 'await', since most of the time you don't want to wait for it to speak before
@@ -28,11 +29,12 @@ async function tts(sound) {
     console.log(sound);
   } else {
     // Set volume at max
-    const setVolumeCommand = `/usr/bin/amixer set Master ${
-      personalData.speechVolumeLevelDefault
-    }% on`;
-    // We don't wait for this, so the first speech may be quiet, but this isn't worth waiting for.
-    exec(setVolumeCommand);
+    if (!robotModel.volumeHasBeenSet) {
+      const setVolumeCommand = `${__dirname}/../scripts/set_MasterVolume.sh ${personalData.speechVolumeLevelDefault}`;
+      // We don't wait for this, so the first speech may be quiet, but this isn't worth waiting for.
+      exec(setVolumeCommand);
+      robotModel.volumeHasBeenSet = true;
+    }
 
     // This script can accept text to speak,
     // or .wav files to play.
