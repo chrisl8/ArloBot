@@ -67,7 +67,7 @@ else
   printf "\n${YELLOW}Without an activity board your robot will not function!${NC}\n"
 fi
 
-if [[ $(jq '.use_xv11' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
+if [[ $(jq '.hasXV11' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
   "${SCRIPTDIR}/XVLidar.sh" start
   export HAS_XV11=true
   XV11_SERIAL_PORT=$("${SCRIPTDIR}/find_XVLidar.sh")

@@ -161,7 +161,7 @@ check_hardware() {
   fi
 
   # XV-11
-  if [[ $(jq '.use_xv11' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
+  if [[ $(jq '.hasXV11' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
     echo "Checking XV11"
     if ! "${SCRIPT_DIR}/find_XVLidar.sh" | grep ACM &>/dev/null; then
       FAILURE_REASON="XV-11 missing!"

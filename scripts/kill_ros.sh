@@ -84,7 +84,7 @@ if [[ -f nohup.out ]]; then
   rm nohup.out
 fi
 
-if [[ $(jq '.use_xv11' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
+if [[ $(jq '.hasXV11' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
   "${SCRIPTDIR}/XVLidar.sh" stop
 fi
 

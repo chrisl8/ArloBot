@@ -17,7 +17,7 @@ source "${SCRIPTDIR}/rosEnvironmentSetup.sh"
 if pgrep -f robot.launch > /dev/null; then
   echo "When you are done, save your map!"
   echo "Please run './save-map.sh mapname' from another terminal when your map is done before closing this!"
-  if [[ $(jq '.use_xv11' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
+  if [[ $(jq '.hasXV11' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
     unbuffer roslaunch arlobot_navigation gmapping_demo_xv11DWAonly.launch
   else
     unbuffer roslaunch arlobot_navigation gmapping_demo.launch

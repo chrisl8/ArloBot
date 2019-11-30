@@ -128,7 +128,7 @@ async function main() {
   });
 
   let exploreCommand;
-  if (personalData.use_xv11) {
+  if (personalData.hasXV11) {
     exploreCommand =
       'unbuffer roslaunch arlobot_launchers add_autonomous_explore_xv11.launch';
   } else {
@@ -154,7 +154,7 @@ async function main() {
   });
 
   let loadMapCommand;
-  if (personalData.use_xv11) {
+  if (personalData.hasXV11) {
     loadMapCommand =
       'unbuffer roslaunch arlobot_launchers load_map_xv11.launch map_file:=';
   } else if (personalData.hasScanseSweep) {

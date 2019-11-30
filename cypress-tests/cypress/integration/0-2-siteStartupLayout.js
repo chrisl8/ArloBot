@@ -100,7 +100,7 @@ describe("site initial layout and page function", () => {
     cy.contains("arduinoUniqueString:").should("be.visible");
     cy.contains("arduinoStringLocation:").should("be.visible");
     cy.contains("useUSBrelay:").should("be.visible");
-    cy.contains("use_xv11:").should("be.visible");
+    cy.contains("hasXV11:").should("be.visible");
     cy.contains("hasScanseSweep:").should("be.visible");
     cy.contains("createMultiScanTopic:").should("be.visible");
     cy.contains("camera0:").should("be.visible");
