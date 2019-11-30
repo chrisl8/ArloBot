@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Find the camera listed on the command line,
+# Find the Microphone listed on the command line,
 # based on output of 'pacmd'
 export PULSE_RUNTIME_PATH="/run/user/1000/pulse/"
 if [[ $# -eq 0 ]]; then
