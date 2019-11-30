@@ -16,8 +16,8 @@ RUN source /opt/ros/melodic/setup.bash && catkin_make
 # clone Arlobot source required for rviz files
 WORKDIR /catkin_ws/src
 # This defeats the cache
-ADD https://api.github.com/repos/chrisl8/ArloBot/compare/new-serial-interface...HEAD /dev/null
-RUN git clone -b new-serial-interface https://github.com/chrisl8/ArloBot.git
+ADD https://api.github.com/repos/chrisl8/ArloBot/compare/melodic...HEAD /dev/null
+RUN git clone -b melodic https://github.com/chrisl8/ArloBot.git
 
 # xpra crashes if the path of called apps is too long,
 # so we link the ones we call externally to root.
