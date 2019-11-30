@@ -6,7 +6,8 @@ SHELL ["/bin/bash", "-c"]
 RUN apt-get update && apt-get install -y \
         ros-melodic-desktop-full \
         ros-melodic-tf2-tools \
-        git
+        git \
+        xterm
 
 RUN mkdir -p /catkin_ws/src
 WORKDIR /catkin_ws
