@@ -171,7 +171,8 @@ check_hardware() {
   fi
 
   # ASUS xtion
-  if [[ $(jq '.ros3dSensor' "${HOME}/.arlobot/personalDataForBehavior.json") == "asus_xtion_pro" ]]; then
+  VAR=$(jq '.ros3dSensor' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
+  if [[ "${VAR}" == "asus_xtion_pro" ]]; then
     echo "Checking ASUS Xtion Pro"
     if ! /usr/bin/lsusb | grep ASUS &>/dev/null; then
       FAILURE_REASON="ASUS Xtion missing!"
