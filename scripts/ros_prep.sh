@@ -80,6 +80,14 @@ if [[ $(jq '.hasScanseSweep' "${HOME}/.arlobot/personalDataForBehavior.json") ==
   export SCANSE_SWEEP_SERIAL_PORT
 fi
 
+if [[ $(jq '.hasRPLIDAR' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
+  export HAS_RPLIDAR=true
+  RPLIDAR_USB_PORT=$("${SCRIPTDIR}/find_RPLIDAR.sh")
+  export RPLIDAR_USB_PORT
+  RPLIDAR_BAUDRATE=$(jq '.rplidarBaudrate' "${HOME}/.arlobot/personalDataForBehavior.json")
+  export RPLIDAR_BAUDRATE
+fi
+
 if [[ $(jq '.createMultiScanTopic' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
   export ENABLE_COMBINED_SCAN_TOPIC=true
 fi
