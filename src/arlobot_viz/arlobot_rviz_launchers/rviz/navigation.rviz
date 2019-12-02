@@ -346,7 +346,7 @@ Visualization Manager:
       Selectable: true
       Size (Pixels): 3
       Size (m): 0.009999999776482582
-      Style: Squares
+      Style: Points
       Topic: /scan
       Unreliable: false
       Use Fixed Frame: true
@@ -534,7 +534,7 @@ Visualization Manager:
       Position Transformer: XYZ
       Queue Size: 10
       Selectable: true
-      Size (Pixels): 3
+      Size (Pixels): 25
       Size (m): 0.009999999776482582
       Style: Points
       Topic: /ultrasonic_scan
@@ -551,7 +551,7 @@ Visualization Manager:
       Axis: Z
       Channel Name: intensity
       Class: rviz/LaserScan
-      Color: 255; 0; 0
+      Color: 0; 255; 0
       Color Transformer: FlatColor
       Decay Time: 0
       Enabled: true
@@ -564,7 +564,7 @@ Visualization Manager:
       Position Transformer: XYZ
       Queue Size: 10
       Selectable: true
-      Size (Pixels): 3
+      Size (Pixels): 25
       Size (m): 0.009999999776482582
       Style: Points
       Topic: /infrared_scan
