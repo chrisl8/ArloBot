@@ -228,7 +228,7 @@ class ArlobotExplore(object):
                 I should adjust some of the planner and nav stack parameters to operate closer to my desires,
                 exploring has a different set of needs for navigating a known map:
                 ideas:
-                /move_base/DWAPlannerROS/max_rot_vel # I have set this to 1.0, which makes it behave much more calmly!
+                /move_base/DWAPlannerROS/max_vel_theta # I have set this to 1.0, which makes it behave much more calmly!
                 /move_base/clearing_rotation_allowed # I have disabled this, this makes a HUGE difference.
                 /move_base/controller_frequency
                 /move_base/controller_patience

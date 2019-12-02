@@ -8,9 +8,16 @@ I suggest tuning these items:
 
 src/arlobot/arlobot_explore/param/dwa_local_planner_params.yaml
 src/arlobot_apps/arlobot_navigation/param/dwa_local_planner_params.yaml
-max_trans_vel: 0.6
+max_vel_trans (formerly max_trans_vel): 0.6
 max_vel_x: 0.6
 I always set these to the same. From my testing (documented in ArlobotAccelerationTesting.txt) 0.74 is the maximum. However I find the robot overshoots goals a lot at this speed. 0.5 is safe. 0.6 seems "fast enough" to not seem tiresome.
+
+NOTE:
+Parameter max_trans_vel is deprecated (and will not load properly). Use max_vel_trans instead.
+Parameter min_trans_vel is deprecated (and will not load properly). Use min_vel_trans instead.
+Parameter max_rot_vel is deprecated (and will not load properly). Use max_vel_theta instead.
+Parameter min_rot_vel is deprecated (and will not load properly). Use min_vel_theta instead.
+Parameter rot_stopped_vel is deprecated (and will not load properly). Use theta_stopped_vel instead.
 
 src/arlobot/arlobot_explore/param/dwa_local_planner_params.yaml
 src/arlobot_apps/arlobot_navigation/param/dwa_local_planner_params.yaml

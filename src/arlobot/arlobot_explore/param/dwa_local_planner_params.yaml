@@ -8,20 +8,20 @@ DWAPlannerROS:
   max_vel_y: 0.0  # diff drive robot
   min_vel_y: 0.0  # diff drive robot
 
-  max_trans_vel: 0.6 # choose slightly less than the base's capability - Setting the same as max_vel_x
-  min_trans_vel: 0.1  # this is the min trans velocity when there is negligible rotational velocity
+  max_vel_trans: 0.6 # choose slightly less than the base's capability - Setting the same as max_vel_x
+  min_vel_trans: 0.1  # this is the min trans velocity when there is negligible rotational velocity
   trans_stopped_vel: 0.1
-  # Do not set min_trans_vel or trans_stopped_vel to 0, 0.1 seems to work fine.
-  # Anything below 0.1 for min_trans_vel can produce strange results.
+  # Do not set min_trans_vel (now min_vel_trans) or trans_stopped_vel to 0, 0.1 seems to work fine.
+  # Anything below 0.1 for min_trans_vel (now min_vel_trans) can produce strange results.
 
   # Warning!
-  #   do not set min_trans_vel to 0.0 otherwise dwa will always think translational velocities
+  #   do not set min_trans_vel (now min_vel_trans) to 0.0 otherwise dwa will always think translational velocities
   #   are non-negligible and small in place rotational velocities will be created.
 
-  max_rot_vel: 3.6 # Maybe make it slower for exploration?
-  min_rot_vel: 0.0  # this is the min angular velocity when there is negligible translational velocity
+  max_vel_theta: 3.6 # Maybe make it slower for exploration?
+  min_vel_theta: 0.0  # this is the min angular velocity when there is negligible translational velocity
   # Setting this above zero means it will never travel in a straight line!
-  rot_stopped_vel: 0.3 # Set the same as min_rot_vel? That is what Turtlebot Does.
+  theta_stopped_vel: 0.3 # Set the same as min_vel_theta? That is what Turtlebot Does.
   
    # Setting acc_lim_x & acc_lim_theta to real values causes DWA to behave oddly and fail to reach goals.
   acc_lim_x: 4.0

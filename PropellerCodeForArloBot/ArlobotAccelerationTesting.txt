@@ -99,7 +99,7 @@ At 0.03 and below it just jerks back and forth, each wheel moving a bit.
 
 ANGULAR (theta):
 
-Maximum Angular Velocity: 3.6 rad/s (214 TPS) - max_rot_vel
+Maximum Angular Velocity: 3.6 rad/s (214 TPS) - max_vel_theta (formerly max_rot_vel)
 Up on blocks it can do:
 At 4.0 rad/s it consistently reaches the speed every time and runs.
 At 4.1 rad/s it runs forever without attaining the requested speed.
@@ -145,7 +145,7 @@ Angular (positive) [ON THE FLOOR!]
 1383
 1185
 
-Minimum Angular Velocity: 0.3 rad/s (18 TPS) - min_trans_vel
+Minimum Angular Velocity: 0.3 rad/s (18 TPS) - min_trans_vel (now min_vel_trans)
 Below this it is very jerky.
 It sometimes sounds funny at 0.3 rad/s, but it is smooth.
 
