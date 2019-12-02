@@ -13,14 +13,21 @@
       <include file="$(find arlobot_navigation)/launch/3dsensor_only.launch" />
     </group>
 
+    <arg name="loadxv11" value="$(optenv HAS_XV11 false)" />
+    <group if="$(arg loadxv11)">
+        <include file="$(find arlobot_launchers)/launch/xv11.launch" />
+    </group>
+
     <arg name="loadScanseSweep" value="$(optenv HAS_SCANSE_SWEEP false)" />
     <group if="$(arg loadScanseSweep)">
         <include file="$(find arlobot_launchers)/launch/sweep.launch" />
     </group>
-    <arg name="loadxv11" value="$(optenv HAS_XV11 false)" />
-    <group if="$(arg loadxv11)">
-        <include file="$(find arlobot_bringup)/launch/xv11.launch" />
+
+    <arg name="loadRPLIDAR" value="$(optenv HAS_RPLIDAR false)" />
+    <group if="$(arg loadRPLIDAR)">
+        <include file="$(find arlobot_launchers)/launch/rplidar.launch" />
     </group>
+
     <arg name="enableCombinedScanTopic" value="$(optenv ENABLE_COMBINED_SCAN_TOPIC false)" />
     <group if="$(arg enableCombinedScanTopic)">
         <include file="$(find arlobot_launchers)/launch/laserscan_multi_merger_arlobot.launch" />
