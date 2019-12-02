@@ -65,9 +65,7 @@ class PropellerSerialTest(object):
     def __init__(self, usbPort="/dev/ttyUSB0"):
         self._usbPort = usbPort
 
-        configFilename = (
-                os.getenv("HOME") + "/.arlobot/arlobot.yaml"
-        )
+        configFilename = os.getenv("HOME") + "/.arlobot/arlobot.yaml"
 
         with open(configFilename, "r") as stream:
             try:
