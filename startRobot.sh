@@ -16,7 +16,7 @@ SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 # echo "${SCRIPTDIR}" # For debugging
 
 if ! command -v pm2; then
-  echo "The robot is not 'installed'. Please run setup-kinetic.sh to get everything installed first."
+  echo "The robot is not 'installed'. Please run setup-melodic.sh to get everything installed first."
   exit 1
 fi
 
