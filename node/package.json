@@ -27,7 +27,7 @@
     "socket.io-client": "2.3.0",
     "stochator": "0.6.2",
     "twilio": "3.37.1",
-    "websocket": "1.0.30"
+    "websocket": "1.0.31"
   },
   "devDependencies": {
     "babel-eslint": "10.0.3",
