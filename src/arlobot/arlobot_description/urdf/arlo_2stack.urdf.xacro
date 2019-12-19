@@ -347,10 +347,15 @@
 
   <!-- RPLIDAR on top of robot -->
      <joint name="rplidar_joint" type="fixed">
-       <!-- Minor adjustments based on lining up Scanse Sweep output with 3D Sensor output -->
-       <!-- So if the 3D sensor is misaligned the Scanse Sweep is off by the same amount -->
+       <!-- WARNING: The 'rpy' means Roll, Pitch, Yaw, but in the static_transform_publisher the order -->
+       <!-- is Yaw, Pitch, Roll !!!  So don't forget to translate those! -->
+       <!-- The best way to tweak this is to delete this section, start the robot, and use -->
+       <!-- staticTransformExample.sh to broadcast this transform while watching in RVIZ, -->
+       <!-- and keep tweaking the numbers and killing and restarting that transform broadcaster. -->
        <!-- NOTE: The "FRONT" of the RPLIDAR A2/3 is the point where the cord comes out. -->
-       <origin xyz="0.15 0.0 0.269107" rpy="0 0 3.13" />
+       <!-- Hence the r of 3.1 to rotate it half way around.  -->
+       <!-- The height is set even with the top plate. It shouldn't matter really. -->
+       <origin xyz="0.125 0.0 0.269107" rpy="0.0 0.0 3.1" />
        <parent link="base_link" />
        <child link="rplidar" />
      </joint>
