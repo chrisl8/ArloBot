@@ -5,6 +5,7 @@ const howManySecondsSince = require('../howManySecondsSince');
 const textme = require('../textme');
 const rosInterface = require('../rosInterface');
 const WayPoints = require('../WayPoints.js');
+const LCD = require('../LCD');
 
 const wayPointEditor = new WayPoints();
 const LaunchScript = require('../LaunchScript');
@@ -100,6 +101,18 @@ async function loadMap() {
         webModelFunctions.update('status', 'Map load complete.');
         webModelFunctions.behaviorStatusUpdate('Map is Loaded.');
         robotModel.mapLoadTime = new Date(); // Time that map was loaded.
+        LCD({ operation: 'color', red: 255, green: 255, blue: 0 });
+        LCD({ operation: 'clear' });
+        LCD({
+          operation: 'text',
+          input: ' --Map Loaded-- ',
+          row: 'top',
+        });
+        LCD({
+          operation: 'text',
+          input: `${webModel.mapName}`,
+          row: 'bottom',
+        });
       }
       // Whether we return 'RUNNING' or 'SUCCESS',
       // is dependent on how this Behavior node works.
@@ -117,6 +130,18 @@ async function loadMap() {
   robotModel.loadMapProcess.ROScommand = `${robotModel.loadMapProcess
     .ROScommand + process.env.HOME}/.arlobot/rosmaps/${webModel.mapName}.yaml`;
   webModelFunctions.scrollingStatusUpdate(robotModel.loadMapProcess.ROScommand);
+  LCD({ operation: 'color', red: 255, green: 255, blue: 255 });
+  LCD({ operation: 'clear' });
+  LCD({
+    operation: 'text',
+    input: ' --Loading Map--',
+    row: 'top',
+  });
+  LCD({
+    operation: 'text',
+    input: `${webModel.mapName}`,
+    row: 'bottom',
+  });
 
   /** @namespace personalData.demoWebSite */
   if (personalData.demoWebSite) {

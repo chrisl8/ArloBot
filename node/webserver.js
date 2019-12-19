@@ -35,6 +35,22 @@ const masterRelay = require('./MasterRelay');
 
 const updateMapList = require('./updateMapList');
 
+const LCD = require('./LCD');
+
+LCD({ operation: 'color', red: 0, green: 0, blue: 255 });
+LCD({ operation: 'clear' });
+LCD({ operation: 'contrast', input: 200 });
+LCD({
+  operation: 'text',
+  input: '-Server Running-',
+  row: 'top',
+});
+LCD({
+  operation: 'text',
+  input: 'Initial Startup.',
+  row: 'bottom',
+});
+
 updateMapList();
 
 const client = redis.createClient({

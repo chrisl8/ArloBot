@@ -2,6 +2,7 @@ const webModel = require('../webModel');
 const webModelFunctions = require('../webModelFunctions');
 const personalData = require('../personalData');
 const robotModel = require('../robotModel');
+const LCD = require('../LCD');
 const killROS = require('../killROS');
 
 async function startROS() {
@@ -68,6 +69,13 @@ async function startROS() {
       }
       if (webModel.behaviorStatus === 'Start ROS: Starting up . . .') {
         webModelFunctions.behaviorStatusUpdate('ROS Startup Complete.');
+        LCD({ operation: 'color', red: 0, green: 255, blue: 0 });
+        LCD({ operation: 'clear' });
+        LCD({
+          operation: 'text',
+          input: '-ROS is Running-',
+          row: 'top',
+        });
       }
       // Now that ROS is running, other behaviors can continue.
       return true;
@@ -78,6 +86,13 @@ async function startROS() {
     // IF the process is supposed to start, but wasn't,
     // then run it:
     webModelFunctions.update('status', 'Start ROS Requested.');
+    LCD({ operation: 'color', red: 0, green: 255, blue: 255 });
+    LCD({ operation: 'clear' });
+    LCD({
+      operation: 'text',
+      input: 'Starting ROS ...',
+      row: 'top',
+    });
     if (!personalData.demoWebSite) {
       robotModel.ROSprocess.start();
     } else {
@@ -110,6 +125,11 @@ async function startROS() {
   }
   // If the process isn't running and wasn't requested to run:
   webModelFunctions.behaviorStatusUpdate('Waiting for StartROS request.');
+  LCD({
+    operation: 'text',
+    input: 'ROS not Running.',
+    row: 'bottom',
+  });
   return true;
 }
 

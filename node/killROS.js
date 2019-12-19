@@ -2,8 +2,23 @@ const exec = require('child_process').exec;
 
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
+const LCD = require('./LCD');
 
 function killROS(exitWhenDone) {
+  LCD({ operation: 'color', red: 255, green: 0, blue: 0 });
+  LCD({ operation: 'clear' });
+  LCD({
+    operation: 'text',
+    input: ' ! Killing ROS !',
+    row: 'top',
+  });
+  if (exitWhenDone) {
+    LCD({
+      operation: 'text',
+      input: '  and Exiting...',
+      row: 'bottom',
+    });
+  }
   const command = `${__dirname}/../scripts/kill_ros.sh`;
   // It is rather catastrophic if this repeats!
   if (!webModel.killRosHasRun) {
