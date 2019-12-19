@@ -53,7 +53,7 @@ class ArlobotGoTo(object):
 
         # Subscribe to the current pose via odometry and populate our own variable with the data
         """
-        I'm not sure of any other way to do this. I'd like to just "grab" it at a point in time, but subscriptions don't work taht way.
+        I'm not sure of any other way to do this. I'd like to just "grab" it at a point in time, but subscriptions don't work that way.
         """
         rospy.Subscriber("odom", Odometry, self._SetCurrentOdom)
         # Turns out this works great if you have no map and just want to make movements based on odometry,
@@ -99,20 +99,16 @@ class ArlobotGoTo(object):
         rospy.loginfo("move_base is UP!")
 
         # Wait for tf_listener to be ready.
+        # NOTE: I'm not sure this is required anymore or not
         # If you call self.tf_listener too soon it has no data in the listener buffer!
         # http://answers.ros.org/question/164911/move_base-and-extrapolation-errors-into-the-future/
-        # We could put a static dealy in here, but this is faster.
+        # We could put a static delay in here, but this is faster.
         rospy.loginfo("Waiting for tf_listener to be ready . . . ")
-        rospy.sleep(0.1)  # Give it an initial rest just in case ;)
         tf_listener_ready = False
-        # TODO: The new instructions here are slightly different now, does this still work?
         # http://wiki.ros.org/tf2/Tutorials/Writing%20a%20tf2%20listener%20%28Python%29
         while not tf_listener_ready:
             try:
-                t = self.tf_listener.getLatestCommonTime("map", "base_link")
-                position, quaternion = self.tf_listener.lookupTransform(
-                    "map", "base_link", t
-                )
+                self.tf_Buffer.lookup_transform("map", "base_link", rospy.Time())
                 tf_listener_ready = True
             except tf2_ros.ExtrapolationException:
                 rospy.loginfo("tf_listener not ready . . . ")
@@ -214,11 +210,13 @@ class ArlobotGoTo(object):
                     self._MoveBaseClient.cancel_goal()
 
         # current_odom = self.currentOdom
-        t = self.tf_listener.getLatestCommonTime("map", "base_link")
-        position, quaternion = self.tf_listener.lookupTransform("map", "base_link", t)
-        rospy.loginfo(
-            "New Position: " + str(position) + " New Orientation: " + str(quaternion)
-        )
+
+        trans = self.tf_Buffer.lookup_transform("map", "base_link", rospy.Time())
+
+        rospy.loginfo("New Position: ")
+        rospy.loginfo(str(trans.transform.translation))
+        rospy.loginfo(" New Orientation: ")
+        rospy.loginfo(str(trans.transform.rotation))
 
         if result == GoalStatus.SUCCEEDED:
             return True
