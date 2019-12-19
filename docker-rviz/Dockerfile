@@ -25,6 +25,7 @@ RUN git clone -b melodic https://github.com/chrisl8/ArloBot.git
 WORKDIR /
 RUN ln -s /catkin_ws/src/ArloBot/scripts/view-navigation.sh
 RUN ln -s /catkin_ws/src/ArloBot/scripts/view-robot.sh
+RUN ln -s /catkin_ws/src/ArloBot/scripts/runReconfigure.sh
 
 # initialize ROS (master uri, environments, etc.)
 COPY docker-entrypoint.sh /
