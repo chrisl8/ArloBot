@@ -2,7 +2,7 @@
 
 # Tweak these numbers if it keeps failing
 # Give Linux time for the devices to come one line after a fresh power on of a relay
-USB_DELAY_TIME=3
+USB_DELAY_TIME=1
 # How many retries to give normally
 RETRY_COUNT=2
 # How many retries to give if the relay was just turned on
