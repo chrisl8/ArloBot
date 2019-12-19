@@ -1,10 +1,12 @@
 const SerialPort = require('serialport');
 const UsbDevice = require('./UsbDevice.js');
 const personalData = require('./personalData');
+const wait = require('./wait');
 
-let working = false; // Prevent multiple instances from running at once in the same program
+let busy = false; // Prevent multiple instances from running at once in the same program
+let port; // Store port so we don't have to look it up every time.
 
-function getPortName() {
+async function getPortName() {
   /** @namespace personalData.masterPowerRelayStringLocation */
   /** @namespace personalData.masterPowerRelayUniqueString */
   const relayDevice = new UsbDevice(
@@ -35,7 +37,15 @@ const commandList = {
  Set cursor position - 0xFE 0x47 - set the position of text entry cursor. Column and row numbering starts with 1 so the first position in the very top left is (1, 1)
  */
 
-function LCD({ operation, input, runFromCommandLine, row, red, green, blue }) {
+async function LCD({
+  operation,
+  input,
+  runFromCommandLine,
+  row,
+  red,
+  green,
+  blue,
+}) {
   const wrapUp = ({ error, portObj }) => {
     if (portObj) {
       portObj.close();
@@ -44,23 +54,108 @@ function LCD({ operation, input, runFromCommandLine, row, red, green, blue }) {
       console.error(`Failed to write to port: ${error}`);
       process.exit(1);
     }
-    working = false;
+    busy = false;
   };
-  if (!working && (runFromCommandLine || personalData.useLCD)) {
-    working = true;
-    getPortName()
-      .then((port) => {
-        const portObj = new SerialPort(port, {
-          baudRate: 19200,
-          autoOpen: false,
-        });
+  if (runFromCommandLine || personalData.useLCD) {
+    while (busy) {
+      // eslint-disable-next-line no-await-in-loop
+      await wait(0.01);
+    }
+    busy = true;
+    if (!port) {
+      port = await getPortName();
+    }
+    const portObj = new SerialPort(port, {
+      baudRate: 19200,
+      autoOpen: false,
+    });
 
-        portObj.open((error) => {
-          if (error) {
-            wrapUp({ runFromCommandLine, error });
-          } else if (commandList.hasOwnProperty(operation)) {
+    portObj.open((error) => {
+      if (error) {
+        wrapUp({ runFromCommandLine, error });
+      } else if (commandList.hasOwnProperty(operation)) {
+        portObj.write(Buffer.from([0xfe, commandList[operation]]), (err) => {
+          // Argument Options: err, result
+          if (err) {
+            wrapUp({
+              runFromCommandLine,
+              error: err,
+              portObj,
+            });
+          } else {
+            wrapUp({
+              runFromCommandLine,
+              portObj,
+            });
+          }
+        });
+      } else {
+        switch (operation) {
+          case 'text': {
+            let output = input;
+            // Make input match a full line length to avoid leaving garbage behind.
+            while (output.length < 15) {
+              // eslint-disable-next-line no-param-reassign
+              output = `${output} `;
+            }
+
+            const outputArray = [0xfe, 0x47, 1];
+            if (row === 'bottom') {
+              outputArray.push(2);
+            } else {
+              outputArray.push(1);
+            }
+
+            portObj.write(Buffer.from(outputArray), (err) => {
+              // Argument Options: err, result
+              if (err) {
+                wrapUp({
+                  runFromCommandLine,
+                  error: err,
+                  portObj,
+                });
+              } else {
+                portObj.drain(() => {
+                  portObj.write(output.slice(0, 16), (e) => {
+                    // Argument Options: err, result
+                    if (e) {
+                      wrapUp({
+                        runFromCommandLine,
+                        error: e,
+                        portObj,
+                      });
+                    } else {
+                      wrapUp({
+                        runFromCommandLine,
+                        portObj,
+                      });
+                    }
+                  });
+                });
+              }
+            });
+            break;
+          }
+          case 'hex':
+            portObj.write(Buffer.from([0xfe, input]), (err) => {
+              // Argument Options: err, result
+              if (err) {
+                wrapUp({
+                  runFromCommandLine,
+                  error: err,
+                  portObj,
+                });
+              } else {
+                wrapUp({
+                  runFromCommandLine,
+                  portObj,
+                });
+              }
+            });
+            break;
+          case 'color':
             portObj.write(
-              Buffer.from([0xfe, commandList[operation]]),
+              Buffer.from([0xfe, 0xd0, red, green, blue]),
               (err) => {
                 // Argument Options: err, result
                 if (err) {
@@ -77,136 +172,49 @@ function LCD({ operation, input, runFromCommandLine, row, red, green, blue }) {
                 }
               },
             );
-          } else {
-            switch (operation) {
-              case 'text': {
-                let output = input;
-                // Make input match a full line length to avoid leaving garbage behind.
-                while (output.length < 15) {
-                  // eslint-disable-next-line no-param-reassign
-                  output = `${output} `;
-                }
-
-                const outputArray = [0xfe, 0x47, 1];
-                if (row === 'bottom') {
-                  outputArray.push(2);
-                } else {
-                  outputArray.push(1);
-                }
-
-                portObj.write(Buffer.from(outputArray), (err) => {
-                  // Argument Options: err, result
-                  if (err) {
-                    wrapUp({
-                      runFromCommandLine,
-                      error: err,
-                      portObj,
-                    });
-                  } else {
-                    portObj.drain(() => {
-                      portObj.write(output.slice(0, 16), (e) => {
-                        // Argument Options: err, result
-                        if (e) {
-                          wrapUp({
-                            runFromCommandLine,
-                            error: e,
-                            portObj,
-                          });
-                        } else {
-                          wrapUp({
-                            runFromCommandLine,
-                            portObj,
-                          });
-                        }
-                      });
-                    });
-                  }
-                });
-                break;
-              }
-              case 'hex':
-                portObj.write(Buffer.from([0xfe, input]), (err) => {
-                  // Argument Options: err, result
-                  if (err) {
-                    wrapUp({
-                      runFromCommandLine,
-                      error: err,
-                      portObj,
-                    });
-                  } else {
-                    wrapUp({
-                      runFromCommandLine,
-                      portObj,
-                    });
-                  }
-                });
-                break;
-              case 'color':
-                portObj.write(
-                  Buffer.from([0xfe, 0xd0, red, green, blue]),
-                  (err) => {
-                    // Argument Options: err, result
-                    if (err) {
-                      wrapUp({
-                        runFromCommandLine,
-                        error: err,
-                        portObj,
-                      });
-                    } else {
-                      wrapUp({
-                        runFromCommandLine,
-                        portObj,
-                      });
-                    }
-                  },
-                );
-                break;
-              case 'brightness':
-                portObj.write(Buffer.from([0xfe, 0x99, input]), (err) => {
-                  // Argument Options: err, result
-                  if (err) {
-                    wrapUp({
-                      runFromCommandLine,
-                      error: err,
-                      portObj,
-                    });
-                  } else {
-                    wrapUp({
-                      runFromCommandLine,
-                      portObj,
-                    });
-                  }
-                });
-                break;
-              case 'contrast':
-                portObj.write(Buffer.from([0xfe, 0x50, input]), (err) => {
-                  // Argument Options: err, result
-                  if (err) {
-                    wrapUp({
-                      runFromCommandLine,
-                      error: err,
-                      portObj,
-                    });
-                  } else {
-                    wrapUp({
-                      runFromCommandLine,
-                      portObj,
-                    });
-                  }
-                });
-                break;
-              default:
+            break;
+          case 'brightness':
+            portObj.write(Buffer.from([0xfe, 0x99, input]), (err) => {
+              // Argument Options: err, result
+              if (err) {
                 wrapUp({
                   runFromCommandLine,
-                  error: 'Unknown command.',
+                  error: err,
+                  portObj,
                 });
-            }
-          }
-        });
-      })
-      .catch((error) => {
-        wrapUp({ runFromCommandLine, error });
-      });
+              } else {
+                wrapUp({
+                  runFromCommandLine,
+                  portObj,
+                });
+              }
+            });
+            break;
+          case 'contrast':
+            portObj.write(Buffer.from([0xfe, 0x50, input]), (err) => {
+              // Argument Options: err, result
+              if (err) {
+                wrapUp({
+                  runFromCommandLine,
+                  error: err,
+                  portObj,
+                });
+              } else {
+                wrapUp({
+                  runFromCommandLine,
+                  portObj,
+                });
+              }
+            });
+            break;
+          default:
+            wrapUp({
+              runFromCommandLine,
+              error: 'Unknown command.',
+            });
+        }
+      }
+    });
   }
 }
 
