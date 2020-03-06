@@ -21,7 +21,7 @@
     "pushover-notifications": "1.2.2",
     "redis": "3.0.2",
     "request": "2.88.2",
-    "roslib": "1.0.1",
+    "roslib": "1.1.0",
     "serialport": "8.0.7",
     "socket.io": "2.3.0",
     "socket.io-client": "2.3.0",
