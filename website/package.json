@@ -7,7 +7,7 @@
     "nipplejs": "0.8.5",
     "react": "16.13.0",
     "react-dom": "16.13.0",
-    "react-scripts": "3.4.0",
+    "react-scripts": "3.4.1",
     "reactstrap": "8.4.1",
     "roslib": "1.0.1",
     "socket.io-client": "2.3.0"
