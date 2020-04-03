@@ -14,7 +14,7 @@
     "glob": "7.1.6",
     "jsonwebtoken": "8.5.1",
     "lodash": "4.17.15",
-    "mkdirp": "0.5.1",
+    "mkdirp": "0.5.5",
     "package-lock.json": "1.0.0",
     "package.json": "2.0.1",
     "ps-tree": "1.2.0",
