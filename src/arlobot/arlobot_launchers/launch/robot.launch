@@ -28,9 +28,4 @@
         <include file="$(find arlobot_launchers)/launch/rplidar.launch" />
     </group>
 
-    <arg name="enableCombinedScanTopic" value="$(optenv ENABLE_COMBINED_SCAN_TOPIC false)" />
-    <group if="$(arg enableCombinedScanTopic)">
-        <include file="$(find arlobot_launchers)/launch/laserscan_multi_merger_arlobot.launch" />
-    </group>
-
 </launch>

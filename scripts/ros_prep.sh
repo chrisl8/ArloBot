@@ -88,10 +88,6 @@ if [[ $(jq '.hasRPLIDAR' "${HOME}/.arlobot/personalDataForBehavior.json") == tru
   export RPLIDAR_BAUDRATE
 fi
 
-if [[ $(jq '.createMultiScanTopic' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-  export ENABLE_COMBINED_SCAN_TOPIC=true
-fi
-
 if [[ $(jq '.hasXboxController' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
   export HAS_XBOX_JOYSTICK=true
   if [[ $("${SCRIPTDIR}/find_xbox_controller.sh") ]]; then
