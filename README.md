@@ -53,7 +53,7 @@ If you put a fresh copy of Ubuntu 18.04 LTS on your robot's laptop then you can 
 There is now a script to install everything. Just run:
 
 ```
-bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/melodic/setup-melodic.sh)
+bash <(wget -qO- --no-cache -o /dev/null https://raw.githubusercontent.com/chrisl8/ArloBot/melodic/setup-melodic.sh)
 ```
 
 Be sure to read the instructions that the script will print at the end about editing the config files in ~/.arlobot/
@@ -96,7 +96,7 @@ If you use Ubuntu or Lubuntu there should also be a desktop icon on the robot's 
 If you want to run RVIZ or other ROS tools from a remote Linux workstation, you do not have to install ROS on it. Instead try using [x11docker](https://github.com/mviereck/x11docker) via this setup script:
 
 ```
-bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/melodic/workstation-melodic-via-x11docker.sh)
+bash <(wget -qO- --no-cache -o /dev/null https://raw.githubusercontent.com/chrisl8/ArloBot/melodic/workstation-melodic-via-x11docker.sh)
 ```  
 Then use these commands to run various remote functions via Docker:  
 `docker-view-navigation.sh`  
