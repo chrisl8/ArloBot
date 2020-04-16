@@ -13,7 +13,7 @@ SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 # This script is called by check_hardware.sh and direct2PropSerialTest.sh
 # In order for it to work properly with direct2PropSerialTest.sh, it must ONLY write
 # USB device information to the standard output (STDOUT).
-# Therefore, in order to sucessfully search for two potential Propeller_Activity_[Brd|Board] types,
+# Therefore, in order to successfully search for two potential Propeller_Activity_[Brd|Board] types,
 # the first search must only write to STDOUT if it is going to be successful.
 #
 # Prevent output to STDOUT and determine whether a "Propeller_Activity_Brd" will be found.
