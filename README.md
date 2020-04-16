@@ -8,7 +8,14 @@ ArloBot Package for ROS
 
 1. This package provides a set of ROS packages for using a [Parallax Arlo Platform](http://www.parallax.com/product/arlo-robotic-platform-system "Parallax") robot to run all of the demonstration projects for the [Robot Operating System (ROS)](http://www.ros.org/ "ROS") based on the old [TurtleBot](http://wiki.ros.org/Robots/TurtleBot "TurtleBot")
 
-2. This package also installs a node.js based front end GUI for the robot, complete with Twilio and Pushover integration and push button access to ROS functions.
+This package also includes:
+ 0. An all in one install script that should get things as close to working as possible by running one install script.
+ 1. A Python and Curses based Serial Interface testing utility to help diagnose problems and confirm your hardware is working.
+ 2. A set of Bash script utilities to help in working with the robot.
+ 4. A set of Node.js based utilities to automate many repeated tasks.
+ 5. A Node.js based Server to run the robot at all times, along with:
+ 6. A React based web GUI to interact with the robot.
+ 7. Other fun things like Twilio and Pushover integration.
 
 ### Mobile Friendly Web Interface  
 ![Alt text](/screenshots/arlobotNewWebInterface.png "Web Interface")
@@ -27,7 +34,7 @@ First you need to build a robot!
 * On board computer
 * 3D Sensor
 
-The Arlo Robotic Platform now comes as a complete kit, which I recommend buying from Parallax: [Arlo Complete Robot System](https://www.parallax.com/product/28966)
+The Arlo Robotic Platform is a complete kit, which I recommend buying from Parallax: [Arlo Complete Robot System](https://www.parallax.com/product/28966)
 
 You will also need a few other items (laptop and 3D sensor) which I have some details about on the [Parts List Wiki Page](https://github.com/chrisl8/ArloBot/wiki/Parts-List " Parts List")
 
@@ -39,7 +46,7 @@ Check out my blog: [ArloBot Build Index](http://ekpyroticfrood.net/?p=162 "Ekpyr
 
 And also jump on the [Parallax Forums](http://forums.parallax.com/ "Parallax Forums") and start searching and asking questions!
 
-Now that the Arlo platform comes as a kit, things should be pretty straight forward, but we will all help you out with any problems you run into.  
+Because the Arlo platform comes as a kit, building it should be pretty straight forward, but we will all help you out with any problems you run into.  
 Ask questions in the [Parallax Forums](http://forums.parallax.com/ "Parallax Forums"), on [GitHub](https://github.com/chrisl8/ArloBot/issues "Create an Issue"), on the [ROS for Arlobot Google Group](https://groups.google.com/forum/?utm_medium=email&utm_source=footer#!forum/ros-for-arlobot "ROS for Arlobot"), and on my [blog](http://ekpyroticfrood.net/ "My Blog").
 
 Once your robot is built, you can use this package.
@@ -58,7 +65,7 @@ bash <(wget -qO- --no-cache -o /dev/null https://raw.githubusercontent.com/chris
 
 Be sure to read the instructions that the script will print at the end about editing the config files in ~/.arlobot/
 
-To update your code just run the same script again and it will pull down and compile anything new without erasing custom settings.
+To update your code just run the same script again, and it will pull down and compile anything new without erasing custom settings.
 
 Please note that you will need the code to run on your Propeller board. This is stored in the "Propeller C Code for ArloBot" folder. Details on the Propeller code and setup are here: [http://ekpyroticfrood.net/?p=165](http://ekpyroticfrood.net/?p=165)
 
@@ -73,7 +80,7 @@ This provides an interface to send all controls, commands, and settings directly
 0. Make sure the robot is on blocks off of the floor so when the motors run it will stay still and not run into anything.  
 1. On the robot run `~/catkin_ws/src/ArloBot/scripts/PropellerSerialTest.sh` It will not start moving or doing anything yet, but it may soon! 
 2. The Proximity Sensors, that is the PING and/or InfraRed (IR) sensors, can cause the robot to move to avoid obstacles or refuse to move when commanded to. The bottom row of the status shows their measurements. The second from the bottom row shows if the Propeller Activity Board's built in safety code has determined if it is safe to move forward or backward or not at all.  There is also the line `Escaping:False` which indicates if the code is attempting to move to get away from something too close.  
-Since we are on blocks, let's turn this off so it won't run the motors unless we tell it to. This will prevent it from just driving the wheels in response to you or something close to your test setup.  
+Since we are on blocks, let's turn this off, so it won't run the motors unless we tell it to. This will prevent it from just driving the wheels in response to you or something close to your test setup.  
 Pres `s` for Settings and then `a` to ignore All proximity sensors.  
 The line next to `Settings` that says `ignoreAllProximitySensors:No` will change to `ignoreAllProximitySensors:Yes`.
 3. Next note along the `Settings` line that `pluggedIn` is `Yes`. This will prevent the Propeller Activity Board code from sending any commands to the motor. Normally the only way to override this is through ROS. It is a safety measure that prevents the robot from ever moving if ROS is not running. We will override this now. If you left the Settings menu press `s` to get back in. Then `p` for Plugged in to turn that off.  `pluggedIn:Yes` will change to `pluggedIn:Yes` Now the robot can move.  
@@ -90,7 +97,7 @@ To start the Web Interface, which also allows starting ROS run:
 ```
 and point your web browser at the URL it gives you.
 
-If you use Ubuntu or Lubuntu there should also be a desktop icon on the robot's desktop that you can run to do the same thing and bring up this web page on the robot itself.
+If you use Ubuntu there should also be a desktop icon on the robot's desktop that you can run to do the same thing and bring up this web page on the robot itself.
 
 ## Workstation via [x11docker](https://github.com/mviereck/x11docker)
 If you want to run RVIZ or other ROS tools from a remote Linux workstation, you do not have to install ROS on it. Instead try using [x11docker](https://github.com/mviereck/x11docker) via this setup script:
