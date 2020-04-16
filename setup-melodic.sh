@@ -144,7 +144,7 @@ sudo apt upgrade -y
 # That is why there is a separate section for extra packages that I need for Arlo.
 if ! (dpkg -s ros-${INSTALLING_ROS_DISTRO}-desktop-full | grep "Status: install ok installed" &>/dev/null); then
   printf "\n${YELLOW}[Installing ROS]${NC}\n"
-  sudo apt install -y ros-${INSTALLING_ROS_DISTRO}-desktop-full
+  sudo apt install -y python-rosdep ros-${INSTALLING_ROS_DISTRO}-desktop-full
   printf "${YELLOW}[ROS installed!]${NC}\n"
   printf "\n${YELLOW}[rosdep init and python-rosinstall]${NC}\n"
   if ! [[ -e /etc/ros/rosdep/sources.list.d/20-default.list ]]; then
