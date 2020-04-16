@@ -754,6 +754,9 @@ if [[ "${USER}" == chrisl8 ]]; then
   printf "${YELLOW}in website/:${NC}\n"
   cd "${HOME}/catkin_ws/src/ArloBot/website"
   npm outdated || true # Informational, do not crash  script
+  printf "${YELLOW}in cypress tests/:${NC}\n"
+  cd "${HOME}/catkin_ws/src/ArloBot/cypress-tests"
+  npm outdated || true # Informational, do not crash  script
   printf "${PURPLE}-------------------------------------------------------${NC}\n"
 fi
 
