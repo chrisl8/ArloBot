@@ -14,7 +14,8 @@ describe("The Home Page", () => {
     // This only happens if the robot wasn't online.
     // cy.contains("Robot is Offline!").should("be.visible");
 
-    cy.contains("Starting behaviors.").should("be.visible");
+    // This only exists if the page is newly loaded.
+    // cy.contains("Starting behaviors.").should("be.visible");
 
     cy.contains("Waiting for StartROS request.").should("be.visible");
   });
