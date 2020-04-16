@@ -37,7 +37,7 @@ describe("Behavior Panel Functions", () => {
     cy.get("#fiveVoltRelayButton").should("not.have.class", "btn-success");
 
     cy.get("#masterRelayStatusButton")
-      .contains("span", "Off")
+      .contains("span", "Off", { timeout: 15000 })
       .should("be.visible");
     cy.get("#masterRelayStatusButton").should("not.have.class", "btn-success");
 
@@ -66,7 +66,7 @@ describe("Behavior Panel Functions", () => {
     cy.contains("Master Relay on").should("be.visible");
 
     cy.get("#masterRelayStatusButton")
-      .contains("span", "On")
+      .contains("span", "On", { timeout: 15000 })
       .should("be.visible");
     cy.get("#masterRelayStatusButton").should("have.class", "btn-success");
 
@@ -88,6 +88,9 @@ describe("Behavior Panel Functions", () => {
     cy.get("#videoFeed")
       .should("have.attr", "src")
       .should("include", "action=stream");
+
+    cy.wait(30000); // Visually confirm the camera feed is working.
+    // cy.pause(); // If you want to manually verify and tell it to continue.
   });
 
   it("turn off camera", () => {
@@ -123,7 +126,7 @@ describe("Behavior Panel Functions", () => {
     cy.contains("Master Relay off").should("be.visible");
 
     cy.get("#masterRelayStatusButton")
-      .contains("span", "Off")
+      .contains("span", "Off", { timeout: 15000 })
       .should("be.visible");
     cy.get("#masterRelayStatusButton").should("not.have.class", "btn-success");
   });

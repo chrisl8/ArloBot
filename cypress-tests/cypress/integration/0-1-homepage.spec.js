@@ -11,7 +11,8 @@ describe("The Home Page", () => {
   });
 
   it("new project page loads correctly", () => {
-    cy.contains("Robot is Offline!").should("be.visible");
+    // This only happens if the robot wasn't online.
+    // cy.contains("Robot is Offline!").should("be.visible");
 
     cy.contains("Starting behaviors.").should("be.visible");
 

@@ -152,7 +152,7 @@ describe("Behavior Panel Functions", () => {
     cy.contains("Master Relay on").should("be.visible");
 
     cy.get("#masterRelayStatusButton")
-      .contains("span", "On")
+      .contains("span", "On", { timeout: 15000 })
       .should("be.visible");
     cy.get("#masterRelayStatusButton").should("have.class", "btn-success");
 
@@ -220,7 +220,7 @@ describe("Behavior Panel Functions", () => {
     cy.get("#fiveVoltRelayButton").should("not.have.class", "btn-success");
 
     cy.get("#masterRelayStatusButton")
-      .contains("span", "On")
+      .contains("span", "On", { timeout: 15000 })
       .should("be.visible");
     cy.get("#masterRelayStatusButton").should("have.class", "btn-success");
 
@@ -230,7 +230,7 @@ describe("Behavior Panel Functions", () => {
     cy.contains("Master Relay off").should("be.visible");
 
     cy.get("#masterRelayStatusButton")
-      .contains("span", "Off")
+      .contains("span", "Off", { timeout: 15000 })
       .should("be.visible");
     cy.get("#masterRelayStatusButton").should("not.have.class", "btn-success");
   });

@@ -102,7 +102,6 @@ describe("site initial layout and page function", () => {
     cy.contains("useUSBrelay:").should("be.visible");
     cy.contains("hasXV11:").should("be.visible");
     cy.contains("hasScanseSweep:").should("be.visible");
-    cy.contains("createMultiScanTopic:").should("be.visible");
     cy.contains("camera0:").should("be.visible");
     cy.contains("camera0name:").should("be.visible");
     cy.contains("camera0resolutionForWeb:").should("be.visible");

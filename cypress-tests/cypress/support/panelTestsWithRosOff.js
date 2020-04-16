@@ -95,7 +95,7 @@ function behaviorPanelShouldBeOpen(trueFalse) {
     cy.get("#ask-something").should(visibilitystatus);
     cy.contains("Ask").should(visibilitystatus);
     cy.contains("Response:").should(visibilitystatus);
-    cy.contains("Hello my name is two flower").should(visibilitystatus);
+    cy.contains("Hello my name is ").should(visibilitystatus);
     cy.contains("Never").should(visibilitystatus);
     cy.contains("Idle").should(visibilitystatus);
     cy.contains("Timeout").should(visibilitystatus);

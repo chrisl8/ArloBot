@@ -13,7 +13,7 @@ describe("Toggle Light One", () => {
     cy.contains("Master Relay").should("be.visible");
 
     cy.get("#masterRelayStatusButton")
-      .contains("span", "Off")
+      .contains("span", "Off", { timeout: 15000 })
       .should("be.visible");
 
     cy.contains("Light One").should("not.be.visible");
@@ -33,7 +33,7 @@ describe("Toggle Light One", () => {
     cy.contains("Master Relay on").should("be.visible");
 
     cy.get("#masterRelayStatusButton")
-      .contains("span", "On")
+      .contains("span", "On", { timeout: 15000 })
       .should("be.visible");
     cy.get("#masterRelayStatusButton").should("have.class", "btn-success");
   });
@@ -113,7 +113,7 @@ describe("Toggle Light One", () => {
     cy.contains("Master Relay off").should("be.visible");
 
     cy.get("#masterRelayStatusButton")
-      .contains("span", "Off")
+      .contains("span", "Off", { timeout: 15000 })
       .should("be.visible");
     cy.get("#masterRelayStatusButton").should("not.have.class", "btn-success");
   });

@@ -51,7 +51,7 @@ function resetRobotService() {
     cy.contains("Robot Service Log").click();
 
     cy.contains("Behavior").click();
-    cy.contains("Hello my name is two flower").should("be.visible");
+    cy.contains("Hello my name is ").should("be.visible");
 
     cy.contains("Behavior").click();
   });
