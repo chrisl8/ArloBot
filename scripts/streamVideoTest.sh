@@ -25,4 +25,4 @@ echo "Go to http://${HOSTNAME}:58180 to see video stream."
 # Note that if you use the camera feature on the web interface, the frame rate and resolution are
 # set in ~/.arlobot/personalDataForBehavior.json
 
-mjpg_streamer -i "/usr/local/lib/mjpg-streamer/input_uvc.so -n -d ${1} -f 30 -r 1280x720" -o "/usr/local/lib/mjpg-streamer/output_http.so -p 58180 -w /usr/local/share/mjpg-streamer/www"
+mjpg_streamer -i "/usr/local/lib/mjpg-streamer/input_uvc.so -n -d ${1} -r 1280x720" -o "/usr/local/lib/mjpg-streamer/output_http.so -p 58180 -w /usr/local/share/mjpg-streamer/www"
