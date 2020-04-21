@@ -42,7 +42,7 @@ async function tts(sound) {
     // decide what it is!
     const possibleExtension = sound.slice(-4).toLowerCase();
     if (possibleExtension === '.wav') {
-      exec(`/usr/bin/mplayer -quiet ${sound} > /dev/null 2>&1`);
+      exec(`/usr/bin/aplay -q ${sound} > /dev/null 2>&1`);
     } else if (personalData.useMyCroft) {
       myCroft.sayText(sound);
     } else if (personalData.speechProgram) {
