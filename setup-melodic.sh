@@ -713,6 +713,7 @@ if ! (crontab -l >/dev/null 2>&1) || ! (crontab -l | grep startpm2 >/dev/null 2>
 fi
 
 printf "\n${LIGHTPURPLE}[Flushing PM2 logs and starting/restarting web server.]${NC}\n"
+pm2 update
 pm2 flush
 if ! pm2 restart Robot; then
   "${HOME}/catkin_ws/src/ArloBot/startpm2.sh"
