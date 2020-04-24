@@ -42,7 +42,7 @@
     "eslint-plugin-react": "7.19.0",
     "eslint-plugin-react-hooks": "3.0.0",
     "jasmine": "3.5.0",
-    "prettier": "2.0.4"
+    "prettier": "2.0.5"
   },
   "scripts": {
     "test": "node_modules/jasmine/bin/jasmine.js"
