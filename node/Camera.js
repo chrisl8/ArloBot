@@ -1,10 +1,8 @@
 const spawn = require('child_process').spawn;
 const personalData = require('./personalData');
 const webModel = require('./webModel');
-const robotModel = require('./robotModel');
 const webModelFunctions = require('./webModelFunctions');
 const ipAddress = require('./ipAddress');
-const masterRelay = require('./MasterRelay');
 
 class Camera {
   /** @namespace personalData.relays.has_fiveVolt */
@@ -37,9 +35,7 @@ class Camera {
     // See scripts/streamVideoTest.sh for details on mjpg_streamer usage.
     const process = spawn('/usr/local/bin/mjpg_streamer', [
       '-i',
-      `/usr/local/lib/mjpg-streamer/input_uvc.so -d ${this.video} -n -f ${
-        this.frameRate
-      } -r ${this.resolution}`,
+      `/usr/local/lib/mjpg-streamer/input_uvc.so -d ${this.video} -n -f ${this.frameRate} -r ${this.resolution}`,
       '-o',
       '/usr/local/lib/mjpg-streamer/output_http.so -p 58180 -w /usr/local/share/mjpg-streamer/www',
     ]);
@@ -75,47 +71,26 @@ class Camera {
 
   findAndSwitchOn() {
     this.dataHolder = '';
-    let delayForUsb = 0;
-    if (personalData.useMasterPowerRelay && !webModel.masterRelayOn) {
-      masterRelay('on');
-      delayForUsb = 5;
-    }
-    console.log(webModel.relays);
-    if (
-      personalData.relays.has_fiveVolt &&
-      !webModel.relays.find((x) => x.name === 'fiveVolt').relayOn
-    ) {
-      robotModel.usbRelay.switchRelay(
-        webModel.relays.find((x) => x.name === 'fiveVolt').number,
-        'on',
-      );
-      delayForUsb = 5;
-    }
-    if (delayForUsb > 0) {
-      webModelFunctions.scrollingStatusUpdate('Camera will be up soon . . .');
-    }
-    setTimeout(() => {
-      webModelFunctions.scrollingStatusUpdate(
-        `Finding Camera ${this.cameraModel}`,
-      );
-      const process = spawn(`${__dirname}/../scripts/find_camera.sh`, [
-        this.cameraModel,
-      ]);
-      process.stdout.on('data', (data) => {
-        this.dataHolder = data;
-      });
-      process.on('close', (code) => {
-        // console.log(`child process exited with code ${code}`);
-        if (code === 0) {
-          this.video = `${this.dataHolder}`.trim();
-          this.switchOn();
-        } else {
-          webModelFunctions.scrollingStatusUpdate(
-            `${this.cameraModel} search failed with code: ${code}`,
-          );
-        }
-      });
-    }, delayForUsb * 1000);
+    webModelFunctions.scrollingStatusUpdate(
+      `Finding Camera ${this.cameraModel}`,
+    );
+    const process = spawn(`${__dirname}/../scripts/find_camera.sh`, [
+      this.cameraModel,
+    ]);
+    process.stdout.on('data', (data) => {
+      this.dataHolder = data;
+    });
+    process.on('close', (code) => {
+      // console.log(`child process exited with code ${code}`);
+      if (code === 0) {
+        this.video = `${this.dataHolder}`.trim();
+        this.switchOn();
+      } else {
+        webModelFunctions.scrollingStatusUpdate(
+          `${this.cameraModel} search failed with code: ${code}`,
+        );
+      }
+    });
   }
 }
 
