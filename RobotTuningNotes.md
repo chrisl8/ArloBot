@@ -66,9 +66,13 @@ These can increase CPU load, but can improve quality. See Turtlebot’s paramete
 
 ### Local Planner Trajectory Scoring (Page 9)
 *dwa_local_planner_params.yaml*  
-`path_distance_bias: 64.0 # How closely to follow the global path.`  
-`goal_distance_bias: 20.0 # Weight given to goal regardless of path`  
-`occdist_scale: 0.02 # Weight given to avoiding obstacles`  
+
+As of Melodic the defaults for path_distance_bias, goal_distance_bias, and occdist_scale have changed due to bugs in how the previous versions calculated
+https://github.com/ros-planning/navigation/pull/763/files
+
+`#path_distance_bias: 64.0 # How closely to follow the global path.`  
+`#goal_distance_bias: 20.0 # Weight given to goal regardless of path`  
+`#occdist_scale: 0.02 # Weight given to avoiding obstacles`  
 Too high of occdist_scale will cause the robot to cycle indecisively.  
 With a low sim time, a path_distance_bias of 64.0 seems to work.  
 Higher helps in some situations, but in others it will spend more time getting “back to the path” than moving along it.
