@@ -19,7 +19,7 @@ const howManySecondsSince = require('../howManySecondsSince');
 const publishRobotURL = require('../publishRobotURL');
 
 let intervalCount = 0; // Use this to throttle or space out polling items.
-const intervalTop = 10;
+const intervalTop = 10; // Seconds
 
 async function polling() {
   // Argument options: tick
@@ -40,22 +40,25 @@ async function polling() {
 
   speechEngine();
 
-  handleSemaphoreFiles.readSemaphoreFiles();
   if (intervalCount === 5) {
+    // seconds
     publishRobotURL.updateRobotURL();
   }
   if (intervalCount === 0) {
     checkBattery();
   }
-  if (intervalCount === 5) {
-    robotModel.usbRelay.updateAllRelayState();
-  } else if (intervalCount === 10) {
-    masterRelay('read');
-  }
   if (intervalCount === intervalTop) {
     if (!webModel.cameraOn) {
       saveScreenShotForWeb();
     }
+  }
+  if (webModel.checkMasterRelay) {
+    webModelFunctions.update('checkMasterRelay', false);
+    masterRelay('read');
+  }
+  if (webModel.checkUsbRelayBank) {
+    webModelFunctions.update('checkUsbRelayBank', false);
+    robotModel.usbRelay.updateAllRelayState();
   }
 
   // Check for QR code:
@@ -138,13 +141,12 @@ async function polling() {
     console.log(`ROS Idle Check: Robot not idle.`);
   }
 
-  // After 2 hours be quiet, and turn on the idle timer again.
+  // After 2 hours turn on the idle timer again.
   // NOTE: If you turn on debugging, this will update every behavior loop (1 second)
   const dateNow = new Date();
   const lastActionDate = new Date(webModel.lastUpdateTime);
   const idleMinutes = (dateNow - lastActionDate) / 1000 / 60;
   if (idleMinutes > 120) {
-    handleSemaphoreFiles.setSemaphoreFiles('beQuiet');
     webModelFunctions.update('idleTimeout', true);
   }
 
