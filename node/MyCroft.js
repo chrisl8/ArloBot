@@ -6,11 +6,6 @@ const webModelFunctions = require('./webModelFunctions');
 const Arduino = require('./Arduino');
 
 const arduino = new Arduino(true);
-
-// TODO: Presently if the microphone you want to use is on a USB port that is controlled by a relay,
-// TODO: It may be that the microphone is not available when MyCroft starts.
-// TODO: At this point I start Mycroft outside of the robot, so really the fix for this is external to mycroft.
-
 let connection; // Hold connection data.
 const client = new WebSocketClient();
 
@@ -68,9 +63,7 @@ const init = () => {
           // recognizer_loop:wakeword
           arduino.currentCommandArrayPoint = 0;
           arduino.currentCommandArray = [
-            `${arduino.lightPattern.fillSolid},0,255,0,${
-              arduino.pixel.LOOP_END
-            }`,
+            `${arduino.lightPattern.fillSolid},0,255,0,${arduino.pixel.LOOP_END}`,
           ];
         } else if (messageObject.type === 'speak') {
           webModelFunctions.update('myCroftSaid', messageObject.data.utterance);
