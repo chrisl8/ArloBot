@@ -6,20 +6,24 @@
 // but then the robot won't be good for much at that point anyway.
 // I'm just pointing out that this doesn't actively monitor anything,
 // it is called in a polling loop by index.js
+const chokidar = require('chokidar');
 const fs = require('fs');
 const { promisify } = require('util');
 
 const access = promisify(fs.access);
 const chmod = promisify(fs.chmod);
-const readFile = promisify(fs.readFile);
 const readdir = promisify(fs.readdir);
 const mkdirp = require('mkdirp');
 const webModelFunctions = require('./webModelFunctions');
+const webModel = require('./webModel');
+const robotModel = require('./robotModel');
 
 const personalDataFolder = `${process.env.HOME}/.arlobot/`;
 const statusFolder = `${personalDataFolder}status/`;
 const quietFile = `${statusFolder}bequiet`;
 const stopFile = `${statusFolder}STOP`;
+const checkMasterRelayFile = `${statusFolder}checkMasterRelay`;
+const checkUsbRelayBankFile = `${statusFolder}checkUsbRelayBank`;
 const doorFileFolder = `${statusFolder}doors`;
 // Note this will only work if we do not KNOW what map we are on.
 const doorFile = `${statusFolder}/doors/unknown-door`;
@@ -27,6 +31,16 @@ const foldersExist = {
   statusFolder: false,
   doorFileFolder: false,
 };
+
+function getFileNameFromFullPath(path) {
+  const splitName = path.split('/');
+  return splitName[splitName.length - 1];
+}
+
+function getFolderNameFromFullPath(path) {
+  const splitName = path.split('/');
+  return splitName[splitName.length - 2];
+}
 
 async function folderExists(folderName) {
   while (!foldersExist[folderName]) {
@@ -49,32 +63,12 @@ async function folderExists(folderName) {
   }
 }
 
-async function folderExistsForText(text) {
-  let folderName = statusFolder;
-  if (text === 'markDoorsClosed') {
-    folderName = doorFileFolder;
-  }
+// Ensure the status folder exists
+folderExists(statusFolder);
+folderExists(doorFileFolder);
 
-  await folderExists(folderName);
-}
-
-const readSemaphoreFiles = async () => {
-  const checkFileAndSetValue = async (file, value) => {
-    try {
-      await readFile(file, 'utf8');
-      webModelFunctions.update(value, true);
-    } catch (e) {
-      webModelFunctions.update(value, false);
-    }
-  };
-
-  await folderExists(statusFolder);
-  await checkFileAndSetValue(stopFile, 'haltRobot');
-  await checkFileAndSetValue(quietFile, 'beQuiet');
-
-  // Check door files
-  // TODO: How can we tell if the folder only has files in it for the wrong map?
-  await folderExists(doorFileFolder);
+async function checkDoorFiles() {
+  // Read folder if any change happens and set based on existence of any files
   try {
     const doorFileList = await readdir(doorFileFolder);
     if (doorFileList.length > 0) {
@@ -87,16 +81,70 @@ const readSemaphoreFiles = async () => {
     // True on error for safety.
     webModelFunctions.update('doorsOpen', true);
   }
+}
 
-  webModelFunctions.update('semaphoreFilesRead', true);
+checkDoorFiles();
+
+const setFileValue = async (path, action) => {
+  const fileName = getFileNameFromFullPath(path);
+  const folderName = getFolderNameFromFullPath(path);
+  let deleteFile = false;
+  if (fileName === 'STOP') {
+    webModelFunctions.update('haltRobot', action === 'add');
+  } else if (fileName === 'bequiet') {
+    webModelFunctions.update('beQuiet', action === 'add');
+  } else if (fileName === 'checkMasterRelay') {
+    webModelFunctions.update('checkMasterRelay', true);
+    deleteFile = true;
+  } else if (fileName === 'checkUsbRelayBank') {
+    webModelFunctions.update('checkUsbRelayBank', true);
+    deleteFile = true;
+  } else if (folderName === 'doors') {
+    checkDoorFiles();
+  }
+  if (deleteFile) {
+    fs.unlink(path, (err) => {
+      if (err && err.code !== 'ENOENT') console.error(err);
+      if (webModel.debugging) {
+        console.log(`successfully deleted ${path}`);
+      }
+    });
+  }
 };
+
+// Use chokidar to watch files rather than polling for changes
+function startSemaphoreFileWatcher() {
+  webModelFunctions.update('semaphoreFilesRead', true);
+
+  robotModel.semaphoreFilesWatcher = chokidar.watch(statusFolder, {
+    persistent: true,
+  });
+
+  robotModel.semaphoreFilesWatcher
+    .on('add', (path) => setFileValue(path, 'add'))
+    .on('unlink', (path) => setFileValue(path, 'unlink'));
+}
+
+async function folderExistsForText(text) {
+  let folderName = statusFolder;
+  if (text === 'markDoorsClosed') {
+    folderName = doorFileFolder;
+  }
+
+  await folderExists(folderName);
+}
 
 const setSemaphoreFiles = async (text) => {
   await folderExistsForText(text);
 
   if (text === 'talk') {
     webModelFunctions.update('beQuiet', false);
-    fs.unlink(quietFile, readSemaphoreFiles);
+    fs.unlink(quietFile, (err) => {
+      if (err && err.code !== 'ENOENT') console.error(err);
+      if (webModel.debugging) {
+        console.log(`successfully deleted beQuiet file`);
+      }
+    });
   } else if (text === 'beQuiet') {
     webModelFunctions.update('beQuiet', true);
     fs.writeFile(quietFile, 'quiet\n', (err) => {
@@ -108,7 +156,12 @@ const setSemaphoreFiles = async (text) => {
     });
   } else if (text === 'go') {
     webModelFunctions.update('haltRobot', false);
-    fs.unlink(stopFile, readSemaphoreFiles);
+    fs.unlink(stopFile, (err) => {
+      if (err && err.code !== 'ENOENT') console.error(err);
+      if (webModel.debugging) {
+        console.log(`successfully deleted haltRobot file`);
+      }
+    });
   } else if (text === 'stop') {
     webModelFunctions.update('haltRobot', true);
     fs.writeFile(stopFile, 'STOP\n', (err) => {
@@ -131,7 +184,13 @@ const setSemaphoreFiles = async (text) => {
         foldersExist[doorFileFolder] = false;
       } else {
         files.forEach((file) => {
-          fs.unlink(`${doorFileFolder}/${file}`, readSemaphoreFiles);
+          fs.unlink(`${doorFileFolder}/${file}`, (innerError) => {
+            if (innerError && innerError.code !== 'ENOENT')
+              console.error(innerError);
+            if (webModel.debugging) {
+              console.log(`successfully deleted ${doorFileFolder}/${file}`);
+            }
+          });
         });
       }
     });
@@ -143,8 +202,24 @@ const setSemaphoreFiles = async (text) => {
         foldersExist[statusFolder] = false;
       }
     });
+  } else if (text === 'checkMasterRelayFile') {
+    fs.writeFile(checkMasterRelayFile, text, (err) => {
+      if (err) {
+        console.error(`Error writing ${text} file:`);
+        console.error(err);
+        foldersExist[statusFolder] = false;
+      }
+    });
+  } else if (text === 'checkUsbRelayBankFile') {
+    fs.writeFile(checkUsbRelayBankFile, text, (err) => {
+      if (err) {
+        console.error(`Error writing ${text} file:`);
+        console.error(err);
+        foldersExist[statusFolder] = false;
+      }
+    });
   }
 };
 
 exports.setSemaphoreFiles = setSemaphoreFiles;
-exports.readSemaphoreFiles = readSemaphoreFiles;
+exports.startSemaphoreFileWatcher = startSemaphoreFileWatcher;

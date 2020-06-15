@@ -183,9 +183,7 @@ app.use(express.static(`${__dirname}/../website/build`));
 
 const handleSemaphoreFiles = require('./handleSemaphoreFiles');
 
-handleSemaphoreFiles.readSemaphoreFiles();
-
-const saveMap = function(newMapName) {
+const saveMap = function (newMapName) {
   // TODO: Positive feedback that map is saved.
   // TODO: If the map exists, maybe warn?
   const mapDir = `${process.env.HOME}/.arlobot/rosmaps/`;
@@ -199,7 +197,7 @@ const saveMap = function(newMapName) {
   serverMapProcess.start();
 };
 
-const startLogStreamer = function() {
+const startLogStreamer = function () {
   const command = `${__dirname}/../scripts/log-watcher.sh`;
   const logStreamerProcess = spawn(command);
   logStreamerProcess.on('exit', (code) => {
@@ -214,7 +212,7 @@ const startLogStreamer = function() {
   });
   return logStreamerProcess;
 };
-const stopLogStreamer = function() {
+const stopLogStreamer = function () {
   const command = '/usr/bin/pkill';
   const commandArgs = ['-f', 'log.io'];
   const process = spawn(command, commandArgs);
@@ -231,7 +229,7 @@ const stopLogStreamer = function() {
 // and only show them when ROS is started.
 // Behaviors like these could also fall into "random activities" when robot is "idle",
 // but then I think that it would need to be in the behavior tree
-const startColorFollower = function() {
+const startColorFollower = function () {
   webModelFunctions.scrollingStatusUpdate('Starting Color Follower.');
   const command = `${__dirname}/../scripts/object_follower.sh`;
   const colorFollowerProcess = spawn(command);
@@ -262,7 +260,7 @@ const startColorFollower = function() {
   });
   return colorFollowerProcess;
 };
-const stopColorFollower = function() {
+const stopColorFollower = function () {
   // pkill -f "roslaunch arlobot_launchers object_follower.launch"
   const command = '/usr/bin/pkill';
   const commandArgs = [

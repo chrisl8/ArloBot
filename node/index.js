@@ -23,6 +23,8 @@ const rosInterface = require('./rosInterface');
 const webserver = require('./webserver');
 const killROS = require('./killROS');
 
+const handleSemaphoreFiles = require('./handleSemaphoreFiles');
+
 const SocketServerSubscriber = require('./SocketServerSubscriber');
 const RemoteMessageHandler = require('./RemoteMessageHandler');
 
@@ -169,6 +171,8 @@ async function main() {
     ROScommand: loadMapCommand,
     successString: 'odom received',
   });
+
+  handleSemaphoreFiles.startSemaphoreFileWatcher();
 
   webModelFunctions.update('status', 'Starting behaviors.');
 

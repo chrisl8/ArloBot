@@ -1,5 +1,6 @@
 const exec = require('child_process').exec;
 
+const robotModel = require('./robotModel');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
 const LCD = require('./LCD');
@@ -13,6 +14,11 @@ function killROS(exitWhenDone) {
     row: 'top',
   });
   if (exitWhenDone) {
+    if (robotModel.semaphoreFilesWatcher) {
+      robotModel.semaphoreFilesWatcher
+        .close()
+        .then(() => console.log('Semaphore File Watcher closed.'));
+    }
     LCD({
       operation: 'text',
       input: '  and Exiting...',

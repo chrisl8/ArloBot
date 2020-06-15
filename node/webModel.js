@@ -25,6 +25,8 @@ module.exports = {
   makeMapRunning: false,
   idleTimeout: true,
   beQuiet: false,
+  checkMasterRelay: true, // Always read once on load
+  checkUsbRelayBank: true, // Always read once on load
   pushoverOn: false, // TODO: Add this to web interface, to enable by hand IF enabled in json config
   haltRobot: false,
   doorsOpen: true, // Track if any doors are open that pose a danger to Daleks

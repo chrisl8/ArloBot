@@ -7,6 +7,7 @@ const webModelFunctions = require('./webModelFunctions');
 const UsbDevice = require('./UsbDevice.js');
 const personalData = require('./personalData');
 const robotModel = require('./robotModel');
+const handleSemaphoreFiles = require('./handleSemaphoreFiles');
 
 function getPortName() {
   /** @namespace personalData.masterPowerRelayStringLocation */
@@ -25,6 +26,17 @@ function usbRelay(operation, runFromCommandLine) {
       process.exit(1);
     }
     robotModel.masterRelayBusy = false;
+    if (operation !== 'read') {
+      if (runFromCommandLine) {
+        // If this is run from the command line, the Robot server can't see the result,
+        // so use the semaphore file to tell it to update.
+        handleSemaphoreFiles.setSemaphoreFiles('checkMasterRelayFile');
+      } else {
+        // Force a read to ensure the change worked,
+        // and update the webModel with the new state.
+        usbRelay('read');
+      }
+    }
   };
   if (
     !personalData.demoWebSite &&
@@ -80,8 +92,6 @@ function usbRelay(operation, runFromCommandLine) {
               );
             }
             webModelFunctions.update('masterRelayOn', result);
-          } else {
-            usbRelay('read');
           }
           portObj.close();
           wrapUp();

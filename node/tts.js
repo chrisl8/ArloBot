@@ -1,9 +1,12 @@
 const exec = require('child_process').exec;
 const Push = require('pushover-notifications');
+const fs = require('fs');
+const { promisify } = require('util');
+
+const readFile = promisify(fs.readFile);
 const personalData = require('./personalData');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
-const handleSemaphoreFiles = require('./handleSemaphoreFiles');
 const myCroft = require('./MyCroft');
 const robotModel = require('./robotModel');
 
@@ -11,11 +14,24 @@ async function tts(sound) {
   // It is fine to call this without 'await', since most of the time you don't want to wait for it to speak before
   // moving on with your programing.
 
+  const checkFileAndSetValue = async (file, value) => {
+    try {
+      await readFile(file, 'utf8');
+      webModelFunctions.update(value, true);
+    } catch (e) {
+      webModelFunctions.update(value, false);
+    }
+  };
   if (!webModel.semaphoreFilesRead) {
     // This will not make any noise if the file
     // ~/.arlobot/status/bequiet
     // exists
-    await handleSemaphoreFiles.readSemaphoreFiles();
+
+    // This section is for running from the command line.
+    const personalDataFolder = `${process.env.HOME}/.arlobot/`;
+    const statusFolder = `${personalDataFolder}status/`;
+    const quietFile = `${statusFolder}bequiet`;
+    await checkFileAndSetValue(quietFile, 'beQuiet');
   }
 
   if (webModel.beQuiet) {
