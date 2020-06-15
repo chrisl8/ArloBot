@@ -53,3 +53,6 @@ else
   SERIAL_NUMBER=${3}
 fi
 "${SCRIPTDIR}/drcontrol.py" -d "${SERIAL_NUMBER}" -r "${RELAY_NUMBER}" -c "${2}"
+if [[ "${2}" != "state" ]]; then
+  touch "${HOME}/.arlobot/status/checkUsbRelayBank"
+fi
