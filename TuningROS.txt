@@ -38,7 +38,7 @@ The only reason we set it to 1.0 and not 0.0, is because at 0.0 it won't path ar
 
 src/arlobot_apps/arlobot_navigation/param/move_base_params.yaml
 src/arlobot/arlobot_explore/param/move_base_params.yaml
-controller_frequency: 20.0
+controller_frequency: 20.0 # Default: 20.0
 Setting it lower seems to result in poor path following.
 Setting it higher seems to cause VERY poor behavior. Robot will spin and spin and spin
 without making any progress, or make circles to get to a location!
