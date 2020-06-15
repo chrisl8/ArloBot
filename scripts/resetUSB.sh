@@ -19,5 +19,4 @@ for i in $(lspci | grep USB | grep xHCI | awk '{ print $1}'); do
   echo -n "0000:${i}" >/sys/bus/pci/drivers/xhci_hcd/unbind
   echo -n "0000:${i}" >/sys/bus/pci/drivers/xhci_hcd/bind
 done
-echo "All USB ports reset, sleeping for 10 seconds..."
-sleep 10
+echo "All USB ports have been reset."
