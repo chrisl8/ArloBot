@@ -144,18 +144,18 @@ sudo apt upgrade -y
 # That is why there is a separate section for extra packages that I need for Arlo.
 if ! (dpkg -s ros-${INSTALLING_ROS_DISTRO}-desktop-full | grep "Status: install ok installed" &>/dev/null); then
   printf "\n${YELLOW}[Installing ROS]${NC}\n"
-  sudo apt install -y python-rosdep ros-${INSTALLING_ROS_DISTRO}-desktop-full
+  sudo apt install -y ros-${INSTALLING_ROS_DISTRO}-desktop-full
   printf "${YELLOW}[ROS installed!]${NC}\n"
-  printf "\n${YELLOW}[rosdep init and python-rosinstall]${NC}\n"
-  if ! [[ -e /etc/ros/rosdep/sources.list.d/20-default.list ]]; then
-    sudo sh -c "rosdep init"
-  fi
-  printf "${BLUE}Running rosdep update . . .${NC}\n"
-  rosdep update
+  #printf "\n${YELLOW}[rosdep init and python-rosinstall]${NC}\n"
+  #if ! [[ -e /etc/ros/rosdep/sources.list.d/20-default.list ]]; then
+  #  sudo sh -c "rosdep init"
+  #fi
+  #printf "${BLUE}Running rosdep update . . .${NC}\n"
+  #rosdep update
   # shellcheck source=/opt/ros/melodic/setup.bash
   source /opt/ros/${INSTALLING_ROS_DISTRO}/setup.bash
   printf "\n${BLUE}Installing ROS Dependencies for building packages${NC}\n"
-  sudo apt install -y python-rosinstall python-rosinstall-generator python-wstool build-essential
+  #sudo apt install -y python-rosinstall python-rosinstall-generator python-wstool build-essential
   # END Official ROS Install section
 fi
 
