@@ -195,13 +195,33 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 # redis-server and redis-tools are used by the web server
 
 # TODO: Test that everything works with the new python3 versions
-PACKAGE_TO_INSTALL_LIST=("?name(ros-${INSTALLING_ROS_DISTRO}-rqt-*)" "ros-${INSTALLING_ROS_DISTRO}-kobuki-ftdi" python3-ftdi1 python3-pip python3-serial "?name(ros-${INSTALLING_ROS_DISTRO}-openni-*)" "?name(ros-${INSTALLING_ROS_DISTRO}-openni2-*)" "ros-${INSTALLING_ROS_DISTRO}-vision-opencv" "ros-${INSTALLING_ROS_DISTRO}-rtabmap-ros" libopencv-dev python3-opencv "ros-${INSTALLING_ROS_DISTRO}-rosbridge-server" "ros-${INSTALLING_ROS_DISTRO}-tf2-tools" imagemagick fswebcam festvox-en1 libv4l-dev jq expect curl zbar-tools openssh-server libftdi-dev libftdi1 libgif-dev pulseaudio pavucontrol "ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan" git "?name(ros-${INSTALLING_ROS_DISTRO}-yocs-*)" "ros-${INSTALLING_ROS_DISTRO}-move-base" "ros-${INSTALLING_ROS_DISTRO}-map-server" "ros-${INSTALLING_ROS_DISTRO}-amcl" "ros-${INSTALLING_ROS_DISTRO}-gmapping" "ros-${INSTALLING_ROS_DISTRO}-depthimage-to-laserscan" "ros-${INSTALLING_ROS_DISTRO}-navigation" "ros-${INSTALLING_ROS_DISTRO}-cartographer" "ros-${INSTALLING_ROS_DISTRO}-cartographer-ros" "ros-${INSTALLING_ROS_DISTRO}-cartographer-ros-msgs" "ros-${INSTALLING_ROS_DISTRO}-cartographer-rviz" net-tools xvfb git libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 espeak-ng-espeak redis-server redis-tools)
+PACKAGE_TO_INSTALL_LIST=("?name(ros-${INSTALLING_ROS_DISTRO}-rqt-*)" python3-ftdi1 python3-pip python3-serial "?name(ros-${INSTALLING_ROS_DISTRO}-openni-*)" "?name(ros-${INSTALLING_ROS_DISTRO}-openni2-*)" "ros-${INSTALLING_ROS_DISTRO}-vision-opencv" "ros-${INSTALLING_ROS_DISTRO}-rtabmap-ros" libopencv-dev python3-opencv "ros-${INSTALLING_ROS_DISTRO}-rosbridge-server" "ros-${INSTALLING_ROS_DISTRO}-tf2-tools" imagemagick fswebcam festvox-en1 libv4l-dev jq expect curl zbar-tools openssh-server libftdi-dev libftdi1 libgif-dev pulseaudio pavucontrol "ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan" git "?name(ros-${INSTALLING_ROS_DISTRO}-yocs-*)" "ros-${INSTALLING_ROS_DISTRO}-move-base" "ros-${INSTALLING_ROS_DISTRO}-map-server" "ros-${INSTALLING_ROS_DISTRO}-amcl" "ros-${INSTALLING_ROS_DISTRO}-navigation"  net-tools xvfb git libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 espeak-ng-espeak redis-server redis-tools)
+
+# TODO: The following packages were removed due to not existing in Noetic:
+# "ros-${INSTALLING_ROS_DISTRO}-kobuki-ftdi" # TODO: What was this for? Do we still need it?
+
+# "ros-${INSTALLING_ROS_DISTRO}-gmapping" # TODO: Can we replace this with hector, nav2d, or Cartographer?
+# This response suggests they could work better:
+#   https://answers.ros.org/question/332538/laser-scan-walls-moving-with-robot/?answer=334827#post-id-334827
+# This response suggests that gmapping is no longer a good option:
+#   https://answers.ros.org/question/300480/building-open_gmapping-from-source-on-melodicubuntu-1804/?answer=300525#post-id-300525
+# nav2d: http://wiki.ros.org/nav2d
+# hector: http://wiki.ros.org/hector_slam
+# Cartographer ROS: https://google-cartographer-ros.readthedocs.io/en/latest/index.html
+
+# TODO: Cartographer ROS isn't ready for Noetic either yet though.
+# "ros-${INSTALLING_ROS_DISTRO}-cartographer"
+# "ros-${INSTALLING_ROS_DISTRO}-cartographer-ros"
+# "ros-${INSTALLING_ROS_DISTRO}-cartographer-ros-msgs"
+# "ros-${INSTALLING_ROS_DISTRO}-cartographer-rviz"
+
+# TODO: I presume needing this one depends on whether I stick with gmapping or not?
+# "ros-${INSTALLING_ROS_DISTRO}-depthimage-to-laserscan"
 
 # NOTE: If you are looking for a ROS package and wonder if it exists, but not for Melodic, check here:
 # http://repositories.ros.org/status_page/compare_kinetic_melodic.html
 
-echo "${PACKAGE_TO_INSTALL_LIST[@]}" # TODO: Remove this line after testing is done.
-sudo apt install "${PACKAGE_TO_INSTALL_LIST[@]}" # TODO: Add -y back to this line after testing is done.
+sudo apt install -y "${PACKAGE_TO_INSTALL_LIST[@]}"
 
 if [[ -z ${USER} ]]; then
   # This probably only happens in Docker, but note that it isn't just for my own purpose
