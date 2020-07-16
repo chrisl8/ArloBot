@@ -184,8 +184,8 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 # jq - allows shell scripts to read .json formatted config files.
 # zbar-tools - reading QR codes.
 # libftdi1 -  required by SimpleIDE for the Parallax Propeller board
-# libqtgui4 - Required by simpleide
-# libqtcore4 - Required by simpleide
+# libqtgui4 - Required by simpleide # TODO: Ubuntu 20.04 does not have this. Will version 5 work?
+# libqtcore4 - Required by simpleide # TODO: Ubuntu 20.04 does not have this. Will version 5 work?
 # libgif-dev - required for roslib in order to build canvas
 # rtabmap - for 3D mapping RTABMAP
 # pulseaudio & pavucontrol - for setting the default microphone. I use this for mycroft among other things
@@ -195,7 +195,7 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 # redis-server and redis-tools are used by the web server
 
 # TODO: Test that everything works with the new python3 versions
-PACKAGE_TO_INSTALL_LIST=("?name(ros-${INSTALLING_ROS_DISTRO}-rqt-*)" "ros-${INSTALLING_ROS_DISTRO}-kobuki-ftdi" python3-ftdi1 python3-pip python3-serial "?name(ros-${INSTALLING_ROS_DISTRO}-openni-*)" "?name(ros-${INSTALLING_ROS_DISTRO}-openni2-*)" "ros-${INSTALLING_ROS_DISTRO}-vision-opencv" "ros-${INSTALLING_ROS_DISTRO}-rtabmap-ros" libopencv-dev python3-opencv "ros-${INSTALLING_ROS_DISTRO}-rosbridge-server" "ros-${INSTALLING_ROS_DISTRO}-tf2-tools" imagemagick fswebcam festvox-en1 libv4l-dev jq expect curl zbar-tools openssh-server libftdi-dev libftdi1 libgif-dev pulseaudio pavucontrol "ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan" git libqtgui4 libqtcore4 "?name(ros-${INSTALLING_ROS_DISTRO}-yocs-*)" "ros-${INSTALLING_ROS_DISTRO}-move-base" "ros-${INSTALLING_ROS_DISTRO}-map-server" "ros-${INSTALLING_ROS_DISTRO}-amcl" "ros-${INSTALLING_ROS_DISTRO}-gmapping" "ros-${INSTALLING_ROS_DISTRO}-depthimage-to-laserscan" "ros-${INSTALLING_ROS_DISTRO}-navigation" "ros-${INSTALLING_ROS_DISTRO}-cartographer" "ros-${INSTALLING_ROS_DISTRO}-cartographer-ros" "ros-${INSTALLING_ROS_DISTRO}-cartographer-ros-msgs" "ros-${INSTALLING_ROS_DISTRO}-cartographer-rviz" net-tools xvfb git libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 espeak-ng-espeak redis-server redis-tools)
+PACKAGE_TO_INSTALL_LIST=("?name(ros-${INSTALLING_ROS_DISTRO}-rqt-*)" "ros-${INSTALLING_ROS_DISTRO}-kobuki-ftdi" python3-ftdi1 python3-pip python3-serial "?name(ros-${INSTALLING_ROS_DISTRO}-openni-*)" "?name(ros-${INSTALLING_ROS_DISTRO}-openni2-*)" "ros-${INSTALLING_ROS_DISTRO}-vision-opencv" "ros-${INSTALLING_ROS_DISTRO}-rtabmap-ros" libopencv-dev python3-opencv "ros-${INSTALLING_ROS_DISTRO}-rosbridge-server" "ros-${INSTALLING_ROS_DISTRO}-tf2-tools" imagemagick fswebcam festvox-en1 libv4l-dev jq expect curl zbar-tools openssh-server libftdi-dev libftdi1 libgif-dev pulseaudio pavucontrol "ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan" git "?name(ros-${INSTALLING_ROS_DISTRO}-yocs-*)" "ros-${INSTALLING_ROS_DISTRO}-move-base" "ros-${INSTALLING_ROS_DISTRO}-map-server" "ros-${INSTALLING_ROS_DISTRO}-amcl" "ros-${INSTALLING_ROS_DISTRO}-gmapping" "ros-${INSTALLING_ROS_DISTRO}-depthimage-to-laserscan" "ros-${INSTALLING_ROS_DISTRO}-navigation" "ros-${INSTALLING_ROS_DISTRO}-cartographer" "ros-${INSTALLING_ROS_DISTRO}-cartographer-ros" "ros-${INSTALLING_ROS_DISTRO}-cartographer-ros-msgs" "ros-${INSTALLING_ROS_DISTRO}-cartographer-rviz" net-tools xvfb git libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 espeak-ng-espeak redis-server redis-tools)
 
 # NOTE: If you are looking for a ROS package and wonder if it exists, but not for Melodic, check here:
 # http://repositories.ros.org/status_page/compare_kinetic_melodic.html
