@@ -90,6 +90,7 @@ if [[ ! -e /etc/localtime ]]; then
   apt update
   apt install -y tzdata sudo lsb-release gnupg cron
   # Now the rest of the script should work as if it was in a normal Ubuntu install.
+  # shellcheck disable=SC2034
   DOCKER_TEST_INSTALL=true
 fi
 
@@ -550,7 +551,7 @@ if ! (grep NVM_SYMLINK_CURRENT ~/.bashrc >/dev/null); then
   sh -c "echo \"export NVM_SYMLINK_CURRENT=true\" >> ~/.bashrc"
 fi
 nvm install --lts
-nvm alias default lts/*
+nvm alias default "lts/*"
 
 printf "\n${YELLOW}[Grabbing/Updating global dependencies for node packages]${NC}\n"
 printf "${BLUE}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
@@ -594,7 +595,7 @@ if ! (command -v mjpg_streamer >/dev/null); then
   printf "\n${YELLOW}[Installing mjpg_streamer for Web Page camera viewing]${NC}\n"
   cd "${HOME}/catkin_ws/src/ArloBot/"
   git clone https://github.com/jacksonliam/mjpg-streamer.git
-  cd ${HOME}/catkin_ws/src/ArloBot/mjpg-streamer/mjpg-streamer-experimental
+  cd "${HOME}/catkin_ws/src/ArloBot/mjpg-streamer/mjpg-streamer-experimental"
   make distclean
   make
   sudo make install
