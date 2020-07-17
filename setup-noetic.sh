@@ -54,6 +54,14 @@ LIGHTBLUE='\033[1;34m'
 LIGHTPURPLE='\033[1;35m'
 NC='\033[0m' # NoColor
 
+# TODO: Remove this when it works.
+printf "${RED}WARNING WARNING WARNING${NC}\n"
+printf "${RED}THIS does NOT WORK! It is only for testing while I work on the conversion to Noetic.${NC}\n\n"
+printf "${RED}Please press Ctrl+c now to stop this script!${NC}\n\n"
+if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
+  read -n 1 -s -r -p "Press any key to continue"
+fi
+
 ARLO_HOME=${HOME}/.arlobot
 
 function finish() {
@@ -195,7 +203,7 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 # redis-server and redis-tools are used by the web server
 
 # TODO: Test that everything works with the new python3 versions
-PACKAGE_TO_INSTALL_LIST=("?name(ros-${INSTALLING_ROS_DISTRO}-rqt-*)" python3-ftdi1 python3-pip python3-serial "?name(ros-${INSTALLING_ROS_DISTRO}-openni-*)" "?name(ros-${INSTALLING_ROS_DISTRO}-openni2-*)" "ros-${INSTALLING_ROS_DISTRO}-vision-opencv" "ros-${INSTALLING_ROS_DISTRO}-rtabmap-ros" libopencv-dev python3-opencv "ros-${INSTALLING_ROS_DISTRO}-rosbridge-server" "ros-${INSTALLING_ROS_DISTRO}-tf2-tools" imagemagick fswebcam festvox-en1 libv4l-dev jq expect curl zbar-tools openssh-server libftdi-dev libftdi1 libgif-dev pulseaudio pavucontrol "ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan" git "?name(ros-${INSTALLING_ROS_DISTRO}-yocs-*)" "ros-${INSTALLING_ROS_DISTRO}-move-base" "ros-${INSTALLING_ROS_DISTRO}-map-server" "ros-${INSTALLING_ROS_DISTRO}-amcl" "ros-${INSTALLING_ROS_DISTRO}-navigation"  net-tools xvfb git libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 espeak-ng-espeak redis-server redis-tools)
+PACKAGE_TO_INSTALL_LIST=("?name(ros-${INSTALLING_ROS_DISTRO}-rqt-*)" python3-ftdi1 python3-pip python3-serial "?name(ros-${INSTALLING_ROS_DISTRO}-openni-*)" "?name(ros-${INSTALLING_ROS_DISTRO}-openni2-*)" "ros-${INSTALLING_ROS_DISTRO}-vision-opencv" "ros-${INSTALLING_ROS_DISTRO}-rtabmap-ros" libopencv-dev python3-opencv "ros-${INSTALLING_ROS_DISTRO}-rosbridge-server" "ros-${INSTALLING_ROS_DISTRO}-tf2-tools" imagemagick fswebcam festvox-en1 libv4l-dev jq expect curl zbar-tools openssh-server libftdi-dev libftdi1 libgif-dev pulseaudio pavucontrol "ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan" git "?name(ros-${INSTALLING_ROS_DISTRO}-yocs-*)" "ros-${INSTALLING_ROS_DISTRO}-move-base" "ros-${INSTALLING_ROS_DISTRO}-map-server" "ros-${INSTALLING_ROS_DISTRO}-amcl" "ros-${INSTALLING_ROS_DISTRO}-navigation" net-tools xvfb git libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 espeak-ng-espeak redis-server redis-tools)
 
 # TODO: The following packages were removed due to not existing in Noetic:
 # "ros-${INSTALLING_ROS_DISTRO}-kobuki-ftdi" # TODO: What was this for? Do we still need it?
@@ -351,7 +359,9 @@ if ! [[ -d ~/catkin_ws/src/ArloBot ]]; then
 else
   cd ~/catkin_ws/src/ArloBot
   git checkout melodic
-  git pull
+  # TODO: Uncomment this when we are ready to try cloning. For now we are using a local copy.
+  echo "Skipping Arlobot clone now during testing."
+  #git pull
 fi
 
 printf "${BLUE}TurtleBot respository${NC}\n"
@@ -454,6 +464,9 @@ else
   git pull
 fi
 
+# TODO: Got this error installing MyCroft that I had to say "Y" to move past:
+#ModuleNotFoundError: No module named 'pip'
+
 if [[ -d ~/catkin_ws/src/ArloBot/mycroft-core ]]; then
   printf "\n${YELLOW}[Updating Mycroft]${NC}\n"
   cd ~/catkin_ws/src/ArloBot/mycroft-core
@@ -494,6 +507,28 @@ if [[ -d /opt/mycroft/skills ]]; then
     ln -s "${HOME}/catkin_ws/src/ArloBot/mycroft-smalltalk-skill" arlobot-smalltalk-skill
   fi
 fi
+
+# TODO: Got this error building:
+# -- ==> add_subdirectory(ArloBot/turtlebot/turtlebot_teleop)
+#-- Could NOT find joy (missing: joy_DIR)
+#-- Could not find the required component 'joy'. The following CMake error indicates that you either need to install the package with the same name or change your environment so that it can be found.
+#CMake Error at /opt/ros/noetic/share/catkin/cmake/catkinConfig.cmake:83 (find_package):
+#  Could not find a package configuration file provided by "joy" with any of
+#  the following names:
+#
+#    joyConfig.cmake
+#    joy-config.cmake
+#
+#  Add the installation prefix of "joy" to CMAKE_PREFIX_PATH or set "joy_DIR"
+#  to a directory containing one of the above files.  If "joy" provides a
+#  separate development package or SDK, be sure it has been installed.
+#Call Stack (most recent call first):
+#  ArloBot/turtlebot/turtlebot_teleop/CMakeLists.txt:5 (find_package)
+#
+#
+#-- Configuring incomplete, errors occurred!
+#See also "/home/chrisl8/catkin_ws/build/CMakeFiles/CMakeOutput.log".
+#See also "/home/chrisl8/catkin_ws/build/CMakeFiles/CMakeError.log".
 
 printf "\n${YELLOW}[(Re)Building ROS Source files.]${NC}\n"
 cd ~/catkin_ws
