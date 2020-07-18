@@ -221,8 +221,6 @@ Start everything
 This is built into the `start-robot.sh` script.
 ### Gmapping Demo (SLAM Map building) ###
 `make-map-gmapping.sh`  
-Or use Cartographer instead of Gmapping:  
-`make-map-cartographer.sh`
 View with rviz:  
 `view-navigation.sh`  
 Save the map:  

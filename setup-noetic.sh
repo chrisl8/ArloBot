@@ -208,20 +208,13 @@ PACKAGE_TO_INSTALL_LIST=("?name(ros-${INSTALLING_ROS_DISTRO}-rqt-*)" python3-ftd
 # TODO: The following packages were removed due to not existing in Noetic:
 # "ros-${INSTALLING_ROS_DISTRO}-kobuki-ftdi" # TODO: What was this for? Do we still need it?
 
-# "ros-${INSTALLING_ROS_DISTRO}-gmapping" # TODO: Can we replace this with hector, nav2d, or Cartographer?
+# "ros-${INSTALLING_ROS_DISTRO}-gmapping" # TODO: Can we replace this with hector, nav2d, or Slam Toolbox?
 # This response suggests they could work better:
 #   https://answers.ros.org/question/332538/laser-scan-walls-moving-with-robot/?answer=334827#post-id-334827
 # This response suggests that gmapping is no longer a good option:
 #   https://answers.ros.org/question/300480/building-open_gmapping-from-source-on-melodicubuntu-1804/?answer=300525#post-id-300525
 # nav2d: http://wiki.ros.org/nav2d
 # hector: http://wiki.ros.org/hector_slam
-# Cartographer ROS: https://google-cartographer-ros.readthedocs.io/en/latest/index.html
-
-# TODO: Cartographer ROS isn't ready for Noetic either yet though.
-# "ros-${INSTALLING_ROS_DISTRO}-cartographer"
-# "ros-${INSTALLING_ROS_DISTRO}-cartographer-ros"
-# "ros-${INSTALLING_ROS_DISTRO}-cartographer-ros-msgs"
-# "ros-${INSTALLING_ROS_DISTRO}-cartographer-rviz"
 
 # TODO: I presume needing this one depends on whether I stick with gmapping or not?
 # "ros-${INSTALLING_ROS_DISTRO}-depthimage-to-laserscan"

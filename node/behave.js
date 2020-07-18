@@ -16,7 +16,6 @@
 const polling = require('./behaviors/polling');
 const startROS = require('./behaviors/startROS');
 const makeMapGmapping = require('./behaviors/makeMapGmapping');
-const makeMapCartographer = require('./behaviors/makeMapCartographer');
 const autoExplore = require('./behaviors/autoExplore');
 const loadMap = require('./behaviors/loadMap');
 const unPlugRobot = require('./behaviors/unPlugRobot');
@@ -54,10 +53,6 @@ async function loop() {
       }
     } else if (webModel.makeMapGmapping) {
       if (!(await makeMapGmapping())) {
-        return;
-      }
-    } else if (webModel.makeMapCartographer) {
-      if (!(await makeMapCartographer())) {
         return;
       }
     } else if (!(await loadMap())) {

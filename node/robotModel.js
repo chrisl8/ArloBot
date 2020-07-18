@@ -9,7 +9,6 @@ module.exports = {
   startROSTime: undefined, // Time that ROS start was completed.
   mapLoadTime: undefined, // Time that map load was complete
   makeMapGmapping: undefined,
-  makeMapCartographer: undefined,
   master: {
     isClose: false, // Eddy Beackon === 1
     isInRoom: false, // Eddy Beacon < 1

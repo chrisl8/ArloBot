@@ -312,10 +312,6 @@ async function start() {
       webModelFunctions.update('makeMapGmapping', true);
     });
 
-    socket.on('makeMapCartographer', () => {
-      webModelFunctions.update('makeMapCartographer', true);
-    });
-
     socket.on('clearMap', () => {
       if (!webModel.ROSisRunning) {
         webModelFunctions.update('autoExplore', false);

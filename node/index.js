@@ -149,12 +149,6 @@ async function main() {
     successString: 'odom received',
   });
 
-  robotModel.makeMapCartographer = new LaunchScript({
-    name: 'MakeMapCartographer',
-    scriptName: '../scripts/make-map-cartographer.sh',
-    successString: 'odom received',
-  });
-
   let loadMapCommand;
   if (personalData.hasXV11) {
     loadMapCommand =

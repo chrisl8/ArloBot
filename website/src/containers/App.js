@@ -123,7 +123,6 @@ class App extends Component {
             }
             ignoreProximity={this.state.webModel.rosParameters.ignoreProximity}
             makeMapGmapping={this.state.webModel.makeMapGmapping}
-            makeMapCartographer={this.state.webModel.makeMapCartographer}
             makeMapRunning={this.state.webModel.makeMapRunning}
             mapList={this.state.webModel.mapList}
             wayPoints={this.state.webModel.wayPoints}

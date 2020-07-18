@@ -21,7 +21,6 @@ module.exports = {
   autoExplore: false,
   pauseExplore: false,
   makeMapGmapping: false,
-  makeMapCartographer: false,
   makeMapRunning: false,
   idleTimeout: true,
   beQuiet: false,

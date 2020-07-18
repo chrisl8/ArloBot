@@ -51,28 +51,12 @@ class Navigation extends Component {
             </span>
           </span>
         );
-      } else {
-        cardTitleText = (
-          <span>
-            Navigation -{' '}
-            <span style={{ fontWeight: 'bold' }}>
-              Making a Map with Cartographer
-            </span>
-          </span>
-        );
       }
     } else if (this.props.makeMapGmapping) {
       cardTitleText = (
         <span>
           Navigation -{' '}
           <span style={{ fontWeight: 'bold' }}>Loading Gmapping . . .</span>
-        </span>
-      );
-    } else if (this.props.makeMapCartographer) {
-      cardTitleText = (
-        <span>
-          Navigation -{' '}
-          <span style={{ fontWeight: 'bold' }}>Loading Cartographer . . .</span>
         </span>
       );
     } else if (this.props.mapName !== '') {
@@ -130,46 +114,33 @@ class Navigation extends Component {
           </CardHeader>
           <Collapse id="navigation-card-body" isOpen={this.props.isOpen}>
             <CardBody>
-              {this.props.mapName === '' &&
-                !this.props.makeMapGmapping &&
-                !this.props.makeMapCartographer && (
-                  <div>
-                    <button
-                      id="make-map-button"
-                      type="button"
-                      className="btn btn-warning"
-                      onClick={() =>
-                        this.props.sendDataToRobot('makeMapGmapping')
-                      }
-                    >
-                      Make Map - Gmapping
-                    </button>
-                    <button
-                      id="make-map-button"
-                      type="button"
-                      className="btn btn-warning"
-                      onClick={() =>
-                        this.props.sendDataToRobot('makeMapCartographer')
-                      }
-                    >
-                      Make Map - Cartographer
-                    </button>
-                    &nbsp;or&nbsp;
-                    <button
-                      id="load-map-button"
-                      type="button"
-                      className="btn btn-warning"
-                      onClick={this.handleLoadMapButton}
-                    >
-                      Load Map
-                    </button>
-                  </div>
-                )}
+              {this.props.mapName === '' && !this.props.makeMapGmapping && (
+                <div>
+                  <button
+                    id="make-map-button"
+                    type="button"
+                    className="btn btn-warning"
+                    onClick={() =>
+                      this.props.sendDataToRobot('makeMapGmapping')
+                    }
+                  >
+                    Make Map - Gmapping
+                  </button>
+                  &nbsp;or&nbsp;
+                  <button
+                    id="load-map-button"
+                    type="button"
+                    className="btn btn-warning"
+                    onClick={this.handleLoadMapButton}
+                  >
+                    Load Map
+                  </button>
+                </div>
+              )}
 
               {this.state.showMapPicker &&
                 this.props.mapName === '' &&
                 !this.props.makeMapGmapping &&
-                !this.props.makeMapCartographer &&
                 !this.props.makeMapRunning &&
                 !this.props.autoExplore && (
                   <div>
