@@ -123,6 +123,9 @@
   "socketEmitterThrottle": 500,
   "_ros3dSensor": "ARLOBOT_3D_SENSOR setting for ROS: none, kinect, asus_xtion_pro, or astra - NOTE: astra has not been tested",
   "ros3dSensor": "none",
+  "_cartographerMappingDevice": "Which device should Cartographer use to map: none, kinect, asus_xtion_pro, scanse_sweep, xv11 or rplidar",
+  "cartographerMappingDevice": "none",
+  "_obstacleDetectionDevices": "NOTE that AMCL is used to move IN a map, using DWA to map around obstacles, buth during map making and when loading existing maps. These an use multiple sensors, and the defaults may not line up with your robot.",
   "_hasBeenEdited": "Set to true once you have put your settings in this file to let the program know that you did it.",
   "hasBeenEdited": false
 }

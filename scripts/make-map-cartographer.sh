@@ -14,16 +14,15 @@ SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 # shellcheck source=/home/chrisl8/catkin_ws/src/ArloBot/scripts/rosEnvironmentSetup.sh
 source "${SCRIPTDIR}/rosEnvironmentSetup.sh"
 
-# TODO: Make sure the "cartographerDevice" is set in personal settings.
-# TODO: Launch what is required based on the "cartographerDevice" setting.
-
-if pgrep -f robot.launch > /dev/null; then
-  echo "When you are done, save your map!"
-  echo "Please run './save-map.sh mapname' from another terminal when your map is done before closing this!"
-  if [[ $(jq '.hasScanseSweep' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-    export HAS_SCANSE_SWEEP=true
+if pgrep -f robot.launch >/dev/null; then
+  CARTOGRAPHER_DEVICE=$(jq '.cartographerMappingDevice' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
+  if ! [[ "${CARTOGRAPHER_DEVICE}" == "none" ]]; then
+    echo "When you are done, save your map!"
+    echo "Please run './save-map.sh mapname' from another terminal when your map is done before closing this!"
+    unbuffer roslaunch arlobot_cartographer "2d_cartograper_${CARTOGRAPHER_DEVICE}.launch"
+  else
+    echo "You must set your cartographerMappingDevice in ~/.arlobot/personalDataForBehavior.json first"
   fi
-  unbuffer roslaunch arlobot_cartographer 2d_cartograper.launch
 else
   echo "Robot must be running to start this."
 fi
