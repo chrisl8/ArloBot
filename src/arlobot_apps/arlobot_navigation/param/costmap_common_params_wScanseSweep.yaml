@@ -7,8 +7,6 @@ max_obstacle_height: 0.60  # assume something like an arm is mounted on top of t
 robot_radius: 0.22545 # distance a circular robot should be clear of the obstacle (kobuki: 0.18)
 # footprint: [[x0, y0], [x1, y1], ... [xn, yn]]  # if the robot is not circular
 
-map_type: voxel
-
 obstacle_layer:
   enabled:              true
   max_obstacle_height:  0.6
