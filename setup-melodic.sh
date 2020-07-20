@@ -107,7 +107,7 @@ case ${version} in
   ;;
 esac
 
-printf "${YELLOW}[Updating Root CA Certificates from Ubuntu]${NC}\n"
+printf "\n${YELLOW}[Updating Root CA Certificates from Ubuntu]${NC}\n"
 # Sometimes this has to be done by hand on new Ubuntu installs.
 sudo update-ca-certificates
 printf "\n"
@@ -270,7 +270,7 @@ if [[ ${RESPONSE_TO_SWEEP_QUERY} == 'null' ]]; then
   printf "${BLUE}It is no longer available.${NC}\n\n"
   printf "${BLUE}https://scanse.io/home/${NC}\n\n"
   if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
-    read -n 1 -s -r -p "Press 'y' to install Sanse Sweep code" RESPONSE_TO_SWEEP_QUERY
+    read -n 1 -s -r -p "Press 'y' to install Scanse Sweep code" RESPONSE_TO_SWEEP_QUERY
   fi
   printf "\n"
 fi
@@ -329,7 +329,7 @@ fi
 printf "\n${YELLOW}[Cloning or Updating git repositories]${NC}\n"
 cd ~/catkin_ws/src
 
-printf "${BLUE}ArloBot respository${NC}\n"
+printf "${BLUE}ArloBot repository${NC}\n"
 if ! [[ -d ~/catkin_ws/src/ArloBot ]]; then
   git clone -b melodic https://github.com/chrisl8/ArloBot.git
 else
@@ -338,7 +338,7 @@ else
   git pull
 fi
 
-printf "${BLUE}TurtleBot respository${NC}\n"
+printf "${BLUE}TurtleBot repository${NC}\n"
 printf "${BLUE}TurtleBot has not been ported to Melodic${NC}\n"
 printf "${BLUE}Rather than copying all of the required code to ArloBot,${NC}\n"
 printf "${BLUE}I am cloning it by hand. So far it compiles in Melodic.${NC}\n"
@@ -351,7 +351,7 @@ else
 fi
 
 if [[ "${RESPONSE_TO_XV11_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then # Always test in Travis
-  printf "\n${BLUE}Neato XV11 respository${NC}\n"
+  printf "\n${BLUE}Neato XV11 repository${NC}\n"
   # Only needed if you have an XV-11 "Neato" Scanner
   cd ~/catkin_ws/src
   if ! [[ -d ~/catkin_ws/src/xv_11_laser_driver ]]; then
@@ -363,7 +363,7 @@ if [[ "${RESPONSE_TO_XV11_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then #
 fi
 
 if [[ "${RESPONSE_TO_SWEEP_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then # Always test in Travis
-  printf "\n${BLUE}Scanse Sweep respository${NC}\n"
+  printf "\n${BLUE}Scanse Sweep repository${NC}\n"
   # Only needed if you have a Scanse Sweep
   if ! [[ -f /usr/local/lib/cmake/sweep/SweepConfig.cmake ]]; then
     cd
@@ -387,7 +387,7 @@ fi
 
 if [[ "${RESPONSE_TO_KINECT_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then # Always test in Travis
   printf "\n${BLUE}OpenKinect for Kinect${NC}\n"
-  # If you have a Kinect. Melodic seems to be mising the package
+  # If you have a Kinect. Melodic seems to be missing the package
   # https://github.com/ros-drivers/freenect_stack/issues/48#issuecomment-514020969
   if ! [[ -f /usr/local/lib/fakenect/libfakenect.so ]]; then
     cd
@@ -464,7 +464,7 @@ else
     printf "\n${YELLOW}[IF you want to use Mycroft:]${NC}\n"
     printf "\n${YELLOW}[Then see https://docs.mycroft.ai/development/cerberus for configuration info.]${NC}\n"
     printf "\n${YELLOW}[See more info at: https://docs.mycroft.ai/installing.and.running/installation/git.clone.install]${NC}\n"
-    printf "\n${YELLOW}[At the least you will have to register Mycroft if you want full functionality, althoug it does work without registering.]${NC}\n"
+    printf "\n${YELLOW}[At the least you will have to register Mycroft if you want full functionality, although it does work without registering.]${NC}\n"
   fi
 fi
 
@@ -773,7 +773,7 @@ if [[ "${USER}" == chrisl8 ]]; then
   printf "${PURPLE}-------------------------------------------------------${NC}\n"
 fi
 
-printf "\n${PURPLE}Anytime you want to update ArloBot code from the web you can run this same script again. It will pull down and compile new code without wiping out custom configs in ~/.arlarbot. I run this script myself almost every day.${NC}\n"
+printf "\n${PURPLE}Anytime you want to update ArloBot code from the web you can run this same script again. It will pull down and compile new code without wiping out custom configs in ~/.arlobot. I run this script myself almost every day.${NC}\n"
 
 printf "\n${YELLOW}-----------------------------------${NC}\n"
 printf "${YELLOW}ALL DONE! REBOOT, EDIT FILES, AND START TESTING!${NC}\n\n"
