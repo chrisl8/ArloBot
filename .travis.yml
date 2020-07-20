@@ -18,6 +18,19 @@ matrix:
       script:
         - docker run -ti -e TRAVIS=${TRAVIS} -v $PWD:/home/user ubuntu:18.04 /bin/bash -c "/home/user/setup-melodic.sh"
 
+    - language: minimal
+      name: "Noetic Robot Setup Script"
+      cache:
+        directories:
+          - ~/.npm
+          - ~/.cache
+      services:
+        - docker
+      before_install:
+        - docker pull ubuntu:20.04
+      script:
+        - docker run -ti -e TRAVIS=${TRAVIS} -v $PWD:/home/user ubuntu:20.04 /bin/bash -c "/home/user/setup-noetic.sh"
+
     - language: node_js
       name: "Node Scripts"
       node_js: "lts/*"
