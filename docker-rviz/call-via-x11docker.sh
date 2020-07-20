@@ -46,4 +46,4 @@ fi
 VAR=$(node "${SCRIPT_DIR}/../node/ipAddress.js")
 X11_DOCKER_ARGUMENT_LIST=("--xpra" "--hostnet" "${DPI_ARGUMENT[@]}" "--env" "ROS_MASTER_URI=${ROS_MASTER_URI}" "--env" "ROS_HOSTNAME=${VAR}" "ros:gui" "$@")
 
-~/catkin_ws/src/x11docker/x11docker "${X11_DOCKER_ARGUMENT_LIST[@]}"
+sudo ~/catkin_ws/src/x11docker/x11docker "${X11_DOCKER_ARGUMENT_LIST[@]}"

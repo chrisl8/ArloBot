@@ -95,6 +95,15 @@ printf "\n${YELLOW}[Building Docker Image]${NC}\n"
 cd ~/catkin_ws/src/ArloBot/docker-rviz/
 sudo docker build -t ros:gui . # Run again if you change any settings
 
+if ! (sudo -nl | grep x11docker >/dev/null); then
+  printf "\n${YELLOW}[Setting up required sudo entries.]${NC}\n"
+  echo "${USER} ALL = NOPASSWD: ${HOME}/catkin_ws/src/x11docker/x11docker" >/tmp/x11docker_sudoers
+  chmod 0440 /tmp/x11docker_sudoers
+  sudo chown root:root /tmp/x11docker_sudoers
+  sudo mv /tmp/x11docker_sudoers /etc/sudoers.d/
+  sudo chown root:root /etc/sudoers.d/x11docker_sudoers
+fi
+
 printf "\n${YELLOW}-----------------------------------${NC}\n"
 printf "${YELLOW}ALL DONE! TRY RVIZ NOW${NC}\n"
 printf "${LIGHT_PURPLE}If you have not set up Docker to run without root, you will have to use 'sudo' to run these.${NC}\n"
