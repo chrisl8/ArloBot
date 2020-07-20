@@ -98,6 +98,7 @@ if [[ ! -e /etc/localtime ]]; then
   apt update
   apt install -y tzdata sudo lsb-release gnupg cron
   # Now the rest of the script should work as if it was in a normal Ubuntu install.
+  # shellcheck disable=SC2034
   DOCKER_TEST_INSTALL=true
 fi
 
@@ -463,9 +464,6 @@ else
   git pull
 fi
 
-# TODO: Got this error installing MyCroft that I had to say "Y" to move past:
-#ModuleNotFoundError: No module named 'pip'
-
 if [[ -d ~/catkin_ws/src/ArloBot/mycroft-core ]]; then
   printf "\n${YELLOW}[Updating Mycroft]${NC}\n"
   cd ~/catkin_ws/src/ArloBot/mycroft-core
@@ -506,28 +504,6 @@ if [[ -d /opt/mycroft/skills ]]; then
     ln -s "${HOME}/catkin_ws/src/ArloBot/mycroft-smalltalk-skill" arlobot-smalltalk-skill
   fi
 fi
-
-# TODO: Got this error building:
-# -- ==> add_subdirectory(ArloBot/turtlebot/turtlebot_teleop)
-#-- Could NOT find joy (missing: joy_DIR)
-#-- Could not find the required component 'joy'. The following CMake error indicates that you either need to install the package with the same name or change your environment so that it can be found.
-#CMake Error at /opt/ros/noetic/share/catkin/cmake/catkinConfig.cmake:83 (find_package):
-#  Could not find a package configuration file provided by "joy" with any of
-#  the following names:
-#
-#    joyConfig.cmake
-#    joy-config.cmake
-#
-#  Add the installation prefix of "joy" to CMAKE_PREFIX_PATH or set "joy_DIR"
-#  to a directory containing one of the above files.  If "joy" provides a
-#  separate development package or SDK, be sure it has been installed.
-#Call Stack (most recent call first):
-#  ArloBot/turtlebot/turtlebot_teleop/CMakeLists.txt:5 (find_package)
-#
-#
-#-- Configuring incomplete, errors occurred!
-#See also "/home/chrisl8/catkin_ws/build/CMakeFiles/CMakeOutput.log".
-#See also "/home/chrisl8/catkin_ws/build/CMakeFiles/CMakeError.log".
 
 printf "\n${YELLOW}[(Re)Building ROS Source files.]${NC}\n"
 cd ~/catkin_ws
