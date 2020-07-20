@@ -649,8 +649,13 @@ npm ci
 if ! (command -v mjpg_streamer >/dev/null); then
   printf "\n${YELLOW}[Installing mjpg_streamer for Web Page camera viewing]${NC}\n"
   cd "${HOME}/catkin_ws/src/ArloBot/"
-  git clone https://github.com/jacksonliam/mjpg-streamer.git
-  cd ${HOME}/catkin_ws/src/ArloBot/mjpg-streamer/mjpg-streamer-experimental
+  if ! [[ -d ${HOME}/catkin_ws/src/ArloBot/mjpg-streamer ]]; then
+    git clone https://github.com/jacksonliam/mjpg-streamer.git
+  else
+    cd "${HOME}/catkin_ws/src/ArloBot/mjpg-streamer"
+    git pull
+  fi
+  cd "${HOME}/catkin_ws/src/ArloBot/mjpg-streamer/mjpg-streamer-experimental"
   make distclean
   make
   sudo make install
