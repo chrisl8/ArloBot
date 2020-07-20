@@ -39,7 +39,8 @@ fi
 cd
 DPI_ARGUMENT=""
 SCREEN_RESOLUTION=$(xdpyinfo | grep 'dimensions:' | awk '{print $2}')
-if [[ "${SCREEN_RESOLUTION}" == "3840x2160" ]]; then
+
+if [[ "${SCREEN_RESOLUTION}" == "3840x2160" ]] || [[ "${SCREEN_RESOLUTION}" == "7680x2160" ]]; then
   DPI_ARGUMENT=("--dpi" "200")
 fi
 VAR=$(node "${SCRIPT_DIR}/../node/ipAddress.js")

@@ -12,7 +12,7 @@ SCRIPT_DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 #echo "${SCRIPT_DIR}" # For debugging
 
 SCREEN_RESOLUTION=$(xdpyinfo | grep 'dimensions:' | awk '{print $2}')
-if [[ "${SCREEN_RESOLUTION}" == "3840x2160" ]]; then
+if [[ "${SCREEN_RESOLUTION}" == "3840x2160" ]] || [[ "${SCREEN_RESOLUTION}" == "7680x2160" ]]; then
   "${SCRIPT_DIR}/../docker-rviz/call-via-x11docker.sh" "/catkin_ws/src/ArloBot/docker-rviz/xterm-large-font.sh"
 else
   "${SCRIPT_DIR}/../docker-rviz/call-via-x11docker.sh" "xterm"
