@@ -551,7 +551,7 @@ if [[ -f ~/.zshrc ]]; then
 fi
 
 # For 8-CH USB Relay board:
-pip install pylibftdi
+pip3 install pylibftdi
 # Required by pylibftdi
 # https://pylibftdi.readthedocs.io/en/0.15.0/installation.html
 if ! [[ -f /etc/udev/rules.d/99-libftdi.rules ]]; then
