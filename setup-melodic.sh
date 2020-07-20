@@ -107,6 +107,11 @@ case ${version} in
   ;;
 esac
 
+printf "${YELLOW}[Updating Root CA Certificates from Ubuntu]${NC}\n"
+# Sometimes this has to be done by hand on new Ubuntu installs.
+sudo update-ca-certificates
+printf "\n"
+
 if ! [[ -e /etc/apt/sources.list.d/ros-latest.list ]]; then
   printf "${YELLOW}[Adding the ROS repository]${NC}\n"
   # This should follow the official ROS install instructions closely.
