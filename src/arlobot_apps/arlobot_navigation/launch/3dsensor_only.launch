@@ -1,7 +1,5 @@
 <launch>
   <include file="$(find arlobot_bringup)/launch/3dsensor.launch">
-    <!-- rgb_processing is needed for rtabmap -->
-    <arg name="rgb_processing"                  value="true"/>
     <arg name="ir_processing"                   value="false"/>
     <arg name="depth_processing"                value="false"/>
     <arg name="depth_registered_processing"     value="false"/>

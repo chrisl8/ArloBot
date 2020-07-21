@@ -192,14 +192,13 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 # libqtgui4 - Required by simpleide
 # libqtcore4 - Required by simpleide
 # libgif-dev - required for roslib in order to build canvas
-# rtabmap - for 3D mapping RTABMAP
 # pulseaudio & pavucontrol - for setting the default microphone. I use this for mycroft among other things
 # ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan - for Scanse Sweep
 # git - allows for cloning of repositories
 # xvfb libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 - For Cypress Testing https://docs.cypress.io/guides/guides/continuous-integration.html#Advanced-setup
 # redis-server and redis-tools are used by the web server
 
-PACKAGE_TO_INSTALL_LIST=("ros-${INSTALLING_ROS_DISTRO}-rqt-*" "ros-${INSTALLING_ROS_DISTRO}-kobuki-ftdi" python-ftdi1 python-pip python-serial "ros-${INSTALLING_ROS_DISTRO}-openni-*" "ros-${INSTALLING_ROS_DISTRO}-openni2-*" "ros-${INSTALLING_ROS_DISTRO}-vision-opencv" "ros-${INSTALLING_ROS_DISTRO}-rtabmap-ros" libopencv-dev python-opencv "ros-${INSTALLING_ROS_DISTRO}-rosbridge-server" "ros-${INSTALLING_ROS_DISTRO}-tf2-tools" imagemagick fswebcam festvox-en1 libv4l-dev jq expect curl zbar-tools openssh-server libftdi-dev libftdi1 libgif-dev pulseaudio pavucontrol "ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan" git libqtgui4 libqtcore4 "ros-${INSTALLING_ROS_DISTRO}-yocs-*" "ros-${INSTALLING_ROS_DISTRO}-move-base" "ros-${INSTALLING_ROS_DISTRO}-map-server" "ros-${INSTALLING_ROS_DISTRO}-amcl" "ros-${INSTALLING_ROS_DISTRO}-gmapping" "ros-${INSTALLING_ROS_DISTRO}-depthimage-to-laserscan" "ros-${INSTALLING_ROS_DISTRO}-navigation" "ros-${INSTALLING_ROS_DISTRO}-slam-toolbox" net-tools xvfb git libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 espeak-ng-espeak redis-server redis-tools)
+PACKAGE_TO_INSTALL_LIST=("ros-${INSTALLING_ROS_DISTRO}-rqt-*" "ros-${INSTALLING_ROS_DISTRO}-kobuki-ftdi" python-ftdi1 python-pip python-serial "ros-${INSTALLING_ROS_DISTRO}-openni-*" "ros-${INSTALLING_ROS_DISTRO}-openni2-*" "ros-${INSTALLING_ROS_DISTRO}-vision-opencv" libopencv-dev python-opencv "ros-${INSTALLING_ROS_DISTRO}-rosbridge-server" "ros-${INSTALLING_ROS_DISTRO}-tf2-tools" imagemagick fswebcam festvox-en1 libv4l-dev jq expect curl zbar-tools openssh-server libftdi-dev libftdi1 libgif-dev pulseaudio pavucontrol "ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan" git libqtgui4 libqtcore4 "ros-${INSTALLING_ROS_DISTRO}-yocs-*" "ros-${INSTALLING_ROS_DISTRO}-move-base" "ros-${INSTALLING_ROS_DISTRO}-map-server" "ros-${INSTALLING_ROS_DISTRO}-amcl" "ros-${INSTALLING_ROS_DISTRO}-gmapping" "ros-${INSTALLING_ROS_DISTRO}-depthimage-to-laserscan" "ros-${INSTALLING_ROS_DISTRO}-navigation" "ros-${INSTALLING_ROS_DISTRO}-slam-toolbox" net-tools xvfb git libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 espeak-ng-espeak redis-server redis-tools)
 
 # NOTE: If you are looking for a ROS package and wonder if it exists, but not for Melodic, check here:
 # http://repositories.ros.org/status_page/compare_kinetic_melodic.html

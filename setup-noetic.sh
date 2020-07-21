@@ -200,7 +200,6 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 # libqtgui4 - Required by simpleide # TODO: Ubuntu 20.04 does not have this. Will version 5 work?
 # libqtcore4 - Required by simpleide # TODO: Ubuntu 20.04 does not have this. Will version 5 work?
 # libgif-dev - required for roslib in order to build canvas
-# rtabmap - for 3D mapping RTABMAP
 # pulseaudio & pavucontrol - for setting the default microphone. I use this for mycroft among other things
 # ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan - for Scanse Sweep
 # git - allows for cloning of repositories
@@ -211,7 +210,8 @@ printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 # "ros-${INSTALLING_ROS_DISTRO}-teb-local-planner" - Teb Local Planner is the path planner I use.
 
 # TODO: Test that everything works with the new python3 versions
-PACKAGE_TO_INSTALL_LIST=("?name(ros-${INSTALLING_ROS_DISTRO}-rqt-*)" python3-ftdi1 python3-pip python3-serial "?name(ros-${INSTALLING_ROS_DISTRO}-openni-*)" "?name(ros-${INSTALLING_ROS_DISTRO}-openni2-*)" "ros-${INSTALLING_ROS_DISTRO}-vision-opencv" "ros-${INSTALLING_ROS_DISTRO}-rtabmap-ros" libopencv-dev python3-opencv "ros-${INSTALLING_ROS_DISTRO}-rosbridge-server" "ros-${INSTALLING_ROS_DISTRO}-tf2-tools" imagemagick fswebcam festvox-en1 libv4l-dev jq expect curl zbar-tools openssh-server libftdi-dev libftdi1 libgif-dev pulseaudio pavucontrol git "?name(ros-${INSTALLING_ROS_DISTRO}-yocs-*)" "ros-${INSTALLING_ROS_DISTRO}-move-base" "ros-${INSTALLING_ROS_DISTRO}-map-server" "ros-${INSTALLING_ROS_DISTRO}-amcl" "ros-${INSTALLING_ROS_DISTRO}-navigation" "ros-${INSTALLING_ROS_DISTRO}-slam-toolbox" "ros-${INSTALLING_ROS_DISTRO}-teb-local-planner" "ros-${INSTALLING_ROS_DISTRO}-joy" net-tools xvfb git libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 espeak-ng-espeak redis-server redis-tools)
+
+PACKAGE_TO_INSTALL_LIST=("?name(ros-${INSTALLING_ROS_DISTRO}-rqt-*)" python3-ftdi1 python3-pip python3-serial "?name(ros-${INSTALLING_ROS_DISTRO}-openni-*)" "?name(ros-${INSTALLING_ROS_DISTRO}-openni2-*)" "ros-${INSTALLING_ROS_DISTRO}-vision-opencv" libopencv-dev python3-opencv "ros-${INSTALLING_ROS_DISTRO}-rosbridge-server" "ros-${INSTALLING_ROS_DISTRO}-tf2-tools" imagemagick fswebcam festvox-en1 libv4l-dev jq expect curl zbar-tools openssh-server libftdi-dev libftdi1 libgif-dev pulseaudio pavucontrol "ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan" git "?name(ros-${INSTALLING_ROS_DISTRO}-yocs-*)" "ros-${INSTALLING_ROS_DISTRO}-move-base" "ros-${INSTALLING_ROS_DISTRO}-map-server" "ros-${INSTALLING_ROS_DISTRO}-amcl" "ros-${INSTALLING_ROS_DISTRO}-navigation" "ros-${INSTALLING_ROS_DISTRO}-slam-toolbox" "ros-${INSTALLING_ROS_DISTRO}-teb-local-planner" "ros-${INSTALLING_ROS_DISTRO}-joy" net-tools xvfb git libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 espeak-ng-espeak redis-server redis-tools)
 
 # TODO: The following packages were removed due to not existing in Noetic (yet):
 # "ros-${INSTALLING_ROS_DISTRO}-teb-local-planner-tutorials"
