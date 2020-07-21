@@ -81,6 +81,7 @@ printf "\n${YELLOW}SETTING UP ROS ${INSTALLING_ROS_DISTRO} FOR YOUR ARLOBOT!${NC
 printf "${YELLOW}---------------------------------------------------${NC}\n"
 printf "${GREEN}You will be asked for your password for running commands as root!${NC}\n"
 
+DOCKER_TEST_INSTALL=false
 if [[ ! -e /etc/localtime ]]; then
   # These steps are to allow this script to work in a minimal Docker container for testing.
   printf "${YELLOW}[This looks like a Docker setup.]${NC}\n"
@@ -97,6 +98,11 @@ if [[ ! -e /etc/localtime ]]; then
   apt update
   apt install -y tzdata sudo lsb-release gnupg cron
   # Now the rest of the script should work as if it was in a normal Ubuntu install.
+
+  # Installing this now appears to prevent it from hanging up the Docker setup later.
+  apt install -y keyboard-configuration
+
+  DOCKER_TEST_INSTALL=true
 fi
 
 version=$(lsb_release -sc)
@@ -112,7 +118,7 @@ case ${version} in
   ;;
 esac
 
-if ! [[ ${TRAVIS} == "true" ]]; then # This does not work on Docker
+if ! [[ ${DOCKER_TEST_INSTALL=true} == "true" ]]; then # This does not work on Docker
   printf "\n${YELLOW}[Updating Root CA Certificates from Ubuntu]${NC}\n"
   # Sometimes this has to be done by hand on new Ubuntu installs.
   sudo update-ca-certificates
