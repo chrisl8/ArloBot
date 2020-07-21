@@ -364,7 +364,7 @@ else
   cd ~/catkin_ws/src/ArloBot
   git checkout melodic
   # TODO: Uncomment this when we are ready to try cloning. For now we are using a local copy.
-  echo "Skipping Arlobot clone now during testing."
+  echo "Skipping Arlobot UPDATE now during testing."
   #git pull
 fi
 
@@ -408,7 +408,8 @@ if [[ "${RESPONSE_TO_SWEEP_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then 
   fi
   cd ~/catkin_ws/src
   if ! [[ -d ~/catkin_ws/src/sweep-ros ]]; then
-    git clone https://github.com/scanse/sweep-ros.git
+    # Using my repository to fix compile issues.
+    git clone https://github.com/chrisl8/sweep-ros.git
   else
     cd ~/catkin_ws/src/sweep-ros
     git pull
