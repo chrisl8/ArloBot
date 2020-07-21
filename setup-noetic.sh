@@ -469,6 +469,8 @@ else
   git pull
 fi
 
+export PIP_DISABLE_PIP_VERSION_CHECK=1
+
 if [[ -d ~/catkin_ws/src/ArloBot/mycroft-core ]]; then
   printf "\n${YELLOW}[Updating Mycroft]${NC}\n"
   cd ~/catkin_ws/src/ArloBot/mycroft-core
