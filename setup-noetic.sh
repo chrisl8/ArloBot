@@ -5,22 +5,22 @@
 INSTALLING_ROS_DISTRO=noetic
 
 # Run this straight off of github like this:
-# bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/melodic/setup-melodic.sh)
+# bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/melodic/setup-noetic.sh)
 
 #   TESTING
 #
 # Testing workstation install with Docker:
 #
-# You can Test this with Docker by installing Docker, then pulling down the Ubuntu 16.04 image:
-# sudo docker pull ubuntu:18.04
+# You can Test this with Docker by installing Docker, then pulling down the Ubuntu 20.04 image:
+# sudo docker pull ubuntu:20.04
 # cd ~/catkin_ws/src/ArloBot
 #
 # Then either kick it off all in one shot:
-# sudo docker run -ti -v $PWD:/home/user ubuntu:18.04 /bin/bash -c "/home/user/setup-melodic.sh"
+# sudo docker run -ti -v $PWD:/home/user ubuntu:20.04 /bin/bash -c "/home/user/setup-noetic.sh"
 #
 # Or start an interactive shell in Docker and run it, with the ability to make changes and start it again when it finishes:
-# sudo docker run -ti -v $PWD:/home/user ubuntu:18.04 /bin/bash
-# /home/user/setup-melodic.sh
+# sudo docker run -ti -v $PWD:/home/user ubuntu:20.04 /bin/bash
+# /home/user/setup-noetic.sh
 #
 # If you started a non-interactive ("one shot") build and then it crashed and you want to get in and look around:
 # https://docs.docker.com/engine/reference/commandline/commit/
@@ -165,7 +165,7 @@ if ! (dpkg -s ros-${INSTALLING_ROS_DISTRO}-desktop-full | grep "Status: install 
   #fi
   #printf "${BLUE}Running rosdep update . . .${NC}\n"
   #rosdep update
-  # shellcheck source=/opt/ros/melodic/setup.bash
+  # shellcheck source=/opt/ros/noetic/setup.bash
   source /opt/ros/${INSTALLING_ROS_DISTRO}/setup.bash
   printf "\n${BLUE}Installing ROS Dependencies for building packages${NC}\n"
   #sudo apt install -y python-rosinstall python-rosinstall-generator python-wstool build-essential
@@ -174,7 +174,7 @@ fi
 
 # In case .bashrc wasn't set up, or you didn't reboot
 if ! (command -v catkin_make >/dev/null); then
-  # shellcheck source=/opt/ros/melodic/setup.bash
+  # shellcheck source=/opt/ros/noetic/setup.bash
   source /opt/ros/${INSTALLING_ROS_DISTRO}/setup.bash
 fi
 

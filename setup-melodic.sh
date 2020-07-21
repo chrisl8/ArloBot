@@ -11,7 +11,7 @@ INSTALLING_ROS_DISTRO=melodic
 #
 # Testing workstation install with Docker:
 #
-# You can Test this with Docker by installing Docker, then pulling down the Ubuntu 16.04 image:
+# You can Test this with Docker by installing Docker, then pulling down the Ubuntu 18.04 image:
 # sudo docker pull ubuntu:18.04
 # cd ~/catkin_ws/src/ArloBot
 #
