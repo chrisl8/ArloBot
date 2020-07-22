@@ -663,19 +663,18 @@ fi
 
 if ! (command -v simpleide >/dev/null); then
   printf "\n${YELLOW}[Setting up Parallax SimpleIDE for putting code on Activity Board.]${NC}\n"
-  cd /tmp
-  wget https://web.archive.org/web/20161005174013/http://downloads.parallax.com/plx/software/side/101rc1/simple-ide_1-0-1-rc1_amd64.deb
-  sudo dpkg -i /tmp/simple-ide_1-0-1-rc1_amd64.deb
-  rm /tmp/simple-ide_1-0-1-rc1_amd64.deb
+  cd ~/catkin_ws/src/ArloBot/PropellerCodeForArloBot/RequiredBuildTools
+  sudo dpkg -i ~/catkin_ws/src/ArloBot/PropellerCodeForArloBot/RequiredBuildTools/simple-ide_1-0-1-rc1_amd64.deb
 fi
 
 if ! [[ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/Arlo/libarlodrive/arlodrive.c ]]; then
   if ! [[ -d ~/Documents/SimpleIDE/ ]]; then
     mkdir -p ~/Documents/SimpleIDE/
   fi
+  cp ~/catkin_ws/src/ArloBot/PropellerCodeForArloBot/RequiredBuildTools/Learn-Folder-Updated-2019.07.02_0.zip ~/Documents/SimpleIDE/
   cd ~/Documents/SimpleIDE/
-  wget https://www.parallax.com/sites/default/files/downloads/Learn-Folder-Updated-2019.07.02_0.zip
   unzip Learn-Folder-Updated-2019.07.02_0.zip
+  rm Learn-Folder-Updated-2019.07.02_0.zip
   cd
 fi
 

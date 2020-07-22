@@ -699,23 +699,32 @@ if ! (sudo -nl | grep resetUSB >/dev/null && sudo -nl | grep modprobe >/dev/null
   sudo chown root:root /etc/sudoers.d/arlobot_sudoers
 fi
 
-if ! (command -v simpleide >/dev/null); then
-  printf "\n${YELLOW}[Setting up Parallax SimpleIDE for putting code on Activity Board.]${NC}\n"
-  cd /tmp
-  wget https://web.archive.org/web/20161005174013/http://downloads.parallax.com/plx/software/side/101rc1/simple-ide_1-0-1-rc1_amd64.deb
-  sudo dpkg -i /tmp/simple-ide_1-0-1-rc1_amd64.deb
-  rm /tmp/simple-ide_1-0-1-rc1_amd64.deb
+if ! [[ -e /usr/share/PropWare/include/arlodrive.h ]]; then
+  printf "\n${YELLOW}[Setting up PropWare and PropGCC for putting code on Activity Board.]${NC}\n"
+  printf "\n${BLUE}Parallax no longer supports Linux so we are using some third party tools.${NC}\n"
+  printf "\n${BLUE}https://david.zemon.name/PropWare${NC}\n"
+  cd ~/catkin_ws/src/ArloBot/PropellerCodeForArloBot/RequiredBuildTools
+  sudo dpkg -i ~/catkin_ws/src/ArloBot/PropellerCodeForArloBot/RequiredBuildTools/propware_3.0.0.224-1_all.deb
 fi
 
-if ! [[ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/Arlo/libarlodrive/arlodrive.c ]]; then
-  if ! [[ -d ~/Documents/SimpleIDE/ ]]; then
-    mkdir -p ~/Documents/SimpleIDE/
-  fi
-  cd ~/Documents/SimpleIDE/
-  wget https://www.parallax.com/sites/default/files/downloads/Learn-Folder-Updated-2019.07.02_0.zip
-  unzip Learn-Folder-Updated-2019.07.02_0.zip
-  cd
+if ! [[ -d /opt/parallax ]]; then
+  sudo cp ~/catkin_ws/src/ArloBot/PropellerCodeForArloBot/RequiredBuildTools/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz /opt
+  cd /opt
+  sudo tar xvf propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz
+  sudo rm /opt/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz
+  # TODO: Set up instructions and/or scripts on how to use these tools.
 fi
+
+# TODO: Are we 100% SURE THE COPIES IN PROPWARE ARE THE SAME?!
+#if ! [[ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/Arlo/libarlodrive/arlodrive.c ]]; then
+#  if ! [[ -d ~/Documents/SimpleIDE/ ]]; then
+#    mkdir -p ~/Documents/SimpleIDE/
+#  fi
+#  cd ~/Documents/SimpleIDE/
+#  wget https://www.parallax.com/sites/default/files/downloads/Learn-Folder-Updated-2019.07.02_0.zip
+#  unzip Learn-Folder-Updated-2019.07.02_0.zip
+#  cd
+#fi
 
 if [[ -e ${ARLO_HOME}/arlobot.yaml ]]; then
   if ! (diff "${HOME}/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml" "${ARLO_HOME}/arlobot.yaml" >/dev/null); then
