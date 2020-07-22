@@ -703,17 +703,31 @@ if ! [[ -e /usr/share/PropWare/include/arlodrive.h ]]; then
   printf "\n${YELLOW}[Setting up PropWare and PropGCC for putting code on Activity Board.]${NC}\n"
   printf "${BLUE}Parallax no longer supports Linux so we are using some third party tools.${NC}\n"
   printf "${BLUE}https://david.zemon.name/PropWare${NC}\n"
-  cd "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/RequiredBuildTools"
-  sudo dpkg -i "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/RequiredBuildTools/propware_3.0.0.224-1_all.deb"
+  cd /tmp
+  wget -O propware_3.0.0.224-1_all.deb https://ci.zemon.name/repository/download/PropWare_Develop/3817:id/propware_3.0.0.224-1_all.deb?guest=1
+  # NOTE: I have this stored in my Dropbox also if the above link dies use:
+  # https://www.dropbox.com/s/12l51adhwge1y43/propware_3.0.0.224-1_all.deb?dl=1
+  sudo dpkg -i /tmp/propware_3.0.0.224-1_all.deb
+  rm /tmp/propware_3.0.0.224-1_all.deb
 fi
 
 if ! [[ -d /opt/parallax ]]; then
-  sudo cp "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/RequiredBuildTools/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz" /opt
+  cd /tmp
+  wget -O propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz https://ci.zemon.name/repository/download/PropGCC5_Gcc4linuxX64/3620:id/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz?guest=1
+  # NOTE: I have this stored in my Dropbox also if the above link dies use:
+  # https://www.dropbox.com/s/sccr5cs46hgrlwd/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz?dl=1
+  sudo cp /tmp/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz /opt
+  rm /tmp/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz
   cd /opt
   sudo tar xvf propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz
   sudo rm /opt/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz
+  cd # Get out of /opt just for safety
   # TODO: Set up instructions and/or scripts on how to use these tools.
 fi
+
+# TODO: Go ahead and test build the codes!
+
+# TODO: Write script for quick "deploy to Activity Board".
 
 # TODO: Are we 100% SURE THE COPIES IN PROPWARE ARE THE SAME?!
 #if ! [[ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/Arlo/libarlodrive/arlodrive.c ]]; then

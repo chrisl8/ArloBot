@@ -73,6 +73,7 @@ printf "\n${YELLOW}SETTING UP ROS ${INSTALLING_ROS_DISTRO} FOR YOUR ARLOBOT!${NC
 printf "${YELLOW}---------------------------------------------------${NC}\n"
 printf "${GREEN}You will be asked for your password for running commands as root!${NC}\n"
 
+DOCKER_TEST_INSTALL=false
 if [[ ! -e /etc/localtime ]]; then
   # These steps are to allow this script to work in a minimal Docker container for testing.
   printf "${YELLOW}[This looks like a Docker setup.]${NC}\n"
@@ -89,6 +90,8 @@ if [[ ! -e /etc/localtime ]]; then
   apt update
   apt install -y tzdata sudo lsb-release gnupg cron
   # Now the rest of the script should work as if it was in a normal Ubuntu install.
+
+  DOCKER_TEST_INSTALL=true
 fi
 
 version=$(lsb_release -sc)
@@ -104,7 +107,7 @@ case ${version} in
   ;;
 esac
 
-if ! [[ ${TRAVIS} == "true" ]]; then # This does not work on Docker
+if ! [[ ${DOCKER_TEST_INSTALL=true} == "true" ]]; then # This does not work on Docker
   printf "\n${YELLOW}[Updating Root CA Certificates from Ubuntu]${NC}\n"
   # Sometimes this has to be done by hand on new Ubuntu installs.
   sudo update-ca-certificates
@@ -663,18 +666,23 @@ fi
 
 if ! (command -v simpleide >/dev/null); then
   printf "\n${YELLOW}[Setting up Parallax SimpleIDE for putting code on Activity Board.]${NC}\n"
-  cd "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/RequiredBuildTools"
-  sudo dpkg -i "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/RequiredBuildTools/simple-ide_1-0-1-rc1_amd64.deb"
+  cd /tmp
+  wget -O simple-ide_1-0-1-rc1_amd64.deb https://www.dropbox.com/s/k9gl1lbutmd8c2w/simple-ide_1-0-1-rc1_amd64.deb?dl=1
+  # NOTE: If the above link dies, you can try using this Wayback Machine link:
+  # https://web.archive.org/web/20161005174013/http://downloads.parallax.com/plx/software/side/101rc1/simple-ide_1-0-1-rc1_amd64.deb
+  sudo dpkg -i /tmp/simple-ide_1-0-1-rc1_amd64.deb
+  rm /tmp/simple-ide_1-0-1-rc1_amd64.deb
 fi
 
 if ! [[ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/Arlo/libarlodrive/arlodrive.c ]]; then
   if ! [[ -d ~/Documents/SimpleIDE/ ]]; then
     mkdir -p ~/Documents/SimpleIDE/
   fi
-  cp "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/RequiredBuildTools/Learn-Folder-Updated-2019.07.02_0.zip" ~/Documents/SimpleIDE/
   cd ~/Documents/SimpleIDE/
-  unzip Learn-Folder-Updated-2019.07.02_0.zip
-  rm Learn-Folder-Updated-2019.07.02_0.zip
+  wget -O Learn-Folder-Updated-2019.07.02_0.zip https://www.parallax.com/sites/default/files/downloads/Learn-Folder-Updated-2019.07.02_0.zip
+  # NOTE: I have this stored in my Dropbox also if the above link dies use:
+  # https://www.dropbox.com/s/6ny53cmbljwfk9u/Learn-Folder-Updated-2019.07.02_0.zip?dl=1
+  unzip -q Learn-Folder-Updated-2019.07.02_0.zip
   cd
 fi
 
