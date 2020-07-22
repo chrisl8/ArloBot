@@ -701,14 +701,14 @@ fi
 
 if ! [[ -e /usr/share/PropWare/include/arlodrive.h ]]; then
   printf "\n${YELLOW}[Setting up PropWare and PropGCC for putting code on Activity Board.]${NC}\n"
-  printf "\n${BLUE}Parallax no longer supports Linux so we are using some third party tools.${NC}\n"
-  printf "\n${BLUE}https://david.zemon.name/PropWare${NC}\n"
-  cd ~/catkin_ws/src/ArloBot/PropellerCodeForArloBot/RequiredBuildTools
-  sudo dpkg -i ~/catkin_ws/src/ArloBot/PropellerCodeForArloBot/RequiredBuildTools/propware_3.0.0.224-1_all.deb
+  printf "${BLUE}Parallax no longer supports Linux so we are using some third party tools.${NC}\n"
+  printf "${BLUE}https://david.zemon.name/PropWare${NC}\n"
+  cd "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/RequiredBuildTools"
+  sudo dpkg -i "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/RequiredBuildTools/propware_3.0.0.224-1_all.deb"
 fi
 
 if ! [[ -d /opt/parallax ]]; then
-  sudo cp ~/catkin_ws/src/ArloBot/PropellerCodeForArloBot/RequiredBuildTools/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz /opt
+  sudo cp "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/RequiredBuildTools/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz" /opt
   cd /opt
   sudo tar xvf propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz
   sudo rm /opt/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz
