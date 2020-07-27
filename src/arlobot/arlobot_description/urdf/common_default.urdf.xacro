@@ -18,7 +18,7 @@
   <!-- 3D Sensor -->
   <xacro:include filename="$(find arlobot_description)/urdf/asus_xtion_pro.urdf.xacro"/>
 
-  <arlobot/>
-  <stack_circles parent="base_link"/>
-  <sensor_asus_xtion_pro parent="base_link"/>
+  <xacro:arlobot/>
+  <xacro:stack_circles parent="base_link"/>
+  <xacro:sensor_asus_xtion_pro parent="base_link"/>
 </robot>

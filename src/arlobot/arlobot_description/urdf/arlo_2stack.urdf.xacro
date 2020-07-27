@@ -449,13 +449,13 @@
       </collision>
     </link>
 
-    <arlobot_standoff_5in parent="${parent}" number="0" x_loc="0.0676402" y_loc="0.1314196"
+    <xacro:arlobot_standoff_5in parent="${parent}" number="0" x_loc="0.0676402" y_loc="0.1314196"
                           z_loc="0.06825"/>
-    <arlobot_standoff_5in parent="${parent}" number="1" x_loc="0.0676402" y_loc="-0.1314196"
+    <xacro:arlobot_standoff_5in parent="${parent}" number="1" x_loc="0.0676402" y_loc="-0.1314196"
                           z_loc="0.06825"/>
-    <arlobot_standoff_5in parent="${parent}" number="2" x_loc="-0.052832" y_loc="-0.1314196"
+    <xacro:arlobot_standoff_5in parent="${parent}" number="2" x_loc="-0.052832" y_loc="-0.1314196"
                           z_loc="0.06825"/>
-    <arlobot_standoff_5in parent="${parent}" number="3" x_loc="-0.052832" y_loc="0.1314196"
+    <xacro:arlobot_standoff_5in parent="${parent}" number="3" x_loc="-0.052832" y_loc="0.1314196"
                           z_loc="0.06825"/>
 
     <joint name="plate_1_joint" type="fixed">
@@ -491,13 +491,13 @@
       </collision>
     </link>
 
-    <arlobot_standoff_5in parent="plate_0_link" number="4" x_loc="0.0676402" y_loc="0.1314196"
+    <xacro:arlobot_standoff_5in parent="plate_0_link" number="4" x_loc="0.0676402" y_loc="0.1314196"
                           z_loc="0.06825"/>
-    <arlobot_standoff_5in parent="plate_0_link" number="5" x_loc="0.0676402" y_loc="-0.1314196"
+    <xacro:arlobot_standoff_5in parent="plate_0_link" number="5" x_loc="0.0676402" y_loc="-0.1314196"
                           z_loc="0.06825"/>
-    <arlobot_standoff_5in parent="plate_0_link" number="6" x_loc="-0.052832" y_loc="-0.1314196"
+    <xacro:arlobot_standoff_5in parent="plate_0_link" number="6" x_loc="-0.052832" y_loc="-0.1314196"
                           z_loc="0.06825"/>
-    <arlobot_standoff_5in parent="plate_0_link" number="7" x_loc="-0.052832" y_loc="0.1314196"
+    <xacro:arlobot_standoff_5in parent="plate_0_link" number="7" x_loc="-0.052832" y_loc="0.1314196"
                           z_loc="0.06825"/>
   </xacro:macro>
 </robot>
