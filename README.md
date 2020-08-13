@@ -1,6 +1,36 @@
 [![Build Status](https://travis-ci.com/chrisl8/ArloBot.svg)](https://travis-ci.com/chrisl8/ArloBot)
 [![codecov](https://codecov.io/gh/chrisl8/ArloBot/branch/melodic/graph/badge.svg)](https://codecov.io/gh/chrisl8/ArloBot)
 
+# Current Status and my TODO List
+
+I am currently working on conversion to [Slam Toolbox](https://github.com/SteveMacenski/slam_toolbox) for mapping and [teb_local_planner](http://wiki.ros.org/teb_local_planner) for path planning, and [Noetic ROS](http://wiki.ros.org/noetic).  
+I do not know at which point I will move to Noetic.
+ - On the one hand it makes sense to leave the "working" Melodic branch as is and do the new work in Noetic.
+ - On the other it makes sense to make major changes in a working Melodic setup and only move to Noetic once I know everything I want to do works in Melodic.
+ 
+ # TODO List:
+
+ - Fix this error coming from TEB due to something in my config:
+   - [ WARN] [1597326961.776132466]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0513 seconds
+ - Fully Implement Slam Toolbox and teb_local_planner
+   - Remove all references to Gmapping and AMCL.
+   - Remove all old path planner references.
+   - Make web interface work the same with Slam Toolbox
+     - Must be able to make and save a new map.
+     - Must be able to load that map and set my location
+     - Must be able to set and go to waypoints on the map.
+ - Flatten out Package folders
+   - Move arlobot_teleop and arlobot_explore up one level to be in the main folder.
+   - Move arlobot_rviz_launchers up a lovel
+     - Basically no nested ROS nodes. There is no benefit to that.
+ - Clean up arlobot_explore and find out what still does and does not work.
+   - Remove the Gmapping and AMCL mapping and path planning configuration and startup.
+   - Attempt to make every remaining function work with Slam Toolbox/teb_local planner or remove it.
+ - Convert from SimpleIDE to PropeWare/PropGCC for building Propeller code.
+   - Build code as part of install for testing, especially on Travis CI
+   - Create scripts for easy build/install.
+ - Migrate to Noetic and Ubuntu 20.04
+
 ArloBot Package for ROS
 =======================
 
