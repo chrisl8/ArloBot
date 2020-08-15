@@ -413,7 +413,7 @@ if [[ "${RESPONSE_TO_RPLIDAR_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; the
   printf "\n${BLUE}Slamtec RPLIDAR${NC}\n"
   cd ~/catkin_ws/src
   if ! [[ -d ~/catkin_ws/src/rplidar_ros ]]; then
-    git clone -b update_sdk_to1.12.0 https://github.com/Slamtec/rplidar_ros.git
+    git clone https://github.com/chrisl8/rplidar_ros.git
   else
     cd ~/catkin_ws/src/rplidar_ros
     git pull
