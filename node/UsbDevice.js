@@ -19,7 +19,9 @@ class UsbDevice {
           let deviceName;
           for (let i = 0; i < infoDump.length; i++) {
             for (let j = 0; j < infoDump[i].deviceInfo.length; j++) {
-              if (infoDump[i].deviceInfo[j].includes(this.stringLocation)) {
+              if (
+                infoDump[i].deviceInfo[j].includes(`${this.stringLocation}=`)
+              ) {
                 const deviceStringLine = infoDump[i].deviceInfo[j].split('=');
                 if (deviceStringLine.length > 0) {
                   const re = /"/g;

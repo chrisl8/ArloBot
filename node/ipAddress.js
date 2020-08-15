@@ -1,9 +1,8 @@
 const interfaces = require('os').networkInterfaces();
 
-const ipAddress = function() {
+const ipAddress = () => {
   let ip = false;
   let firstInterface;
-  // require('os').networkInterfaces().wlan0[0].address;
   for (const networkInterface in interfaces) {
     if (
       interfaces.hasOwnProperty(networkInterface) &&
