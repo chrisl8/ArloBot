@@ -67,6 +67,14 @@ else
   printf "\n${YELLOW}Without an activity board your robot will not function!${NC}\n"
 fi
 
+if [[ $(jq '.hasASUSXtion' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
+  export HAS_ASUS_XTION=true
+fi
+
+if [[ $(jq '.hasKinect' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
+  export HAS_KINECT=true
+fi
+
 if [[ $(jq '.hasXV11' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
   "${SCRIPTDIR}/XVLidar.sh" start
   export HAS_XV11=true
