@@ -2,9 +2,7 @@ const request = require('request');
 const personalData = require('./personalData');
 
 const getRobotDataFromWeb = async function() {
-  const serverURL = `${personalData.cloudServer.service}://${
-    personalData.cloudServer.fqdn
-  }:${personalData.cloudServer.port}/getRobotInfo`;
+  const serverURL = `${personalData.cloudServer.service}://${personalData.cloudServer.fqdn}:${personalData.cloudServer.port}/getRobotInfo`;
   return new Promise((resolve, reject) => {
     if (!personalData.cloudServer.exists) {
       reject('Robot Web Cloud Server not set up.');

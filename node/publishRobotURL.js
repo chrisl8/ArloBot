@@ -20,9 +20,7 @@ const updateRobotURL = () => {
         webModelFunctions.update('robotIP', robotIP);
 
         /** @namespace personalData.cloudServer.fqdn */
-        const serverURL = `${personalData.cloudServer.service}://${
-          personalData.cloudServer.fqdn
-        }:${personalData.cloudServer.port}/updateRobotURL`;
+        const serverURL = `${personalData.cloudServer.service}://${personalData.cloudServer.fqdn}:${personalData.cloudServer.port}/updateRobotURL`;
 
         request.post(
           serverURL,
