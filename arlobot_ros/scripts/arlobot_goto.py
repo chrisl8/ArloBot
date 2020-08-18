@@ -23,13 +23,9 @@ rosservice call /arlobot_goto/go_to_goal 'pose: { position: { x: -0.136, y: 0.07
 
 
 class ArlobotGoTo(object):
-
-    # TODO: Test for robot movement before sending it places! It could get really goofy to send to -90 from it's position ten seconds ago!
-
     def __init__(self):
         rospy.init_node("arlobot_goto")
         # http://wiki.ros.org/rospy_tutorials/Tutorials/WritingPublisherSubscriber
-        # self.r = rospy.Rate(1) # 1hz refresh rate
 
         # Creates the SimpleActionClient, passing the type of the action
         self._MoveBaseClient = actionlib.SimpleActionClient(
@@ -39,17 +35,11 @@ class ArlobotGoTo(object):
         # Listen to the transforms http://wiki.ros.org/tf/TfUsingPython
         self.tf_Buffer = tf2_ros.Buffer()
         self.tf_listener = tf2_ros.TransformListener(self.tf_Buffer)
-        # rospy.sleep(2) # If you call self.tf_listener too soon it has no data in the listener buffer!
-        # http://answers.ros.org/question/164911/move_base-and-extrapolation-errors-into-the-future/
-        # This is taken care of later instead on a loop that checks the status before continuing.
 
         # Global variable to hold current pose
         self.currentOdom = Odometry()
 
         # Subscribe to the current pose via odometry and populate our own variable with the data
-        """
-        I'm not sure of any other way to do this. I'd like to just "grab" it at a point in time, but subscriptions don't work that way.
-        """
         rospy.Subscriber("odom", Odometry, self._SetCurrentOdom)
         # Turns out this works great if you have no map and just want to make movements based on odometry,
         # but if you are using a map, you need the /map to /base_link transform!
@@ -57,14 +47,13 @@ class ArlobotGoTo(object):
         # Subscribe to the controller topic to check to see if the robot is
         # actually IDLE even though we THINK we are going somewhere!
         self._active_controller = ""
-        rospy.Subscriber(
-            "/cmd_vel_mux/active", String, self._set_active_controller
-        )  # Is this line or the below bad redundancy?
+        rospy.Subscriber("/cmd_vel_mux/active", String, self._set_active_controller)
+        # TODO: Does this topic still work with twist_mux?
 
         # Create a service that can be called to send robot to a map based goal
         # http://wiki.ros.org/ROS/Tutorials/CreatingMsgAndSrv
         # http://wiki.ros.org/ROS/Tutorials/WritingServiceClient%28python%29
-        goToGoal = rospy.Service("~go_to_goal", go_to_goal, self._go_to_goal)
+        rospy.Service("~go_to_goal", go_to_goal, self._go_to_goal)
 
         rospy.spin()
         # Now we just wait for someone to call us!
@@ -73,10 +62,6 @@ class ArlobotGoTo(object):
         self.currentOdom = currentOdom
 
     def _set_active_controller(self, status):
-        """
-        Shut down the motors if the SafeToOperate topic goes false.
-        Set unPlugging variable to allow for safe unplug operation.
-        """
         self._active_controller = status.data
         rospy.loginfo("Active Controller: " + self._active_controller)
 
@@ -86,8 +71,8 @@ class ArlobotGoTo(object):
         # listening for goals.
         """
         This will stall until the move_base comes up,
-        in other words, if you don't run gmapping before this, this will just wait,
-        and it won't go on until gmapping says "odom received!"
+        in other words, if you don't run move_base before this, this will just wait,
+        and it won't go on until move_base says "odom received!"
         """
         rospy.loginfo("Waiting for move_base to come up . . . ")
         self._MoveBaseClient.wait_for_server()
@@ -117,7 +102,7 @@ class ArlobotGoTo(object):
         # we'll create a goal to send to move_base
         # If you are just sending commands to the robot with no map use base_link
         # goal.target_pose.header.frame_id = "base_link"
-        # But if you have gmapping active and are using a map, you need to use the map!
+        # But if you have SLAM or Localization active and are using a map, you need to use the map!
         goal.target_pose.header.frame_id = "map"
 
         goal.target_pose.pose = new_goal.pose
@@ -131,7 +116,6 @@ class ArlobotGoTo(object):
         rospy.loginfo("Sending goal")
         # Sends the goal to the action server.
         result = -1
-        resultText = ""
         timeoutSeconds = 60  # TODO: Should this be sent as part of the call?
         if not rospy.is_shutdown():
             self._MoveBaseClient.cancel_goals_at_and_before_time(rospy.Time.now())
@@ -204,8 +188,6 @@ class ArlobotGoTo(object):
                     # NOTE: Do not use cancel_all_goals here as it can cancel future goals sometimes!
                     self._MoveBaseClient.cancel_goal()
 
-        # current_odom = self.currentOdom
-
         trans = self.tf_Buffer.lookup_transform("map", "base_link", rospy.Time())
 
         rospy.loginfo("New Position: ")
@@ -218,13 +200,9 @@ class ArlobotGoTo(object):
         else:
             return False
 
-    def Stop(self, exception):
-        # print(exception);
+    def Stop(self):
         rospy.loginfo("Arlobot Goto is shutting down.")
         self._MoveBaseClient.cancel_goals_at_and_before_time(rospy.Time.now())
-        # In case the poor thing is still stuck trying to go nowhere!
-        # NOTE: Do not use cancel_all_goals here as it can cancel future goals sometimes!
-        # Send a series of BE STILL commands just in case to make sure robot is left stationary
 
     def Run(self):
         print("This is a ROS node.")

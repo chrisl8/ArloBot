@@ -46,14 +46,14 @@ class PropellerComm(object):
 
         self.r = rospy.Rate(1)  # 1hz refresh rate
         self._motorsOn = (
-            False
-        )  # Set to True if the motors are on, used with USB Relay Control board
+            False  # Set to True if the motors are on, used with USB Relay Control board
+        )
         self._safeToGo = False  # Use arlobot_safety to set this
         self._SafeToOperate = False  # Use arlobot_safety to set this
         self._unPlugging = False  # Used for when arlobot_safety tells us to "UnPlug"!
         self._wasUnplugging = (
-            False
-        )  # Track previous unplugging status for motor control
+            False  # Track previous unplugging status for motor control
+        )
         self._SwitchingMotors = False  # Prevent overlapping calls to _switch_motors
         self._serialAvailable = False
         self._odometry_broadcast_timeout = 0

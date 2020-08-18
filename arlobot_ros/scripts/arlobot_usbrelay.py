@@ -284,9 +284,7 @@ class UsbRelay(object):
         ):  # This causes errors if it tries to shut off the relay when it does not exist
             rospy.loginfo("Shutting off all relays . . .")
             # At this point ROS is shutting down, so any attempts to check parameters or log may crash.
-            self._Busy = (
-                True
-            )  # We are shutting down, so make everyone else stall and plow ahead:
+            self._Busy = True  # We are shutting down, so make everyone else stall and plow ahead:
             for i in range(1, 9):  # Walk the relays
                 state = get_relay_state(
                     BitBangDevice(self.relaySerialNumber).port, str(i)
