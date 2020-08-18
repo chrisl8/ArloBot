@@ -1,8 +1,6 @@
 const fs = require('fs');
 
-const personalDataFile = `${
-  process.env.HOME
-}/.arlobot/personalDataForBehavior.json`;
+const personalDataFile = `${process.env.HOME}/.arlobot/personalDataForBehavior.json`;
 const personalData = JSON.parse(fs.readFileSync(personalDataFile, 'utf8'));
 
 describe('Personal data file tests', () => {
@@ -10,5 +8,3 @@ describe('Personal data file tests', () => {
     expect(personalData.hasBeenEdited).toBe(false);
   });
 });
-
-// TODO: Update the file and then check again?

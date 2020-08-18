@@ -2,9 +2,7 @@ const fs = require('fs');
 const io = require('socket.io-client');
 const webModel = require('../webModel');
 
-const personalDataFile = `${
-  process.env.HOME
-}/.arlobot/personalDataForBehavior.json`;
+const personalDataFile = `${process.env.HOME}/.arlobot/personalDataForBehavior.json`;
 const personalData = JSON.parse(fs.readFileSync(personalDataFile, 'utf8'));
 
 const personalDataFolder = `${process.env.HOME}/.arlobot/`;
@@ -13,8 +11,9 @@ const quietFile = `${statusFolder}bequiet`;
 const stopFile = `${statusFolder}STOP`;
 const webserver = require('../webserver');
 
-let quietFileStatus, stopFileStatus;
-const checkFileStatus = function(callback) {
+let quietFileStatus;
+let stopFileStatus;
+const checkFileStatus = function (callback) {
   fs.readFile(quietFile, (err, data) => {
     if (err) {
       quietFileStatus = false;
@@ -22,11 +21,11 @@ const checkFileStatus = function(callback) {
     if (data) {
       quietFileStatus = true;
     }
-    fs.readFile(stopFile, (err, data) => {
-      if (err) {
+    fs.readFile(stopFile, (localErr, localData) => {
+      if (localErr) {
         stopFileStatus = false;
       }
-      if (data) {
+      if (localData) {
         stopFileStatus = true;
       }
       callback();
@@ -76,10 +75,6 @@ describe('Suite of unit tests for webserver', () => {
   });
 
   describe('Check web Model for expected data', () => {
-    it('should have Explore in the first mapList entry', () => {
-      expect(webModel.mapList[0]).toEqual('Explore!');
-    });
-
     it('should have maps in the mapList', () => {
       // console.log(webModel.mapList);
       expect(webModel.mapList[1]).not.toBe(undefined);
