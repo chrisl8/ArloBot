@@ -360,39 +360,63 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   PACKAGE_TO_INSTALL_LIST+=(imagemagick)
   # imagemagick - used to grab screen shots of desktop for web local robot website display
   PACKAGE_TO_INSTALL_LIST+=(libftdi1 libqtgui4 libqtcore4)
-  # libftdi1 -  required by SimpleIDE for the Parallax Propeller board
-  # libqtgui4 - Required by simpleide
-  # libqtcore4 - Required by simpleide
+  # libftdi1 - Required by SimpleIDE for the Parallax Propeller board
+  # libqtgui4 - Required by SimpleIDE for the Parallax Propeller board
+  # libqtcore4 - Required by SimpleIDE for the Parallax Propeller board
   if [[ "${RESPONSE_TO_ASUS_XTION_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
     # Always test in Travis
     PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-openni2-launch")
-    # ros-noetic-openni2-launch - Required for ASUS Xtion to operate
+    # openni2-launch - Required for ASUS Xtion to operate
   fi
   if [[ "$RESPONSE_TO_ASUS_XTION_QUERY" == "y" ]] || [[ "${RESPONSE_TO_KINECT_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
     # Always test in Travis
     PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-depthimage-to-laserscan")
-    # "ros-${INSTALLING_ROS_DISTRO}-depthimage-to-laserscan" - Required for ASUS Xtion and Kinect to operate
+    # depthimage-to-laserscan" - Required for ASUS Xtion and Kinect to operate
   fi
+  if ! [[ "${RESPONSE_TO_MYCROFT_QUERY}" == "y" ]]; then
+    PACKAGE_TO_INSTALL_LIST+=(espeak-ng-espeak)
+  # espeak-ng-espeak - Used for robot to speak if MyCroft is not used.
+  fi
+  PACKAGE_TO_INSTALL_LIST+=(fswebcam)
+  # fswebcam - Used for streaming a camera to the website. Camera streaming will not work without it.
 
+  # TODO: Do I need this, or is everything I need already installed?
+  # ros-${INSTALLING_ROS_DISTRO}-rqt-* - All of the GUI tools for Robot configuration
+
+  # TODO: Test relay board interaction before installing these.
+  # TODO: Perhaps put these behind a QUESTION about USB Relay board?
+  # TODO: Currently I have REMOVED these packages, and the relay boards still work. :shrug:
   # ### Notes on what the packages are for ###
   # python-ftdi, libftdi-dev - required by pylibftdi for talking to USB based serial boards like relay boards, etc.
-  # https://pylibftdi.readthedocs.io/en/0.15.0/installation.html
-  # For 8-CH USB Relay board:
-  # Reference: https://code.google.com/p/drcontrol/wiki/Install_RaspberryPi">https://code.google.com/p/drcontrol/wiki/Install_RaspberryPi
-  # TEST:
-  #python -m pylibftdi.examples.list_devices
-  #Should return:
-  #FTDI:FT245R USB FIFO:A9026EI5
-  #If you have a USB Relay board attached via USB.
+  # TODO: Or is it:
+  # python-ftdi1, libftdi1-dev - required by pylibftdi for talking to USB based serial boards like relay boards, etc.
+  #           https://pylibftdi.readthedocs.io/en/0.18.0/installation.html
+  #      For 8-CH USB Relay board:
+  #           Reference: https://code.google.com/p/drcontrol/wiki/Install_RaspberryPi">https://code.google.com/p/drcontrol/wiki/Install_RaspberryPi
+  #           TEST:
+  #           python -m pylibftdi.examples.list_devices
+  #           Should return:
+  #           FTDI:FT245R USB FIFO:A9026EI5
+  #           If you have a USB Relay board attached via USB.
+
+  # TODO: Test this.
   # zbar-tools - reading QR codes.
-  # libgif-dev - required for roslib in order to build canvas
-  # pulseaudio & pavucontrol - for setting the default microphone. I use this for mycroft among other things
-  # ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan - for Scanse Sweep
 
-#PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-rqt-*" "ros-${INSTALLING_ROS_DISTRO}-kobuki-ftdi" python-ftdi1 "ros-${INSTALLING_ROS_DISTRO}-openni-*" "ros-${INSTALLING_ROS_DISTRO}-openni2-*" "ros-${INSTALLING_ROS_DISTRO}-vision-opencv" libopencv-dev python-opencv "ros-${INSTALLING_ROS_DISTRO}-tf2-tools" fswebcam festvox-en1 libv4l-dev zbar-tools libftdi-dev libftdi1 libgif-dev pulseaudio pavucontrol "ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan" net-tools espeak-ng-espeak)
+  # TODO: Confirm that Scanse Sweep needs this and add it to the "if scanse" section:
+  # ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan - used by Scanse Sweep
 
-# NOTE: If you are looking for a ROS package and wonder if it exists, but not for Melodic, check here:
-# http://repositories.ros.org/status_page/compare_kinetic_melodic.html
+  # TODO: What is this for? Color follower maybe? Does that even still work?
+  # "ros-${INSTALLING_ROS_DISTRO}-vision-opencv" libopencv-dev python-opencv
+
+  # TODO: What are these for?
+  #  festvox-en1 libv4l-dev
+
+  # TODO: The following packages were removed due to not existing in Noetic (yet):
+  # TODO: What was this for? Do we still need it?
+  # "ros-${INSTALLING_ROS_DISTRO}-kobuki-ftdi"
+
+  # NOTE: If you are looking for a ROS package and wonder if it exists, but not for Melodic, check here:
+  # http://repositories.ros.org/status_page/compare_kinetic_melodic.html
 fi
 
 sudo apt install -y "${PACKAGE_TO_INSTALL_LIST[@]}"

@@ -383,8 +383,19 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     echo "depthimage_to_laserscan will be installed from source instead."
     # "ros-${INSTALLING_ROS_DISTRO}-depthimage-to-laserscan" - Required for ASUS Xtion and Kinect to operate
   fi
+  if ! [[ "${RESPONSE_TO_MYCROFT_QUERY}" == "y" ]]; then
+    PACKAGE_TO_INSTALL_LIST+=(espeak-ng-espeak)
+  # espeak-ng-espeak - Used for robot to speak if MyCroft is not used.
+  fi
+  PACKAGE_TO_INSTALL_LIST+=(fswebcam)
+  # fswebcam - Used for streaming a camera to the website. Camera streaming will not work without it.
 
+  # TODO: Do I need this, or is everything I need already installed?
   # ros-${INSTALLING_ROS_DISTRO}-rqt-* - All of the GUI tools for Robot configuration
+
+  # TODO: Test relay board interaction before installing these.
+  # TODO: Perhaps put these behind a QUESTION about USB Relay board?
+  # TODO: Currently I have REMOVED these packages, and the relay boards still work. :shrug:
   # python3-ftdi1, libftdi1-dev - required by pylibftdi for talking to USB based serial boards like relay boards, etc.
   #           https://pylibftdi.readthedocs.io/en/0.18.0/installation.html
   #      For 8-CH USB Relay board:
@@ -394,15 +405,22 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   #           Should return:
   #           FTDI:FT245R USB FIFO:A9026EI5
   #           If you have a USB Relay board attached via USB.
-  # zbar-tools - reading QR codes.
-  # libgif-dev - required for roslib in order to build canvas
-  # ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan - used by Scanse Sweep # TODO: Should it be only installed later and IF we install the Sweep?
-  # espeak-ng-espeak - TODO: What is this used for?
 
-  #  PACKAGE_TO_INSTALL_LIST=("?name(ros-${INSTALLING_ROS_DISTRO}-rqt-*)" python3-ftdi1 libftdi1-dev "ros-${INSTALLING_ROS_DISTRO}-vision-opencv" libopencv-dev python3-opencv  fswebcam festvox-en1 libv4l-dev zbar-tools  libgif-dev "ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan" espeak-ng-espeak)
+  # TODO: Test this.
+  # zbar-tools - reading QR codes.
+
+  # TODO: Confirm that Scanse Sweep needs this and add it to the "if scanse" section:
+  # ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan - used by Scanse Sweep
+
+  # TODO: What is this for? Color follower maybe? Does that even still work?
+  # "ros-${INSTALLING_ROS_DISTRO}-vision-opencv" libopencv-dev python3-opencv
+
+  # TODO: What are these for?
+  #  festvox-en1 libv4l-dev
 
   # TODO: The following packages were removed due to not existing in Noetic (yet):
-  # "ros-${INSTALLING_ROS_DISTRO}-kobuki-ftdi" # TODO: What was this for? Do we still need it?
+  # TODO: What was this for? Do we still need it?
+  # "ros-${INSTALLING_ROS_DISTRO}-kobuki-ftdi"
 
   # NOTE: If you are looking for a ROS package and wonder if it exists, but not for Noetic, check here:
   # http://repositories.ros.org/status_page/compare_melodic_noetic.html
