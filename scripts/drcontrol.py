@@ -26,8 +26,11 @@
 #   $Rev$
 #   $Date$
 #
+#   Heavily edited by Christen Lofland for use in this code base.
+#
 # ----------------------------------------------------------------------------
 
+from __future__ import print_function
 from optparse import OptionParser
 
 from pylibftdi import Driver
@@ -36,21 +39,21 @@ from pylibftdi import BitBangDevice
 from ctypes.util import find_library
 
 import sys
-import time
 
 # ----------------------------------------------------------------------------
-# VARIABLE CLASSS
+# VARIABLE CLASSES
 # ----------------------------------------------------------------------------
+
 
 class app_data:
     def __init__(
         self,
-        name = "DRControl",
-        version = "0.12",
-        date = "$Date$",
-        rev = "$Rev$",
-        author = "Sebastian Sjoholm"
-        ):
+        name="DRControl",
+        version="0.12",
+        date="$Date$",
+        rev="$Rev$",
+        author="Sebastian Sjoholm",
+    ):
 
         self.name = name
         self.version = version
@@ -58,21 +61,17 @@ class app_data:
         self.rev = rev
         self.author = author
 
+
 class cmdarg_data:
-    def __init__(
-        self,
-        device = "",
-        relay = "",
-        command = "",
-        verbose = False
-        ):
+    def __init__(self, device="", this_relay="", command="", verbose=False):
 
         self.device = device
-        self.relay = relay
+        self.relay = this_relay
         self.command = command
         self.verbose = verbose
 
-'''
+
+"""
 # Original
 class relay_data(dict):
 
@@ -87,37 +86,44 @@ class relay_data(dict):
             "8":"40",
             "all":"FF"
             }
-'''
+"""
+
 
 # For SainSmart 8 port USB model
 class relay_data(dict):
 
     address = {
-            "1":"1",
-            "2":"2",
-            "3":"4",
-            "4":"8",
-            "5":"10",
-            "6":"20",
-            "7":"40",
-            "8":"80",
-            "all":"FF"
-            }
+        "1": "1",
+        "2": "2",
+        "3": "4",
+        "4": "8",
+        "5": "10",
+        "6": "20",
+        "7": "40",
+        "8": "80",
+        "all": "FF",
+    }
 
-    def __getitem__(self, key): return self[key]
-    def keys(self): return self.keys()
+    def __getitem__(self, key):
+        return self[key]
+
+    def keys(self):
+        return self.keys()
+
 
 # ----------------------------------------------------------------------------
 # testBit() returns a nonzero result, 2**offset, if the bit at 'offset' is one.
 # http://wiki.python.org/moin/BitManipulation
 # ----------------------------------------------------------------------------
 
+
 def testBit(int_type, offset):
     mask = 1 << offset
-    return(int_type & mask)
+    return int_type & mask
+
 
 # Original
-'''
+"""
 def get_relay_state( data, relay ):
     if relay == "1":
         return testBit(data, 1)
@@ -135,26 +141,29 @@ def get_relay_state( data, relay ):
         return testBit(data, 6)
     if relay == "8":
         return testBit(data, 8)
-'''
+"""
+
 
 # For SainSmart 8 port USB model
-def get_relay_state( data, relay ):
-    if relay == "1":
+# noinspection Duplicates
+def get_relay_state(data, this_relay):
+    if this_relay == "1":
         return testBit(data, 0)
-    if relay == "2":
+    if this_relay == "2":
         return testBit(data, 1)
-    if relay == "3":
+    if this_relay == "3":
         return testBit(data, 2)
-    if relay == "4":
+    if this_relay == "4":
         return testBit(data, 3)
-    if relay == "5":
+    if this_relay == "5":
         return testBit(data, 4)
-    if relay == "6":
+    if this_relay == "6":
         return testBit(data, 5)
-    if relay == "7":
+    if this_relay == "7":
         return testBit(data, 6)
-    if relay == "8":
+    if this_relay == "8":
         return testBit(data, 7)
+
 
 # ----------------------------------------------------------------------------
 # LIST_DEVICES()
@@ -162,24 +171,26 @@ def get_relay_state( data, relay ):
 # Routine modified from the original pylibftdi example by Ben Bass
 # ----------------------------------------------------------------------------
 
+
 def list_devices():
-    print "Vendor\t\tProduct\t\t\tSerial"
-    dev_list = []
+    print("Vendor\t\tProduct\t\t\tSerial")
     for device in Driver().list_devices():
-        device = map(lambda x: x.decode('latin1'), device)
+        device = map(lambda x: x, device)
         vendor, product, serial = device
-        print "%s\t\t%s\t\t%s" % (vendor, product, serial)
+        print("%s\t\t%s\t\t%s" % (vendor, product, serial))
+
 
 # Adding an option to list ONLY the serial number(s)
 # For use on my ArloBot programs
 
+
 def list_serial_only():
-    #print "Vendor\t\tProduct\t\t\tSerial"
-    dev_list = []
+    # print("Vendor\t\tProduct\t\t\tSerial")
     for device in Driver().list_devices():
-        device = map(lambda x: x.decode('latin1'), device)
+        device = map(lambda x: x, device)
         vendor, product, serial = device
-        print "%s" % (serial)
+        print("%s" % serial)
+
 
 # ----------------------------------------------------------------------------
 # SET_RELAY()
@@ -187,11 +198,19 @@ def list_serial_only():
 # Set specified relay to chosen state
 # ----------------------------------------------------------------------------
 
+
 def set_relay():
 
     if cmdarg.verbose:
-        print "Device:\t\t" + cmdarg.device
-        print "Send command:\tRelay " + cmdarg.relay + " (0x" + relay.address[cmdarg.relay] + ") to " + cmdarg.command.upper()
+        print("Device:\t\t" + cmdarg.device)
+        print(
+            "Send command:\tRelay "
+            + cmdarg.relay
+            + " (0x"
+            + relay.address[cmdarg.relay]
+            + ") to "
+            + cmdarg.command.upper()
+        )
 
     try:
         with BitBangDevice(cmdarg.device) as bb:
@@ -199,88 +218,114 @@ def set_relay():
             # Action towards specific relay
             if cmdarg.relay.isdigit():
 
-                if int(cmdarg.relay) >= 1 and int(cmdarg.relay) <= 8:
+                if 1 <= int(cmdarg.relay) <= 8:
 
                     # Turn relay ON
                     if cmdarg.command == "on":
                         if cmdarg.verbose:
-                            print "Relay " + str(cmdarg.relay) + " to ON"
+                            print("Relay " + str(cmdarg.relay) + " to ON")
                         bb.port |= int(relay.address[cmdarg.relay], 16)
 
                     # Turn relay OFF
                     elif cmdarg.command == "off":
                         if cmdarg.verbose:
-                            print "Relay "  + str(cmdarg.relay) + " to OFF"
+                            print("Relay " + str(cmdarg.relay) + " to OFF")
                         bb.port &= ~int(relay.address[cmdarg.relay], 16)
 
                     # Print relay status
                     elif cmdarg.command == "state":
-                        state = get_relay_state( bb.port, cmdarg.relay )
+                        state = get_relay_state(bb.port, cmdarg.relay)
                         if state == 0:
                             if cmdarg.verbose:
-                                print "Relay " + cmdarg.relay + " state:\tOFF (" + str(state) + ")"
+                                print(
+                                    "Relay "
+                                    + cmdarg.relay
+                                    + " state:\tOFF ("
+                                    + str(state)
+                                    + ")"
+                                )
                             else:
-                                print "OFF"
+                                print("OFF")
                         else:
                             if cmdarg.verbose:
-                                print "Relay " + cmdarg.relay + " state:\tON (" + str(state) + ")"
+                                print(
+                                    "Relay "
+                                    + cmdarg.relay
+                                    + " state:\tON ("
+                                    + str(state)
+                                    + ")"
+                                )
                             else:
-                                print "ON"
+                                print("ON")
 
             # Action towards all relays
             elif cmdarg.relay == "all":
 
                 if cmdarg.command == "on":
                     if cmdarg.verbose:
-                        print "Relay " + str(cmdarg.relay) + " to ON"
+                        print("Relay " + str(cmdarg.relay) + " to ON")
                     bb.port |= int(relay.address[cmdarg.relay], 16)
 
                 elif cmdarg.command == "off":
                     if cmdarg.verbose:
-                        print "Relay "  + str(cmdarg.relay) + " to OFF"
+                        print("Relay " + str(cmdarg.relay) + " to OFF")
                     bb.port &= ~int(relay.address[cmdarg.relay], 16)
 
                 elif cmdarg.command == "state":
-                    #for i in range(1,8):
-                    #print bb.port
-                    for i in range(1,9):
-                        state = get_relay_state( bb.port, str(i) )
+                    # for i in range(1,8):
+                    # print bb.port
+                    for i in range(1, 9):
+                        state = get_relay_state(bb.port, str(i))
                         if state == 0:
                             if cmdarg.verbose:
-                                print "Relay " + str(i) + " state:\tOFF (" + str(state) + ")"
+                                print(
+                                    "Relay "
+                                    + str(i)
+                                    + " state:\tOFF ("
+                                    + str(state)
+                                    + ")"
+                                )
                             else:
-                                print "OFF"
+                                print("OFF")
                         else:
                             if cmdarg.verbose:
-                                print "Relay " + str(i) + " state:\tON (" + str(state) + ")"
+                                print(
+                                    "Relay "
+                                    + str(i)
+                                    + " state:\tON ("
+                                    + str(state)
+                                    + ")"
+                                )
                             else:
-                                print "ON"
+                                print("ON")
 
                 else:
-                    print "Error: Unknown command"
+                    print("Error: Unknown command")
 
             else:
-                print "Error: Unknown relay number"
+                print("Error: Unknown relay number")
                 sys.exit(1)
 
-    except Exception, err:
-        print "Error: " + str(err)
+    except Exception as err:
+        print("Error: " + str(err))
         sys.exit(1)
+
 
 def check():
 
     # Check python version
     if sys.hexversion < 0x02060000:
-        print "Error: Your Python need to be 2.6 or newer"
+        print("Error: Your Python need to be 2.6 or newer")
         sys.exit(1)
 
     # Check availability on library, this check is also done in pylibftdi
-    ftdi_lib = find_library('ftdi')
+    ftdi_lib = find_library("ftdi")
     if ftdi_lib is None:
-        print "Error: The pylibftdi library not found"
+        print("Error: The pylibftdi library not found")
         sys.exit(1)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
 
     # Init objects
     cmdarg = cmdarg_data()
@@ -291,18 +336,60 @@ if __name__ == '__main__':
     check()
 
     parser = OptionParser()
-    parser.add_option("-d", "--device", action="store", type="string", dest="device", help="The device serial, example A6VV5PHY")
-    parser.add_option("-l", "--list", action="store_true", dest="list", default=False, help="List all devices")
-    parser.add_option("-s", "--serial", action="store_true", dest="list_serial_only", default=False, help="List device serial numbers only")
-    parser.add_option("-r", "--relay", action="store", type="string", dest="relay", help="Relay to command by number: 1...8 or all")
-    parser.add_option("-c", "--command", action="store", type="string", dest="command", help="State: on, off, state")
-    parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False, help="Verbose, print all info on screen")
+    parser.add_option(
+        "-d",
+        "--device",
+        action="store",
+        type="string",
+        dest="device",
+        help="The device serial, example A6VV5PHY",
+    )
+    parser.add_option(
+        "-l",
+        "--list",
+        action="store_true",
+        dest="list",
+        default=False,
+        help="List all devices",
+    )
+    parser.add_option(
+        "-s",
+        "--serial",
+        action="store_true",
+        dest="list_serial_only",
+        default=False,
+        help="List device serial numbers only",
+    )
+    parser.add_option(
+        "-r",
+        "--relay",
+        action="store",
+        type="string",
+        dest="relay",
+        help="Relay to command by number: 1...8 or all",
+    )
+    parser.add_option(
+        "-c",
+        "--command",
+        action="store",
+        type="string",
+        dest="command",
+        help="State: on, off, state",
+    )
+    parser.add_option(
+        "-v",
+        "--verbose",
+        action="store_true",
+        dest="verbose",
+        default=False,
+        help="Verbose, print all info on screen",
+    )
 
     (options, args) = parser.parse_args()
 
     if options.verbose:
         cmdarg.verbose = options.verbose
-        print app.name + " " + app.version
+        print(app.name + " " + app.version)
     else:
         cmdarg.verbose = False
 
@@ -316,14 +403,14 @@ if __name__ == '__main__':
 
     if options.relay or options.command:
         if not options.device:
-            print "Error: Device missing"
+            print("Error: Device missing")
 
     if options.device:
         if not options.relay:
-            print "Error: Need to state which relay"
+            print("Error: Need to state which relay")
             sys.exit(1)
         if not options.command:
-            print "Error: Need to specify which relay state"
+            print("Error: Need to specify which relay state")
             sys.exit(1)
 
         cmdarg.device = options.device
@@ -332,8 +419,3 @@ if __name__ == '__main__':
 
         set_relay()
         sys.exit(0)
-
-
-
-
-
