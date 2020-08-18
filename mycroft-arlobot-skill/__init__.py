@@ -27,7 +27,7 @@ from adapt.intent import IntentBuilder
 from mycroft.skills.core import MycroftSkill
 from mycroft.util.log import getLogger
 
-__author__ = 'chrisl8'
+__author__ = 'Christen Lofland'
 # Based on helloworld by eward
 
 LOGGER = getLogger(__name__)

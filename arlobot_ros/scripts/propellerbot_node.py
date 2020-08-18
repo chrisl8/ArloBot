@@ -3,7 +3,7 @@
 # pylint: disable=line-too-long
 # Software License Agreement (BSD License)
 #
-# Author: Chris L8 https://github.com/chrisl8
+# Author: Christen Lofland https://github.com/chrisl8
 # URL: https://github.com/chrisl8/ArloBot
 #
 # Derived from \opt\ros\hydro\lib\create_node\turtlebot_node.py

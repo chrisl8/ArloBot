@@ -11,7 +11,7 @@ DWA Local Planner has been **removed** in favor of [teb_local_planner](http://wi
  - It is able to back up, which makes routing much better.
  - It seems to work very well with near default tuning.
 
-I am currently in proces of converting over to [Noetic ROS](http://wiki.ros.org/noetic).  
+I am currently in process of converting over to [Noetic ROS](http://wiki.ros.org/noetic).  
  
  # TODO List:
 

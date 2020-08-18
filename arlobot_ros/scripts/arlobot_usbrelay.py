@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # Software License Agreement (BSD License)
 #
-# Author: Chris L8 https://github.com/chrisl8
+# Author: Christen Lofland https://github.com/chrisl8
 # URL: https://github.com/chrisl8/ArloBot
 
 import rospy

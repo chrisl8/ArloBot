@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """ camshift_node.py - Version 1.1 2013-12-20
-    Modified by ChrisL8 in 2016 to save the color and retrieve it on next run,
+    Modified by Christen Lofland in 2016 to save the color and retrieve it on next run,
     Otherwise this is the exact same code available at:
     https://github.com/pirobot/rbx1
 
