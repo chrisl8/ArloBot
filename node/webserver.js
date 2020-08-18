@@ -1,6 +1,5 @@
 const express = require('express');
 const _ = require('lodash');
-
 const spawn = require('child_process').spawn;
 const bodyParser = require('body-parser');
 const socketIo = require('socket.io');
@@ -18,17 +17,12 @@ const robotModel = require('./robotModel');
 const LaunchScript = require('./LaunchScript');
 const tts = require('./tts');
 const myCroft = require('./MyCroft');
-
 const WayPoints = require('./WayPoints.js');
 
 const wayPointEditor = new WayPoints();
-
 const rosInterface = require('./rosInterface');
-
 const masterRelay = require('./MasterRelay');
-
 const updateMapList = require('./updateMapList');
-
 const LCD = require('./LCD');
 
 LCD({ operation: 'color', red: 0, green: 0, blue: 255 });
@@ -71,15 +65,16 @@ const handleSemaphoreFiles = require('./handleSemaphoreFiles');
 const saveMap = function (newMapName) {
   // TODO: Positive feedback that map is saved.
   // TODO: If the map exists, maybe warn?
-  const mapDir = `${process.env.HOME}/.arlobot/rosmaps/`;
-  const serverMapProcess = new LaunchScript({
+  // Text from service when it is finished is:
+  // **Finished serializing Dataset**
+  const saveMapProcess = new LaunchScript({
     name: 'SaveMap',
     callback: updateMapList,
-    ROScommand: `rosrun map_server map_saver -f ${mapDir}${newMapName}`,
+    ROScommand: `${__dirname}/../scripts/save-map.sh ${newMapName}`,
     scriptArguments: newMapName,
   });
-  // console.log(serverMapProcess.ROScommand);
-  serverMapProcess.start();
+  // console.log(saveMapProcess.ROScommand);
+  saveMapProcess.start();
 };
 
 const startLogStreamer = function () {
@@ -146,12 +141,9 @@ const startColorFollower = function () {
   return colorFollowerProcess;
 };
 const stopColorFollower = function () {
-  // pkill -f "roslaunch arlobot_launchers object_follower.launch"
+  // pkill -f "roslaunch arlobot_ros object_follower.launch"
   const command = '/usr/bin/pkill';
-  const commandArgs = [
-    '-f',
-    'roslaunch arlobot_launchers object_follower.launch',
-  ];
+  const commandArgs = ['-f', 'roslaunch arlobot_ros object_follower.launch'];
   const process = spawn(command, commandArgs);
   return process;
 };
@@ -204,7 +196,9 @@ async function start() {
         if (webModel.wayPoints.indexOf(data) > -1) {
           webModelFunctions.updateWayPointNavigator('wayPointName', data);
           wayPointEditor.getWayPoint(data, (response) => {
-            robotModel.wayPointNavigator.destinaitonWaypoint = response;
+            console.log(data);
+            console.log(response);
+            robotModel.wayPointNavigator.destinationWaypoint = response;
             webModelFunctions.updateWayPointNavigator('goToWaypoint', true);
           });
         }
@@ -359,6 +353,9 @@ async function start() {
     });
     socket.on('toggleDebug', () => {
       webModelFunctions.toggle('debugging');
+    });
+    socket.on('toggleLogConsoleMessages', () => {
+      webModelFunctions.toggle('logConsoleMessages');
     });
     socket.on('toggleCamera', () => {
       camera.toggle();

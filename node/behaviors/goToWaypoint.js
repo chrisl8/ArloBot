@@ -41,10 +41,10 @@ async function goToWaypoint() {
         // so that it can be run again.
         robotModel.goToWaypointProcess.started = false;
         // 3. Send a status to the web site:
-        webModelFunctions.update(
-          'status',
-          `Arrived at ${webModel.wayPointNavigator.wayPointName}`,
-        );
+        if (robotModel.goToWaypointProcess.exitCode > 0) {
+          webModelFunctions.update('lastNavigationResult', 'Failure');
+        }
+        webModelFunctions.update('navigationInProgress', false);
         // 4. Log the closure to the console,
         // because this is significant.
         webModelFunctions.scrollingStatusUpdate(
@@ -59,7 +59,8 @@ async function goToWaypoint() {
         // let the next Behavior tick respond as it would,
         // if this function was never requested.
         return false;
-      } else if (!webModel.wayPointNavigator.goToWaypoint) {
+      }
+      if (!webModel.wayPointNavigator.goToWaypoint) {
         // KILL a node here if you want it to STOP!
         // Otherwise this is a non-event,
         // Either way the response should probably be RUNNING.
@@ -100,22 +101,42 @@ async function goToWaypoint() {
         console.log('Go to Waypoint: RUNNING');
         webModelFunctions.scrollingStatusUpdate('Go to Waypoint: RUNNING');
       }
+
+      if (robotModel.goToWaypointProcess.finalSuccess) {
+        robotModel.goToWaypointProcess.finalSuccess = false;
+        webModelFunctions.update('lastNavigationResult', 'Success');
+        webModelFunctions.update(
+          'status',
+          `Arrived at ${webModel.wayPointNavigator.wayPointName}`,
+        );
+      }
+
+      if (robotModel.goToWaypointProcess.finalFailure) {
+        robotModel.goToWaypointProcess.finalFailure = false;
+        webModelFunctions.update('lastNavigationResult', 'Failure');
+      }
+
       return false;
     }
     webModelFunctions.behaviorStatusUpdate('Go to Waypoint Starting up . . .');
     console.log('Go to Waypoint: RUNNING');
     return false;
-  } else if (webModel.wayPointNavigator.goToWaypoint) {
+  }
+  if (webModel.wayPointNavigator.goToWaypoint) {
     console.log('webModel.wayPointNavigator.goToWaypoint');
     // IF the process is supposed to start, but wasn't,
     // then run it:
+    webModelFunctions.update('lastNavigationResult', false);
     webModelFunctions.update(
       'status',
       `Going to waypoint ${webModel.wayPointNavigator.wayPointName}`,
     );
-    robotModel.goToWaypointProcess.ROScommand = `unbuffer rosservice call /arlobot_goto/go_to_goal "${
-      robotModel.wayPointNavigator.destinaitonWaypoint
-    }"`;
+    webModelFunctions.update('navigationInProgress', true);
+
+    robotModel.goToWaypointProcess.scriptArguments = [
+      robotModel.wayPointNavigator.destinationWaypoint,
+    ];
+
     robotModel.goToWaypointProcess.start();
     webModelFunctions.scrollingStatusUpdate('Go to Waypoint Process starting!');
     return false;
@@ -126,34 +147,3 @@ async function goToWaypoint() {
 }
 
 module.exports = goToWaypoint;
-
-/* RESULTS from GoToWaypoint logging:
- webModel.wayPointNavigator.goToWaypoint
- Running GoToWaypoint child process . . .
- GoToWaypoint is starting up . . .
- robotModel.goToWaypointProcess.started
- GoToWaypoint RUNNING
- robotModel.goToWaypointProcess.started
- GoToWaypoint RUNNING
- robotModel.goToWaypointProcess.started
- GoToWaypoint RUNNING
- robotModel.goToWaypointProcess.started
- GoToWaypoint RUNNING
- robotModel.goToWaypointProcess.started
- GoToWaypoint RUNNING
- robotModel.goToWaypointProcess.started
- GoToWaypoint RUNNING
- robotModel.goToWaypointProcess.started
- GoToWaypoint RUNNING
- robotModel.goToWaypointProcess.started
- GoToWaypoint RUNNING
- robotModel.goToWaypointProcess.started
- GoToWaypoint RUNNING
- robotModel.goToWaypointProcess.started
- GoToWaypoint RUNNING
- GoToWaypoint stdout data:result: True
- GoToWaypoint exited with code: 0
- robotModel.goToWaypointProcess.started
- robotModel.goToWaypointProcess.startupComplete
- robotModel.goToWaypointProcess.hasExited
- */

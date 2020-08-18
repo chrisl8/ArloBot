@@ -13,6 +13,7 @@ module.exports = {
   videoSource: 'xscreen.png',
   masterRelayOn: false,
   debugging: false,
+  logConsoleMessages: false, // Like debugging but ONLY for LaunchScript function
   cameraOn: false,
   ROSstart: false,
   ROSisRunning: false,
@@ -40,6 +41,7 @@ module.exports = {
   QRcode: '',
   hasSetupViaQRcode: false, // So we only do this once. ;)
   mapName: '',
+  mapLoaded: false,
   triedLightToFindQRcode: false,
   userLightOnRequested: false,
   robotIP: undefined,
@@ -198,4 +200,6 @@ module.exports = {
     goToWaypoint: false, // This is set true when we ask the robot to go somewhere
     mostRecentArrival: undefined, // Where we have most recently arrived at.
   },
+  navigationInProgress: false,
+  lastNavigationResult: false,
 };

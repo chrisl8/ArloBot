@@ -23,4 +23,4 @@ echo "Use kill_ros.sh to close."
 
 ARLOBOT_MODEL=$(jq '.arlobotModel' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
 export ARLOBOT_MODEL
-roslaunch arlobot_bringup minimal.launch --screen
+roslaunch arlobot_ros minimal.launch --screen

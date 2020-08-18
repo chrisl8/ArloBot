@@ -25,8 +25,8 @@ if (pkill -f robot.launch); then
     sleep 1
   done
 fi
-if (pkill -f "arlobot_bringup minimal.launch"); then
-  while (pgrep -f "arlobot_bringup minimal.launch"); do
+if (pkill -f "arlobot_ros minimal.launch"); then
+  while (pgrep -f "arlobot_ros minimal.launch"); do
     echo "Waiting for Arlobot to close . . ."
     sleep 1
   done

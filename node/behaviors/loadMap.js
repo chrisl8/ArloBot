@@ -38,6 +38,7 @@ async function loadMap() {
         // 1. DISABLE whatever user action causes it to be called,
         // so that it won't loop.
         webModelFunctions.update('mapName', '');
+        webModelFunctions.update('mapLoaded', false);
         // 2. Now that it won't loop, set .started to false,
         // so that it can be run again.
         robotModel.loadMapProcess.started = false;
@@ -72,7 +73,7 @@ async function loadMap() {
         // rostopic echo initialpose
         // Set inital pose and look at the output.
         // You might need to use an online YAML to JSON converter
-        // / to get the right format for the command line.
+        // to get the right format for the command line.
         if (webModel.wayPoints.indexOf('initial') > -1) {
           wayPointEditor.getWayPoint('initial', (response) => {
             const set2dPoseEstimate = new LaunchScript({
@@ -84,9 +85,8 @@ async function loadMap() {
           });
         }
         // Either the 2D pose estimate is set now,
-        // or if we do not have an "initial" pose, assume we started at map point 0
-        // TODO: This has an exit code, so can we set it to true when that happens?
-        // and keep returning "RUNNING" until it is set to true?!
+        // or if we do not have an "initial" pose Slam Toolbox assumes we started at map point 0,
+        // although it seems to localize itself rather well automatically.
         /* This is the output:
              set2dPoseEstimate is starting up . . .
              set2dPoseEstimate stdout data:publishing and latching message for 3.0 seconds
@@ -99,6 +99,7 @@ async function loadMap() {
       }
       if (robotModel.mapLoadTime === undefined) {
         webModelFunctions.update('status', 'Map load complete.');
+        webModelFunctions.update('mapLoaded', true);
         webModelFunctions.behaviorStatusUpdate('Map is Loaded.');
         robotModel.mapLoadTime = new Date(); // Time that map was loaded.
         LCD({ operation: 'color', red: 255, green: 255, blue: 0 });
@@ -126,10 +127,8 @@ async function loadMap() {
   // IF the process is supposed to start, but wasn't,
   // then run it:
   webModelFunctions.scrollingStatusUpdate(`Map: ${webModel.mapName}`);
-  // robotModel.loadMapProcess.scriptArguments = [webModel.mapName];
-  robotModel.loadMapProcess.ROScommand = `${robotModel.loadMapProcess
-    .ROScommand + process.env.HOME}/.arlobot/rosmaps/${webModel.mapName}.yaml`;
-  webModelFunctions.scrollingStatusUpdate(robotModel.loadMapProcess.ROScommand);
+  robotModel.loadMapProcess.scriptArguments = [webModel.mapName];
+  webModelFunctions.scrollingStatusUpdate(robotModel.loadMapProcess.scriptName);
   LCD({ operation: 'color', red: 255, green: 255, blue: 255 });
   LCD({ operation: 'clear' });
   LCD({

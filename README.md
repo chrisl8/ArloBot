@@ -155,7 +155,7 @@ Complete setup and usage instructions are at my blog:
 http://ekpyroticfrood.net/?p=162
 
 ## Edit your robot's Description ##
-`roscd arlobot_description/urdf`  
+`roscd arlobot_ros/urdf`  
 and then read the Readme.txt file there!
 
 ## WARNING: BY DEFAULT YOUR ROBOT WILL TRY TO MOVE EVEN WHEN IT IS PLUGGED IN!!!!
@@ -177,13 +177,13 @@ Depending on what you want to do there are different ways to "bring up" the robo
 
 ### Basic TeleOp with 3D sensor use ###
 ```
-roslaunch arlobot_bringup minimal.launch --screen
+roslaunch arlobot_ros minimal.launch --screen
 # In a new Terminal:
 roslaunch arlobot_teleop keyboard_teleop.launch
 # In a new Terminal:
 # Replace "kinect" with "asus_xtion_pro" or "astra", depending on what sensor you have
 export ARLOBOT_3D_SENSOR=kinect
-roslaunch arlobot_bringup 3dsensor.launch
+roslaunch arlobot_ros 3dsensor.launch
 # From a Terminal in the desktop (NOT over SSH):
 roslaunch arlobot_rviz_launchers view_robot.launch
 # Do this:
@@ -197,18 +197,18 @@ roslaunch arlobot_rviz_launchers view_robot.launch
 ### Remote Control with an xBox 360 joystick ###
 http://ekpyroticfrood.net/?p=115
 ```
-roslaunch arlobot_bringup minimal.launch --screen
+roslaunch arlobot_ros minimal.launch --screen
 # In a new Terminal:
 rosparam set /joystick/dev "/dev/input/js0"
 roslaunch turtlebot_teleop xbox360_teleop.launch --screen
 ```
 
-### Gmapping Demo (SLAM Map building) ###
-http://wiki.ros.org/turtlebot_navigation/Tutorials/Build%20a%20map%20with%20SLAM
+### Slam Toolbox (SLAM Map building) ###
+https://github.com/SteveMacenski/slam_toolbox
 ```
-roslaunch arlobot_bringup minimal.launch --screen
+roslaunch arlobot_ros minimal.launch --screen
 # In a new Terminal:
-roslaunch arlobot_navigation gmapping_demo.launch --screen
+roslaunch arlobot_navigation slam_toolbox.launch --screen
 # In a new Terminal:
 roslaunch arlobot_teleop keyboard_teleop.launch
 # From a Terminal in the desktop (NOT over SSH):
@@ -225,7 +225,7 @@ rosrun map_server map_saver -f ~/rosmaps/my_map1
 ### AMCL (Navigating the map we built above ###
 http://wiki.ros.org/turtlebot_navigation/Tutorials/Autonomously%20navigate%20in%20a%20known%20map
 ```
-roslaunch arlobot_bringup minimal.launch --screen
+roslaunch arlobot_ros minimal.launch --screen
 # In a new Terminal:
 roslaunch arlobot_navigation amcl_demo.launch map_file:=~/rosmaps/my_map1.yaml
 # From a Terminal in the desktop (NOT over SSH):
@@ -253,13 +253,13 @@ Start everything
 `unPlug.sh`
 ### Remote Control with an xBox 360 joystick ###
 This is built into the `start-robot.sh` script.
-### Gmapping Demo (SLAM Map building) ###
-`make-map-gmapping.sh`  
+### Slam Toolbox (SLAM Map building) ###
+`make-map.sh`  
 View with rviz:  
 `view-navigation.sh`  
 Save the map:  
 `save-map.sh`
-### AMCL (Navigating the map we built above ###
+### Slam Toolbox Localization Mode (Navigating the map we built above) ###
 List available maps:  
 `listMaps.sh`  
 Load the map:  
@@ -287,7 +287,7 @@ All the basic robot operations are available.
   - Add waypoints to a map
 - Use the Remote Control Panel to control the robot from the web site
   - This works well from a smartphone
-- Explore all of the other options. 
+- Explore all the other options. 
 
 The web site uses the same scripts from above, so you can modify them or the ROS files that they call to modify how ROS operates.
 

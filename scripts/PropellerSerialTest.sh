@@ -25,6 +25,13 @@ if (pgrep -f simpleide >/dev/null); then
   exit 1
 fi
 
+# TODO: Perhaps check that jq is installed and error if not.
+# TODO: Should this happen with the check_hardware.sh script or here?
+
+# TODO: Check for pip3 install pylibftdi already done too?
+# TODO: sudo apt install python3-ftdi1 # check
+
+
 # Check to make sure required hardware is present
 if ! ("${SCRIPTDIR}/check_hardware.sh"); then
   echo "ERROR: Hardware failed to come on line:"
@@ -33,4 +40,4 @@ fi
 
 USB_PORT=$("${SCRIPTDIR}/find_ActivityBoard.sh")
 
-python "${SCRIPTDIR}/../src/arlobot/arlobot_bringup/scripts/PropellerSerialTest.py" "${USB_PORT}"
+python "${SCRIPTDIR}/../arlobot_ros/scripts/PropellerSerialTest.py" "${USB_PORT}"

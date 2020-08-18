@@ -6,7 +6,6 @@ If you tweak for minor improvements, you are chasing shadows. The results vary a
 
 I suggest tuning these items:
 
-src/arlobot/arlobot_explore/param/dwa_local_planner_params.yaml
 src/arlobot_apps/arlobot_navigation/param/dwa_local_planner_params.yaml
 max_vel_trans (formerly max_trans_vel): 0.6
 max_vel_x: 0.6
@@ -19,7 +18,6 @@ Parameter max_rot_vel is deprecated (and will not load properly). Use max_vel_th
 Parameter min_rot_vel is deprecated (and will not load properly). Use min_vel_theta instead.
 Parameter rot_stopped_vel is deprecated (and will not load properly). Use theta_stopped_vel instead.
 
-src/arlobot/arlobot_explore/param/dwa_local_planner_params.yaml
 src/arlobot_apps/arlobot_navigation/param/dwa_local_planner_params.yaml
 acc_lim_x: 4.0
 This is a goofy setting. Set it too low, like to the real value, and the robot just cannot function. Set it too high and the robot overshoots goals. Too low and it halts short and has to start up again to get where it wants to go. So it deserves tweaking. Try numbers between 2.5 and 20 (yes, a broad range). It is difficult because a course correction or obstacle detection can interfere with a test.
@@ -29,7 +27,6 @@ HOWEVER, remember every run is different, so be careful trying to tweak this too
 What NOT to mess with:
 
 src/arlobot_apps/arlobot_navigation/param/move_base_params.yaml
-src/arlobot/arlobot_explore/param/move_base_params.yaml
 planner_frequency: 1.0
 This just tells the global planner how often to make new plan.
 You don't need it doing it constantly, it has a plan already.
@@ -37,7 +34,6 @@ It should make a new one when you start and when the robot gets stuck.
 The only reason we set it to 1.0 and not 0.0, is because at 0.0 it won't path around new obstacles (like your cat) until it is fully stuck. With 1.0 it will make a new plan every second, possibly planning around your cat before it gets stuck.
 
 src/arlobot_apps/arlobot_navigation/param/move_base_params.yaml
-src/arlobot/arlobot_explore/param/move_base_params.yaml
 controller_frequency: 20.0 # Default: 20.0
 Setting it lower seems to result in poor path following.
 Setting it higher seems to cause VERY poor behavior. Robot will spin and spin and spin
@@ -45,24 +41,9 @@ without making any progress, or make circles to get to a location!
 ALSO: Live reconfiguration of this appears to have NO affect. So you *THINK* you are tweaking it,
 but the results are a lie. It only sets this on startup.
 
-src/arlobot/arlobot_explore/param/dwa_local_planner_params.yaml
 src/arlobot_apps/arlobot_navigation/param/dwa_local_planner_params.yaml
 acc_lim_theta: 20.0
 Seems perfect here. Even though this has no relation to reality, it works.
-
-
-Unknown:
-These are settings that are only in the EXPLORE part, and I'm not sure if Hector
-uses them or what, but they were set based on my Acceleration testing,
-and may or may not even affect the robot under Indigo:
-
-src/arlobot/arlobot_explore/param/base_local_planner_params.yaml
-max_vel_x: 0.74
-min_vel_x: 0.06
-min_in_place_vel_theta: 0.3
-acc_lim_x: 0.7
-acc_lim_theta: 1.5
-
 
 Here are some good reference sites for ROS Tuning of Navigation:
 http://wiki.ros.org/navigation/Tutorials/Navigation%20Tuning%20Guide

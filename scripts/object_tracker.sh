@@ -7,7 +7,7 @@
 # and I suggest buying his book to learn how, although technically you could just get it from Github.
 if pgrep -f robot.launch >/dev/null; then
   if echo "$DISPLAY" | grep : >/dev/null; then
-    roslaunch arlobot_launchers object_tracker.launch
+    roslaunch arlobot_ros object_tracker.launch
   else
     echo "This must be run from XWindows."
     exit 1

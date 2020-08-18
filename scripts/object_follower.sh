@@ -22,7 +22,7 @@ if pgrep -f robot.launch >/dev/null; then
   source "${SCRIPTDIR}/rosEnvironmentSetup.sh"
 
   export DISPLAY=:0
-  unbuffer roslaunch arlobot_launchers object_follower.launch --screen
+  unbuffer roslaunch arlobot_ros object_follower.launch --screen
 else
   echo "Robot must be running to start this."
   exit 1

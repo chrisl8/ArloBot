@@ -29,4 +29,4 @@ export ARLOBOT_MODEL
 # which makes monitoring status impossible.
 # http://stackoverflow.com/a/11337310
 # http://linux.die.net/man/1/unbuffer
-unbuffer roslaunch arlobot_launchers robot.launch --screen
+unbuffer roslaunch arlobot_ros robot.launch --screen

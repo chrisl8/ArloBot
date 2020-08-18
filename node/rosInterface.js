@@ -103,7 +103,7 @@ function subscribeToActiveStatus() {
     const arlobotArloStatus = new ROSLIB.Topic({
       ros,
       name: '/arlo_status', // Obtain name by running 'rostopic list'
-      messageType: 'arlobot_msgs/arloStatus', // Obtain Type by running 'rostopic info <name>'
+      messageType: 'arlobot_ros/arloStatus', // Obtain Type by running 'rostopic info <name>'
     }); // Obtain message.??? by running 'rosmsg show <messageType>'
     arlobotArloStatus.subscribe((message) => {
       for (const key in message) {
@@ -189,7 +189,7 @@ function talkToROS() {
   unplug = new ROSLIB.Service({
     ros,
     name: '/arlobot_unplug', // rosservice list
-    serviceType: 'arlobot_msgs/UnPlug', // rosservice info <service>
+    serviceType: 'arlobot_ros/UnPlug', // rosservice info <service>
   });
 
   // Enumerate parameters to watch

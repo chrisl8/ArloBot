@@ -14,17 +14,15 @@ SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 # shellcheck source=/home/chrisl8/catkin_ws/src/ArloBot/scripts/rosEnvironmentSetup.sh
 source "${SCRIPTDIR}/rosEnvironmentSetup.sh"
 
-if pgrep -f robot.launch > /dev/null; then
+if pgrep -f robot.launch >/dev/null; then
   echo "When you are done, save your map!"
   echo "Please run './save-map.sh mapname' from another terminal when your map is done before closing this!"
-  if [[ $(jq '.hasXV11' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-    unbuffer roslaunch arlobot_navigation gmapping_demo_xv11DWAonly.launch
-  else
-    unbuffer roslaunch arlobot_navigation gmapping_demo.launch
-  fi
+  unbuffer roslaunch arlobot_navigation slam_toolbox.launch
 else
   echo "Robot must be running to start this."
+  exit 1
 fi
+
 # 'unbuffer' is required for running this from the node based 'behavior'
 # scripts. Otherwise stdout data is buffered until ROS exits,
 # which makes monitoring status impossible.

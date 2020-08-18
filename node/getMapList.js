@@ -1,9 +1,9 @@
 const fs = require('fs');
 
-module.exports = function(dir, callback) {
+module.exports = (dir, callback) => {
   // Also check out the path module for help with
   // sanitizing and normalizing paths!
-  const extension = 'yaml';
+  const extension = 'data';
   const fileList = [];
 
   fs.readdir(dir, (err, list) => {
@@ -11,16 +11,16 @@ module.exports = function(dir, callback) {
       callback(err);
     } else {
       // console.log(list);
-      for (const file in list) {
-        const splitFile = list[file].split('.');
+      list.forEach((file) => {
+        const splitFile = file.split('.');
         // This also lists files named the extension,
         // So we check that the filename HAS an extension first
         if (splitFile.length > 1) {
           if (splitFile[splitFile.length - 1] === extension) {
-            fileList.push(list[file]);
+            fileList.push(file);
           }
         }
-      }
+      });
       callback(null, fileList);
     }
   });

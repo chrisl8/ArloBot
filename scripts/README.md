@@ -8,8 +8,8 @@ Many of these scripts are also used by the web site and the ROS nodes themselves
 - kill_ros.sh - This will stop all ROS programs and reset everything.
 - start-arlobot-only.sh - This will start up just the ArloBot basic ROS package
 - start-robot.sh - This will start up Arlobot, web interface and behavior, basically everything.
-- make-map-gmapping.sh - Start GMapping to make a map with ROS.
-- save-map.sh - Use this to save a map you've made before shutting down GMapping.
+- make-map.sh - Start Slam Toolbox to make a map with ROS.
+- save-map.sh - Use this to save a map you've made before shutting down Slam Toolbox.
 - list-maps.sh - This will list the maps available in your maps folder.
 - load-map.sh - This will load up a map for your robot to start using.
 - view-navigation.sh - This will launch RVIZ with your robot, sensors and map all.
