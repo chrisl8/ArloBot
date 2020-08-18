@@ -79,12 +79,6 @@
   "speechProgram": "espeak",
   "web_folder": "~/catkin_ws/src/ArloBot/website/build",
   "webServerPort": 8080,
-  "webSiteSettings": {
-    "requirePassword": false,
-    "basicAuthPassword": "password",
-    "sessionSecret": "superSecret",
-    "tokenSecret": "superSecret"
-  },
   "launchBrowser": true,
   "useQRcodes": false,
   "qrCameraName": "C615",

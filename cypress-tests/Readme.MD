@@ -22,6 +22,7 @@ This results in a lot of duplicate test code, but also means each test is easily
 ## Usage
 I suggest just running the tests one at a time starting with `0-1-...` until you finish them all.
 
+### To start Cypress
 ```
 cd cypress-tests
 npx cypress open

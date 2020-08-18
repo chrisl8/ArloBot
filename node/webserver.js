@@ -1,10 +1,4 @@
 const express = require('express');
-const redis = require('redis');
-const session = require('express-session');
-const RedisStore = require('connect-redis')(session);
-// Because Express.js says not to use their session store for production.
-const jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
-const cookieParser = require('cookie-parser');
 const _ = require('lodash');
 
 const spawn = require('child_process').spawn;
@@ -53,31 +47,7 @@ LCD({
 
 updateMapList();
 
-const client = redis.createClient({
-  host: 'localhost',
-  // The default TTL is 24 hours
-  // Plus the cookies themselves will die when the browser is closed.
-  prefix: 'website-sessions:', // The ':' makes it a "folder" in redis
-});
-client.unref();
-client.on('error', console.error);
-
 const app = express();
-app.use(cookieParser());
-const hour = 3600000;
-/** @namespace personalData.webSiteSettings */
-// noinspection JSCheckFunctionSignatures
-/** @namespace personalData.webSiteSettings.sessionSecret */
-app.use(
-  session({
-    store: new RedisStore({ client }),
-    cookie: { maxAge: hour },
-    rolling: true,
-    secret: personalData.webSiteSettings.sessionSecret,
-    saveUninitialized: false, // True for built in, false for redis-connect
-    resave: false, // True for built in, false for redis-connect
-  }),
-);
 
 // For json encoded post requests, which I use:
 app.use(bodyParser.json());
@@ -92,91 +62,6 @@ app.use(
 //     console.log('get /');
 //     res.sendFile(path.join(__dirname + '/../website/index.html'));
 // });
-
-// Allow posting to root with a username and password for authentication.
-app.post('/', (req, res) => {
-  // TODO: I think this code is dead/not used, but I need to test to make sure before removing it.
-  // Allow for local plaintext password (in case we are offline) by creating and sending ourselves a token.
-  // This is kind of overkill, but I did it to test the system locally before building it remotely.
-  /** @namespace personalData.webSiteSettings.basicAuthPassword */
-  if (
-    req.body.name &&
-    req.body.password === personalData.webSiteSettings.basicAuthPassword
-  ) {
-    /* Token help:
-     https://stormpath.com/blog/nodejs-jwt-create-verify
-     https://scotch.io/tutorials/authenticate-a-node-js-api-with-json-web-tokens
-     */
-    /** @namespace personalData.webSiteSettings.tokenSecret */
-    const token = jwt.sign(
-      { name: req.body.name },
-      personalData.webSiteSettings.tokenSecret,
-      {
-        expiresIn: '24h',
-      },
-    );
-    console.log('Token:', token);
-    // Not setting a cookie actually.
-    // This would be used if I was using full token auth instead of only using the token as a means
-    // to pass authentication from a remote server to myself here.
-    // res.cookie('access_token', token);
-    // Create a page to post the token back to ourselves:
-    const postPage = `<!DOCTYPE html>
-            <html lang="en">
-            <head>
-            <meta charset="UTF-8">
-            <title>PostBack</title>
-        </head>
-        <body>
-        <form name="postToken" action="/" method="post">
-            <input type="hidden" name="token" value="${token}">
-        </form>
-        </body>
-        <script type="text/javascript">
-            window.onload = function() {
-                console.log('.');
-                document.forms["postToken"].submit();
-            }
-        </script>
-        </html>`;
-    res.set('Content-type', 'text/html');
-    res.send(new Buffer(postPage));
-  } else if (req.body.token) {
-    // Use a token sent to us by a remote site or ourselves:
-    console.log(req.body.token);
-    // Set a junk string for the tokenSecret if you want to test how it operates on failure.
-    jwt.verify(
-      req.body.token,
-      personalData.webSiteSettings.tokenSecret,
-      (err, decoded) => {
-        if (err) {
-          res.redirect('/basicLogin.html');
-        } else {
-          console.log(decoded);
-          console.log(`Creating new session for ${decoded.name}`);
-          req.session.authorized = true;
-          req.session.userName = decoded.name;
-          res.redirect('/');
-        }
-      },
-    );
-  }
-});
-
-// Require session for all pages unless personalData.webSiteSettings.requirePassword is OFF:
-app.use((req, res, next) => {
-  /** @namespace personalData.webSiteSettings.requirePassword */
-  if (
-    req.url === '/basicLogin.html' ||
-    !personalData.webSiteSettings.requirePassword
-  ) {
-    next();
-  } else if (req.session.userName && req.session.authorized === true) {
-    next();
-  } else {
-    res.redirect('/basicLogin.html');
-  }
-});
 
 // All web content is housed in the website folder
 app.use(express.static(`${__dirname}/../website/build`));

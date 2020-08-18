@@ -7,19 +7,12 @@
   "dependencies": {
     "body-parser": "1.19.0",
     "chokidar": "^3.4.1",
-    "connect-redis": "^5.0.0",
-    "cookie-parser": "1.4.5",
     "express": "4.17.1",
-    "express-session": "1.17.1",
     "glob": "7.1.6",
-    "jsonwebtoken": "8.5.1",
     "lodash": "^4.17.19",
     "mkdirp": "1.0.4",
-    "package-lock.json": "1.0.0",
-    "package.json": "2.0.1",
     "ps-tree": "1.2.0",
     "pushover-notifications": "1.2.2",
-    "redis": "3.0.2",
     "request": "2.88.2",
     "roslib": "1.1.0",
     "serialport": "^9.0.0",
@@ -41,7 +34,7 @@
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.20.3",
     "eslint-plugin-react-hooks": "^4.0.8",
-    "jasmine": "3.5.0",
+    "jasmine": "^3.6.1",
     "prettier": "2.0.5"
   },
   "scripts": {
