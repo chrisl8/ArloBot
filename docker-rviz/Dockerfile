@@ -1,17 +1,20 @@
-FROM ros:melodic
+FROM ros:noetic
 
 SHELL ["/bin/bash", "-c"]
 
+ENV DEBIAN_FRONTEND=noninteractive
 # ros desktop full for GUIs
 RUN apt-get update && apt-get install -y \
-        ros-melodic-desktop-full \
-        ros-melodic-tf2-tools \
+        ros-noetic-desktop-full \
+        ros-noetic-tf2-tools \
+        ros-noetic-slam-toolbox \
         git \
         xterm
+ENV DEBIAN_FRONTEND=newt
 
 RUN mkdir -p /catkin_ws/src
 WORKDIR /catkin_ws
-RUN source /opt/ros/melodic/setup.bash && catkin_make
+RUN source /opt/ros/noetic/setup.bash && catkin_make
 
 # clone Arlobot source required for rviz files
 WORKDIR /catkin_ws/src

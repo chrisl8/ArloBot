@@ -30,7 +30,7 @@ if ! (command -v xpra >/dev/null); then
 fi
 
 if ! [[ -d ~/catkin_ws/src/x11docker ]]; then
-  printf "${RED}[You must run workstation-melodic-via-x11docker.sh first to prepare your system for this tool]${NC}\n"
+  printf "${RED}[You must run workstation-via-x11docker.sh first to prepare your system for this tool]${NC}\n"
 else
   cd ~/catkin_ws/src/x11docker
   git pull

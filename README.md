@@ -133,7 +133,7 @@ If you use Ubuntu there should also be a desktop icon on the robot's desktop tha
 If you want to run RVIZ or other ROS tools from a remote Linux workstation, you do not have to install ROS on it. Instead try using [x11docker](https://github.com/mviereck/x11docker) via this setup script:
 
 ```
-bash <(wget -qO- --no-cache -o /dev/null https://raw.githubusercontent.com/chrisl8/ArloBot/melodic/workstation-melodic-via-x11docker.sh)
+bash <(wget -qO- --no-cache -o /dev/null https://raw.githubusercontent.com/chrisl8/ArloBot/melodic/workstation-via-x11docker.sh)
 ```  
 Then use these commands to run various remote functions via Docker:  
 `docker-view-navigation.sh`  
