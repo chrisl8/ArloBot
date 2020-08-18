@@ -20,11 +20,11 @@ class App extends Component {
 
   componentDidMount() {
     // For local testing on the robot:
-    // this.socket = openSocket(`http://${window.location.hostname}:8080`);
+    this.socket = openSocket(`http://${window.location.hostname}:8080`);
     // For testing running locally while connecting site to a remote robot:
     // this.socket = openSocket(`http://twoflower.local:8080`);
     // For production:
-    this.socket = openSocket();
+    // this.socket = openSocket();
 
     this.socket.on('startup', (data) => {
       this.setState({
@@ -93,10 +93,10 @@ class App extends Component {
             laptopFullyCharged={this.state.webModel.laptopFullyCharged}
             pluggedIn={this.state.webModel.pluggedIn}
             doorsOpen={this.state.webModel.doorsOpen}
-            explorePaused={this.state.webModel.rosParameters.explorePaused}
             mapName={this.state.webModel.mapName}
-            autoExplore={this.state.webModel.autoExplore}
+            mapLoaded={this.state.webModel.mapLoaded}
             debugging={this.state.webModel.debugging}
+            logConsoleMessages={this.state.webModel.logConsoleMessages}
             cameraOn={this.state.webModel.cameraOn}
             videoSource={this.state.webModel.videoSource}
             masterRelayOn={this.state.webModel.masterRelayOn}
@@ -122,10 +122,13 @@ class App extends Component {
               this.state.webModel.rosParameters.ignoreFloorSensors
             }
             ignoreProximity={this.state.webModel.rosParameters.ignoreProximity}
-            makeMapGmapping={this.state.webModel.makeMapGmapping}
+            makeMap={this.state.webModel.makeMap}
             makeMapRunning={this.state.webModel.makeMapRunning}
             mapList={this.state.webModel.mapList}
             wayPoints={this.state.webModel.wayPoints}
+            navigationInProgress={this.state.webModel.navigationInProgress}
+            lastNavigationResult={this.state.webModel.lastNavigationResult}
+            wayPointName={this.state.webModel.wayPointNavigator.wayPointName}
             unplugYourself={this.state.webModel.unplugYourself}
             scrollingStatus={this.state.webModel.scrollingStatus}
             logStreamerRunning={this.state.webModel.logStreamerRunning}

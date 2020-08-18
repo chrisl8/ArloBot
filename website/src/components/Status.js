@@ -34,13 +34,6 @@ const Status = (props) => {
     doorsOpenBadgeClass = 'badge badge-light';
   }
 
-  // let explorePausedClass = 'btn';
-  // let explorePausedBadgeClass = 'badge badge-secondary';
-  // if (props.explorePaused) {
-  //     explorePausedClass = 'btn btn-warning';
-  //     explorePausedBadgeClass = 'badge badge-light';
-  // }
-
   let mapClass = 'btn';
   let mapBadgeClass = 'badge badge-secondary';
   let mapBadgeText = 'None';
@@ -50,18 +43,18 @@ const Status = (props) => {
     mapBadgeText = props.mapName;
   }
 
-  // let autoExploreClass = 'btn';
-  // let autoExploreBadgeClass = 'badge badge-secondary';
-  // if (props.autoExplore) {
-  //     autoExploreClass = 'btn btn-warning';
-  //     autoExploreBadgeClass = 'badge badge-light';
-  // }
-
   let debuggingClass = 'btn';
   let debuggingBadgeClass = 'badge badge-secondary';
   if (props.debugging) {
     debuggingClass = 'btn btn-warning';
     debuggingBadgeClass = 'badge badge-light';
+  }
+
+  let logConsoleMessagesClass = 'btn';
+  let logConsoleMessagesBadgeClass = 'badge badge-secondary';
+  if (props.logConsoleMessages) {
+    logConsoleMessagesClass = 'btn btn-warning';
+    logConsoleMessagesBadgeClass = 'badge badge-light';
   }
 
   let cameraClass = 'btn';
@@ -141,10 +134,6 @@ const Status = (props) => {
               {boolToYesNo(props.doorsOpen)}
             </span>
           </button>
-          {/* <button type="button" className={explorePausedClass} */}
-          {/* onClick={() => props.openGroup('navigation')}>Explore Paused <span */}
-          {/* className={explorePausedBadgeClass}>{boolToYesNo(props.explorePaused)}</span> */}
-          {/* </button> */}
           <button
             id="mapStatusButton"
             type="button"
@@ -154,10 +143,6 @@ const Status = (props) => {
             Map&nbsp;
             <span className={mapBadgeClass}>{mapBadgeText}</span>
           </button>
-          {/* <button type="button" className={autoExploreClass} */}
-          {/* onClick={() => props.openGroup('navigation')}>Auto Exploring <span */}
-          {/* className={autoExploreBadgeClass}>{boolToYesNo(props.autoExplore)}</span> */}
-          {/* </button> */}
           <button
             id="debuggingStatusButton"
             type="button"
@@ -167,6 +152,17 @@ const Status = (props) => {
             Debugging&nbsp;
             <span className={debuggingBadgeClass}>
               {boolToYesNo(props.debugging)}
+            </span>
+          </button>
+          <button
+            id="logConsoleMessagesStatusButton"
+            type="button"
+            className={logConsoleMessagesClass}
+            onClick={() => props.sendDataToRobot('toggleLogConsoleMessages')}
+          >
+            Log Console&nbsp;
+            <span className={logConsoleMessagesBadgeClass}>
+              {boolToYesNo(props.logConsoleMessages)}
             </span>
           </button>
           <button

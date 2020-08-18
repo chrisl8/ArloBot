@@ -13,12 +13,16 @@ class Navigation extends Component {
     };
   }
 
+  // TODO: Feedback during/after waypoint set
+  // TODO: Feedback for setting Destinations, because sometimes they don't "set", and how do I now if it has arrived?
+
   componentDidMount() {
     this.props.handleUpdateNavigationElement(this.cardDiv);
   }
 
   setNewWaypointName = (event) => {
     this.props.sendDataToRobot('setWayPoint', this.state.newWaypointName);
+    this.setState({ newWaypointName: '' });
     event.preventDefault();
   };
 
@@ -42,30 +46,51 @@ class Navigation extends Component {
   render() {
     let cardTitleText = <span>Navigation</span>;
     if (this.props.makeMapRunning) {
-      if (this.props.makeMapGmapping) {
+      if (this.props.makeMap) {
         cardTitleText = (
           <span>
-            Navigation -{' '}
+            Navigation -&nbsp;
             <span style={{ fontWeight: 'bold' }}>
-              Making a Map with Gmapping
+              Making a Map with Slam Toolbox
             </span>
           </span>
         );
       }
-    } else if (this.props.makeMapGmapping) {
+    } else if (this.props.makeMap) {
       cardTitleText = (
         <span>
-          Navigation -{' '}
-          <span style={{ fontWeight: 'bold' }}>Loading Gmapping . . .</span>
+          Navigation -&nbsp;
+          <span style={{ fontWeight: 'bold' }}>
+            Please wait, Loading Slam Toolbox . . .
+          </span>
+        </span>
+      );
+    } else if (this.props.mapName !== '' && this.props.mapLoaded) {
+      cardTitleText = (
+        <span>
+          Navigation -&nbsp;
+          <span style={{ fontWeight: 'bold' }}>
+            <span style={{ color: '#337ab7' }}> {this.props.mapName} </span>
+            &nbsp;map loaded&nbsp;
+            {this.props.navigationInProgress && (
+              <span>
+                &nbsp;-&nbsp;Going to&nbsp;
+                <span style={{ color: '#337ab7' }}>
+                  {this.props.wayPointName}
+                </span>
+                &nbsp;...
+              </span>
+            )}
+          </span>
         </span>
       );
     } else if (this.props.mapName !== '') {
       cardTitleText = (
         <span>
-          Navigation -{' '}
+          Navigation -&nbsp;
           <span style={{ fontWeight: 'bold' }}>
-            Map Loaded:{' '}
-            <span style={{ color: '#337ab7' }}> {this.props.mapName} </span>
+            Please wait, Loading Map:&nbsp;
+            <span style={{ color: '#337ab7' }}> {this.props.mapName} </span>...
           </span>
         </span>
       );
@@ -73,20 +98,18 @@ class Navigation extends Component {
 
     const mapList = this.props.mapList.map((map) => {
       let listItem = '';
-      if (map !== 'Explore!') {
-        listItem = (
-          <li key={map}>
-            <button
-              id={`load-map-button-${map}`}
-              type="button"
-              className="btn btn-primary"
-              onClick={() => this.props.sendDataToRobot('setMap', map)}
-            >
-              {map}
-            </button>
-          </li>
-        );
-      }
+      listItem = (
+        <li key={map}>
+          <button
+            id={`load-map-button-${map}`}
+            type="button"
+            className="btn btn-primary"
+            onClick={() => this.props.sendDataToRobot('setMap', map)}
+          >
+            {map}
+          </button>
+        </li>
+      );
       return listItem;
     });
 
@@ -114,76 +137,124 @@ class Navigation extends Component {
           </CardHeader>
           <Collapse id="navigation-card-body" isOpen={this.props.isOpen}>
             <CardBody>
-              {this.props.mapName === '' && !this.props.makeMapGmapping && (
+              {this.props.mapName === '' && !this.props.makeMap && (
                 <div>
                   <button
                     id="make-map-button"
                     type="button"
                     className="btn btn-warning"
-                    onClick={() =>
-                      this.props.sendDataToRobot('makeMapGmapping')
-                    }
+                    onClick={() => this.props.sendDataToRobot('makeMap')}
                   >
-                    Make Map - Gmapping
+                    Make Map - Slam Toolbox
                   </button>
-                  &nbsp;or&nbsp;
-                  <button
-                    id="load-map-button"
-                    type="button"
-                    className="btn btn-warning"
-                    onClick={this.handleLoadMapButton}
-                  >
-                    Load Map
-                  </button>
+                  {!this.state.showMapPicker && (
+                    <>
+                      &nbsp;or&nbsp;
+                      <button
+                        id="load-map-button"
+                        type="button"
+                        className="btn btn-warning"
+                        onClick={this.handleLoadMapButton}
+                      >
+                        Load Map
+                      </button>
+                    </>
+                  )}
                 </div>
               )}
 
               {this.state.showMapPicker &&
                 this.props.mapName === '' &&
-                !this.props.makeMapGmapping &&
-                !this.props.makeMapRunning &&
-                !this.props.autoExplore && (
+                !this.props.makeMap &&
+                !this.props.makeMapRunning && (
                   <div>
                     <h3>Pick a map to load:</h3>
                     <ul>{mapList}</ul>
                   </div>
                 )}
 
-              {this.props.mapName !== '' && this.props.wayPoints.length > 0 && (
-                <div>
-                  <h3>Send Robot to a Destination:</h3>
-                  <ul>{waypointList}</ul>
-                </div>
+              {!this.props.pluggedIn &&
+                !this.props.navigationInProgress &&
+                Boolean(this.props.mapName) !== '' &&
+                Boolean(this.props.mapLoaded) &&
+                Boolean(this.props.wayPoints.length) > 0 && (
+                  <div>
+                    <h3>Send Robot to a Destination:</h3>
+                    <ul>{waypointList}</ul>
+                  </div>
+                )}
+
+              {this.props.pluggedIn &&
+                Boolean(this.props.mapName) !== '' &&
+                Boolean(this.props.mapLoaded) &&
+                Boolean(this.props.wayPoints.length) > 0 && (
+                  <div>
+                    <p>
+                      <strong>
+                        Waypoint navigation is disabled while robot is plugged
+                        in.
+                      </strong>
+                    </p>
+                  </div>
+                )}
+
+              {this.props.navigationInProgress && (
+                <p>
+                  <strong>
+                    Navigation to{' '}
+                    <span style={{ color: '#337ab7' }}>
+                      {this.props.wayPointName}
+                    </span>{' '}
+                    in progress...
+                  </strong>
+                </p>
               )}
 
-              {this.props.mapName !== '' && (
-                <div>
-                  <form
-                    id="saveNewWaypointForm"
-                    name="saveNewWaypointForm"
-                    style={{ lineHeight: '29px' }}
-                    onSubmit={this.setNewWaypointName}
-                  >
-                    <input
-                      type="text"
-                      id="saveNewWaypoint"
-                      placeholder="Enter name for current location . . ."
-                      value={this.state.newWaypointName}
-                      onChange={this.handleNewWaypointNameChange}
-                    />
-                    <input
-                      type="submit"
-                      value="Save Current Location"
-                      className="btn btn-primary"
-                    />
-                  </form>
-                  <p>
-                    If you create a destination waypoint called
-                    &quot;initial&quot; that location will be set as the current
-                    robot location whenever the map is loaded.
-                  </p>
-                </div>
+              {Boolean(this.props.lastNavigationResult) && (
+                <p>
+                  <strong>
+                    Last Destination:&nbsp;
+                    <span style={{ color: '#337ab7' }}>
+                      {this.props.wayPointName}
+                    </span>
+                    &nbsp; Last Navigation result:&nbsp;
+                    <span style={{ color: '#337ab7' }}>
+                      {this.props.lastNavigationResult}
+                    </span>
+                  </strong>
+                </p>
               )}
+
+              {Boolean(this.props.mapName) !== '' &&
+                Boolean(this.props.mapLoaded) &&
+                !this.props.navigationInProgress && (
+                  <div>
+                    <form
+                      id="saveNewWaypointForm"
+                      name="saveNewWaypointForm"
+                      style={{ lineHeight: '29px' }}
+                      onSubmit={this.setNewWaypointName}
+                    >
+                      <input
+                        type="text"
+                        id="saveNewWaypoint"
+                        placeholder="Enter name for current location . . ."
+                        value={this.state.newWaypointName}
+                        onChange={this.handleNewWaypointNameChange}
+                      />
+                      <input
+                        type="submit"
+                        value="Save Current Location"
+                        className="btn btn-primary"
+                      />
+                    </form>
+                    <p>
+                      If you create a destination waypoint called
+                      &quot;initial&quot; that location will be set as the
+                      current robot location whenever the map is loaded.
+                    </p>
+                  </div>
+                )}
 
               {!this.props.makeMapRunning && this.props.mapName === '' && (
                 <p>
@@ -236,8 +307,9 @@ class Navigation extends Component {
               )}
               <p>
                 The only way to load a map after making it, or to load a
-                different map, is to Stop ROS and Start ROS again. ROS has no
-                ability to switch from SLAM to AMCL nor to swap maps in AMCL.
+                different map, is to Stop ROS and Start ROS again. ROS cannot
+                switch from SLAM mode to Localization mode nor swap maps while
+                in Localization mode.
               </p>
             </CardBody>
           </Collapse>
@@ -248,19 +320,3 @@ class Navigation extends Component {
 }
 
 export default Navigation;
-
-/*
-            <div *ngIf="arlobotSvc.webModel.autoExplore && arlobotSvc.webModel.ROSisRunning">
-                <form id='saveMapForm' name='saveMapForm'>
-                    <label for="saveMap"></label>
-                    <input type="text" name="saveMap" id="saveMap" style="line-height: 29px;"
-                           placeholder="Enter new map name . . ."
-                           [(ngModel)]="newMapName"/>
-                    <button type="button"
-                            class="btn btn-primary" style="float: left;"
-                            (click)="sendDataToArlobot('saveMap', newMapName)">Save Map
-                    </button>
-                </form>
-            </div>
-
- */

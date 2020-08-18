@@ -51,7 +51,12 @@ class Relays extends Component {
           <CardTitle>Relays</CardTitle>
         </CardHeader>
         <Collapse id="relays-card-body" isOpen={this.state.isOpen}>
-          <CardBody>{cardBody}</CardBody>
+          <CardBody>
+            {!this.props.masterRelayOn && (
+              <p>Relays will not function while Master Relay is off.</p>
+            )}
+            {cardBody}
+          </CardBody>
         </Collapse>
       </Card>
     );

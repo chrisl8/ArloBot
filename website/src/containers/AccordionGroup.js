@@ -41,7 +41,7 @@ class AccordionGroup extends Component {
     if (this.startupElement) {
       // console.log(this.startupElement);
       // NOTE: you can't put these refs on just anything. I made a wrapping <div> for it,
-      // as I was getting weird "scrollInotView" is not a function and
+      // as I was getting weird "scrollIntoView" is not a function and
       // cannot attach ref to stateless functional components
       // errors otherwise.
       // I think you can also stick .parentNode on the end of the ref if you want to walk up the DOM
@@ -76,16 +76,15 @@ class AccordionGroup extends Component {
 
   render() {
     return (
-      <React.Fragment>
+      <>
         <Status
           laptopBatteryPercentage={this.props.laptopBatteryPercentage}
           laptopFullyCharged={this.props.laptopFullyCharged}
           pluggedIn={this.props.pluggedIn}
           doorsOpen={this.props.doorsOpen}
-          explorePaused={this.props.explorePaused}
           mapName={this.props.mapName}
-          autoExplore={this.props.autoExplore}
           debugging={this.props.debugging}
+          logConsoleMessages={this.props.logConsoleMessages}
           isOpen={this.state.statusIsOpen}
           toggle={this.toggle}
           openGroup={this.openGroup}
@@ -103,6 +102,7 @@ class AccordionGroup extends Component {
         )}
         <Relays
           relays={this.props.relays}
+          masterRelayOn={this.props.masterRelayOn}
           sendDataToRobot={this.props.sendDataToRobot}
         />
         <Behavior
@@ -145,12 +145,17 @@ class AccordionGroup extends Component {
           <Navigation
             isOpen={this.state.navigationIsOpen}
             toggle={this.toggle}
-            makeMapGmapping={this.props.makeMapGmapping}
+            makeMap={this.props.makeMap}
             makeMapRunning={this.props.makeMapRunning}
             mapName={this.props.mapName}
+            mapLoaded={this.props.mapLoaded}
             mapList={this.props.mapList}
             wayPoints={this.props.wayPoints}
             sendDataToRobot={this.props.sendDataToRobot}
+            pluggedIn={this.props.pluggedIn}
+            navigationInProgress={this.props.navigationInProgress}
+            lastNavigationResult={this.props.lastNavigationResult}
+            wayPointName={this.props.wayPointName}
             handleUpdateNavigationElement={this.handleUpdateNavigationElement}
           />
         )}
@@ -172,7 +177,7 @@ class AccordionGroup extends Component {
           robotURL={this.props.robotURL}
           sendDataToRobot={this.props.sendDataToRobot}
         />
-      </React.Fragment>
+      </>
     );
   }
 }
