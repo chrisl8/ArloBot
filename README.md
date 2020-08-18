@@ -3,33 +3,30 @@
 
 # Current Status and my TODO List
 
-I am currently working on conversion to [Slam Toolbox](https://github.com/SteveMacenski/slam_toolbox) for mapping and [teb_local_planner](http://wiki.ros.org/teb_local_planner) for path planning, and [Noetic ROS](http://wiki.ros.org/noetic).  
-I do not know at which point I will move to Noetic.
- - On the one hand it makes sense to leave the "working" Melodic branch as is and do the new work in Noetic.
- - On the other it makes sense to make major changes in a working Melodic setup and only move to Noetic once I know everything I want to do works in Melodic.
+Gmapping and AMCL have been **removed** in favor of [Slam Toolbox](https://github.com/SteveMacenski/slam_toolbox) for mapping.
+ - Gmapping is no longer maintained.  
+
+DWA Local Planner has been **removed** in favor of [teb_local_planner](http://wiki.ros.org/teb_local_planner) for path planning.  
+ - Teb Local Planner is much better behaved for me.
+ - It is able to back up, which makes routing much better.
+ - It seems to work very well with near default tuning.
+
+I am currently in proces of converting over to [Noetic ROS](http://wiki.ros.org/noetic).  
  
  # TODO List:
 
  - Fix this error coming from TEB due to something in my config:
    - [ WARN] [1597326961.776132466]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0513 seconds
- - Fully Implement Slam Toolbox and teb_local_planner
-   - Remove all references to Gmapping and AMCL.
-   - Remove all old path planner references.
-   - Make web interface work the same with Slam Toolbox
-     - Must be able to make and save a new map.
-     - Must be able to load that map and set my location
-     - Must be able to set and go to waypoints on the map.
- - Flatten out Package folders
-   - Move arlobot_teleop and arlobot_explore up one level to be in the main folder.
-   - Move arlobot_rviz_launchers up a lovel
-     - Basically no nested ROS nodes. There is no benefit to that.
- - Clean up arlobot_explore and find out what still does and does not work.
-   - Remove the Gmapping and AMCL mapping and path planning configuration and startup.
-   - Attempt to make every remaining function work with Slam Toolbox/teb_local planner or remove it.
- - Convert from SimpleIDE to PropeWare/PropGCC for building Propeller code.
+ - Possibly change PING auto response to be more "failsafe" so that they do not interfere with normal TEB path following in tight spaces.
+    - Still testing. This may not be necessary.
+    - Teb is very good at pathing, and staying in the middle of the rooms and doorways.
+    - It seems to behave very well with the PING's emergency stopping and slowing of the robot.
+ - Test remaining "goto" functions with Python 3 and Slam Toolbox
+ - Convert from SimpleIDE to PropWare/PropGCC for building Propeller code.
    - Build code as part of install for testing, especially on Travis CI
    - Create scripts for easy build/install.
  - Migrate to Noetic and Ubuntu 20.04
+ - Remove patches folder. None of them are in use anymore.
 
 ArloBot Package for ROS
 =======================
@@ -285,13 +282,13 @@ All the basic robot operations are available.
   - Make a new Map
   - Load an existing Map
   - Add waypoints to a map
-- Use the Remote Control Panel to control the robot from the web site
+- Use the Remote Control Panel to control the robot from the website
   - This works well from a smartphone
 - Explore all the other options. 
 
-The web site uses the same scripts from above, so you can modify them or the ROS files that they call to modify how ROS operates.
+The website uses the same scripts from above, so you can modify them or the ROS files that they call to modify how ROS operates.
 
-Note that xBox 360 Controller operation is always live when ROS is running from the web site.
+Note that xBox 360 Controller operation is always live when ROS is running from the website.
 
 ## Convenience Scripts ##
 Look in the scripts folder for a set of handy scripts for starting up and shutting down various aspects of Arlobot.
