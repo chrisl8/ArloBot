@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<robot name="arlobot" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- A common file to tie together all of the bits and bobs of the entire robot
+  Modeled after turtlebot_description 
+  NOTE: All Gazebo references are gone, so simulation will have to be rebuilt if you want it -->
+
+  <!-- From $(find turtlebot_description)/urdf/common_properties.urdf.xacro -->
+  <!-- It is required by asus_xtion_pro.urdf.xacro -->
+  <xacro:property name="M_PI" value="3.1415926535897931"/>
+
+  <!-- This is where the 3D camera location is set. -->
+  <xacro:include filename="$(find arlobot_ros)/urdf/3d_camera_position_chrisl8.urdf.xacro"/>
+
+  <!-- ArloBot -->
+  <xacro:include filename="$(find arlobot_ros)/urdf/arlo_2stack.urdf.xacro"/>
+
+  <!-- 3D Sensor -->
+  <xacro:include filename="$(find arlobot_ros)/urdf/asus_xtion_pro_chrisl8.urdf.xacro"/>
+
+  <xacro:arlobot/>
+  <xacro:stack_circles parent="base_link"/>
+  <xacro:sensor_asus_xtion_pro parent="base_link"/>
+</robot>

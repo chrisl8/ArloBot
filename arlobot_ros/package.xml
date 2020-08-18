@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>arlobot_ros</name>
+  <version>0.1.0</version>
+  <description>
+    arlobot_ros provides all ROS functionality for ArloBot.
+  </description>
+  <maintainer email="christenlofland@gmail.com">Christen Lofland</maintainer>
+  <license>BSD</license>
+  <url type="website">https://github.com/chrisl8/ArloBot</url>
+  <author email="christenlofland@gmail.com">Christen Lofland</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>roscpp</depend>
+  <depend>rospy</depend>
+  <depend>move_base_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>message_generation</depend>
+  <depend>zeroconf_avahi</depend>
+  <depend>twist_mux</depend>
+  <depend>arlobot_safety</depend>
+  <depend>robot_state_publisher</depend>
+  <depend>diagnostic_aggregator</depend>
+  <depend>openni_launch</depend>
+  <depend>rocon_app_manager</depend>
+  <depend>depthimage_to_laserscan</depend>
+  <depend>urdf</depend>
+  <depend>xacro</depend>
+  <depend>actionlib</depend>
+</package>

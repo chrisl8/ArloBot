@@ -1,0 +1,29 @@
+<!--  If you want to JUST launch this run this line to find and set the port and run: -->
+<!--  RPLIDAR_USB_PORT=$(find_RPLIDAR.sh) roslaunch arlobot_ros rplidar.launch -->
+
+<!-- If you want to also view this in RViz, you must have a transform. -->
+<!-- rosrun tf static_transform_publisher 0.0 0.0 0.0 0.0 0.0 0.0 map rplidar 1000 -->
+<!-- Then you can start up rviz and see the scan data -->
+
+<!-- If you want to play with the offset/rotation/etc. modify the parameters to match your URDF file like so:-->
+<!-- rosrun tf static_transform_publisher 0.125 0.0 0.269107 3.1 0.0 0.0 map rplidar 1000 -->
+<!-- Note that the 3.1 (approximately PI) lines it up "backwards" with the cord toward the back of the robot)-->
+<launch>
+  <!--  The default USB port MIGHT work, but you really do typically need to inject the port
+   possibly using some script finds it. -->
+  <!--  My find_RPLIDAR.sh script will do the trick. -->
+  <!--  See comment at top for how to use it to run this launch file standalone. -->
+  <arg name="usb_port" value="$(optenv RPLIDAR_USB_PORT /dev/ttyUSB1)"/>
+  <!--  A3 Works at 256000, others at half this speed.-->
+  <arg name="baudrate" value="$(optenv RPLIDAR_BAUDRATE 256000)"/>
+  <node name="rplidarNode" pkg="rplidar_ros" type="rplidarNode" output="screen">
+    <param name="serial_port" type="string" value="$(arg usb_port)"/>
+    <param name="serial_baudrate" type="int" value="$(arg baudrate)"/>
+    <param name="frame_id" type="string" value="rplidar"/>
+    <param name="inverted" type="bool" value="false"/>
+    <!--    Angle compensation should make this work well with mapping tools https://github.com/allenh1/rplidar_ros/pull/12-->
+    <!--    "With angle compensation enabled you should be able to get consistent laser scan sizes that are evenly distributed which will make slam packages happy."-->
+    <param name="angle_compensate" type="bool" value="true"/>
+    <param name="scan_mode" type="string" value="Sensitivity"/>
+  </node>
+</launch>

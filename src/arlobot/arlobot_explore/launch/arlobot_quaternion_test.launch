@@ -1,3 +1,0 @@
-<launch>
-  <node pkg="arlobot_explore" type="arlobot_quaternion_test.py" name="arlobot_quaternion_test" respawn="false" />
-</launch>

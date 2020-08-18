@@ -1,0 +1,31 @@
+<launch>
+  <node pkg="arlobot_ros" type="propellerbot_node.py" name="arlobot" respawn="true"
+        args="--respawnable">
+    <param name="bonus" value="false"/>
+    <param name="update_rate" value="30.0"/>
+    <remap from="arlobot/sensor_state" to="mobile_base/sensors/core"/>
+    <remap from="imu/data" to="mobile_base/sensors/imu_data"/>
+    <remap from="imu/raw" to="mobile_base/sensors/imu_data_raw"/>
+    <rosparam file="$(env HOME)/.arlobot/arlobot.yaml" command="load"/>
+  </node>
+
+  <!-- This is an example of merging ODM with IMU data using robot_pose_ekf -->
+  <!-- My robot does not have an IMU, hence this has never been used or tested. -->
+  <!-- The odometry estimator -->
+  <!--  <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">-->
+  <!--    <remap from="imu_data" to="mobile_base/sensors/imu_data"/>-->
+  <!--    <remap from="robot_pose_ekf/odom" to="odom_combined"/>-->
+  <!--    <param name="freq" value="10.0"/>-->
+  <!--    <param name="sensor_timeout" value="1.0"/>-->
+  <!--    <param name="publish_tf" value="true"/>-->
+  <!--    <param name="odom_used" value="true"/>-->
+  <!--    <param name="imu_used" value="false"/>-->
+  <!--    <param name="vo_used" value="false"/>-->
+  <!--    <param name="output_frame" value="odom"/>-->
+  <!--  </node>-->
+
+  <!-- Remember to broadcast base_link to odom Transform from propellerbot_node when robot_pose_ekf is not used -->
+
+  <!-- velocity commands multiplexer -->
+  <include file="$(find arlobot_ros)/launch/includes/twist_mux.launch"/>
+</launch>

@@ -1,3 +1,0 @@
-<launch>
-  <node pkg="arlobot_explore" type="arlobot_movement_test.py" name="arlobot_movement_test" respawn="false" />
-</launch>

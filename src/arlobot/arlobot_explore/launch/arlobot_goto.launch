@@ -1,3 +1,0 @@
-<launch>
-  <node pkg="arlobot_explore" type="arlobot_goto.py" name="arlobot_goto" respawn="false" />
-</launch>

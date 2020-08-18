@@ -1,5 +1,0 @@
-<launch>
-  <node pkg="arlobot_explore" type="arlobot_explore.py" name="arlobot_explore" respawn="false">
-    <param name="pause" value="false" />
-  </node>
-</launch>
