@@ -13,14 +13,19 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <depend>roscpp</depend>
+  <depend>tf2_ros</depend>
   <depend>rospy</depend>
+  <depend>move_base</depend>
+  <depend>map_server</depend>
+  <depend>slam_toolbox</depend>
   <depend>move_base_msgs</depend>
   <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
   <depend>geometry_msgs</depend>
+  <depend>message_runtime</depend>
   <depend>message_generation</depend>
   <depend>zeroconf_avahi</depend>
   <depend>twist_mux</depend>
-  <depend>arlobot_safety</depend>
   <depend>robot_state_publisher</depend>
   <depend>diagnostic_aggregator</depend>
   <depend>openni_launch</depend>
@@ -29,4 +34,9 @@
   <depend>urdf</depend>
   <depend>xacro</depend>
   <depend>actionlib</depend>
+  <depend>teb_local_planner</depend>
+  <depend>joint_state_publisher</depend>
+  <depend>rviz</depend>
+  <depend>joy</depend>
+  <depend>cv_bridge</depend>
 </package>

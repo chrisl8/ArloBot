@@ -5,5 +5,5 @@
 
   <!-- Launch rviz with our favorite config file -->
   <node name="rviz" pkg="rviz" type="rviz"
-        args="-d $(find arlobot_rviz_launchers)/rviz/model.rviz"/>
+        args="-d $(find arlobot_ros)/rviz/model.rviz"/>
 </launch>

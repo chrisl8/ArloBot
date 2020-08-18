@@ -1,0 +1,34 @@
+<launch>
+  <!--  Based on /opt/ros/noetic/share/slam_toolbox/online_async.launch -->
+
+  <!--  async vs. sync advice: -->
+  <!--  https://github.com/SteveMacenski/slam_toolbox/pull/226#issuecomment-666630778 -->
+  <!--  If a backlog causes you problems, then you're not using the right mode. Use async mode to remain realtime at the loss of some information potentially. Sync mode is only suited to users that know what they're doing or offline processing for map quality. -->
+
+  <arg name="map_file_name" default="$(optenv MAP_FILE_NAME)"/>
+
+  <!--  If no map name is set in the MAP_FILE_NAME OS environment variable, make a new map -->
+  <group if="$(eval arg('map_file_name') =='')">
+    <node pkg="slam_toolbox" type="async_slam_toolbox_node" name="slam_toolbox" output="screen">
+      <rosparam command="load"
+                file="$(find arlobot_ros)/param/mapper_params_online_async.yaml"/>
+    </node>
+  </group>
+
+  <!--  If a map name IS set in the MAP_FILE_NAME OS Environment variable, -->
+  <!--       Load it, and start in Localization mode. -->
+  <!--  Run it like this: (Notice full path but no extension) -->
+  <!--  MAP_FILE_NAME="/home/chrisl8/.arlobot/rosmaps/office-t1" roslaunch arlobot_ros slam_toolbox.launch -->
+  <group unless="$(eval arg('map_file_name') =='')">
+    <node pkg="slam_toolbox" type="localization_slam_toolbox_node" name="slam_toolbox"
+          output="screen">
+      <rosparam command="load"
+                file="$(find arlobot_ros)/param/mapper_params_localization.yaml"/>
+      <param name="map_file_name" value="$(arg map_file_name)"/>
+    </node>
+  </group>
+
+
+  <include file="$(find arlobot_ros)/launch/includes/move_base.launch.xml"/>
+
+</launch>

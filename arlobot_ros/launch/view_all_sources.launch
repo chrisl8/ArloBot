@@ -1,0 +1,7 @@
+<!--
+  Used for visualising all sources of input when testing setup.
+ -->
+<launch>
+  <node name="rviz" pkg="rviz" type="rviz"
+        args="-d $(find arlobot_ros)/rviz/allSources.rviz"/>
+</launch>

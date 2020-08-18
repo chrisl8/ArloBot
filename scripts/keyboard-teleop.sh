@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-roslaunch arlobot_teleop keyboard_teleop.launch
+roslaunch arlobot_ros keyboard_teleop.launch

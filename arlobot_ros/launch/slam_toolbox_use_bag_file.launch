@@ -1,7 +1,7 @@
 <launch>
 
   <node pkg="slam_toolbox" type="async_slam_toolbox_node" name="slam_toolbox" output="screen">
-    <rosparam command="load" file="$(find arlobot_navigation)/config/mapper_params_online_sync.yaml" />
+    <rosparam command="load" file="$(find arlobot_ros)/config/mapper_params_online_sync.yaml" />
   </node>
 
 </launch>

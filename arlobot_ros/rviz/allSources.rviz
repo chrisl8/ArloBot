@@ -11,8 +11,8 @@ Panels:
         - /Global Map1/Planner1
         - /Local Map1/Costmap1
         - /Local Map1/Planner1
-      Splitter Ratio: 0.6654279828071594
-    Tree Height: 796
+      Splitter Ratio: 0.7235293984413147
+    Tree Height: 731
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -30,7 +30,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: UltraSonic
+    SyncSource: Scanse Sweep
 Preferences:
   PromptSaveOnExit: false
 Toolbars:
@@ -122,17 +122,22 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        mount_asus_xtion_pro_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        neato_laser:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         ping_sensor_array:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
         plate_0_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        plate_1_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -173,26 +178,6 @@ Visualization Manager:
           Show Trail: false
           Value: true
         standoff_5in_3_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        standoff_5in_4_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        standoff_5in_5_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        standoff_5in_6_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        standoff_5in_7_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -232,15 +217,15 @@ Visualization Manager:
           Value: false
         left_wheel_link:
           Value: false
-        map:
-          Value: false
+        mount_asus_xtion_pro_link:
+          Value: true
+        neato_laser:
+          Value: true
         odom:
           Value: false
         ping_sensor_array:
           Value: false
         plate_0_link:
-          Value: false
-        plate_1_link:
           Value: false
         rear_caster:
           Value: false
@@ -258,68 +243,55 @@ Visualization Manager:
           Value: false
         standoff_5in_3_link:
           Value: false
-        standoff_5in_4_link:
-          Value: false
-        standoff_5in_5_link:
-          Value: false
-        standoff_5in_6_link:
-          Value: false
-        standoff_5in_7_link:
-          Value: false
+      Marker Alpha: 1
       Marker Scale: 2
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: false
       Tree:
-        map:
-          odom:
-            base_footprint:
-              base_link:
-                battery_box:
-                  left_axle_link:
-                    left_wheel_link:
-                      {}
-                  right_axle_link:
-                    right_wheel_link:
-                      {}
-                camera_rgb_frame:
-                  camera_depth_frame:
-                    camera_depth_optical_frame:
-                      {}
-                  camera_link:
+        odom:
+          base_footprint:
+            base_link:
+              battery_box:
+                left_axle_link:
+                  left_wheel_link:
                     {}
-                  camera_rgb_optical_frame:
+                right_axle_link:
+                  right_wheel_link:
                     {}
-                front_caster:
-                  {}
-                ir_sensor_array:
-                  {}
-                ping_sensor_array:
-                  {}
-                plate_0_link:
-                  plate_1_link:
+              camera_rgb_frame:
+                camera_depth_frame:
+                  camera_depth_optical_frame:
                     {}
-                  standoff_5in_4_link:
-                    {}
-                  standoff_5in_5_link:
-                    {}
-                  standoff_5in_6_link:
-                    {}
-                  standoff_5in_7_link:
-                    {}
-                rear_caster:
+                camera_link:
                   {}
-                scanse_sweep:
+                camera_rgb_optical_frame:
                   {}
-                standoff_5in_0_link:
-                  {}
-                standoff_5in_1_link:
-                  {}
-                standoff_5in_2_link:
-                  {}
-                standoff_5in_3_link:
-                  {}
+              front_caster:
+                {}
+              ir_sensor_array:
+                {}
+              mount_asus_xtion_pro_link:
+                {}
+              neato_laser:
+                {}
+              ping_sensor_array:
+                {}
+              plate_0_link:
+                {}
+              rear_caster:
+                {}
+              scanse_sweep:
+                {}
+              standoff_5in_0_link:
+                {}
+              standoff_5in_1_link:
+                {}
+              standoff_5in_2_link:
+                {}
+              standoff_5in_3_link:
+                {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -334,7 +306,7 @@ Visualization Manager:
       Color: 255; 255; 255
       Color Transformer: Intensity
       Decay Time: 0
-      Enabled: true
+      Enabled: false
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Max Intensity: 4096
@@ -351,7 +323,7 @@ Visualization Manager:
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
-      Value: true
+      Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -364,7 +336,7 @@ Visualization Manager:
       Color: 0; 255; 0
       Color Transformer: FlatColor
       Decay Time: 0
-      Enabled: false
+      Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Max Intensity: 4096
@@ -394,7 +366,7 @@ Visualization Manager:
       Color: 255; 255; 255
       Color Transformer: Intensity
       Decay Time: 0
-      Enabled: false
+      Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Max Intensity: 0.34202098846435547
@@ -411,7 +383,7 @@ Visualization Manager:
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
-      Value: false
+      Value: true
     - Alpha: 0.699999988079071
       Class: rviz/Map
       Color Scheme: map
@@ -451,6 +423,7 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: None
+          Queue Size: 10
           Radius: 0.029999999329447746
           Shaft Diameter: 0.10000000149011612
           Shaft Length: 0.10000000149011612
@@ -488,6 +461,7 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: None
+          Queue Size: 10
           Radius: 0.029999999329447746
           Shaft Diameter: 0.10000000149011612
           Shaft Length: 0.10000000149011612
@@ -506,6 +480,7 @@ Visualization Manager:
       Head Length: 0.07000000029802322
       Head Radius: 0.029999999329447746
       Name: Amcl Particles
+      Queue Size: 10
       Shaft Length: 0.23000000417232513
       Shaft Radius: 0.009999999776482582
       Shape: Arrow (Flat)
@@ -589,6 +564,7 @@ Visualization Manager:
         Z: 0
       Pose Color: 255; 85; 255
       Pose Style: None
+      Queue Size: 10
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
@@ -612,6 +588,7 @@ Visualization Manager:
         Z: 0
       Pose Color: 255; 85; 255
       Pose Style: None
+      Queue Size: 10
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
@@ -635,6 +612,7 @@ Visualization Manager:
         Z: 0
       Pose Color: 255; 147; 24
       Pose Style: None
+      Queue Size: 10
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
@@ -650,17 +628,48 @@ Visualization Manager:
       Head Length: 0.30000001192092896
       Head Radius: 0.10000000149011612
       Name: Goal
+      Queue Size: 10
       Shaft Length: 1
       Shaft Radius: 0.10000000149011612
       Shape: Arrow
       Topic: /move_base/current_goal
       Unreliable: false
       Value: true
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 0.4106791317462921
+        Min Value: 0.3922385275363922
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/LaserScan
+      Color: 255; 255; 255
+      Color Transformer: AxisColor
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 4096
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: Kinect
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.009999999776482582
+      Style: Flat Squares
+      Topic: /kinect
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: map
+    Fixed Frame: odom
     Frame Rate: 30
   Name: root
   Tools:
@@ -669,7 +678,10 @@ Visualization Manager:
       Hide Inactive Objects: true
     - Class: rviz/Select
     - Class: rviz/SetInitialPose
+      Theta std deviation: 0.2617993950843811
       Topic: /initialpose
+      X std deviation: 0.5
+      Y std deviation: 0.5
     - Class: rviz/SetGoal
       Topic: /move_base_simple/goal
     - Class: rviz/Measure
@@ -686,19 +698,18 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 143.47486877441406
+      Scale: 157.949462890625
       Target Frame: <Fixed Frame>
-      Value: TopDownOrtho (rviz)
       X: 0.5060149431228638
       Y: -0.11350982636213303
     Saved: ~
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 1025
+  Height: 960
   Hide Left Dock: false
   Hide Right Dock: true
-  QMainWindow State: 000000ff00000000fd000000040000000000000275000003a7fc0200000005fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003d000003a7000000c900ffffff000000010000010f000002c2fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a005600690065007700730000000028000002c2000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004a00000003efc0100000002fb0000000800540069006d00650000000000000004a0000002eb00fffffffb0000000800540069006d0065010000000000000450000000000000000000000505000003a700000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000004000000000000015600000366fc0200000005fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003d00000366000000c900ffffff000000010000010f000002c2fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a005600690065007700730000000028000002c2000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004a00000003efc0100000002fb0000000800540069006d00650000000000000004a0000002eb00fffffffb0000000800540069006d006501000000000000045000000000000000000000035c0000036600000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -707,6 +718,6 @@ Window Geometry:
     collapsed: false
   Views:
     collapsed: true
-  Width: 1920
-  X: 0
+  Width: 1208
+  X: 72
   Y: 27

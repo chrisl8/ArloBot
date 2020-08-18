@@ -17,7 +17,7 @@ source "${SCRIPTDIR}/rosEnvironmentSetup.sh"
 if pgrep -f robot.launch >/dev/null; then
   echo "When you are done, save your map!"
   echo "Please run './save-map.sh mapname' from another terminal when your map is done before closing this!"
-  unbuffer roslaunch arlobot_navigation slam_toolbox.launch
+  unbuffer roslaunch arlobot_ros slam_toolbox.launch
 else
   echo "Robot must be running to start this."
   exit 1

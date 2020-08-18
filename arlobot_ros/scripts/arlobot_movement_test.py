@@ -36,7 +36,7 @@ class ArlobotExplore(object):
 #TODO: Test for robot movement before sending it places! It could get really goofy to send to -90 from it's position ten seconds ago!
 
     def __init__(self):
-        rospy.init_node('arlobot_ros')
+        rospy.init_node('arlobot_movement_test')
         # http://wiki.ros.org/rospy_tutorials/Tutorials/WritingPublisherSubscriber
         #self.r = rospy.Rate(1) # 1hz refresh rate
         

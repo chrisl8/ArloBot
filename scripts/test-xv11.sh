@@ -19,5 +19,5 @@ while ! (rosparam list &>/dev/null); do
   sleep 1
 done
 rosrun xv_11_laser_driver neato_laser_publisher _port:="$("${SCRIPTDIR}/find_XVLidar.sh")" _firmware_version:=2 &
-roslaunch arlobot_rviz_launchers view_xv11.launch --screen
+roslaunch arlobot_ros view_xv11.launch --screen
 "${SCRIPTDIR}/kill_ros.sh"

@@ -4,5 +4,5 @@
   It requires minimal.launch and optionally 3dsensor.launch to already be up and running.
  -->
 <launch>
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find arlobot_rviz_launchers)/rviz/robot.rviz" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find arlobot_ros)/rviz/robot.rviz" />
 </launch>

@@ -179,13 +179,13 @@ Depending on what you want to do there are different ways to "bring up" the robo
 ```
 roslaunch arlobot_ros minimal.launch --screen
 # In a new Terminal:
-roslaunch arlobot_teleop keyboard_teleop.launch
+roslaunch arlobot_ros keyboard_teleop.launch
 # In a new Terminal:
 # Replace "kinect" with "asus_xtion_pro" or "astra", depending on what sensor you have
 export ARLOBOT_3D_SENSOR=kinect
 roslaunch arlobot_ros 3dsensor.launch
 # From a Terminal in the desktop (NOT over SSH):
-roslaunch arlobot_rviz_launchers view_robot.launch
+roslaunch arlobot_ros view_robot.launch
 # Do this:
   Set your Global Options->Fixed Frame to "odom
     Drive and see if the robot appears to move properly on the grid.
@@ -208,11 +208,11 @@ https://github.com/SteveMacenski/slam_toolbox
 ```
 roslaunch arlobot_ros minimal.launch --screen
 # In a new Terminal:
-roslaunch arlobot_navigation slam_toolbox.launch --screen
+roslaunch arlobot_ros slam_toolbox.launch --screen
 # In a new Terminal:
-roslaunch arlobot_teleop keyboard_teleop.launch
+roslaunch arlobot_ros keyboard_teleop.launch
 # From a Terminal in the desktop (NOT over SSH):
-roslaunch arlobot_rviz_launchers view_navigation.launch
+roslaunch arlobot_ros view_navigation.launch
 # When you are done, save your map!
 rosrun map_server map_saver -f ~/rosmaps/my_map1
 # Do this:
@@ -227,9 +227,9 @@ http://wiki.ros.org/turtlebot_navigation/Tutorials/Autonomously%20navigate%20in%
 ```
 roslaunch arlobot_ros minimal.launch --screen
 # In a new Terminal:
-roslaunch arlobot_navigation amcl_demo.launch map_file:=~/rosmaps/my_map1.yaml
+roslaunch arlobot_ros amcl_demo.launch map_file:=~/rosmaps/my_map1.yaml
 # From a Terminal in the desktop (NOT over SSH):
-roslaunch arlobot_rviz_launchers view_navigation.launch --screen
+roslaunch arlobot_ros view_navigation.launch --screen
 ```
 
 Please report an issue for any problems or if you need me to clarify anything!  

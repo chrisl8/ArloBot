@@ -4,7 +4,7 @@
   We use openni_camera here, turn everything on by default
   (allows the user to conveniently see everything when
   launching this on its own - use with 
-  arlobot_rviz_launchers/view_robot.launch to visualise)
+  arlobot_ros/view_robot.launch to visualise)
   and provide args to disable them so you can optimise the
   horsepower for your application.
   

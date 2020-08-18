@@ -12,4 +12,4 @@ if (command -v jq >/dev/null) && [[ $(jq '.cloudServer.exists' "${HOME}/.arlobot
 fi
 echo "set Global Options->Fixed Frame to"
 echo "'odom' in order to make this work."
-roslaunch arlobot_rviz_launchers view_robot.launch --screen
+roslaunch arlobot_ros view_robot.launch --screen

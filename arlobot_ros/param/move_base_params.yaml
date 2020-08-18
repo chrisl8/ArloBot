@@ -14,7 +14,7 @@ oscillation_timeout: 10.0 # Default 0.0, i.e. never
 oscillation_distance: 0.2 # Default 0.5
 
 # local planner - default is trajectory rollout
-base_local_planner: "dwa_local_planner/DWAPlannerROS"
+base_local_planner: "teb_local_planner/TebLocalPlannerROS"
 
 base_global_planner: "global_planner/GlobalPlanner" #alternatives: global_planner/GlobalPlanner, carrot_planner/CarrotPlanner, navfn/NavfnROS
 

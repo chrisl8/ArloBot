@@ -21,7 +21,7 @@ http://wiki.ros.org/actionlib_tutorials/Tutorials/Writing%20a%20Simple%20Action%
 class ArlobotExplore(object):
 
     def __init__(self):
-        rospy.init_node('arlobot_ros')
+        rospy.init_node('arlobot_quaternion_test')
         # http://wiki.ros.org/rospy_tutorials/Tutorials/WritingPublisherSubscriber
         #self.r = rospy.Rate(1) # 1hz refresh rate
         
