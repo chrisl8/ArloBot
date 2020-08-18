@@ -76,9 +76,9 @@ describe('Suite of unit tests for webserver', () => {
 
   describe('Check web Model for expected data', () => {
     it('should have maps in the mapList', () => {
-      // console.log(webModel.mapList);
-      expect(webModel.mapList[1]).not.toBe(undefined);
-      expect(webModel.mapList[1]).not.toEqual('');
+      console.log(webModel.mapList);
+      expect(webModel.mapList[0]).not.toBe(undefined);
+      expect(webModel.mapList[0]).not.toEqual('');
     });
   });
 
