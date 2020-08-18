@@ -15,7 +15,8 @@ or
 
 ## Robot Dimensions
 *costmap_common_params.yaml*  
-`robot_radius: 0.22545`
+`robot_radius: 0.25`
+Padding it a bit helps it to avoid bumping into door frames
 
 ## Velocity
 NOTE: If your robot is always overshooting goals, especially rotationally, your acceleration parameters are probably wrong. Read the above doc for some insight on how to test and tune those.

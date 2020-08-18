@@ -93,7 +93,7 @@ There is now a script to install everything. Just run:
 bash <(wget -qO- --no-cache -o /dev/null https://raw.githubusercontent.com/chrisl8/ArloBot/melodic/setup-melodic.sh)
 ```
 
-Be sure to read the instructions that the script will print at the end about editing the config files in ~/.arlobot/
+Be sure to read the instructions that the script will print at the end about editing the config files in `~/.arlobot/`
 
 To update your code just run the same script again, and it will pull down and compile anything new without erasing custom settings.
 
@@ -102,7 +102,7 @@ Please note that you will need the code to run on your Propeller board. This is 
 ## Propeller Serial Interface Test ##
 Before you start trying to get ROS running, but after you have loaded the C code onto the Propeller Activity board, use the PropellerSerialTest to test the hardware and interface.  
 
-Place the robot up on blocks so it won't drive into anything if it goes nuts, and then run:  
+Place the robot up on blocks, so it won't drive into anything if it goes nuts, and then run:  
 `~/catkin_ws/src/ArloBot/scripts/PropellerSerialTest.sh`  
 This provides an interface to send all controls, commands, and settings directly to the Propeller Activity Board without involving ROS. Use this to test everything and make sure your robot's hardware is functioning before you start playing with ROS.
 
@@ -121,7 +121,11 @@ There is also the ability to send Test packets to the robot to check for serious
 Note that if you do the `r - Run speed test` there will be errors. It basically tests the ability for the code to slow down the transfer rate until the connection is stable, so errors will pop up as it attempts to go too fast and then backs off and retries. This is normal.  
 
 ## Quick Start of Entire Robot: ##
-To start the Web Interface, which also allows starting ROS run:
+The default install script will actually set up the robot website to start automatically on system boot.  
+You can see the status of this by running: `pm2 log`  
+You will even see the URL to use printed in the log output.
+
+If the Web Interface is not already running, you can start it by hand by running:
 ```
 ~/catkin_ws/src/ArloBot/startRobot.sh
 ```
@@ -144,7 +148,7 @@ The above works for me on Ubuntu 19.10.
 
 ## Updating Code
 
-To update your code just run the same script again and it will pull down and compile anything new without erasing custom settings.
+To update your code just run the same script again, and it will pull down and compile anything new without erasing custom settings.
 
 ## Full Arlobot Setup Instructions: ##
 Complete setup and usage instructions are at my blog:
@@ -272,10 +276,10 @@ Note that xBox 360 Controller operation is always live when ROS is running this 
 
 # Web Based Operation #
 
-Finally the entire robot can be operated from the web.  
+Finally, the entire robot can be operated from the web.  
 Go to http://<robot_ip_address>:8080/
 
-All of the basic robot operations are available.  
+All the basic robot operations are available.  
 - Use the Startup/Shutdown Panel to start ROS.
 - Use the Navigation Panel to:
   - Make a new Map
