@@ -8,7 +8,6 @@ const robotModel = require('./robotModel');
 robotModel.lastMovementTime = Date.now();
 
 let unplug;
-let pauseExplore; // Empty global for actual topic
 
 // Copied from arloweb.js
 /** @namespace personalData.rosLibDelay */
@@ -48,11 +47,6 @@ const rosParameters = {
     label: 'mapName',
     path: '/arlobot/mapname',
   },
-  explorePaused: {
-    param: webModel.rosParameters.explorePaused,
-    label: 'explorePaused',
-    path: '/arlobot_explore/pause',
-  },
 };
 
 function unplugRobot(value) {
@@ -62,19 +56,6 @@ function unplugRobot(value) {
       unPlug: value, // Note javaScript uses true not True for bool
     });
     unplug.callService(unplugRequest, (result) => {
-      console.log(result);
-      // webModelFunctions.scrollingStatusUpdate(result);
-    });
-  }
-}
-
-function callPauseExplore(value) {
-  if (pauseExplore) {
-    const pauseExploreRequest = new ROSLIB.ServiceRequest({
-      // args from rosservice info <service>
-      pause_explorer: value, // Note javaScript uses true not True for bool
-    });
-    pauseExplore.callService(pauseExploreRequest, (result) => {
       console.log(result);
       // webModelFunctions.scrollingStatusUpdate(result);
     });
@@ -208,12 +189,6 @@ function talkToROS() {
   unplug = new ROSLIB.Service({
     ros,
     name: '/arlobot_unplug', // rosservice list
-    serviceType: 'arlobot_msgs/pause_explorer', // rosservice info <service>
-  });
-
-  pauseExplore = new ROSLIB.Service({
-    ros,
-    name: '/arlobot_explore/pause_explorer', // rosservice list
     serviceType: 'arlobot_msgs/UnPlug', // rosservice info <service>
   });
 
@@ -291,4 +266,3 @@ function start() {
 exports.start = start;
 exports.setParam = setParam;
 exports.unplugRobot = unplugRobot;
-exports.callPauseExplore = callPauseExplore;

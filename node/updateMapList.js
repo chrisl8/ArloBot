@@ -4,10 +4,10 @@ const getMapList = require('./getMapList');
 const mapDir = `${process.env.HOME}/.arlobot/rosmaps/`;
 
 module.exports = () => {
-  webModel.mapList = ['Explore!'];
+  webModel.mapList = [];
   getMapList(mapDir, (err, data) => {
     data.forEach((value) => {
-      webModel.mapList.push(value.replace('.yaml', ''));
+      webModel.mapList.push(value.replace('.data', ''));
     });
   });
 };

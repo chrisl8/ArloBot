@@ -15,8 +15,7 @@
 
 const polling = require('./behaviors/polling');
 const startROS = require('./behaviors/startROS');
-const makeMapGmapping = require('./behaviors/makeMapGmapping');
-const autoExplore = require('./behaviors/autoExplore');
+const makeMap = require('./behaviors/makeMap');
 const loadMap = require('./behaviors/loadMap');
 const unPlugRobot = require('./behaviors/unPlugRobot');
 const goToWaypoint = require('./behaviors/goToWaypoint');
@@ -47,12 +46,8 @@ async function loop() {
   }
 
   if (webModel.ROSisRunning) {
-    if (webModel.autoExplore) {
-      if (!(await autoExplore())) {
-        return;
-      }
-    } else if (webModel.makeMapGmapping) {
-      if (!(await makeMapGmapping())) {
+    if (webModel.makeMap) {
+      if (!(await makeMap())) {
         return;
       }
     } else if (!(await loadMap())) {
@@ -60,10 +55,7 @@ async function loop() {
       return;
     }
 
-    if (
-      webModel.pluggedIn &&
-      (webModel.autoExplore || webModel.mapName !== '')
-    ) {
+    if (webModel.pluggedIn && webModel.mapName !== '') {
       if (!(await unPlugRobot())) {
         return;
       }

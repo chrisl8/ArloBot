@@ -33,7 +33,7 @@ function killROS(exitWhenDone) {
     // ROS drops all knowledge when restarted,
     // So make it clear to the user that he needs to pick a map again.
     webModelFunctions.update('mapName', '');
-    webModelFunctions.update('autoExplore', false);
+    webModelFunctions.update('mapLoaded', false);
     webModelFunctions.scrollingStatusUpdate('Running kill_ros.sh . . .');
     // Logging to console too, because feedback on shutdown is nice.
     console.log('Running kill_ros.sh . . .');

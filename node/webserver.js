@@ -182,24 +182,19 @@ async function start() {
 
     socket.on('setMap', (data) => {
       if (data) {
-        if (data === 'Explore!') {
-          webModelFunctions.update('mapName', '');
-          webModelFunctions.update('autoExplore', true);
-        } else if (webModel.mapList.indexOf(data)) {
-          webModelFunctions.update('autoExplore', false);
+        if (webModel.mapList.indexOf(data)) {
           webModelFunctions.update('mapName', data);
           wayPointEditor.updateWayPointList();
         }
       }
     });
 
-    socket.on('makeMapGmapping', () => {
-      webModelFunctions.update('makeMapGmapping', true);
+    socket.on('makeMap', () => {
+      webModelFunctions.update('makeMap', true);
     });
 
     socket.on('clearMap', () => {
       if (!webModel.ROSisRunning) {
-        webModelFunctions.update('autoExplore', false);
         webModelFunctions.update('mapName', '');
       }
     });
@@ -273,12 +268,6 @@ async function start() {
       webModelFunctions.update('idleTimeout', true);
     });
 
-    socket.on('pauseAutoExplore', () => {
-      webModelFunctions.update('pauseExplore', true);
-    });
-    socket.on('unPauseAutoExplore', () => {
-      webModelFunctions.update('pauseExplore', false);
-    });
     // unplugYourself
     socket.on('unplugYourself', () => {
       // Setting the status means if we flip the switch before ROS

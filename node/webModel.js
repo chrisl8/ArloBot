@@ -18,9 +18,7 @@ module.exports = {
   ROSisRunning: false,
   killRosHasRun: false,
   pluggedIn: true, // Assume the most restrictive setting.
-  autoExplore: false,
-  pauseExplore: false,
-  makeMapGmapping: false,
+  makeMap: false,
   makeMapRunning: false,
   idleTimeout: true,
   beQuiet: false,
@@ -38,7 +36,7 @@ module.exports = {
   status: 'Arlo behavior is not running.',
   behaviorStatus: '',
   scrollingStatus: [],
-  mapList: ['Explore!'],
+  mapList: [],
   QRcode: '',
   hasSetupViaQRcode: false, // So we only do this once. ;)
   mapName: '',
@@ -57,7 +55,6 @@ module.exports = {
     ignoreFloorSensors: false,
     monitorACconnection: true,
     mapName: null,
-    explorePaused: false,
   },
   rosTopicItems: [
     // From ROS Topic /arlo_status
@@ -197,7 +194,7 @@ module.exports = {
   ],
   unplugYourself: false, // Indicates that robot should unplug itself.
   wayPointNavigator: {
-    wayPointName: undefined,
+    wayPointName: null,
     goToWaypoint: false, // This is set true when we ask the robot to go somewhere
     mostRecentArrival: undefined, // Where we have most recently arrived at.
   },

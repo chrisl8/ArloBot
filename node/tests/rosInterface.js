@@ -6,5 +6,4 @@ rosInterface.start();
 setInterval(() => {
   console.log(robotModel);
   console.log(webModel.rosParameters);
-  console.log(webModel.rosParameters.explorePaused);
 }, 5000);

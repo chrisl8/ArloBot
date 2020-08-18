@@ -1,8 +1,10 @@
+// TODO: Check for CPU hogs, slow things, and maybe things that repeat too often:
+//       https://www.npmjs.com/package/0x
+
 const os = require('os');
 const personalData = require('./personalData');
 // We *DO* need webModel, don't remove it.
 // eslint-disable-next-line no-unused-vars
-const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
 
 webModelFunctions.update('robotName', personalData.robotName);
@@ -116,53 +118,22 @@ async function main() {
     // TODO: Could this be set to "true" by the ROSlibJS connection instead??
   });
 
-  /* GotoWaypoint Process output:
-     Running GoToWaypoint child process . . .
-     GoToWaypoint is starting up . . .
-     GoToWaypoint stdout data:result: True
-     GoToWaypoint exited with code: 0
-
-     So just wait for a clean exit, no need for a successString.
-     */
   robotModel.goToWaypointProcess = new LaunchScript({
     name: 'GoToWaypoint',
-    // Set the ROScommmand at call time!
+    scriptName: '../scripts/gotoMapPositionHelperScript.sh',
+    finalSuccessResultString: 'result: True',
+    finalFailureResultString: 'result: False',
   });
 
-  let exploreCommand;
-  if (personalData.hasXV11) {
-    exploreCommand =
-      'unbuffer roslaunch arlobot_launchers add_autonomous_explore_xv11.launch';
-  } else {
-    exploreCommand =
-      'unbuffer roslaunch arlobot_launchers add_autonomous_explore.launch';
-  }
-  robotModel.exploreProcess = new LaunchScript({
-    name: 'Explore',
-    ROScommand: exploreCommand,
+  robotModel.makeMap = new LaunchScript({
+    name: 'MakeMap',
+    scriptName: '../scripts/make-map.sh',
     successString: 'odom received',
   });
 
-  robotModel.makeMapGmapping = new LaunchScript({
-    name: 'MakeMapGmapping',
-    scriptName: '../scripts/make-map-gmapping.sh',
-    successString: 'odom received',
-  });
-
-  let loadMapCommand;
-  if (personalData.hasXV11) {
-    loadMapCommand =
-      'unbuffer roslaunch arlobot_launchers load_map_xv11.launch map_file:=';
-  } else if (personalData.hasScanseSweep) {
-    loadMapCommand =
-      'unbuffer roslaunch arlobot_launchers load_map_wScanseSweep.launch map_file:=';
-  } else {
-    loadMapCommand =
-      'unbuffer roslaunch arlobot_launchers load_map.launch map_file:=';
-  }
   robotModel.loadMapProcess = new LaunchScript({
     name: 'LoadMap',
-    ROScommand: loadMapCommand,
+    scriptName: '../scripts/load-map.sh',
     successString: 'odom received',
   });
 

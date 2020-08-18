@@ -11,8 +11,7 @@ the tree.
     ├──Poll Node    # A node at the top to perform any required polling functions.
     ├──Startup Sequence # A Sequence to track all functions required to get the robot up and running fully.
     |   ├──StartROS Node        # Wait for start ROS request.
-    |   ├──Priority             # Put Explore vs. LaoadMpa into a priority
-    |   |   ├──AutoExplore Node # If "Explore" was requested, run it.
+    |   ├──Priority             # Put LoadMpa into a priority
     |   |   └──LoadMap Node     # Load the map if we have our location.
     |   └──UnPlugRobot Node     # Handle robot AC connection status and unplug requests.
     └──ToDo Priority            # A Priority to tick through the "task" branches.
@@ -47,10 +46,6 @@ Wait for start ROS request = FAILURE
                 ROS Up and running = SUCCESS
 
 ##### Priority
-###### AutoExplore Node
-If this was requested, run it
-                        return RUNNING.
-                        else return FAILURE.
 ###### LoadMap Node
 If we have the map name, load it, otherwise perform tasks to find map, such as:
 - zbarcam to find a QR Code
@@ -59,7 +54,7 @@ If we have the map name, load it, otherwise perform tasks to find map, such as:
 
 Once we have a map loaded return SUCCESS.
 until then, return FAILURE.
-if AutoExplore and LoadMap fail, this node fails.
+if LoadMap fail, this node fails.
 
 ##### UnPlugRobot Node
 When robot is unplugged return SUCCESS,
