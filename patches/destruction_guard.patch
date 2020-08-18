@@ -1,4 +1,0 @@
-62c62
-<       count_condition_.timed_wait(lock, boost::posix_time::milliseconds(1000.0f));
----
->       count_condition_.timed_wait(lock, boost::posix_time::milliseconds(1000));

@@ -26,7 +26,6 @@ I am currently in proces of converting over to [Noetic ROS](http://wiki.ros.org/
    - Build code as part of install for testing, especially on Travis CI
    - Create scripts for easy build/install.
  - Migrate to Noetic and Ubuntu 20.04
- - Remove patches folder. None of them are in use anymore.
 
 ArloBot Package for ROS
 =======================
