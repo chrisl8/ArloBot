@@ -1,5 +1,5 @@
 <launch>
-  <node pkg="arlobot_usbrelay" type="arlobot_usbrelay.py" name="arlobot_usbrelay" respawn="true">
+  <node pkg="arlobot_ros" type="arlobot_usbrelay.py" name="arlobot_usbrelay" respawn="true">
     <rosparam file="$(find arlobot_ros)/param/usbrelay.yaml" command="load" />
   </node>
 </launch>

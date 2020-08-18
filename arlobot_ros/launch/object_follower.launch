@@ -3,7 +3,7 @@
     <arg name="depth_registration" value="true"/>
   </include>
 <!-- From rbx1_vision camshift.launch -->
-<node pkg="arlobot_vision" name="camshift" type="camshift.py" output="screen">
+<node pkg="arlobot_ros" name="camshift" type="camshift.py" output="screen">
   <remap from="input_rgb_image" to="/camera/rgb/image_raw" />
   <rosparam>
     smin: 128 # 85

@@ -1,5 +1,5 @@
 <launch>
-  <node pkg="arlobot_vision" name="camshift" type="camshift.py" output="screen">
+  <node pkg="arlobot_ros" name="camshift" type="camshift.py" output="screen">
     <remap from="input_rgb_image" to="/camera/rgb/image_raw" />
     <rosparam>
        smin: 85

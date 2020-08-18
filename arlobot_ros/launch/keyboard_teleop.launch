@@ -1,6 +1,6 @@
 <launch>
   <!-- turtlebot_teleop_key already has its own built in velocity smoother -->
-  <node pkg="arlobot_teleop" type="arlobot_teleop_key" name="arlobot_teleop_keyboard"  output="screen">
+  <node pkg="arlobot_ros" type="arlobot_teleop_key" name="arlobot_teleop_keyboard"  output="screen">
 <!-- I am pretty sure these are no longer used
     <param name="scale_linear" value="0.5" type="double"/>
     <param name="scale_angular" value="1.5" type="double"/>
