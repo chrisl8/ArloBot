@@ -214,7 +214,7 @@ if ! (command -v jq >/dev/null); then
   # jq - allows shell scripts to read .json formatted config files.
   # jq is used to read and write JSON configuration files in shell scripts
   # for the installer script, and for many Arlobot functions.
-  sudo apt install jq
+  sudo apt install -y jq
 fi
 
 function saveResponseData() {
