@@ -1,4 +1,4 @@
-dist: bionic
+dist: focal
 notifications:
   email:
     on_success: change
@@ -24,12 +24,8 @@ matrix:
         directories:
           - ~/.npm
           - ~/.cache
-      services:
-        - docker
-      before_install:
-        - docker pull ubuntu:20.04
       script:
-        - docker run -ti -e TRAVIS=${TRAVIS} -v $PWD:/home/user ubuntu:20.04 /bin/bash -c "/home/user/setup-noetic.sh"
+        - ${TRAVIS_BUILD_DIR}/setup-noetic.sh
 
     - language: node_js
       name: "Node Scripts"
