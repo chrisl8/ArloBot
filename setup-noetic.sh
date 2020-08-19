@@ -389,6 +389,8 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   fi
   PACKAGE_TO_INSTALL_LIST+=(fswebcam)
   # fswebcam - Used for streaming a camera to the website. Camera streaming will not work without it.
+  PACKAGE_TO_INSTALL_LIST+=(zbar-tools)
+  # zbar-tools - Used by node service to read QR codes via on board camera
 
   # TODO: Do I need this, or is everything I need already installed?
   # ros-${INSTALLING_ROS_DISTRO}-rqt-* - All of the GUI tools for Robot configuration
@@ -405,9 +407,6 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   #           Should return:
   #           FTDI:FT245R USB FIFO:A9026EI5
   #           If you have a USB Relay board attached via USB.
-
-  # TODO: Test this.
-  # zbar-tools - reading QR codes.
 
   # TODO: Confirm that Scanse Sweep needs this and add it to the "if scanse" section:
   # ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan - used by Scanse Sweep
@@ -449,9 +448,7 @@ if ! [[ -d ~/catkin_ws/src/ArloBot ]]; then
 else
   cd ~/catkin_ws/src/ArloBot
   git checkout melodic
-  # TODO: Uncomment this when we are ready to try cloning. For now we are using a local copy.
-  echo "Skipping Arlobot UPDATE now during testing."
-  #git pull
+  git pull
 fi
 
 printf "${BLUE}TurtleBot repository${NC}\n"
