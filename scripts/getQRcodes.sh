@@ -26,7 +26,6 @@ if [[ $(jq '.useQRcodes' "${HOME}/.arlobot/personalDataForBehavior.json") == tru
   VIDEODEVICE=$("${SCRIPTDIR}/find_camera.sh" "${CAMERANAME}")
   if [[ -z ${VIDEODEVICE} ]]; then
     exit 1
-
   fi
   zbarcam -q --raw --nodisplay "${VIDEODEVICE}"
 fi
