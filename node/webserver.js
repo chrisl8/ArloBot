@@ -144,8 +144,7 @@ const stopColorFollower = function () {
   // pkill -f "roslaunch arlobot_ros object_follower.launch"
   const command = '/usr/bin/pkill';
   const commandArgs = ['-f', 'roslaunch arlobot_ros object_follower.launch'];
-  const process = spawn(command, commandArgs);
-  return process;
+  return spawn(command, commandArgs);
 };
 
 async function start() {

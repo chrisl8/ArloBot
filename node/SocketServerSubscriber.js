@@ -3,9 +3,7 @@ const personalData = require('./personalData');
 
 class SocketServerSubscriber {
   constructor(messageHandler) {
-    this.remoteServer = `${personalData.cloudServer.service}://${
-      personalData.cloudServer.fqdn
-    }:${personalData.cloudServer.port}`;
+    this.remoteServer = `${personalData.cloudServer.service}://${personalData.cloudServer.fqdn}:${personalData.cloudServer.port}`;
     this.messageHandler = messageHandler;
   }
 

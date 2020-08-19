@@ -48,8 +48,8 @@ const update = (key, value) => {
   if (webModel[key] != value) {
     webModel[key] = value;
     emitter.emit('change', key, value);
-    if (key === 'status') {
-    }
+    // if (key === 'status') {
+    // }
   }
 };
 exports.update = update;
@@ -99,10 +99,10 @@ const updateRosTopicItem = (key, value) => {
       [true, false].indexOf(webModel.rosTopicItems[arrayIndex].alertOn) === -1
     ) {
       const operators = {
-        '>': function(a, b) {
+        '>': function (a, b) {
           return a > b;
         },
-        '<': function(a, b) {
+        '<': function (a, b) {
           return a < b;
         },
         // ...

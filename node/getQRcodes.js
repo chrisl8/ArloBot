@@ -13,11 +13,8 @@ const kill = require('./reallyKillProcess.js');
   2. Otherwise, if it does not start with a '{' it will stop and use
      the single line as the input.
 */
-module.exports = function() {
-  let killProcess;
+module.exports = function () {
   const process = spawn('../scripts/getQRcodes.sh');
-  const foundJSON = false;
-  const qrJSONstring = '';
   const killOnTimeout = setTimeout(() => {
     // console.log('timeout');
     kill(process.pid);

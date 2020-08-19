@@ -47,16 +47,10 @@ class Arduino {
 
     this.ledTestCommandArray = [
       // Clear the loop with a black wipe
-      `${this.lightPattern.colorWipe},0,0,0,${this.pixel.LOOP_START},${
-        this.pixel.LOOP_END
-      },25`,
+      `${this.lightPattern.colorWipe},0,0,0,${this.pixel.LOOP_START},${this.pixel.LOOP_END},25`,
       // Start wipe in the middle of the loop
-      `${this.lightPattern.colorWipe},255,255,255,100,${
-        this.pixel.LOOP_END
-      },25`,
-      `${this.lightPattern.colorWipe},255,255,255,${
-        this.pixel.LOOP_START
-      },100,25`,
+      `${this.lightPattern.colorWipe},255,255,255,100,${this.pixel.LOOP_END},25`,
+      `${this.lightPattern.colorWipe},255,255,255,${this.pixel.LOOP_START},100,25`,
       // Wipe and clear small section in reverse order
       `${this.lightPattern.colorWipe},255,0,0,90,105,20`,
       `${this.lightPattern.colorWipe},0,0,0,105,90,20`,
@@ -70,61 +64,29 @@ class Arduino {
       // Theater Chase in a small section
       `${this.lightPattern.theaterChase},255,0,0,50,90,106,30`,
       // Clear loop with a black wipe
-      `${this.lightPattern.colorWipe},0,0,0,${this.pixel.LOOP_START},${
-        this.pixel.LOOP_END
-      },25`,
+      `${this.lightPattern.colorWipe},0,0,0,${this.pixel.LOOP_START},${this.pixel.LOOP_END},25`,
       // Make some big color loops with escalating speed
-      `${this.lightPattern.colorWipe},255,0,0,${this.pixel.LOOP_START},${
-        this.pixel.LOOP_END
-      },25`,
-      `${this.lightPattern.colorWipe},0,255,0,${this.pixel.LOOP_START},${
-        this.pixel.LOOP_END
-      },15`,
-      `${this.lightPattern.colorWipe},0,0,255,${this.pixel.LOOP_START},${
-        this.pixel.LOOP_END
-      },10`,
-      `${this.lightPattern.rainbow},${this.pixel.LOOP_START},${
-        this.pixel.LOOP_END
-      },1`,
-      `${this.lightPattern.rainbowCycle},${this.pixel.LOOP_START},${
-        this.pixel.LOOP_END
-      },1`,
+      `${this.lightPattern.colorWipe},255,0,0,${this.pixel.LOOP_START},${this.pixel.LOOP_END},25`,
+      `${this.lightPattern.colorWipe},0,255,0,${this.pixel.LOOP_START},${this.pixel.LOOP_END},15`,
+      `${this.lightPattern.colorWipe},0,0,255,${this.pixel.LOOP_START},${this.pixel.LOOP_END},10`,
+      `${this.lightPattern.rainbow},${this.pixel.LOOP_START},${this.pixel.LOOP_END},1`,
+      `${this.lightPattern.rainbowCycle},${this.pixel.LOOP_START},${this.pixel.LOOP_END},1`,
       // Escalate the chase
       // NOTE: Use consecutive chases to evaluate update speed,
       // Is it taking too long for a new command to get to the board,
       // causing gaps in the animation, or is it fluid?
-      `${this.lightPattern.theaterChase},170,170,170,50,${
-        this.pixel.LOOP_START
-      },${this.pixel.LOOP_END},5`,
-      `${this.lightPattern.theaterChase},170,170,170,50,${
-        this.pixel.LOOP_START
-      },${this.pixel.LOOP_END},5`,
-      `${this.lightPattern.theaterChase},170,170,170,50,${
-        this.pixel.LOOP_START
-      },${this.pixel.LOOP_END},5`,
-      `${this.lightPattern.theaterChase},170,170,170,40,${
-        this.pixel.LOOP_START
-      },${this.pixel.LOOP_END},20`,
-      `${this.lightPattern.theaterChase},170,170,170,30,${
-        this.pixel.LOOP_START
-      },${this.pixel.LOOP_END},30`,
-      `${this.lightPattern.theaterChase},170,170,170,20,${
-        this.pixel.LOOP_START
-      },${this.pixel.LOOP_END},30`,
+      `${this.lightPattern.theaterChase},170,170,170,50,${this.pixel.LOOP_START},${this.pixel.LOOP_END},5`,
+      `${this.lightPattern.theaterChase},170,170,170,50,${this.pixel.LOOP_START},${this.pixel.LOOP_END},5`,
+      `${this.lightPattern.theaterChase},170,170,170,50,${this.pixel.LOOP_START},${this.pixel.LOOP_END},5`,
+      `${this.lightPattern.theaterChase},170,170,170,40,${this.pixel.LOOP_START},${this.pixel.LOOP_END},20`,
+      `${this.lightPattern.theaterChase},170,170,170,30,${this.pixel.LOOP_START},${this.pixel.LOOP_END},30`,
+      `${this.lightPattern.theaterChase},170,170,170,20,${this.pixel.LOOP_START},${this.pixel.LOOP_END},30`,
       // Reverse Chase
-      `${this.lightPattern.theaterChase},170,170,170,15,${
-        this.pixel.LOOP_END
-      },${this.pixel.LOOP_START},40`,
+      `${this.lightPattern.theaterChase},170,170,170,15,${this.pixel.LOOP_END},${this.pixel.LOOP_START},40`,
       // Super fast!
-      `${this.lightPattern.theaterChase},170,170,170,10,${
-        this.pixel.LOOP_START
-      },${this.pixel.LOOP_END},50`,
-      `${this.lightPattern.theaterChase},170,170,170,5,${
-        this.pixel.LOOP_START
-      },${this.pixel.LOOP_END},55`,
-      `${this.lightPattern.theaterChaseRainbow},50,${this.pixel.LOOP_START},${
-        this.pixel.LOOP_END
-      },256`,
+      `${this.lightPattern.theaterChase},170,170,170,10,${this.pixel.LOOP_START},${this.pixel.LOOP_END},50`,
+      `${this.lightPattern.theaterChase},170,170,170,5,${this.pixel.LOOP_START},${this.pixel.LOOP_END},55`,
+      `${this.lightPattern.theaterChaseRainbow},50,${this.pixel.LOOP_START},${this.pixel.LOOP_END},256`,
     ];
     this.currentCommandArray = [];
   }

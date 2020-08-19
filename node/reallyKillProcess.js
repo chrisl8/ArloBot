@@ -2,7 +2,7 @@
 const psTree = require('ps-tree');
 
 // eslint-disable-next-line func-names
-module.exports = (pid, signal = 'SIGKILL', callback = function() {}) => {
+module.exports = (pid, signal = 'SIGKILL', callback = function () {}) => {
   const killTree = true;
   if (killTree) {
     psTree(pid, (err, children) => {

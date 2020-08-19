@@ -11,7 +11,6 @@ const robotModel = require('../robotModel');
 const speechEngine = require('../speechEngine');
 const checkBattery = require('../checkBattery');
 const masterRelay = require('../MasterRelay');
-const handleSemaphoreFiles = require('../handleSemaphoreFiles');
 const getQRcodes = require('../getQRcodes');
 const saveScreenShotForWeb = require('../saveScreenShotForWeb');
 const howManySecondsSince = require('../howManySecondsSince');
