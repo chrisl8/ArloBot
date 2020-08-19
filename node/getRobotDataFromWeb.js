@@ -1,38 +1,43 @@
-const request = require('request');
+const fetch = require('node-fetch');
 const personalData = require('./personalData');
 
-const getRobotDataFromWeb = async function() {
+const getRobotDataFromWeb = async () => {
+  if (!personalData.cloudServer.exists) {
+    console.error('Robot Web Cloud Server not set up.');
+    return false;
+  }
   const serverURL = `${personalData.cloudServer.service}://${personalData.cloudServer.fqdn}:${personalData.cloudServer.port}/getRobotInfo`;
-  return new Promise((resolve, reject) => {
-    if (!personalData.cloudServer.exists) {
-      reject('Robot Web Cloud Server not set up.');
+  const body = { password: personalData.cloudServer.password };
+  try {
+    const response = await fetch(serverURL, {
+      method: 'post',
+      body: JSON.stringify(body),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (response.ok) {
+      return await response.json();
     }
-    request.post(
-      serverURL,
-      {
-        json: {
-          password: personalData.cloudServer.password,
-        },
-      },
-      (error, response) => {
-        // Arguments: error, response, body
-        if (!error && response.statusCode === 200) {
-          resolve(response.body);
-        } else {
-          reject(
-            'Robot URL Update failed. Check Internet connection and personalData settings.',
-          );
-        }
-      },
+    console.error(
+      'Robot URL Update failed. Check Internet connection and personalData settings.',
     );
-  });
+    console.error(response.status, response.statusText);
+  } catch (e) {
+    console.error(
+      'Robot URL Update failed. Check Internet connection and personalData settings.',
+    );
+    console.error(e);
+  }
+  return false;
 };
 exports.getRobotDataFromWeb = getRobotDataFromWeb;
 
 if (require.main === module) {
   // Run the function if this is called directly instead of required.
-  (async function() {
+  // eslint-disable-next-line func-names
+  (async function () {
     const returnData = await getRobotDataFromWeb();
-    console.log(returnData);
+    if (returnData) {
+      console.log(returnData);
+    }
   })();
 }

@@ -1,15 +1,15 @@
 const os = require('os');
-const request = require('request');
+const fetch = require('node-fetch');
 const personalData = require('./personalData');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
 const ipAddress = require('./ipAddress');
 
 const robotHostname = os.hostname();
-const updateRobotURL = () => {
+const updateRobotURL = async () => {
   let robotIP = false;
 
-  function getIpOrPublish() {
+  async function getIpOrPublish() {
     if (!robotIP) {
       robotIP = ipAddress.ipAddress();
       setTimeout(getIpOrPublish, 30000);
@@ -22,39 +22,47 @@ const updateRobotURL = () => {
         /** @namespace personalData.cloudServer.fqdn */
         const serverURL = `${personalData.cloudServer.service}://${personalData.cloudServer.fqdn}:${personalData.cloudServer.port}/updateRobotURL`;
 
-        request.post(
-          serverURL,
-          {
-            json: {
-              password: personalData.cloudServer.password,
-              localURL: robotURL,
-              robotIP,
-              robotHostname,
-            },
-          },
-          (error, response) => {
-            // Arguments: error, response, body
-            if (!error && response.statusCode === 200) {
-              webModelFunctions.update('robotURL', robotURL);
-              // console.log(body)
-              // console.log('webModel.robotIP:', webModel.robotIP);
-              // console.log('webModel.robotURL:', webModel.robotURL);
-            } else {
-              console.log(
-                'Robot URL Update failed. Check Internet connection and personalData settings.',
-              );
-              console.log(`Server URL: ${serverURL}`);
-            }
-          },
-        );
+        const body = {
+          password: personalData.cloudServer.password,
+          localURL: robotURL,
+          robotIP,
+          robotHostname,
+        };
+        try {
+          const response = await fetch(serverURL, {
+            method: 'post',
+            body: JSON.stringify(body),
+            headers: { 'Content-Type': 'application/json' },
+          });
+          if (response.ok) {
+            console.log('RobotWebService updated.');
+            webModelFunctions.update('robotURL', robotURL);
+            return;
+          }
+          console.error(
+            'Robot URL Update failed. Check Internet connection and personalData settings.',
+          );
+          console.error(`Server URL: ${serverURL}`);
+          console.error(response.status, response.statusText);
+        } catch (e) {
+          console.error(
+            'Robot URL Update failed. Check Internet connection and personalData settings.',
+          );
+          console.error(`Server URL: ${serverURL}`);
+          console.error(e);
+        }
       }
     }
   }
 
-  getIpOrPublish();
+  await getIpOrPublish();
 };
 exports.updateRobotURL = updateRobotURL;
+
 if (require.main === module) {
   // Run the function if this is called directly instead of required.
-  updateRobotURL();
+  // eslint-disable-next-line no-unused-expressions,func-names
+  (async function () {
+    await updateRobotURL();
+  });
 }

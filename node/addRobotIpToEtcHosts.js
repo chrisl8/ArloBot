@@ -27,6 +27,9 @@ const writeNewEtcHostsFile = async (data) =>
 const addRobotIpToEtcHosts = async () => {
   try {
     const robotData = await getRobotDataFromWeb();
+    if (!robotData) {
+      return null;
+    }
     const etcHosts = await getEtcHostsFile();
     const etcHostsArray = etcHosts.split('\n');
     const newEtcHostsArray = [];

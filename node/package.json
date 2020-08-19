@@ -13,14 +13,14 @@
     "mkdirp": "1.0.4",
     "ps-tree": "1.2.0",
     "pushover-notifications": "1.2.2",
-    "request": "2.88.2",
     "roslib": "1.1.0",
     "serialport": "^9.0.0",
     "socket.io": "2.3.0",
     "socket.io-client": "2.3.0",
     "stochator": "0.6.2",
     "twilio": "^3.48.0",
-    "websocket": "1.0.31"
+    "websocket": "1.0.31",
+    "node-fetch": "^2.6.0"
   },
   "devDependencies": {
     "babel-eslint": "10.1.0",
