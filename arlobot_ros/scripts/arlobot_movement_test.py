@@ -106,8 +106,8 @@ class ArlobotExplore(object):
         # listening for goals.
         """
         This will stall until the move_base comes up,
-        in other words, if you don't run gmapping before this, this will just wait,
-        and it won't go on until gmapping says "odom received!"
+        in other words, if you don't run move_base before this, this will just wait,
+        and it won't go on until move_base says "odom received!"
         """
         print("Waiting for move_base to come up . . . ")
         self._MoveBaseClient.wait_for_server()
@@ -156,7 +156,7 @@ class ArlobotExplore(object):
         # we'll create a goal to send to move_base
         # If you are just sending commands to the robot with no map use base_link
         # goal.target_pose.header.frame_id = "base_link"
-        # But if you have gmapping active and are using a map, you need to use the map!
+        # But if you have Slam Toolbox active and are using a map, you need to use the map!
         goal.target_pose.header.frame_id = "map"
         goal.target_pose.header.stamp = rosNow
 
@@ -687,7 +687,7 @@ class ArlobotExplore(object):
             # The contents of this GetRobotTrajectory service is a nav_msgs/Path message
             # http://docs.ros.org/api/nav_msgs/html/msg/Path.html
 
-            # Lets just use the LAST pose and let gmapping deal with the path
+            # Lets just use the LAST pose and let path planner deal with the path
             # print(response.trajectory.poses[-1])
             i = response.trajectory.poses[-1]
             explorePosition = [0, 0, 0]

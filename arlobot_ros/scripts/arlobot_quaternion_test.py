@@ -57,8 +57,8 @@ class ArlobotExplore(object):
         # listening for goals.
         """
         This will stall until the move_base comes up,
-        in other words, if you don't run gmapping before this, this will jsut wait,
-        and it won't go on until gmapping says "odom received!"
+        in other words, if you don't run move_base before this, this will jsut wait,
+        and it won't go on until move_base says "odom received!"
         """
         self._MoveBaseClient.wait_for_server()
         rospy.loginfo("move_base is UP!")

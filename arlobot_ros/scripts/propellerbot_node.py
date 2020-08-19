@@ -446,10 +446,10 @@ class PropellerComm(object):
         # when I can visualize the sensor output in RVIZ!
         # For this purpose, a lot of the parameters are a matter of personal taste.
         #   Whatever makes it easiest to visualize is best.
-        # 2. I want to allow AMCL to use this data to avoid obstacles that the Kinect/Xtion miss.
+        # 2. I want to allow the cost map to use this data to avoid obstacles that the Kinect/Xtion miss.
         #     For the second purpose, some of the parameters here may need to be tweaked,
-        #   to adjust how large an object looks to AMCL.
-        # Note that we should also adjust the distance at which AMCL takes this data
+        #   to adjust how large an object looks to the cost map.
+        # Note that we should also adjust the distance at which the cost map takes this data
         # into account either here or elsewhere.
 
         # Transform: http://wiki.ros.org/tf/Tutorials/Writing%20a%20tf%20broadcaster%20%28Python%29

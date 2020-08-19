@@ -68,8 +68,8 @@ class ArlobotExplore(object):
         # listening for goals.
         """
         This will stall until the move_base comes up,
-        in other words, if you don't run gmapping before this, this will just wait,
-        and it won't go on until gmapping says "odom received!"
+        in other words, if you don't run move_base before this, this will just wait,
+        and it won't go on until move_base says "odom received!"
         """
         self._MoveBaseClient.wait_for_server()
         rospy.loginfo("move_base is UP!")
@@ -100,7 +100,7 @@ class ArlobotExplore(object):
         # we'll create a goal to send to move_base
         # If you are just sending commands to the robot with no map use base_link
         # goal.target_pose.header.frame_id = "base_link"
-        # But if you have gmapping active and are using a map, you need to use the map!
+        # But if you have Slam Toolbox active and are using a map, you need to use the map!
         goal.target_pose.header.frame_id = "map"
         goal.target_pose.header.stamp = rosNow
 

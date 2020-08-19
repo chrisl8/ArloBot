@@ -202,7 +202,7 @@ class PropellerSerialDataPacketTypes(object):
         #             and reports it, not reads it. The ROS program tracks a "difference" between
         #             the reported odometry and the position on the map.
         #             But if you know the robot's position better than it does, for instance,
-        #             when loading a new map, or a board reset while AMCL is running, then
+        #             when loading a new map, or a board reset while Localization is running, then
         #             we may want to tell the robot where to start after init is already done.
         self.CharacterPositionUpdate = "p".encode("ascii")
         self.FormatPositionUpdate = "<fff"  # PositionUpdate Packet Format
