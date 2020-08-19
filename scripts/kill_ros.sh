@@ -84,8 +84,14 @@ if [[ -f nohup.out ]]; then
   rm nohup.out
 fi
 
+# Shut off XV11
 if [[ $(jq '.hasXV11' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
   "${SCRIPTDIR}/XVLidar.sh" stop
+fi
+
+# Shut off Scanse Sweep
+if [[ $(jq '.hasScanseSweep' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
+  node "${HOME}/catkin_ws/src/ArloBot/node/ScanseSweepControl.js" stop
 fi
 
 # USB Relay Controller
