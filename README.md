@@ -19,7 +19,7 @@ I am currently in process of converting over to [Noetic ROS](http://wiki.ros.org
    - [ WARN] [1597326961.776132466]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0513 seconds
  - Possibly change PING auto response to be more "failsafe" so that they do not interfere with normal TEB path following in tight spaces.
     - Still testing. This may not be necessary.
-    - Teb is very good at pathing, and staying in the middle of the rooms and doorways.
+    - Teb is very good at path planning, and staying in the middle of the rooms and doorways.
     - It seems to behave very well with the PING's emergency stopping and slowing of the robot.
  - Test remaining "goto" functions with Python 3 and Slam Toolbox
  - Convert from SimpleIDE to PropWare/PropGCC for building Propeller code.
@@ -32,7 +32,7 @@ ArloBot Package for ROS
 
 ## and SO MUCH MORE! ##
 
-1. This package provides a set of ROS packages for using a [Parallax Arlo Platform](http://www.parallax.com/product/arlo-robotic-platform-system "Parallax") robot to run all of the demonstration projects for the [Robot Operating System (ROS)](http://www.ros.org/ "ROS") based on the old [TurtleBot](http://wiki.ros.org/Robots/TurtleBot "TurtleBot")
+ - This package provides a set of ROS packages for using a [Parallax Arlo Platform](http://www.parallax.com/product/arlo-robotic-platform-system "Parallax") robot to create and navigate a map of a room (Simultaneous Mapping and Localization) via [Robot Operating System (ROS)](http://www.ros.org/ "ROS").  Originally based on the old [TurtleBot](http://wiki.ros.org/Robots/TurtleBot "TurtleBot").
 
 This package also includes:
  0. An all in one install script that should get things as close to working as possible by running one install script.
@@ -50,7 +50,7 @@ This package also includes:
 `~/catkin_ws/src/ArloBot/scripts/PropellerSerialTest.sh`  
 ![Alt text](/screenshots/PropellerSerialTest.png "Serial Test Program")
 
-* An python curses based serial communications test program allows testing of ALL Propeller board functions over serial with zero use of ROS to more easily ensure the hardware is working before starting ROS.
+* A Python Curses based serial communications test program allows testing of ALL Propeller board functions over serial with zero use of ROS to more easily ensure the hardware is working before starting ROS.
 
 # Build a Robot! #
 First you need to build a robot!
@@ -93,7 +93,7 @@ Be sure to read the instructions that the script will print at the end about edi
 
 To update your code just run the same script again, and it will pull down and compile anything new without erasing custom settings.
 
-Please note that you will need the code to run on your Propeller board. This is stored in the "Propeller C Code for ArloBot" folder. Details on the Propeller code and setup are here: [http://ekpyroticfrood.net/?p=165](http://ekpyroticfrood.net/?p=165)
+Please note that you will need the code to run on your Propeller board. This is stored in the "PropellerCodeForArloBot" folder. Details on the Propeller code and setup are here: [http://ekpyroticfrood.net/?p=165](http://ekpyroticfrood.net/?p=165)
 
 ## Propeller Serial Interface Test ##
 Before you start trying to get ROS running, but after you have loaded the C code onto the Propeller Activity board, use the PropellerSerialTest to test the hardware and interface.  
@@ -112,7 +112,7 @@ The line next to `Settings` that says `ignoreAllProximitySensors:No` will change
 3. Next note along the `Settings` line that `pluggedIn` is `Yes`. This will prevent the Propeller Activity Board code from sending any commands to the motor. Normally the only way to override this is through ROS. It is a safety measure that prevents the robot from ever moving if ROS is not running. We will override this now. If you left the Settings menu press `s` to get back in. Then `p` for Plugged in to turn that off.  `pluggedIn:Yes` will change to `pluggedIn:Yes` Now the robot can move.  
 4. Now `q` to get out of Settings and `m` to send Move commands.  Use the letters `i` to make the wheels move the robot forward.  
 ** IT WORKS!  **
-You should probably test all of the functions available, but this has at least shown you how to use the test program and that your hardware is working.  You can use the Sensor output data to ensure your sensors work and diagnose issues with your hardware or code settings.  
+You should probably test all the functions available, but this has at least shown you how to use the test program and that your hardware is working.  You can use the Sensor output data to ensure your sensors work and diagnose issues with your hardware or code settings.  
 There is also the ability to send Test packets to the robot to check for serious serial errors.  
 Note that if you do the `r - Run speed test` there will be errors. It basically tests the ability for the code to slow down the transfer rate until the connection is stable, so errors will pop up as it attempts to go too fast and then backs off and retries. This is normal.  
 
@@ -127,10 +127,10 @@ If the Web Interface is not already running, you can start it by hand by running
 ```
 and point your web browser at the URL it gives you.
 
-If you use Ubuntu there should also be a desktop icon on the robot's desktop that you can run to do the same thing and bring up this web page on the robot itself.
+If you use Ubuntu there should also be a desktop icon on the robot's desktop which you can run to do the same thing and bring up this web page on the robot itself.
 
 ## Workstation via [x11docker](https://github.com/mviereck/x11docker)
-If you want to run RVIZ or other ROS tools from a remote Linux workstation, you do not have to install ROS on it. Instead try using [x11docker](https://github.com/mviereck/x11docker) via this setup script:
+If you want to run RVIZ or other ROS tools from a remote Linux workstation, you do not have to install ROS on it. Instead, try using [x11docker](https://github.com/mviereck/x11docker) via this setup script:
 
 ```
 bash <(wget -qO- --no-cache -o /dev/null https://raw.githubusercontent.com/chrisl8/ArloBot/melodic/workstation-via-x11docker.sh)
@@ -169,63 +169,68 @@ Once ROS is running, if you want to ensure that ONLY ROS input causes movement, 
 Notice that you must run that **AFTER ROS is started**, and run it every time you start ROS when testing with sensors ignored.
 
 # Basic ROS based usage instructions #
+*Note that you can do everything meaningful via the Web Interface. These instructions and scripts are here for reference, debugging, and learning.*  
 Depending on what you want to do there are different ways to "bring up" the robot with just ROS.<br/>These are the "recipes" that are well tested so far:
 
 ### Basic TeleOp with 3D sensor use ###
 ```
-roslaunch arlobot_ros minimal.launch --screen
+roslaunch arlobot_ros minimal.launch
 # In a new Terminal:
 roslaunch arlobot_ros keyboard_teleop.launch
 # In a new Terminal:
-# Replace "kinect" with "asus_xtion_pro" or "astra", depending on what sensor you have
-export ARLOBOT_3D_SENSOR=kinect
-roslaunch arlobot_ros 3dsensor.launch
+RPLIDAR_USB_PORT=$(find_RPLIDAR.sh) 
+roslaunch arlobot_ros rplidar.launch
 # From a Terminal in the desktop (NOT over SSH):
-roslaunch arlobot_ros view_robot.launch
-# Do this:
-  Set your Global Options->Fixed Frame to "odom
-    Drive and see if the robot appears to move properly on the grid.
-  Turn on LaserScan and set the Decay Time to 650
-    Rotate the robot in a circle, and see if you get a reasonable picture of the room.
-  Turn off Laser Scan and turn on Registered DepthCloud to see if you get a picture of the room overlayed properly onto the 3D virtual world in RVIZ.
+roslaunch arlobot_ros view_navigation.launch
 ```
+##### Do this:
+  - Set your Global Options->Fixed Frame to "odom
+  - Look at the Scan output to see if it is producing an image of the room.
+  - Drive and see if the robot appears to move properly on the grid.
 
-### Remote Control with an xBox 360 joystick ###
+### Remote Control with an xBox 360 Joystick ###
 http://ekpyroticfrood.net/?p=115
 ```
-roslaunch arlobot_ros minimal.launch --screen
+roslaunch arlobot_ros minimal.launch
 # In a new Terminal:
 rosparam set /joystick/dev "/dev/input/js0"
-roslaunch turtlebot_teleop xbox360_teleop.launch --screen
+roslaunch turtlebot_teleop xbox360_teleop.launch
 ```
 
 ### Slam Toolbox (SLAM Map building) ###
 https://github.com/SteveMacenski/slam_toolbox
 ```
-roslaunch arlobot_ros minimal.launch --screen
+start-robot.sh
 # In a new Terminal:
-roslaunch arlobot_ros slam_toolbox.launch --screen
-# In a new Terminal:
-roslaunch arlobot_ros keyboard_teleop.launch
+roslaunch arlobot_ros slam_toolbox.launch
 # From a Terminal in the desktop (NOT over SSH):
 roslaunch arlobot_ros view_navigation.launch
 # When you are done, save your map!
-rosrun map_server map_saver -f ~/rosmaps/my_map1
-# Do this:
-  Make sure that obstacles in the 3D Camera view are shown in the local costmap
-    It is possible to map walls, while the 3D is ignored by the costmap!
-    I find this is caused by the max_obstacle_height being set below the 3D Sensor's height
-    in costmap_common_params.yaml on the "scan:" line
+rosservice" call /slam_toolbox/serialize_map "${HOME}/.arlobot/rosmaps/my_map1"
 ```
+##### Do this:
+  - Ensure obstacles in the 3D Camera view are shown in the local cost map
+  - Use the "2D Nav Goal" to set destinations for the robot to navigate to.
+  - Once you have built a map you are happy with, save it.
 
-### AMCL (Navigating the map we built above ###
-http://wiki.ros.org/turtlebot_navigation/Tutorials/Autonomously%20navigate%20in%20a%20known%20map
+##### Note you can also run these scripts to accomplish the same thing more easily:
 ```
-roslaunch arlobot_ros minimal.launch --screen
+start-robot.sh
+make-map.sh
+view-navigation.sh
+# and to save the map:
+save-map.sh
+```    
+
+
+### Localization (Navigating the map we built above ###
+```
+start-robot.sh
 # In a new Terminal:
-roslaunch arlobot_ros amcl_demo.launch map_file:=~/rosmaps/my_map1.yaml
+export MAP_FILE_NAME="${HOME}/.arlobot/rosmaps/my_map1"
+roslaunch arlobot_ros slam_toolbox.launch
 # From a Terminal in the desktop (NOT over SSH):
-roslaunch arlobot_ros view_navigation.launch --screen
+roslaunch arlobot_ros view_navigation.launch
 ```
 
 Please report an issue for any problems or if you need me to clarify anything!  
@@ -241,13 +246,13 @@ All of the functions above also have quick launch scripts.
 Start just the most basic pieces  
 `start-arlobot-only.sh`  
 OR  
-Start everything  
+Start everything:  
 `start-robot.sh`
 ### Basic TeleOp ###
 `keyboard-teleop.sh`
 ### Automatically unplug itself ###
 `unPlug.sh`
-### Remote Control with an xBox 360 joystick ###
+### Remote Control with an xBox 360 Joystick ###
 This is built into the `start-robot.sh` script.
 ### Slam Toolbox (SLAM Map building) ###
 `make-map.sh`  
@@ -285,7 +290,7 @@ All the basic robot operations are available.
   - This works well from a smartphone
 - Explore all the other options. 
 
-The website uses the same scripts from above, so you can modify them or the ROS files that they call to modify how ROS operates.
+The website uses the same scripts from above, so you can modify them, or the ROS files that they call, to modify how ROS operates.
 
 Note that xBox 360 Controller operation is always live when ROS is running from the website.
 
