@@ -17,9 +17,15 @@ class PersonalSettings extends Component {
           typeof this.props.personalData[key] !== 'object' &&
           key[0] !== '_'
         ) {
+          let data = this.props.personalData[key];
+          if (data === true) {
+            data = 'True';
+          } else if (data === false) {
+            data = 'False';
+          }
           dataTable.push(
             <li key={key}>
-              {key}: {this.props.personalData[key]}
+              {key}: {data}
             </li>,
           );
         }
