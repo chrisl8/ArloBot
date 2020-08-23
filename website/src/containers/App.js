@@ -51,6 +51,9 @@ class App extends Component {
         },
       });
     });
+
+    // Populate personal data on startup
+    this.sendDataToRobot('getPersonalData');
   }
 
   handleBottomButton = (e) => {
@@ -87,6 +90,7 @@ class App extends Component {
       } else {
         pageContent = (
           <AccordionGroup
+            personalData={this.state.personalData}
             laptopBatteryPercentage={
               this.state.webModel.laptopBatteryPercentage
             }

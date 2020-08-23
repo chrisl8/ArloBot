@@ -9,6 +9,7 @@ import RobotServiceLog from './RobotServiceLog';
 import Navigation from './Navigation';
 import RemoteControl from './RemoteControl';
 import Video from '../components/Video';
+import ScanSource from '../components/ScanSource';
 
 class AccordionGroup extends Component {
   constructor(props) {
@@ -75,6 +76,14 @@ class AccordionGroup extends Component {
   }
 
   render() {
+    const displayScanSource =
+      [
+        this.props.personalData.hasASUSXtion,
+        this.props.personalData.hasKinect,
+        this.props.personalData.hasXV11,
+        this.props.personalData.hasScanseSweep,
+        this.props.personalData.hasRPLIDAR,
+      ].filter((entry) => entry).length > 1;
     return (
       <>
         <Status
@@ -135,6 +144,13 @@ class AccordionGroup extends Component {
           sendDataToRobot={this.props.sendDataToRobot}
           handleUpdateStartupElement={this.handleUpdateStartupElement}
         />
+        {displayScanSource && (
+          <ScanSource
+            isOpen={this.state.scanSourceIsOpen}
+            toggle={this.toggle}
+            personalData={this.props.personalData}
+          />
+        )}
         <RobotServiceLog
           scrollingStatus={this.props.scrollingStatus}
           logStreamerRunning={this.props.logStreamerRunning}
