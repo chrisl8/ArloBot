@@ -92,15 +92,15 @@ check_hardware() {
   # Camera 0
   if [[ $(jq '.camera0' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
     echo "Checking Camera 0 . . ."
-    CAMERANAME=$(jq '.camera0name' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
-    if ! "${SCRIPT_DIR}/find_camera.sh" "${CAMERANAME}" >/dev/null; then
+    CAMERA_NAME=$(jq '.camera0name' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
+    if ! "${SCRIPT_DIR}/find_camera.sh" "${CAMERA_NAME}" >/dev/null; then
       FAILURE_REASON="Camera 0 missing!"
       CHECK_GOOD=false
       return 1
     fi
-    VIDEODEVICE=$("${SCRIPT_DIR}/find_camera.sh" "${CAMERANAME}")
+    VIDEO_DEVICE=$("${SCRIPT_DIR}/find_camera.sh" "${CAMERA_NAME}")
 
-    if ! ls "${VIDEODEVICE}" &>/dev/null; then
+    if ! ls "${VIDEO_DEVICE}" &>/dev/null; then
       FAILURE_REASON="Camera 0 missing!"
       CHECK_GOOD=false
       return 1
@@ -110,15 +110,15 @@ check_hardware() {
   # Camera 1
   if [[ $(jq '.camera1' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
     echo "Checking Camera 1 . . ."
-    CAMERANAME=$(jq '.camera1name' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
-    if ! "${SCRIPT_DIR}/find_camera.sh" "${CAMERANAME}" >/dev/null; then
+    CAMERA_NAME=$(jq '.camera1name' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
+    if ! "${SCRIPT_DIR}/find_camera.sh" "${CAMERA_NAME}" >/dev/null; then
       FAILURE_REASON="Camera 1 missing!"
       CHECK_GOOD=false
       return 1
     fi
-    VIDEODEVICE=$("${SCRIPT_DIR}/find_camera.sh" "${CAMERANAME}")
+    VIDEO_DEVICE=$("${SCRIPT_DIR}/find_camera.sh" "${CAMERA_NAME}")
 
-    if ! ls "${VIDEODEVICE}" &>/dev/null; then
+    if ! ls "${VIDEO_DEVICE}" &>/dev/null; then
       FAILURE_REASON="Camera 1 missing!"
       CHECK_GOOD=false
       return 1

@@ -18,8 +18,8 @@ SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 # echo "${SCRIPTDIR}" # For debugging
 
 if [[ $(jq '.camera0' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-  CAMERANAME=$(jq '.camera0name' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d \")
-  VIDEODEVICE=$("${SCRIPTDIR}/find_camera.sh" "${CAMERANAME}")
+  CAMERA_NAME=$(jq '.camera0name' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d \")
+  VIDEO_DEVICE=$("${SCRIPTDIR}/find_camera.sh" "${CAMERA_NAME}")
   #echo "You will have to kill this with Ctrl+c once you have the output you want."
-  zbarcam -q --raw --nodisplay "${VIDEODEVICE}"
+  zbarcam -q --raw --nodisplay "${VIDEO_DEVICE}"
 fi

@@ -19,13 +19,13 @@ if [[ $(jq '.useQRcodes' "${HOME}/.arlobot/personalDataForBehavior.json") == tru
       sleep 1
     done
   fi
-  CAMERANAME=$(jq '.qrCameraName' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
-  if [[ -z ${CAMERANAME} ]]; then
+  CAMERA_NAME=$(jq '.qrCameraName' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
+  if [[ -z ${CAMERA_NAME} ]]; then
     exit 1
   fi
-  VIDEODEVICE=$("${SCRIPTDIR}/find_camera.sh" "${CAMERANAME}")
-  if [[ -z ${VIDEODEVICE} ]]; then
+  VIDEO_DEVICE=$("${SCRIPTDIR}/find_camera.sh" "${CAMERA_NAME}")
+  if [[ -z ${VIDEO_DEVICE} ]]; then
     exit 1
   fi
-  zbarcam -q --raw --nodisplay "${VIDEODEVICE}"
+  zbarcam -q --raw --nodisplay "${VIDEO_DEVICE}"
 fi
