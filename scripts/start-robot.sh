@@ -21,9 +21,6 @@ source "${SCRIPTDIR}/ros_prep.sh"
 
 echo "Use kill_ros.sh to close."
 
-ARLOBOT_MODEL=$(jq '.arlobotModel' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
-export ARLOBOT_MODEL
-
 # 'unbuffer' is required for running this from the node based 'behavior'
 # scripts. Otherwise stdout data is buffered until ROS exits,
 # which makes monitoring status impossible.
