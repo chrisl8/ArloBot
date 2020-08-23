@@ -4,7 +4,7 @@ import {
   setSoundToQuiet,
   setIdleToTimeout,
   openPanelIfClosed,
-  closePanelIfOpen
+  closePanelIfOpen,
 } from "../support/reusableTestsAndSetupTasks";
 
 import {
@@ -12,7 +12,7 @@ import {
   relayPanelCorrectIntialState,
   statusPanelShouldBeOpen,
   behaviorPanelShouldBeOpen,
-  startupShutdownPanelShouldBeOpen
+  startupShutdownPanelShouldBeOpen,
 } from "../support/panelTestsWithRosOff";
 
 describe("site initial layout and page function", () => {
@@ -71,9 +71,7 @@ describe("site initial layout and page function", () => {
   closePanelIfOpen("video");
 
   it("video tab should be closed", () => {
-    cy.get("#cameraButton")
-      .contains("span", "Off")
-      .should("not.be.visible");
+    cy.get("#cameraButton").contains("span", "Off").should("not.be.visible");
     cy.get("#videoFeed").should("not.be.visible");
   });
 
@@ -123,7 +121,7 @@ describe("site initial layout and page function", () => {
     cy.contains("batteryConsideredFullAt:").should("be.visible");
     cy.contains("maxPingRangeAccepted:").should("be.visible");
     cy.contains("socketEmitterThrottle:").should("be.visible");
-    cy.contains("ros3dSensor:").should("be.visible");
+    cy.contains("scanTopicSource:").should("be.visible");
     cy.contains("hasBeenEdited:").should("be.visible");
 
     cy.get("#control").click();
