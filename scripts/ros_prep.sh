@@ -104,12 +104,12 @@ if [[ $(jq '.hasXboxController' "${HOME}/.arlobot/personalDataForBehavior.json")
 fi
 
 if [[ $(jq '.camera0' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-  CAMERANAME=$(jq '.camera0name' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
-  rosparam set /camera1 "$("${SCRIPTDIR}/find_camera.sh" "${CAMERANAME}")"
+  CAMERA_NAME=$(jq '.camera0name' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
+  rosparam set /camera1 "$("${SCRIPTDIR}/find_camera.sh" "${CAMERA_NAME}")"
 fi
 if [[ $(jq '.camera1' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-  CAMERANAME=$(jq '.camera1name' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
-  rosparam set /camera2 "$("${SCRIPTDIR}/find_camera.sh" "${CAMERANAME}")"
+  CAMERA_NAME=$(jq '.camera1name' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
+  rosparam set /camera2 "$("${SCRIPTDIR}/find_camera.sh" "${CAMERA_NAME}")"
 fi
 if [[ $(jq '.wait_for_door_confirmation' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
   echo "Open and close each door to ensure lockout is working."
