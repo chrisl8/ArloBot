@@ -173,7 +173,7 @@ async function start() {
 
     socket.on('setMap', (data) => {
       if (data) {
-        if (webModel.mapList.indexOf(data)) {
+        if (webModel.mapList.indexOf(data) > -1) {
           webModelFunctions.update('mapName', data);
           wayPointEditor.updateWayPointList();
         }
