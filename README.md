@@ -139,6 +139,7 @@ Then use these commands to run various remote functions via Docker:
 `docker-view-navigation.sh`  
 `docker-ros-view-robot.sh`  
 `docker-ros-xterm.sh`  
+`docker-view-all-sources.sh`  
 
 The above works for me on Ubuntu 19.10.
 
@@ -309,6 +310,24 @@ These warnings are normal if you are using a Kinect. You can ignore them.
 [ WARN] [1564761452.230197119]: Using default parameters for RGB camera calibration.   [ WARN] [1564761452.230247519]: Camera calibration file /home/chrisl8/.ros/camera_info/depth_B00364729659136B.yaml not found.
 [ WARN] [1564761452.230264691]: Using default parameters for IR camera calibration.
 ```
+
+### Testing Kinect
+```
+roslaunch freenect_launch freenect.launch
+```
+```
+rosrun rqt_image_view rqt_image_view
+```
+Pick */camera/depth/image_rect*
+
+### Testing ASUS Xtion
+```
+roslaunch openni2_launch openni2.launch
+```
+```
+rosrun rqt_image_view rqt_image_view
+```
+Pick */camera/depth/image_rect*
 
 ## HB-25 Motor Controller Support Gone! ##
 Parallax has updated the Arlo platform to use their new DHB-10 Dual H-Bridge controller.  
