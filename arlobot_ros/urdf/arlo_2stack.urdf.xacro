@@ -358,7 +358,7 @@
       <!-- NOTE: The "FRONT" of the RPLIDAR A2/3 is the point where the cord comes out. -->
       <!-- Hence the r of 3.1 to rotate it half way around.  -->
       <!-- The height is set even with the top plate. It shouldn't matter really. -->
-      <origin xyz="0.125 0.0 0.269107" rpy="0.0 0.0 3.1"/>
+      <origin xyz="0.125 0.0 0.269107" rpy="0.0 0.0 0.0"/>
       <parent link="base_link"/>
       <child link="rplidar"/>
     </joint>
