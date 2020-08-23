@@ -86,6 +86,7 @@ fi
 
 # Shut off XV11
 if [[ $(jq '.hasXV11' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
+  echo "Stopping XV11..."
   "${SCRIPTDIR}/XVLidar.sh" stop
 fi
 
