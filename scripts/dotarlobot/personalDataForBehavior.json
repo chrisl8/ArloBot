@@ -26,7 +26,7 @@
     "service": "http",
     "fqdn": "server.example.com",
     "port": 80,
-    "password": "sueprSecret1785"
+    "password": "superSecret1234"
   },
   "_useMasterPowerRelay": "Set to true if you have a 'Master Relay' to turn off all power to the robot.",
   "useMasterPowerRelay": false,
@@ -63,7 +63,7 @@
   "arlobotModel": "default",
   "_hasActivityBoard": "This can only be false for a 'dummy' test system that has no actual hardware.",
   "hasActivityBoard": true,
-  "_hasQuickStartBoard": "My roobt has a SECOND Prpoeller board called  'Quck Start Board' that runs the PING sensors.",
+  "_hasQuickStartBoard": "My robot has a SECOND Propeller board called 'Quick Start Board' that runs the PING sensors.",
   "hasQuickStartBoard": false,
   "_speechVolumeLevelDefault": "Default volume level for speech. 0 to 100",
   "speechVolumeLevelDefault": 100,
@@ -81,7 +81,7 @@
     "has_fiveVolt": false,
     "_fiveVolt": "List the number on the USB Relay controller that controls the 5 volt power converter.",
     "fiveVolt": 7,
-    "_has_arduino": "Set this to true if you have a relay controlling a voltage converter with an Arduiono attached.",
+    "_has_arduino": "Set this to true if you have a relay controlling a voltage converter with an Arduino attached.",
     "has_arduino": false,
     "_arduino": "List the number on the USB Relay controller that controls the Arduino attached.",
     "arduino": 3,
@@ -102,7 +102,7 @@
     "_rightMotor": "List the number on the USB Relay controller that right Motor is attached to.",
     "rightMotor": 2,
     "has_speaker": false,
-    "_speaker": "Relay used to turn on speaker by rapid power cycliing it.",
+    "_speaker": "Relay used to turn on speaker by rapid power cycling it.",
     "speaker": 2
   },
   "maxPingRangeAccepted": 0.5,
