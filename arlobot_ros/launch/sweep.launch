@@ -1,11 +1,14 @@
+<!--SCANSE_SWEEP_SERIAL_PORT=$(find_ScanseSweep.sh) roslaunch arlobot_ros sweep.launch-->
+<!-- If you are getting nothing from the Scanse Sweep after using it a lot, -->
+<!--  try just unplugging it and plugging it in again. -->
 <launch>
   <group ns="scanse_sweep">
     <arg name="serial_port" value="$(optenv SCANSE_SWEEP_SERIAL_PORT)"/>
-    <node name="sweep_node"	pkg="sweep_ros"  type="sweep_node" output="screen">
-      <param name="serial_port"         type="string" value="$(arg serial_port)"/>
-      <param name="serial_baudrate"     type="int"    value="115200"/>
-      <param name="frame_id"            type="string" value="scanse_sweep"/>
-      <param name="rotation_speed"	  type="int" value="4"/>
+    <node name="sweep_node" pkg="sweep_ros" type="sweep_node" output="screen">
+      <param name="serial_port" type="string" value="$(arg serial_port)"/>
+      <param name="serial_baudrate" type="int" value="115200"/>
+      <param name="frame_id" type="string" value="scanse_sweep"/>
+      <param name="rotation_speed" type="int" value="4"/>
     </node>
   </group>
 </launch>

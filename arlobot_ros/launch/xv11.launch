@@ -1,7 +1,9 @@
 <launch>
-  <node pkg="xv_11_laser_driver" type="neato_laser_publisher" name="xv11" respawn="true" args="--respawnable">
-    <remap from="/scan" to="/xv11" />
-    <param name="~firmware_version" value="2" />
+  <arg name="scan_topic" default="xv11"/>
+  <node pkg="xv_11_laser_driver" type="neato_laser_publisher" name="xv11" respawn="true"
+        args="--respawnable">
+        <remap from="/scan" to="/$(arg scan_topic)" />
+    <param name="~firmware_version" value="2"/>
     <param name="~port" value="$(optenv XV11_SERIAL_PORT)"/>
   </node>
 </launch>
