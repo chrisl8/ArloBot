@@ -35,7 +35,11 @@ function ScanseSweep(operation, runFromCommandLine) {
         portObj.on('data', (data) => {
           if (runFromCommandLine) {
             // The "buffer" has to be converted into a string.
-            console.log(String(data));
+            const dataString = String(data);
+            const stringsToIgnore = ['MS00', '00P'];
+            if (stringsToIgnore.indexOf(dataString) > -1) {
+              console.log();
+            }
           }
           portObj.close();
           wrapUp();
@@ -45,8 +49,8 @@ function ScanseSweep(operation, runFromCommandLine) {
           if (error) {
             wrapUp(runFromCommandLine, error);
           } else if (operation === 'stop') {
-            console.log('Stoping Scanse Sweep.');
-            webModelFunctions.scrollingStatusUpdate('Stoping Scanse Sweep.');
+            console.log('Stopping Scanse Sweep...');
+            webModelFunctions.scrollingStatusUpdate('Stopping Scanse Sweep.');
             portObj.write('MS00\r', (err) => {
               // Argument Options: err, result
               if (err) {
