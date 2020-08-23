@@ -13,6 +13,7 @@ Many of these scripts are also used by the web site and the ROS nodes themselves
 - list-maps.sh - This will list the maps available in your maps folder.
 - load-map.sh - This will load up a map for your robot to start using.
 - view-navigation.sh - This will launch RVIZ with your robot, sensors and map all.
+- view-all-sources.sh - This will launch RVIZ with all of the sensors I know how to set up. I just use this with my test desktop..
 - find_xbox_controller.sh - This will tell you what device your xBox 360 controller is on.
 - find_ActivityBoard.sh - This will tell you what USB port your Activity Board is on.
 - find_camera.sh - Given a camera "name" this will tell you what video device it is on.
