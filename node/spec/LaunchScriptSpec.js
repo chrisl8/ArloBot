@@ -1,5 +1,6 @@
+const LaunchScript = require('../LaunchScript');
+
 describe('LaunchScript', () => {
-  const LaunchScript = require('../LaunchScript');
   let script;
 
   beforeEach((done) => {

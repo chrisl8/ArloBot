@@ -6,19 +6,6 @@ notifications:
 matrix:
   include:
     - language: minimal
-      name: "Melodic Robot Setup Script"
-      cache:
-        directories:
-          - ~/.npm
-          - ~/.cache
-      services:
-        - docker
-      before_install:
-        - docker pull ubuntu:18.04
-      script:
-        - docker run -ti -e TRAVIS=${TRAVIS} -v $PWD:/home/user ubuntu:18.04 /bin/bash -c "/home/user/setup-melodic.sh"
-
-    - language: minimal
       name: "Noetic Robot Setup Script"
       cache:
         directories:
@@ -28,21 +15,7 @@ matrix:
         - ${TRAVIS_BUILD_DIR}/setup-noetic.sh
 
     - language: node_js
-      name: "Node Scripts"
-      node_js: "lts/*"
-      cache:
-        directories:
-          - ~/.npm
-          - ~/.cache
-      before_install:
-        - mkdir -p ~/.arlobot/rosmaps ~/catkin_ws/src
-        - touch ~/.arlobot/rosmaps/dummymap.data ~/.arlobot/rosmaps/dummymap.posegraph
-        - cp scripts/dotarlobot/personalDataForBehavior.json ~/.arlobot/
-        - ln -s ${TRAVIS_BUILD_DIR} ~/catkin_ws/src/ArloBot
-        - cd node
-
-    - language: node_js
-      name: "Node Code Coverage"
+      name: "Node Script Test and Code Coverage"
       node_js: "lts/*"
       cache:
         directories:
@@ -58,7 +31,7 @@ matrix:
         - npm install -g nyc codecov
       script:
         - npm ci
-        - nyc ./node_modules/jasmine/bin/jasmine.js
+        - nyc ./node_modules/jest/bin/jest.js --forceExit
         - nyc report --reporter=text-lcov > coverage.lcov
         - codecov
 
@@ -69,8 +42,8 @@ matrix:
         directories:
           - ~/.npm
           - ~/.cache
+      before_install:
+        - cd website
       script:
         - npm test
         - npm run build
-      before_install:
-        - cd website

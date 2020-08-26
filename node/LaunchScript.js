@@ -21,10 +21,12 @@ class LaunchScript {
     this.started = true;
     this.hasExited = false;
     if (webModel.debugging || webModel.logConsoleMessages) {
+      /* istanbul ignore next */
       console.log(`Running ${this.name} child process . . .`);
     }
     this.startupComplete = false;
     if (webModel.debugging || webModel.logConsoleMessages) {
+      /* istanbul ignore next */
       console.log(`${this.name} is starting up . . .`);
     }
     webModelFunctions.scrollingStatusUpdate(
@@ -37,6 +39,7 @@ class LaunchScript {
     }
     this.process.stdout.on('data', (data) => {
       if (webModel.debugging || webModel.logConsoleMessages) {
+        /* istanbul ignore next */
         console.log(`${this.name} stdout data:${data}`);
       }
       if (!this.startupComplete) {
@@ -81,11 +84,13 @@ class LaunchScript {
     });
     this.process.stderr.on('data', (data) => {
       if (webModel.debugging || webModel.logConsoleMessages) {
+        /* istanbul ignore next */
         console.log(`${this.name} stderr data:${data}`);
       }
     });
     this.process.on('error', (err) => {
       if (webModel.debugging || webModel.logConsoleMessages) {
+        /* istanbul ignore next */
         console.log(`${this.name} error:${err}`);
       }
       webModelFunctions.scrollingStatusUpdate(
@@ -100,6 +105,7 @@ class LaunchScript {
       this.hasExited = true;
       this.startupComplete = true;
       if (webModel.debugging || webModel.logConsoleMessages) {
+        /* istanbul ignore next */
         console.log(`${this.name} exited with code: ${code}`);
       }
       if (this.callback) {

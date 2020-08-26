@@ -20,5 +20,6 @@ const ipAddress = () => {
 exports.ipAddress = ipAddress;
 if (require.main === module) {
   // Run the function if this is called directly instead of required.
+  /* istanbul ignore next */
   console.log(ipAddress());
 }

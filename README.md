@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.com/chrisl8/ArloBot.svg)](https://travis-ci.com/chrisl8/ArloBot)
-[![codecov](https://codecov.io/gh/chrisl8/ArloBot/branch/melodic/graph/badge.svg)](https://codecov.io/gh/chrisl8/ArloBot)
+[![codecov](https://codecov.io/gh/chrisl8/ArloBot/branch/noetic/graph/badge.svg)](https://codecov.io/gh/chrisl8/ArloBot)
 
 # Current Status and my TODO List
 
@@ -11,8 +11,6 @@ DWA Local Planner has been **removed** in favor of [teb_local_planner](http://wi
  - It is able to back up, which makes routing much better.
  - It seems to work very well with near default tuning.
 
-I am currently in process of converting over to [Noetic ROS](http://wiki.ros.org/noetic).  
- 
  # TODO List:
 
  - Fix this error coming from TEB due to something in my config:
@@ -25,7 +23,6 @@ I am currently in process of converting over to [Noetic ROS](http://wiki.ros.org
  - Convert from SimpleIDE to PropWare/PropGCC for building Propeller code.
    - Build code as part of install for testing, especially on Travis CI
    - Create scripts for easy build/install.
- - Migrate to Noetic and Ubuntu 20.04
 
 ArloBot Package for ROS
 =======================
@@ -78,7 +75,7 @@ Ask questions in the [Parallax Forums](http://forums.parallax.com/ "Parallax For
 Once your robot is built, you can use this package.
 
 ## Requirements ##
-Arlobot operates on ROS Melodic which requires Ubuntu *18.04 LTS*.
+Arlobot operates on ROS Noetic which requires Ubuntu *20.04 LTS*.
 
 If you put a fresh copy of Ubuntu 18.04 LTS on your robot's laptop then you can use the quick install script below.
 
@@ -86,7 +83,7 @@ If you put a fresh copy of Ubuntu 18.04 LTS on your robot's laptop then you can 
 There is now a script to install everything. Just run:
 
 ```
-bash <(wget -qO- --no-cache -o /dev/null https://raw.githubusercontent.com/chrisl8/ArloBot/melodic/setup-melodic.sh)
+bash <(wget -qO- --no-cache -o /dev/null https://raw.githubusercontent.com/chrisl8/ArloBot/noetic/setup-noetic.sh)
 ```
 
 Be sure to read the instructions that the script will print at the end about editing the config files in `~/.arlobot/`
@@ -133,7 +130,7 @@ If you use Ubuntu there should also be a desktop icon on the robot's desktop whi
 If you want to run RVIZ or other ROS tools from a remote Linux workstation, you do not have to install ROS on it. Instead, try using [x11docker](https://github.com/mviereck/x11docker) via this setup script:
 
 ```
-bash <(wget -qO- --no-cache -o /dev/null https://raw.githubusercontent.com/chrisl8/ArloBot/melodic/workstation-via-x11docker.sh)
+bash <(wget -qO- --no-cache -o /dev/null https://raw.githubusercontent.com/chrisl8/ArloBot/noetic/workstation-via-x11docker.sh)
 ```  
 Then use these commands to run various remote functions via Docker:  
 `docker-view-navigation.sh`  

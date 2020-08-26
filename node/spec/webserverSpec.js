@@ -13,7 +13,7 @@ const webserver = require('../webserver');
 
 let quietFileStatus;
 let stopFileStatus;
-const checkFileStatus = function (callback) {
+const checkFileStatus = (callback) => {
   fs.readFile(quietFile, (err, data) => {
     if (err) {
       quietFileStatus = false;

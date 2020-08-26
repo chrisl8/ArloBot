@@ -5,7 +5,7 @@
 INSTALLING_ROS_DISTRO=noetic
 
 # Run this straight off of github like this:
-# bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/melodic/setup-noetic.sh)
+# bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/noetic/setup-noetic.sh)
 
 #   TESTING
 #
@@ -444,10 +444,10 @@ cd ~/catkin_ws/src
 
 printf "${BLUE}ArloBot repository${NC}\n"
 if ! [[ -d ~/catkin_ws/src/ArloBot ]]; then
-  git clone -b melodic https://github.com/chrisl8/ArloBot.git
+  git clone -b noetic https://github.com/chrisl8/ArloBot.git
 else
   cd ~/catkin_ws/src/ArloBot
-  git checkout melodic
+  git checkout noetic
   git pull
 fi
 
@@ -819,7 +819,7 @@ if ! [[ -e /usr/share/PropWare/include/arlodrive.h ]]; then
   printf "${BLUE}https://david.zemon.name/PropWare${NC}\n"
   cd /tmp
   wget -O propware_3.0.0.224-1_all.deb https://ci.zemon.name/repository/download/PropWare_Develop/3817:id/propware_3.0.0.224-1_all.deb?guest=1
-  # NOTE: I have this stored in my Dropbox also if the above link dies use:
+  # NOTE: I also have this stored in my Dropbox. If the above link dies use:
   # https://www.dropbox.com/s/12l51adhwge1y43/propware_3.0.0.224-1_all.deb?dl=1
   sudo dpkg -i /tmp/propware_3.0.0.224-1_all.deb
   rm /tmp/propware_3.0.0.224-1_all.deb
@@ -828,7 +828,7 @@ fi
 if ! [[ -d /opt/parallax ]]; then
   cd /tmp
   wget -O propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz https://ci.zemon.name/repository/download/PropGCC5_Gcc4linuxX64/3620:id/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz?guest=1
-  # NOTE: I have this stored in my Dropbox also if the above link dies use:
+  # NOTE: I also have this stored in my Dropbox. If the above link dies use:
   # https://www.dropbox.com/s/sccr5cs46hgrlwd/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz?dl=1
   sudo cp /tmp/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz /opt
   rm /tmp/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz

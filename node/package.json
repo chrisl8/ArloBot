@@ -27,23 +27,25 @@
     "eslint": "^7.4.0",
     "eslint-config-airbnb": "^18.2.0",
     "eslint-config-prettier": "6.11.0",
-    "eslint-plugin-cypress": "^2.11.1",
     "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-jasmine": "^4.1.1",
+    "eslint-plugin-jest": "^23.20.0",
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.20.3",
     "eslint-plugin-react-hooks": "^4.0.8",
-    "jasmine": "^3.6.1",
-    "prettier": "2.0.5"
+    "jest": "^26.4.2",
+    "prettier": "^2.1.0"
   },
   "scripts": {
-    "test": "node_modules/jasmine/bin/jasmine.js"
+    "test": "jest --config ./jest.config.json"
   },
   "author": "Christen Lofland",
   "license": "ISC",
   "repository": {
     "type": "git",
     "url": "git://github.com/chrisl8/ArloBot.git"
+  },
+  "wallaby": {
+    "autoDetect": true
   }
 }
