@@ -1,31 +1,10 @@
 [![Build Status](https://travis-ci.com/chrisl8/ArloBot.svg)](https://travis-ci.com/chrisl8/ArloBot)
 [![codecov](https://codecov.io/gh/chrisl8/ArloBot/branch/melodic/graph/badge.svg)](https://codecov.io/gh/chrisl8/ArloBot)
 
-# Current Status and my TODO List
-
-Gmapping and AMCL have been **removed** in favor of [Slam Toolbox](https://github.com/SteveMacenski/slam_toolbox) for mapping.
- - Gmapping is no longer maintained.  
-
-DWA Local Planner has been **removed** in favor of [teb_local_planner](http://wiki.ros.org/teb_local_planner) for path planning.  
- - Teb Local Planner is much better behaved for me.
- - It is able to back up, which makes routing much better.
- - It seems to work very well with near default tuning.
-
-I am currently in process of converting over to [Noetic ROS](http://wiki.ros.org/noetic).  
+ # End of Melodic Support
  
- # TODO List:
-
- - Fix this error coming from TEB due to something in my config:
-   - [ WARN] [1597326961.776132466]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0513 seconds
- - Possibly change PING auto response to be more "failsafe" so that they do not interfere with normal TEB path following in tight spaces.
-    - Still testing. This may not be necessary.
-    - Teb is very good at path planning, and staying in the middle of the rooms and doorways.
-    - It seems to behave very well with the PING's emergency stopping and slowing of the robot.
- - Test remaining "goto" functions with Python 3 and Slam Toolbox
- - Convert from SimpleIDE to PropWare/PropGCC for building Propeller code.
-   - Build code as part of install for testing, especially on Travis CI
-   - Create scripts for easy build/install.
- - Migrate to Noetic and Ubuntu 20.04
+ I am no longer using this Melodic install. I am now using the [Noetic setup](https://github.com/chrisl8/ArloBot/tree/noetic). Please use the [Noetic setup](https://github.com/chrisl8/ArloBot/tree/noetic) on Ubuntu 20.04 instead of this one.  
+ If you do need support on this version, open an issue, and I will help, but be aware I'm not testing it anymore.
 
 ArloBot Package for ROS
 =======================

@@ -18,29 +18,6 @@ matrix:
       script:
         - docker run -ti -e TRAVIS=${TRAVIS} -v $PWD:/home/user ubuntu:18.04 /bin/bash -c "/home/user/setup-melodic.sh"
 
-    - language: minimal
-      name: "Noetic Robot Setup Script"
-      cache:
-        directories:
-          - ~/.npm
-          - ~/.cache
-      script:
-        - ${TRAVIS_BUILD_DIR}/setup-noetic.sh
-
-    - language: node_js
-      name: "Node Scripts"
-      node_js: "lts/*"
-      cache:
-        directories:
-          - ~/.npm
-          - ~/.cache
-      before_install:
-        - mkdir -p ~/.arlobot/rosmaps ~/catkin_ws/src
-        - touch ~/.arlobot/rosmaps/dummymap.data ~/.arlobot/rosmaps/dummymap.posegraph
-        - cp scripts/dotarlobot/personalDataForBehavior.json ~/.arlobot/
-        - ln -s ${TRAVIS_BUILD_DIR} ~/catkin_ws/src/ArloBot
-        - cd node
-
     - language: node_js
       name: "Node Code Coverage"
       node_js: "lts/*"
