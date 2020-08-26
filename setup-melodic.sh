@@ -461,7 +461,7 @@ if [[ "${RESPONSE_TO_XV11_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then #
   # Only needed if you have an XV-11 "Neato" Scanner
   cd ~/catkin_ws/src
   if ! [[ -d ~/catkin_ws/src/xv_11_laser_driver ]]; then
-    git clone https://github.com/chrisl8/xv_11_laser_driver.git
+    git clone -b noetic-devel https://github.com/chrisl8/xv_11_laser_driver.git
   else
     cd ~/catkin_ws/src/xv_11_laser_driver
     git pull
