@@ -45,6 +45,14 @@
     "type": "git",
     "url": "git://github.com/chrisl8/ArloBot.git"
   },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/*Spec.js"
+    ],
+    "coverageDirectory": "./coverage/",
+    "collectCoverage": true
+  },
   "wallaby": {
     "autoDetect": true
   }

@@ -28,12 +28,11 @@ matrix:
         - ln -s ${TRAVIS_BUILD_DIR} ~/catkin_ws/src/ArloBot
         - cd node
       install:
-        - npm install -g nyc codecov
+        - npm install -g jest codecov
       script:
         - npm ci
-        - nyc ./node_modules/jest/bin/jest.js --forceExit
-        - nyc report --reporter=text-lcov > coverage.lcov
-        - codecov
+        - jest --forceExit
+        - codecov --disable=gcov
 
     - language: node_js
       name: "React Website"
