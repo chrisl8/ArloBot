@@ -5,7 +5,7 @@
 # on a secondary system. it will not run a robot.
 
 # Run this straight off of github like this:
-# bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/melodic/workstation-via-x11docker.sh)
+# bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/noetic/workstation-via-x11docker.sh)
 
 set -e
 
@@ -77,7 +77,7 @@ if ! [[ -d ~/catkin_ws/src ]]; then
 fi
 cd ~/catkin_ws/src
 if ! [[ -d ~/catkin_ws/src/ArloBot ]]; then
-  git clone -b melodic https://github.com/chrisl8/ArloBot.git
+  git clone -b noetic https://github.com/chrisl8/ArloBot.git
 else
   cd ~/catkin_ws/src/ArloBot
   git pull
