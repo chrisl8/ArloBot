@@ -6,7 +6,7 @@
  *     Version: 0.1
  *
  *  Edited on Aug 2, 2014
- *       Editor: ChrisL8
+ *       Editor: Christen Lofland
  *       Version 0.2
  *       Increased all "delay(10)" statments to "delay(15)"
  *       Because 10 is too short for waitcnt.

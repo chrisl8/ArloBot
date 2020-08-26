@@ -71,7 +71,7 @@ The code is used to calibrate the odometry of the Arlobot.
 The encoders must be plugged in the Parallax activity board, and the `DISPERCOUNT`, `TRACKWIDTH` and `DIAERROR` should be calibrated.
 `Fwd()` and `Turn()` functions are used to drive the robot to a certain distance or angle.
 
-The calibrated results should be put into the copy of [../src/arlobot/arlobot_bringup/arlobot.yaml](../src/arlobot/arlobot_bringup/arlobot.yaml), which is under `~/.arlobot/`:
+The calibrated results should be put into the copy of [../arlobot_ros/arlobot.yaml](../arlobot_ros/arlobot.yaml), which is under `~/.arlobot/`:
 In the `driveGeometry:` line, use the calculated value `TRACKWIDTH` for `trackWidth`,
 and the measured value `DISPERCOUNT` for `distancePerCount` (see below).
 

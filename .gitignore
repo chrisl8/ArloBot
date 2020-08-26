@@ -23,3 +23,9 @@ PropellerCodeForArloBot/ROSInterfaceForArloBotWithDHB10.elf
 .ropeproject/
 /Log.io
 508.0x
+cmake-build-none/
+/PropellerCodeForArloBot/bin/
+/PropellerCodeForArloBot/2ndBoardCode/bin/
+/PropellerCodeForArloBot/Calib/bin/
+/PropellerCodeForArloBot/MotorResponseTesting/bin/
+/PropellerCodeForArloBot/ROSInterfaceForArloBot/bin/

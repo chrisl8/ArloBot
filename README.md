@@ -21,7 +21,6 @@ DWA Local Planner has been **removed** in favor of [teb_local_planner](http://wi
     - It seems to behave very well with the PING's emergency stopping and slowing of the robot.
  - Test remaining "goto" functions with Python 3 and Slam Toolbox
  - Convert from SimpleIDE to PropWare/PropGCC for building Propeller code.
-   - Build code as part of install for testing, especially on Travis CI
    - Create scripts for easy build/install.
 
 ArloBot Package for ROS

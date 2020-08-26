@@ -13,11 +13,7 @@ without ever achieving its destination.
 So use this for info and experimenting, but don't go copying these blindly
 into param/*.yaml files.
 
-These settings are used in
-dwa_local_planner_params.yaml
-    under both arlobot_navigation and arlobot_explore
-and base_local_planenr_params.yaml
-    under arlobot_explore
+These settings are used in base_local_planenr_params.yaml
 
 The robot behaves much better if the acceleration is limited.
 I do this by setting the ACC in the motor controller to 150 instead of the default 512:
@@ -151,7 +147,7 @@ It sometimes sounds funny at 0.3 rad/s, but it is smooth.
 
 If you make changes, be sure to adjust
 propellerMaxSpeeds: {abd_speedLimit: 220, abdR_speedLimit: 220}
-in ~/catkin_ws/src/ArloBot/src/arlobot/arlobot_bringup/param/arlobot.yaml
+in ~/catkin_ws/src/ArloBot/arlobot_ros/param/arlobot.yaml
 
 Some snippets:
 From a goal in front of the robot:

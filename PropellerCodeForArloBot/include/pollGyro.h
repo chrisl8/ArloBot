@@ -7,7 +7,7 @@
    wheel encoders is excellent! The only thing I do with the gyro is send the
    data to ROS and display it on the web interface. At some point a ROS node
    could use that data to detect a serious issue, like the robot being picked up
-   or being stuck. As it is though, gmapping, AMCL, etc. work very well off of
+   or being stuck. As it is though, mapping works very well off of
    the Odometry without using the gyro data.
    */
 const unsigned char i2cAddr = 0x69; // I2C Gyro address

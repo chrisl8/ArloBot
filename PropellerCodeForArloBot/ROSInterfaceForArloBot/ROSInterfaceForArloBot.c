@@ -6,7 +6,7 @@ Author: Chris L8 https://github.com/chrisl8
 URL: https://github.com/chrisl8/ArloBot
 
 The ROS Node for this code is called propellerbot_node.py
-and can be found in the arlobot_bringup package from the above URL.
+and can be found in the arlobot_ros package from the above URL.
 
 ATTENTION! ATTENTION! ATTENTION! ATTENTION! ATTENTION! ATTENTION!
 
@@ -23,6 +23,8 @@ preceding QUESTION is commented out.
 
 Example, My robot has a "Thing1", but not a "Thing2"
 */
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "EndlessLoop"
 #define hasThingOne
 //#define hasThingTwo
 
@@ -524,3 +526,5 @@ int main() {
     }
   }
 }
+
+#pragma clang diagnostic pop

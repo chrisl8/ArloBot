@@ -11,7 +11,7 @@
 
 // =============================================== //
 // This is a companion file to
-// src/arlobot/arlobot_bringup/scripts/PropellerSerialDataPacketTypes.py
+// arlobot_ros/scripts/PropellerSerialDataPacketTypes.py
 // where the data types are defined for the ROS side
 // Python code.
 // =============================================== //
@@ -286,7 +286,7 @@ ledUnion ledData;
 // odometry, and reports it, not reads it. The ROS program tracks a "difference"
 // between the reported odometry and the position on the map. But if you
 // know the robot's position better than it does, for instance, when
-// loading a new map, or a board reset while AMCL is running, then we may
+// loading a new map, or a board reset while Localization is running, then we may
 // want to tell the robot where to start after init is already done.
 // =============================================== //
 

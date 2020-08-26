@@ -182,11 +182,11 @@ void broadcastOdometryAndRunMotors(void *par) {
         reporting. This will help with debugging situations where the robot gets
         stalled in doorways and such due to odd sensor readings from angled
         surfaces near the sides.
-        2. I also want to use at least some of this for obstacle avoidance in
-        AMCL. Note that I do not think that IR and PING data will be useful for
-        gmapping, however introducing the PING and IR data into AMCL as
-        obstacles helps with path planning around obstacles that are not seen by
-        the 3D Kinect/ASUS camera.
+        2. I also want to use at least some of this for obstacle avoidance. Note
+        that I do not think that IR and PING data will ever be useful for
+        mapping, however introducing the PING and IR data into the costmap as
+        obstacles can help with path planning around obstacles that are not seen by
+        the LIDAR or cameras.
         */
 
 // Check Motor Power

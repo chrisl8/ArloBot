@@ -839,6 +839,27 @@ if ! [[ -d /opt/parallax ]]; then
   # TODO: Set up instructions and/or scripts on how to use these tools.
 fi
 
+printf "\n${YELLOW}[Test Compiling Propeller Code.]${NC}\n"
+printf "${BLUE}You will need to load this code onto your Propeller board after the setup is done.${NC}\n"
+
+function testMake() {
+printf " ${BLUE}- ${1}${NC}\n"
+  cd "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/${1}"
+  rm -rf bin
+  if ! [[ -d bin ]]; then
+    mkdir bin
+  fi
+  cd bin
+  cmake -G "Unix Makefiles" ..
+  make
+
+}
+testMake ROSInterfaceForArloBot
+testMake MotorResponseTesting
+testMake 2ndBoardCode
+testMake Calib
+cd
+
 # TODO: Go ahead and test build the codes!
 
 # TODO: Write script for quick "deploy to Activity Board".
