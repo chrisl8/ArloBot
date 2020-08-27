@@ -839,6 +839,14 @@ if ! [[ -d /opt/parallax ]]; then
   # TODO: Set up instructions and/or scripts on how to use these tools.
 fi
 
+if ! [[ -e ${ARLO_HOME}/per_robot_settings_for_propeller_c_code.h ]]; then
+  cp "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/per_robot_settings_for_propeller_c_code.h" "${ARLO_HOME}"
+fi
+
+if ! [[ -e ${ARLO_HOME}/per_robot_settings_for_propeller_2nd_board.h ]]; then
+  cp "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/per_robot_settings_for_propeller_2nd_board.h" "${ARLO_HOME}"
+fi
+
 printf "\n${YELLOW}[Test Compiling Propeller Code.]${NC}\n"
 printf "${BLUE}You will need to load this code onto your Propeller board after the setup is done.${NC}\n"
 
