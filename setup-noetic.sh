@@ -383,6 +383,13 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     echo "depthimage_to_laserscan will be installed from source instead."
     # "ros-${INSTALLING_ROS_DISTRO}-depthimage-to-laserscan" - Required for ASUS Xtion and Kinect to operate
   fi
+  if [[ "${RESPONSE_TO_KINECT_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
+    # Always test in Travis
+    # TODO: Uncomment if they every release freenect_stack for Noetic
+    #PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-freenect-stack")
+    echo "freenect_stack will be installed from source instead."
+    # "ros-${INSTALLING_ROS_DISTRO}-freenect-stack" - Required for Kinect to operate
+  fi
   if ! [[ "${RESPONSE_TO_MYCROFT_QUERY}" == "y" ]]; then
     PACKAGE_TO_INSTALL_LIST+=(espeak-ng-espeak)
   # espeak-ng-espeak - Used for robot to speak if MyCroft is not used.
@@ -814,7 +821,7 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
 fi
 
 if ! [[ -e /usr/share/PropWare/include/arlodrive.h ]]; then
-  printf "\n${YELLOW}[Setting up PropWare and PropGCC for putting code on Activity Board.]${NC}\n"
+  printf "\n${YELLOW}[Setting up PropWare (and PropGCC) for putting code on Activity Board.]${NC}\n"
   printf "${BLUE}Parallax no longer supports Linux so we are using some third party tools.${NC}\n"
   printf "${BLUE}https://david.zemon.name/PropWare${NC}\n"
   cd /tmp
@@ -826,6 +833,7 @@ if ! [[ -e /usr/share/PropWare/include/arlodrive.h ]]; then
 fi
 
 if ! [[ -d /opt/parallax ]]; then
+  printf "\n${YELLOW}[Setting up PropGCC for putting code on Activity Board.]${NC}\n"
   cd /tmp
   wget -O propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz https://ci.zemon.name/repository/download/PropGCC5_Gcc4linuxX64/3620:id/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz?guest=1
   # NOTE: I also have this stored in my Dropbox. If the above link dies use:
@@ -851,7 +859,7 @@ printf "\n${YELLOW}[Test Compiling Propeller Code.]${NC}\n"
 printf "${BLUE}You will need to load this code onto your Propeller board after the setup is done.${NC}\n"
 
 function testMake() {
-printf " ${BLUE}- ${1}${NC}\n"
+  printf " ${BLUE}- ${1}${NC}\n"
   cd "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/${1}"
   rm -rf bin
   if ! [[ -d bin ]]; then
@@ -989,9 +997,9 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
 
   printf "\n${YELLOW}------------------------------------------------------------${NC}\n"
   printf "${YELLOW}Remember: You MUST install the Propeller code on your Propeller board too!${NC}\n"
-  printf "${GREEN}See: ${BLUE}https://ekpyroticfrood.net/?p=165${NC}\n"
-  printf "${GREEN}for more information on getting SimpleIDE set up,${NC}\n"
-  printf "${GREEN}and installing code on your Propeller board.${NC}\n"
+  printf "${GREEN}See: ${BLUE}https://ekpyroticfrood.net/?p=551${NC}\n"
+  # TODO: Should I create a script to do the install for me?
+  printf "${GREEN}for more information on installing code on your Propeller board.${NC}\n"
   printf "${YELLOW}------------------------------------------------------------${NC}\n"
 fi
 # TODO: Some post install instructions for the workstation build.
