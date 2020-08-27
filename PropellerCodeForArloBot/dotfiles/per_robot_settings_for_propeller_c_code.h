@@ -127,8 +127,8 @@ const int startSlowDownDistance[NUMBER_OF_PING_SENSORS] = {MAX_DISTANCE};
 // MAX_DISTANCE, 40, 8, 8, 40, MAX_DISTANCE, 40, 8, 40, MAX_DISTANCE, 40,
 // MAX_DISTANCE};
 // Set shorter distances for IR sensors because they are less reliable.
-const int IRstartSlowDownDistance[NUMBER_OF_IR_SENSORS] = {
-    8, 20, IR_MAX_DISTANCE, 20, 8, IR_MAX_DISTANCE, 0, 0};
+//const int IRstartSlowDownDistance[NUMBER_OF_IR_SENSORS] = {
+//    8, 20, IR_MAX_DISTANCE, 20, 8, IR_MAX_DISTANCE, 0, 0};
 /* My last two IR sensors are cliff sensors, thus the "0, 0" because slowdown
 does not apply to them. */
 

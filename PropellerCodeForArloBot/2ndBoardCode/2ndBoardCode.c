@@ -139,6 +139,7 @@ const float referenceVoltage = 5.0; // MCP3208 reference voltage setting. I use 
   return(mcp3208cm);
 }
 
+#ifdef hasButtons
 void pollButtons(void *par) {
     while (1) {
         pause(100);
@@ -149,3 +150,4 @@ void pollButtons(void *par) {
         }
     }
 }
+#endif
