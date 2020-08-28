@@ -60,9 +60,11 @@ function finish() {
   if [[ -z ${INSTALL_FINISHED} ]]; then
     printf "\n"
     printf "${RED}INSTALL FAILURE!!!${NC}\n"
-    printf "${RED}The Install Script has failed. Please investigate cause, correct, and run again before proceeding.${NC}\n"
+    printf "${RED}The Install Script has failed. Please investigate the cause, correct, and run again before proceeding.${NC}\n"
     printf "\n"
     printf "${YELLOW}If this was a transient error, such as a network failure connecting to something, you may just need to run it again.${NC}\n"
+    printf "\n"
+    printf "${YELLOW}If this persists, please file an issue against the repository at https://github.com/chrisl8/ArloBot/issues${NC}\n"
     printf "\n"
     exit 1
   fi
@@ -821,7 +823,7 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
 fi
 
 if ! [[ -e /usr/share/PropWare/include/arlodrive.h ]]; then
-  printf "\n${YELLOW}[Setting up PropWare (and PropGCC) for putting code on Activity Board.]${NC}\n"
+  printf "\n${YELLOW}[Setting up PropWare and PropGCC for putting code on Activity Board.]${NC}\n"
   printf "${BLUE}Parallax no longer supports Linux so we are using some third party tools.${NC}\n"
   printf "${BLUE}https://david.zemon.name/PropWare${NC}\n"
   cd /tmp
@@ -833,7 +835,7 @@ if ! [[ -e /usr/share/PropWare/include/arlodrive.h ]]; then
 fi
 
 if ! [[ -d /opt/parallax ]]; then
-  printf "\n${YELLOW}[Setting up PropGCC for putting code on Activity Board.]${NC}\n"
+  printf "\n${YELLOW}[Installing PropGCC, which is required by PropWare.]${NC}\n"
   cd /tmp
   wget -O propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz https://ci.zemon.name/repository/download/PropGCC5_Gcc4linuxX64/3620:id/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz?guest=1
   # NOTE: I also have this stored in my Dropbox. If the above link dies use:
@@ -844,7 +846,6 @@ if ! [[ -d /opt/parallax ]]; then
   sudo tar xf propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz
   sudo rm /opt/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz
   cd # Get out of /opt just for safety
-  # TODO: Set up instructions and/or scripts on how to use these tools.
 fi
 
 if ! [[ -e ${ARLO_HOME}/per_robot_settings_for_propeller_c_code.h ]]; then
