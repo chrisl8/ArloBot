@@ -867,7 +867,7 @@ function testMake() {
     mkdir bin
   fi
   cd bin
-  cmake -G "Unix Makefiles" ..
+  cmake -DCMAKE_MODULE_PATH=/usr/share/PropWare/CMakeModules -G "Unix Makefiles" ..
   make
 
 }
