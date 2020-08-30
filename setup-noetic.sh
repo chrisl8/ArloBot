@@ -400,14 +400,8 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   # fswebcam - Used for streaming a camera to the website. Camera streaming will not work without it.
   PACKAGE_TO_INSTALL_LIST+=(zbar-tools)
   # zbar-tools - Used by node service to read QR codes via on board camera
-
-  # TODO: Do I need this, or is everything I need already installed?
-  # ros-${INSTALLING_ROS_DISTRO}-rqt-* - All of the GUI tools for Robot configuration
-
-  # TODO: Test relay board interaction before installing these.
-  # TODO: Perhaps put these behind a QUESTION about USB Relay board?
-  # TODO: Currently I have REMOVED these packages, and the relay boards still work. :shrug:
-  # python3-ftdi1, libftdi1-dev - required by pylibftdi for talking to USB based serial boards like relay boards, etc.
+  PACKAGE_TO_INSTALL_LIST+=(libftdi1-dev)
+  # libftdi1-dev - required by pylibftdi for talking to USB based serial boards like relay boards, etc.
   #           https://pylibftdi.readthedocs.io/en/0.18.0/installation.html
   #      For 8-CH USB Relay board:
   #           Reference: https://code.google.com/p/drcontrol/wiki/Install_RaspberryPi">https://code.google.com/p/drcontrol/wiki/Install_RaspberryPi
@@ -416,6 +410,9 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   #           Should return:
   #           FTDI:FT245R USB FIFO:A9026EI5
   #           If you have a USB Relay board attached via USB.
+
+  # TODO: Do I need this, or is everything I need already installed?
+  # ros-${INSTALLING_ROS_DISTRO}-rqt-* - All of the GUI tools for Robot configuration
 
   # TODO: Confirm that Scanse Sweep needs this and add it to the "if scanse" section:
   # ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan - used by Scanse Sweep

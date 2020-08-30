@@ -319,7 +319,7 @@ def check():
         sys.exit(1)
 
     # Check availability on library, this check is also done in pylibftdi
-    ftdi_lib = find_library("ftdi")
+    ftdi_lib = find_library("ftdi1")
     if ftdi_lib is None:
         print("Error: The pylibftdi library not found")
         sys.exit(1)
