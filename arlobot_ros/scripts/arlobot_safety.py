@@ -62,18 +62,14 @@ class ArlobotSafety(object):
 
             if checkAC:  # Unless we were told not to
                 # upower -i /org/freedesktop/UPower/devices/line_power_AC
-                laptopPowerState = subprocess.Popen(
+                laptopPowerState = subprocess.run(
                     ["upower", "-d", "/org/freedesktop/UPower/devices/line_power_AC"],
                     stdout=subprocess.PIPE,
-                    stderr=subprocess.STDOUT,
-                    close_fds=True,
-                )
+                ).stdout.decode("utf-8")
                 # Only grab the FIRST battery percentage!
                 gotBatteryPercent = False
-                for line in iter(laptopPowerState.stdout.readline, ""):
-                    # rospy.loginfo(line) # for Debugging
-                    if b"online" in line:
-                        # rospy.loginfo(line) # Just so we know it is working (for debugging)
+                for line in laptopPowerState.split("\n"):
+                    if "online" in line:
                         upowerOutput = line.split()
                         # print upowerOutput[1]
                         if upowerOutput[1] == "no":
@@ -90,13 +86,10 @@ class ArlobotSafety(object):
                                 rospy.loginfo("AC Power Connected.")
                                 self.acPower = True
                                 rospy.set_param("~ACpower", self.acPower)
-                    if b"percentage" in line and not gotBatteryPercent:
+                    if "percentage" in line and not gotBatteryPercent:
                         upowerOutput = line.split()
-                        # rospy.loginfo(upowerOutput[1].rstrip('%'))
                         self._laptopBatteryPercent = int(upowerOutput[1].rstrip("%"))
                         gotBatteryPercent = True
-                laptopPowerState.stdout.close()
-                laptopPowerState.wait()
             else:  # Just set to 0 if we were told to ignore AC power status.
                 if self.acPower:  # Only log and set parameters if there is a change!
                     self.acPower = False
