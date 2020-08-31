@@ -1,11 +1,9 @@
 function openPanelIfClosed(id) {
   it(`open ${id} if it is closed`, () => {
-    cy.get(`#${id}-card-body`).each($elm => {
+    cy.get(`#${id}-card-body`).each(($elm) => {
       cy.wrap($elm).then(() => {
         if (!$elm.hasClass("show")) {
-          cy.get($elm)
-            .parent()
-            .click();
+          cy.get($elm).parent().click();
           // Do not continue until animation is done.
           cy.get(`#${id}-card-body`).should("not.have.class", "collapsing");
         }
@@ -19,7 +17,7 @@ function closePanelIfOpen(id) {
     // Cannot close while it is still in motion, so wait for it to be done
     // if it was in motion.
     cy.get(`#${id}-card-body`).should("not.have.class", "collapsing");
-    cy.get(`#${id}-card-body`).each($elm => {
+    cy.get(`#${id}-card-body`).each(($elm) => {
       cy.wrap($elm).then(() => {
         console.log($elm);
         if ($elm.hasClass("show")) {
@@ -66,7 +64,6 @@ function initialPageLoadItemsVisible() {
     cy.contains("Laptop Battery").should("be.visible");
     cy.contains("Laptop Fully Charged").should("be.visible");
     cy.contains("Plugged In").should("be.visible");
-    cy.contains("Dangerous Doors Open").should("be.visible");
     cy.contains("Map").should("be.visible");
     cy.contains("Debugging").should("be.visible");
     cy.contains("Camera").should("be.visible");
@@ -77,9 +74,7 @@ function initialPageLoadItemsVisible() {
     cy.contains("Behavior").should("be.visible");
     cy.contains("Startup/Shutdown").should("be.visible");
     cy.contains("ROS Stopped").should("be.visible");
-    cy.get("#startup-shutdown-card")
-      .contains("Start ROS")
-      .should("be.visible");
+    cy.get("#startup-shutdown-card").contains("Start ROS").should("be.visible");
     cy.contains("Reset Robot Server").should("be.visible");
     cy.contains("Unplug").should("be.visible");
     cy.contains("Robot Service Log").should("be.visible");
@@ -95,7 +90,7 @@ function setSoundToQuiet() {
     cy.contains("Behavior").click();
     cy.get("#talk-bequiet-button")
       .contains("Talk")
-      .each($elm => {
+      .each(($elm) => {
         cy.wrap($elm).then(() => {
           if ($elm.hasClass("brightly-positive-text")) {
             cy.get("#talk-bequiet-button").click();
@@ -116,7 +111,7 @@ function setIdleToTimeout() {
     cy.contains("Behavior").click();
     cy.get("#idle-timeout-button")
       .contains("Never")
-      .each($elm => {
+      .each(($elm) => {
         cy.wrap($elm).then(() => {
           if ($elm.hasClass("brightly-positive-text")) {
             cy.get("#idle-timeout-button").click();
@@ -138,5 +133,5 @@ module.exports = {
   setSoundToQuiet,
   setIdleToTimeout,
   openPanelIfClosed,
-  closePanelIfOpen
+  closePanelIfOpen,
 };

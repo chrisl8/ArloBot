@@ -27,7 +27,6 @@ module.exports = {
   checkUsbRelayBank: true, // Always read once on load
   pushoverOn: false, // TODO: Add this to web interface, to enable by hand IF enabled in json config
   haltRobot: false,
-  doorsOpen: true, // Track if any doors are open that pose a danger to Daleks
   semaphoreFilesRead: false,
   laptopFullyCharged: 'unknown',
   laptopBatteryPercentage: '???%',
@@ -188,6 +187,14 @@ module.exports = {
     {
       rosName: 'robotBatteryLow',
       fancyName: 'Robot Battery Low',
+      status: '',
+      btnClass: '',
+      alertOn: true,
+      alertBtnClass: 'btn-danger',
+    },
+    {
+      rosName: 'dangerousDoorsOpen',
+      fancyName: 'Doors Open',
       status: '',
       btnClass: '',
       alertOn: true,

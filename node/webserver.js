@@ -248,9 +248,6 @@ async function start() {
     socket.on('talk', () => {
       handleSemaphoreFiles.setSemaphoreFiles('talk');
     });
-    socket.on('markDoorsClosed', () => {
-      handleSemaphoreFiles.setSemaphoreFiles('markDoorsClosed');
-    });
 
     socket.on('stopIdleTimer', () => {
       webModelFunctions.scrollingStatusUpdate('Idle Timer Stopped.');

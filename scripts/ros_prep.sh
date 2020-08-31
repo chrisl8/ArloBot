@@ -98,6 +98,11 @@ rosparam set /arlobot/mapname empty
 
 rosparam set /arlobot/maxPingRangeAccepted "$(jq '.maxPingRangeAccepted' "${HOME}/.arlobot/personalDataForBehavior.json")"
 
+if [[ $(jq '.monitorDoors' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
+  rosparam set /arlobot/monitorDoors "$(jq '.monitorDoors' "${HOME}/.arlobot/personalDataForBehavior.json")"
+  echo "Door sensing is on. If robot will not move, check doors."
+fi
+
 if [[ $(jq '.hasActivityBoard' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
   rosparam set /arlobot/port "$("${SCRIPTDIR}/find_ActivityBoard.sh")"
 else
@@ -120,12 +125,4 @@ fi
 if [[ $(jq '.camera1' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
   CAMERA_NAME=$(jq '.camera1name' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
   rosparam set /camera2 "$("${SCRIPTDIR}/find_camera.sh" "${CAMERA_NAME}")"
-fi
-
-if [[ $(jq '.wait_for_door_confirmation' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-  echo "Open and close each door to ensure lockout is working."
-  for i in $(jq -r '.door_list[]' "${HOME}/.arlobot/personalDataForBehavior.json"); do
-    touch "${HOME}/.arlobot/status/doors/${i}"
-  done
-  chmod ugo+rw "${HOME}"/.arlobot/status/doors/*
 fi

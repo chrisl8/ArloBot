@@ -2,7 +2,7 @@ import {
   resetRobotService,
   initialPageLoadItemsVisible,
   openPanelIfClosed,
-  closePanelIfOpen
+  closePanelIfOpen,
 } from "../support/reusableTestsAndSetupTasks";
 
 import { statusPanelShouldBeOpen } from "../support/panelTestsWithRosOff";
@@ -33,14 +33,7 @@ describe("Status Panel Functions", () => {
       .should("be.visible");
     cy.get("#pluggedInStatusButton").should("have.class", "btn-danger");
 
-    cy.get("#doorsOpenStatusButton")
-      .contains("span", "No")
-      .should("be.visible");
-    cy.get("#doorsOpenStatusButton").should("not.have.class", "btn-success");
-
-    cy.get("#mapStatusButton")
-      .contains("span", "None")
-      .should("be.visible");
+    cy.get("#mapStatusButton").contains("span", "None").should("be.visible");
     cy.get("#mapStatusButton").should("not.have.class", "btn-success");
 
     cy.get("#debuggingStatusButton")
@@ -48,9 +41,7 @@ describe("Status Panel Functions", () => {
       .should("be.visible");
     cy.get("#debuggingStatusButton").should("not.have.class", "btn-warning");
 
-    cy.get("#cameraStatusButton")
-      .contains("span", "Off")
-      .should("be.visible");
+    cy.get("#cameraStatusButton").contains("span", "Off").should("be.visible");
     cy.get("#cameraStatusButton").should("not.have.class", "btn-success");
 
     cy.get("#masterRelayStatusButton")
@@ -58,14 +49,10 @@ describe("Status Panel Functions", () => {
       .should("be.visible");
     cy.get("#masterRelayStatusButton").should("not.have.class", "btn-success");
 
-    cy.get("#mycroftStatusButton")
-      .contains("span", "Up")
-      .should("be.visible");
+    cy.get("#mycroftStatusButton").contains("span", "Up").should("be.visible");
     cy.get("#mycroftStatusButton").should("have.class", "btn-success");
 
-    cy.get("#cloudStatusButton")
-      .contains("span", "Up")
-      .should("be.visible");
+    cy.get("#cloudStatusButton").contains("span", "Up").should("be.visible");
     cy.get("#cloudStatusButton").should("have.class", "btn-success");
   });
 
@@ -89,9 +76,7 @@ describe("Status Panel Functions", () => {
     cy.get("#debuggingStatusButton").should("have.class", "btn-warning");
 
     cy.contains("Handle Power without ROS").should("be.visible");
-    cy.get("#startup-shutdown-card")
-      .contains("Start ROS")
-      .should("be.visible");
+    cy.get("#startup-shutdown-card").contains("Start ROS").should("be.visible");
     cy.contains("Polling").should("be.visible");
 
     cy.contains("Robot Service Log").click();
@@ -108,34 +93,24 @@ describe("Status Panel Functions", () => {
 
   it("camera status button should function", () => {
     // NOTE: This tests the camera button in the Status panel, not the Video tab
-    cy.get("#cameraButton")
-      .contains("span", "Off")
-      .should("not.be.visible");
+    cy.get("#cameraButton").contains("span", "Off").should("not.be.visible");
     cy.get("#videoFeed").should("not.be.visible");
     cy.contains("Camera Off").should("be.visible");
 
-    cy.get("#cameraStatusButton")
-      .contains("span", "Off")
-      .should("be.visible");
+    cy.get("#cameraStatusButton").contains("span", "Off").should("be.visible");
 
     cy.get("#cameraStatusButton").click();
 
-    cy.get("#cameraButton")
-      .contains("span", "Off")
-      .should("be.visible");
+    cy.get("#cameraButton").contains("span", "Off").should("be.visible");
     cy.get("#videoFeed").should("be.visible");
 
     cy.get("#cameraStatusButton").click();
 
-    cy.get("#cameraButton")
-      .contains("span", "Off")
-      .should("be.visible");
+    cy.get("#cameraButton").contains("span", "Off").should("be.visible");
     cy.get("#videoFeed").should("be.visible");
 
     cy.contains("Video - Camera Off").click();
-    cy.get("#cameraButton")
-      .contains("span", "Off")
-      .should("not.be.visible");
+    cy.get("#cameraButton").contains("span", "Off").should("not.be.visible");
     cy.get("#videoFeed").should("not.be.visible");
   });
 

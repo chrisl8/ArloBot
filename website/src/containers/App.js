@@ -96,7 +96,6 @@ class App extends Component {
             }
             laptopFullyCharged={this.state.webModel.laptopFullyCharged}
             pluggedIn={this.state.webModel.pluggedIn}
-            doorsOpen={this.state.webModel.doorsOpen}
             mapName={this.state.webModel.mapName}
             mapLoaded={this.state.webModel.mapLoaded}
             debugging={this.state.webModel.debugging}

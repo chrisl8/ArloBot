@@ -90,7 +90,6 @@ class AccordionGroup extends Component {
           laptopBatteryPercentage={this.props.laptopBatteryPercentage}
           laptopFullyCharged={this.props.laptopFullyCharged}
           pluggedIn={this.props.pluggedIn}
-          doorsOpen={this.props.doorsOpen}
           mapName={this.props.mapName}
           debugging={this.props.debugging}
           logConsoleMessages={this.props.logConsoleMessages}
@@ -139,7 +138,6 @@ class AccordionGroup extends Component {
           toggle={this.toggle}
           ROSisRunning={this.props.ROSisRunning}
           ROSstart={this.props.ROSstart}
-          doorsOpen={this.props.doorsOpen}
           unplugYourself={this.props.unplugYourself}
           sendDataToRobot={this.props.sendDataToRobot}
           handleUpdateStartupElement={this.handleUpdateStartupElement}
@@ -181,7 +179,6 @@ class AccordionGroup extends Component {
             openGroup={this.openGroup}
             RosService={this.props.RosService}
             pluggedIn={this.props.pluggedIn}
-            doorsOpen={this.props.doorsOpen}
             sendDataToRobot={this.props.sendDataToRobot}
           />
         )}

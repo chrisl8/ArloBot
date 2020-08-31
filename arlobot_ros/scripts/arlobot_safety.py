@@ -71,7 +71,6 @@ class ArlobotSafety(object):
                 for line in laptopPowerState.split("\n"):
                     if "online" in line:
                         upowerOutput = line.split()
-                        # print upowerOutput[1]
                         if upowerOutput[1] == "no":
                             if (
                                 self.acPower
@@ -138,30 +137,26 @@ class ArlobotSafety(object):
             else:
                 safety_status.safeToGo = False
 
-            # This checks for files left by the door checking system.
-            # Note that if we are exploring you will have to just
-            # ANY file will stop the robot.
-            # The web server has a button to delete all files in the
-            # ~/.arlobot/status/doors folder.
-            door_dir = os.path.expanduser("~/.arlobot/status/doors")
-            # This folder should exist, otherwise we are going to stop!
-            if os.path.isdir(door_dir):
-                map_name = rospy.get_param("/arlobot/mapname", "empty")
-                # If we do not know the name of a map
-                if map_name == "empty":
-                    for file_name in os.listdir(door_dir):
-                        # Then ANY file in this folder will stop the robot
-                        if fnmatch.fnmatch(file_name, "*"):
-                            safety_status.safeToGo = False
-                else:
-                    for file_name in os.listdir(door_dir):
-                        # If we know the map name, only look for files with
-                        # the map_name as a prefix so that other doors
-                        # do not stop us.
-                        if fnmatch.fnmatch(file_name, map_name + "-*"):
-                            safety_status.safeToGo = False
+            # Check for open doors
+            if rospy.has_param("/arlobot/monitorDoors"):  # If arlobot_ros is running
+                monitorDoors = rospy.get_param(
+                    "/arlobot/monitorDoors"
+                )  # Use parameter from arlobot_ros to decide if we should monitor AC or not
             else:
-                safety_status.safeToGo = False
+                monitorDoors = False  # Default is false
+            if monitorDoors:
+                doorStatus = subprocess.run(
+                    [
+                        "node",
+                        os.path.dirname(os.path.realpath(__file__))
+                        + "/../../node/doorClosed.js",
+                    ],
+                    stdout=subprocess.PIPE,
+                ).stdout.decode("utf-8")
+                dangerousDoorsOpen = doorStatus != "true\n"
+                safety_status.dangerousDoorsOpen = dangerousDoorsOpen
+                if dangerousDoorsOpen:
+                    safety_status.safeToGo = False
 
             self._safetyStatusPublisher.publish(safety_status)  # Publish safety status
 

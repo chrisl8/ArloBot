@@ -42,6 +42,11 @@ const rosParameters = {
     label: 'monitorACconnection',
     path: '/arlobot/monitorACconnection',
   },
+  monitorDoors: {
+    param: webModel.rosParameters.monitorDoors,
+    label: 'monitorDoors',
+    path: '/arlobot/monitorDoors',
+  },
   mapName: {
     param: webModel.rosParameters.mapName,
     label: 'mapName',
@@ -106,6 +111,20 @@ function subscribeToActiveStatus() {
       messageType: 'arlobot_ros/arloStatus', // Obtain Type by running 'rostopic info <name>'
     }); // Obtain message.??? by running 'rosmsg show <messageType>'
     arlobotArloStatus.subscribe((message) => {
+      for (const key in message) {
+        if (message.hasOwnProperty(key)) {
+          webModelFunctions.updateRosTopicItem(key, message[key]);
+        }
+      }
+    });
+
+    // THIS is where you put the subscription code:
+    const arlobotSafetyStatus = new ROSLIB.Topic({
+      ros,
+      name: '/arlobot_safety/safetyStatus', // Obtain name by running 'rostopic list'
+      messageType: 'arlobot_ros/arloSafety', // Obtain Type by running 'rostopic info <name>'
+    }); // Obtain message.??? by running 'rosmsg show <messageType>'
+    arlobotSafetyStatus.subscribe((message) => {
       for (const key in message) {
         if (message.hasOwnProperty(key)) {
           webModelFunctions.updateRosTopicItem(key, message[key]);

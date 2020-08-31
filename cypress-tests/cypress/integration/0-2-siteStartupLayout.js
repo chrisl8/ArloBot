@@ -9,7 +9,7 @@ import {
 
 import {
   relayPanelShouldBeOpen,
-  relayPanelCorrectIntialState,
+  relayPanelCorrectInitialState,
   statusPanelShouldBeOpen,
   behaviorPanelShouldBeOpen,
   startupShutdownPanelShouldBeOpen,
@@ -41,7 +41,7 @@ describe("site initial layout and page function", () => {
   openPanelIfClosed("relays");
 
   relayPanelShouldBeOpen(true);
-  relayPanelCorrectIntialState();
+  relayPanelCorrectInitialState();
   closePanelIfOpen("relays");
 
   relayPanelShouldBeOpen(false);

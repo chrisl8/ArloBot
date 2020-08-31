@@ -32,10 +32,6 @@ class StartupShutdown extends Component {
         </span>
       );
     }
-    let doorsClosedClass = 'btn';
-    if (this.props.doorsOpen) {
-      doorsClosedClass = 'btn btn-warning';
-    }
 
     // Unplug yourself button
     let unplugButtonClass = 'toggle';
@@ -78,25 +74,13 @@ class StartupShutdown extends Component {
                 </button>
               )}
               {this.props.ROSisRunning && (
-                <span>
-                  <button
-                    type="button"
-                    className="btn btn-danger"
-                    onClick={() => this.props.sendDataToRobot('stopROS')}
-                  >
-                    Stop ROS
-                  </button>
-                  <button
-                    id="set-all-doors-closed-button"
-                    type="button"
-                    className={doorsClosedClass}
-                    onClick={() =>
-                      this.props.sendDataToRobot('markDoorsClosed')
-                    }
-                  >
-                    Set All Doors Closed
-                  </button>
-                </span>
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={() => this.props.sendDataToRobot('stopROS')}
+                >
+                  Stop ROS
+                </button>
               )}
               <button
                 type="button"

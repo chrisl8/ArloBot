@@ -17,11 +17,9 @@ function relayPanelShouldBeOpen(trueFalse) {
   });
 }
 
-function relayPanelCorrectIntialState() {
+function relayPanelCorrectInitialState() {
   it("Relay Panel entries should have correct initial settings", () => {
-    cy.get("#emptyRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
+    cy.get("#emptyRelayButton").contains("span", "Off").should("be.visible");
     cy.get("#emptyRelayButton").should("not.have.class", "btn-success");
 
     cy.get("#rightMotorRelayButton")
@@ -29,19 +27,13 @@ function relayPanelCorrectIntialState() {
       .should("be.visible");
     cy.get("#rightMotorRelayButton").should("not.have.class", "btn-success");
 
-    cy.get("#arduinoRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
+    cy.get("#arduinoRelayButton").contains("span", "Off").should("be.visible");
     cy.get("#arduinoRelayButton").should("not.have.class", "btn-success");
 
-    cy.get("#lightTwoRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
+    cy.get("#lightTwoRelayButton").contains("span", "Off").should("be.visible");
     cy.get("#lightTwoRelayButton").should("not.have.class", "btn-success");
 
-    cy.get("#emptyRelayButton5")
-      .contains("span", "Off")
-      .should("be.visible");
+    cy.get("#emptyRelayButton5").contains("span", "Off").should("be.visible");
     cy.get("#emptyRelayButton5").should("not.have.class", "btn-success");
 
     cy.get("#leftMotorRelayButton")
@@ -49,14 +41,10 @@ function relayPanelCorrectIntialState() {
       .should("be.visible");
     cy.get("#leftMotorRelayButton").should("not.have.class", "btn-success");
 
-    cy.get("#fiveVoltRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
+    cy.get("#fiveVoltRelayButton").contains("span", "Off").should("be.visible");
     cy.get("#fiveVoltRelayButton").should("not.have.class", "btn-success");
 
-    cy.get("#lightOneRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
+    cy.get("#lightOneRelayButton").contains("span", "Off").should("be.visible");
     cy.get("#lightOneRelayButton").should("not.have.class", "btn-success");
   });
 }
@@ -72,7 +60,6 @@ function statusPanelShouldBeOpen(trueFalse) {
     cy.contains("Laptop Battery").should(visibilitystatus);
     cy.contains("Laptop Fully Charged").should(visibilitystatus);
     cy.contains("Plugged In").should(visibilitystatus);
-    cy.contains("Dangerous Doors Open").should(visibilitystatus);
     cy.contains("Map").should(visibilitystatus);
     cy.contains("Debugging").should(visibilitystatus);
     cy.contains("Camera").should(visibilitystatus);
@@ -114,9 +101,7 @@ function videoPanelShouldBeOpen(trueFalse) {
     openClosed = "Open";
   }
   it(`Video Panel should be ${openClosed}`, () => {
-    cy.get("#cameraButton")
-      .contains("span", "Off")
-      .should(visibilitystatus);
+    cy.get("#cameraButton").contains("span", "Off").should(visibilitystatus);
     cy.get("#videoFeed").should(visibilitystatus);
     cy.get("#videoFeed")
       .should("have.attr", "src")
@@ -159,10 +144,10 @@ function robotServiceLogPanelShouldBeOpen(trueFalse) {
 
 module.exports = {
   relayPanelShouldBeOpen,
-  relayPanelCorrectIntialState,
+  relayPanelCorrectInitialState,
   statusPanelShouldBeOpen,
   behaviorPanelShouldBeOpen,
   videoPanelShouldBeOpen,
   startupShutdownPanelShouldBeOpen,
-  robotServiceLogPanelShouldBeOpen
+  robotServiceLogPanelShouldBeOpen,
 };

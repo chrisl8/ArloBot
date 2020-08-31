@@ -12,7 +12,6 @@ const { promisify } = require('util');
 
 const access = promisify(fs.access);
 const chmod = promisify(fs.chmod);
-const readdir = promisify(fs.readdir);
 const mkdirp = require('mkdirp');
 const webModelFunctions = require('./webModelFunctions');
 const webModel = require('./webModel');
@@ -24,22 +23,14 @@ const quietFile = `${statusFolder}bequiet`;
 const stopFile = `${statusFolder}STOP`;
 const checkMasterRelayFile = `${statusFolder}checkMasterRelay`;
 const checkUsbRelayBankFile = `${statusFolder}checkUsbRelayBank`;
-const doorFileFolder = `${statusFolder}doors`;
 // Note this will only work if we do not KNOW what map we are on.
-const doorFile = `${statusFolder}/doors/unknown-door`;
 const foldersExist = {
   statusFolder: false,
-  doorFileFolder: false,
 };
 
 function getFileNameFromFullPath(path) {
   const splitName = path.split('/');
   return splitName[splitName.length - 1];
-}
-
-function getFolderNameFromFullPath(path) {
-  const splitName = path.split('/');
-  return splitName[splitName.length - 2];
 }
 
 async function folderExists(folderName) {
@@ -65,29 +56,9 @@ async function folderExists(folderName) {
 
 // Ensure the status folder exists
 folderExists(statusFolder);
-folderExists(doorFileFolder);
-
-async function checkDoorFiles() {
-  // Read folder if any change happens and set based on existence of any files
-  try {
-    const doorFileList = await readdir(doorFileFolder);
-    if (doorFileList.length > 0) {
-      webModelFunctions.update('doorsOpen', true);
-    } else {
-      webModelFunctions.update('doorsOpen', false);
-    }
-  } catch (e) {
-    console.error(`Door folder problem: ${e}`);
-    // True on error for safety.
-    webModelFunctions.update('doorsOpen', true);
-  }
-}
-
-checkDoorFiles();
 
 const setFileValue = async (path, action) => {
   const fileName = getFileNameFromFullPath(path);
-  const folderName = getFolderNameFromFullPath(path);
   let deleteFile = false;
   if (fileName === 'STOP') {
     webModelFunctions.update('haltRobot', action === 'add');
@@ -99,8 +70,6 @@ const setFileValue = async (path, action) => {
   } else if (fileName === 'checkUsbRelayBank') {
     webModelFunctions.update('checkUsbRelayBank', true);
     deleteFile = true;
-  } else if (folderName === 'doors') {
-    checkDoorFiles();
   }
   if (deleteFile) {
     fs.unlink(path, (err) => {
@@ -125,18 +94,7 @@ function startSemaphoreFileWatcher() {
     .on('unlink', (path) => setFileValue(path, 'unlink'));
 }
 
-async function folderExistsForText(text) {
-  let folderName = statusFolder;
-  if (text === 'markDoorsClosed') {
-    folderName = doorFileFolder;
-  }
-
-  await folderExists(folderName);
-}
-
 const setSemaphoreFiles = async (text) => {
-  await folderExistsForText(text);
-
   if (text === 'talk') {
     webModelFunctions.update('beQuiet', false);
     fs.unlink(quietFile, (err) => {
@@ -165,37 +123,6 @@ const setSemaphoreFiles = async (text) => {
   } else if (text === 'stop') {
     webModelFunctions.update('haltRobot', true);
     fs.writeFile(stopFile, 'STOP\n', (err) => {
-      if (err) {
-        console.error('Error writing haltRobot file:');
-        console.error(err);
-        foldersExist[statusFolder] = false;
-      }
-    });
-  } else if (text === 'markDoorsClosed') {
-    // Wipe out ALL door files if asked!
-    // The "right" way is to test the doors,
-    // but that will leave files that will prevent
-    // exploring, and will keep the warning
-    // button on even if robot will go.
-    fs.readdir(doorFileFolder, (err, files) => {
-      if (err) {
-        console.error('Error clearing door files:');
-        console.error(err);
-        foldersExist[doorFileFolder] = false;
-      } else {
-        files.forEach((file) => {
-          fs.unlink(`${doorFileFolder}/${file}`, (innerError) => {
-            if (innerError && innerError.code !== 'ENOENT')
-              console.error(innerError);
-            if (webModel.debugging) {
-              console.log(`successfully deleted ${doorFileFolder}/${file}`);
-            }
-          });
-        });
-      }
-    });
-  } else if (text === 'markDoorsOpen') {
-    fs.writeFile(doorFile, 'STOP\n', (err) => {
       if (err) {
         console.error('Error writing haltRobot file:');
         console.error(err);

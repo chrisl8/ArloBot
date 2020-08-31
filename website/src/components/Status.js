@@ -27,13 +27,6 @@ const Status = (props) => {
     pluggedInBadgeClass = 'badge badge-light';
   }
 
-  let doorsOpenClass = 'btn';
-  let doorsOpenBadgeClass = 'badge badge-secondary';
-  if (props.doorsOpen) {
-    doorsOpenClass = 'btn btn-danger';
-    doorsOpenBadgeClass = 'badge badge-light';
-  }
-
   let mapClass = 'btn';
   let mapBadgeClass = 'badge badge-secondary';
   let mapBadgeText = 'None';
@@ -121,17 +114,6 @@ const Status = (props) => {
             Plugged In&nbsp;
             <span className={pluggedInBadgeClass}>
               {boolToYesNo(props.pluggedIn)}
-            </span>
-          </button>
-          <button
-            id="doorsOpenStatusButton"
-            type="button"
-            className={doorsOpenClass}
-            onClick={() => props.openGroup('startupShutdown')}
-          >
-            Dangerous Doors Open&nbsp;
-            <span className={doorsOpenBadgeClass}>
-              {boolToYesNo(props.doorsOpen)}
             </span>
           </button>
           <button

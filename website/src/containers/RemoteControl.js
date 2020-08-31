@@ -174,16 +174,6 @@ class RemoteControl extends Component {
                 <span className="badge badge-light">Yes</span>
               </button>
             )}
-            {this.props.doorsOpen && (
-              <button
-                type="button"
-                className="btn btn-danger"
-                onClick={() => this.props.openGroup('startupShutdown')}
-              >
-                Dangerous Doors Open&nbsp;
-                <span className="badge badge-light">Yes</span>
-              </button>
-            )}
             {this.state.joystickOutput}
             <span id="virtual-joystick-result" />
             <div
@@ -200,19 +190,3 @@ class RemoteControl extends Component {
 }
 
 export default RemoteControl;
-
-/*
-            <button *ngIf="arlobotSvc.webModel.doorsOpen && arlobotSvc.webModel.ROSisRunning" type="button" class="btn"
-                    [ngClass]="{'btn-danger': arlobotSvc.webModel.doorsOpen}"
-                    (click)="status.openStartup = true">Dangerous Doors Open <span class="badge">{{arlobotSvc.webModel.doorsOpen | boolToYesNo}}</span>
-            </button>
-            <!--https://github.com/JorgeArino/virtualjoystick.js-->
-            <button *ngIf="!arlobotSvc.webModel.doorsOpen && arlobotSvc.webModel.ROSisRunning" type="button"
-                    class="btn btn-primary"
-                    (click)="virtualJoystickFunction()">
-                Start virtualJoystick
-            </button>
-            {{ joystickOutput }}
-            <span id="virtual-joystick-result"></span>
-            <div id="virtual-joystick-container"></div>
- */
