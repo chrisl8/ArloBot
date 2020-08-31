@@ -519,6 +519,7 @@ if [[ "$RESPONSE_TO_ASUS_XTION_QUERY" == "y" ]] || [[ "${RESPONSE_TO_KINECT_QUER
   fi
 fi
 
+# TODO: Remove if they ever release freenect_stack for Noetic
 if [[ "${RESPONSE_TO_KINECT_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
   # Always test in Travis
   printf "\n${BLUE}OpenKinect for Kinect${NC}\n"
@@ -553,6 +554,19 @@ if [[ "${RESPONSE_TO_RPLIDAR_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; the
     cd ~/catkin_ws/src/rplidar_ros
     git pull
   fi
+fi
+
+# TODO: Remove this if/when the apt package catches up with all needed updates.
+printf "\n${BLUE}Slam Toolbox${NC}\n"
+printf "\n${PURPLE}There *is* a package for this, but the Github Repo is usually much more up to date.${NC}\n"
+cd ~/catkin_ws/src
+# If you have the excellent ROS by Example book now is a good time to clone the code for following along in the book:
+if ! [[ -d ~/catkin_ws/src/slam_toolbox ]]; then
+  git clone -b noetic-devel https://github.com/SteveMacenski/slam_toolbox.git
+else
+  cd ~/catkin_ws/src/slam_toolbox
+  git checkout noetic-devel
+  git pull
 fi
 
 printf "\n${BLUE}ROS by Example code${NC}\n"
