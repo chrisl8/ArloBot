@@ -1054,11 +1054,12 @@ class PropellerComm(object):
                 )
 
             # Check if any LEDs need to be updated
-            for index, setting in enumerate(self._ledRequestedState_from_ROS):
-                if self._ledInputData_from_propeller[index] != setting:
-                    if self._serialAvailable:
-                        ledData = self.dataTypes.LEDDataPacket(index, setting)
-                        self.serialInterface.SendToPropellerOverSerial("led", ledData)
+            # Disabled for now. Propeller board handles its own LEDs
+            # for index, setting in enumerate(self._ledRequestedState_from_ROS):
+            #     if self._ledInputData_from_propeller[index] != setting:
+            #         if self._serialAvailable:
+            #             ledData = self.dataTypes.LEDDataPacket(index, setting)
+            #             self.serialInterface.SendToPropellerOverSerial("led", ledData)
 
             self.r.sleep()
 
