@@ -79,12 +79,6 @@ fi
 
 chmod 777 "${HOME}/.arlobot/status/" &>/dev/null
 
-if [[ ! -d ${HOME}/.arlobot/status/doors/ ]]; then
-  mkdir "${HOME}/.arlobot/status/doors/"
-fi
-
-chmod 777 "${HOME}/.arlobot/status/doors/" &>/dev/null
-
 # Start roscore separately so that we can set parameters
 # before launching any ROS .launch files.
 "/opt/ros/${ROS_DISTRO}/bin/roscore" &
