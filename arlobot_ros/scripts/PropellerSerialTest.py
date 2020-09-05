@@ -405,7 +405,7 @@ class PropellerSerialTest(object):
 
             # Create lines used to update data on Screen
             odomLineOne = (
-                "Telemetry X:"
+                "Telemetry: X:"
                 + format(self._telemetry["X"], ".2f").rjust(5)
                 + " | Y:"
                 + format(self._telemetry["Y"], ".2f").rjust(5)
@@ -422,7 +422,7 @@ class PropellerSerialTest(object):
                 + " | rightPwr:"
                 + format(self._telemetry["rightMotorPower"], ".2f")
             )
-            odomLineTwo = "Settings "
+            odomLineTwo = "Settings: "
             odomLineTwo = (
                 odomLineTwo
                 + "pluggedIn:"
@@ -463,7 +463,7 @@ class PropellerSerialTest(object):
                 + str(self._config["wheelSymmetryError"])
             )
             odomLineThree = (
-                "Status abd_speedLimit:"
+                "Status: abd_speedLimit:"
                 + str(self._telemetry["abd_speedLimit"]).rjust(3)
                 + " | abdR_speedLimit:"
                 + str(self._telemetry["abdR_speedLimit"]).rjust(3)
@@ -477,7 +477,7 @@ class PropellerSerialTest(object):
                 + ("False", "True")[self._telemetry["Escaping"]]
             )
             odomLineFour = (
-                "Sensors Cliff Detected:"
+                "Sensors: Cliff Detected:"
                 + ("No", "Yes")[self._telemetry["cliff"]]
                 + " | Floor Obstacle Detected:"
                 + ("No", "Yes")[self._telemetry["floorO"]]
