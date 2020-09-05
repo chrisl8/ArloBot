@@ -411,21 +411,11 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   #           FTDI:FT245R USB FIFO:A9026EI5
   #           If you have a USB Relay board attached via USB.
 
-  # TODO: Do I need this, or is everything I need already installed?
-  # ros-${INSTALLING_ROS_DISTRO}-rqt-* - All of the GUI tools for Robot configuration
-
   # TODO: Confirm that Scanse Sweep needs this and add it to the "if scanse" section:
   # ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan - used by Scanse Sweep
 
   # TODO: What is this for? Color follower maybe? Does that even still work?
   # "ros-${INSTALLING_ROS_DISTRO}-vision-opencv" libopencv-dev python3-opencv
-
-  # TODO: What are these for?
-  #  festvox-en1 libv4l-dev
-
-  # TODO: The following packages were removed due to not existing in Noetic (yet):
-  # TODO: What was this for? Do we still need it?
-  # "ros-${INSTALLING_ROS_DISTRO}-kobuki-ftdi"
 
   # NOTE: If you are looking for a ROS package and wonder if it exists, but not for Noetic, check here:
   # http://repositories.ros.org/status_page/compare_melodic_noetic.html
@@ -608,11 +598,6 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
       printf "\n${BLUE}[There will be a lot of questions. I answer Yes to all of them personally.]${NC}\n"
       ./dev_setup.sh
       ./start-mycroft.sh all
-      printf "\n${YELLOW}Giving Mycoroft time to download skills.${NC}\n"
-      #sleep 60
-      #./stop-mycroft.sh
-      #cd mycroft/tts/
-      #ln -s ${HOME}/catkin_ws/src/ArloBot/mycroft-things/arlobot_tts.py
 
       printf "\n${YELLOW}[IF you want to use Mycroft:]${NC}\n"
       printf "\n${YELLOW}[Then see https://docs.mycroft.ai/development/cerberus for configuration info.]${NC}\n"
@@ -781,6 +766,9 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     make distclean
     make
     sudo make install
+    # Removing install files, as they are not needed anymore.
+    cd "${HOME}/catkin_ws/src/ArloBot/"
+    rm -rf mjpg-streamer
     # See scripts/streamVideoTest.sh for details on mjpg_streamer usage.
   fi
 
@@ -805,11 +793,6 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     mkdir "${ARLO_HOME}/status"
   fi
   sudo chmod -R 777 "${ARLO_HOME}/status"
-
-  if [[ ! -d ${ARLO_HOME}/status/doors ]]; then
-    mkdir "${ARLO_HOME}/status/doors"
-  fi
-  sudo chmod -R 777 "${ARLO_HOME}/status/doors"
 
   if ! (id | grep dialout >/dev/null); then
     printf "\n${GREEN}Adding your user to the 'dialout' group for serial port access.${NC}\n"
@@ -887,21 +870,6 @@ testMake MotorResponseTesting
 testMake 2ndBoardCode
 testMake Calib
 cd
-
-# TODO: Go ahead and test build the codes!
-
-# TODO: Write script for quick "deploy to Activity Board".
-
-# TODO: Are we 100% SURE THE COPIES IN PROPWARE ARE THE SAME?!
-#if ! [[ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/Arlo/libarlodrive/arlodrive.c ]]; then
-#  if ! [[ -d ~/Documents/SimpleIDE/ ]]; then
-#    mkdir -p ~/Documents/SimpleIDE/
-#  fi
-#  cd ~/Documents/SimpleIDE/
-#  wget https://www.parallax.com/sites/default/files/downloads/Learn-Folder-Updated-2019.07.02_0.zip
-#  unzip Learn-Folder-Updated-2019.07.02_0.zip
-#  cd
-#fi
 
 if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   if [[ -e ${ARLO_HOME}/arlobot.yaml ]]; then
@@ -1009,8 +977,9 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
 
   printf "\n${YELLOW}------------------------------------------------------------${NC}\n"
   printf "${YELLOW}Remember: You MUST install the Propeller code on your Propeller board too!${NC}\n"
+  printf "${BLUE}You can run install_Propeller_code.sh to perform the install,${NC}\n"
+  printf "${BLUE}and PropellerSerialTest.sh to test it.${NC}\n"
   printf "${GREEN}See: ${BLUE}https://ekpyroticfrood.net/?p=551${NC}\n"
-  # TODO: Should I create a script to do the install for me?
   printf "${GREEN}for more information on installing code on your Propeller board.${NC}\n"
   printf "${YELLOW}------------------------------------------------------------${NC}\n"
 fi
