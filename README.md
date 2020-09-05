@@ -6,7 +6,7 @@
 Gmapping and AMCL have been **removed** in favor of [Slam Toolbox](https://github.com/SteveMacenski/slam_toolbox) for mapping.
  - Gmapping is no longer maintained.  
 
-DWA Local Planner has been **removed** in favor of [teb_local_planner](http://wiki.ros.org/teb_local_planner) for path planning.  
+DWA Local Planner has been **removed** in favor of [teb_local_planner](https://wiki.ros.org/teb_local_planner) for path planning.  
  - Teb Local Planner is much better behaved for me.
  - It is able to back up, which makes routing much better.
  - It seems to work very well with near default tuning.
@@ -15,20 +15,14 @@ DWA Local Planner has been **removed** in favor of [teb_local_planner](http://wi
 
  - Fix this error coming from TEB due to something in my config:
    - [ WARN] [1597326961.776132466]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0513 seconds
- - Possibly change PING auto response to be more "failsafe" so that they do not interfere with normal TEB path following in tight spaces.
-    - Still testing. This may not be necessary.
-    - Teb is very good at path planning, and staying in the middle of the rooms and doorways.
-    - It seems to behave very well with the PING's emergency stopping and slowing of the robot.
  - Test remaining "goto" functions with Python 3 and Slam Toolbox
- - Convert from SimpleIDE to PropWare/PropGCC for building Propeller code.
-   - Create scripts for easy build/install.
 
 ArloBot Package for ROS
 =======================
 
 ## and SO MUCH MORE! ##
 
- - This package provides a set of ROS packages for using a [Parallax Arlo Platform](http://www.parallax.com/product/arlo-robotic-platform-system "Parallax") robot to create and navigate a map of a room (Simultaneous Mapping and Localization) via [Robot Operating System (ROS)](http://www.ros.org/ "ROS").  Originally based on the old [TurtleBot](http://wiki.ros.org/Robots/TurtleBot "TurtleBot").
+ - This package provides a set of ROS packages for using a [Parallax Arlo Platform](https://www.parallax.com/product/arlo-robotic-platform-system "Parallax") robot to create and navigate a map of a room (Simultaneous Mapping and Localization) via [Robot Operating System (ROS)](https://www.ros.org/ "ROS").  Originally based on the old [TurtleBot](https://wiki.ros.org/Robots/TurtleBot "TurtleBot").
 
 This package also includes:
  0. An all in one install script that should get things as close to working as possible by running one install script.
@@ -61,15 +55,15 @@ The Arlo Robotic Platform is a complete kit, which I recommend buying from Paral
 You will also need a few other items (laptop and 3D sensor) which I have some details about on the [Parts List Wiki Page](https://github.com/chrisl8/ArloBot/wiki/Parts-List " Parts List")
 
 ## Building ##
-Follow the excellent [Arlo Robot Assembly Guide](http://learn.parallax.com/tutorials/robot/arlo/arlo-robot-assembly-guide "Assembly Guide") at Parallax to both assemble and test your Arlo Robot platform.  
+Follow the excellent [Arlo Robot Assembly Guide](https://learn.parallax.com/tutorials/robot/arlo/arlo-robot-assembly-guide "Assembly Guide") at Parallax to both assemble and test your Arlo Robot platform.  
  Be sure you have fully understood and run all of their tests before moving on with using ROS.
 
-Check out my blog: [ArloBot Build Index](http://ekpyroticfrood.net/?p=162 "Ekpyrotic Frood Blog")
+Check out my blog: [ArloBot Build Index](https://ekpyroticfrood.net/?p=162 "Ekpyrotic Frood Blog")
 
-And also jump on the [Parallax Forums](http://forums.parallax.com/ "Parallax Forums") and start searching and asking questions!
+And also jump on the [Parallax Forums](https://forums.parallax.com/ "Parallax Forums") and start searching and asking questions!
 
 Because the Arlo platform comes as a kit, building it should be pretty straight forward, but we will all help you out with any problems you run into.  
-Ask questions in the [Parallax Forums](http://forums.parallax.com/ "Parallax Forums"), on [GitHub](https://github.com/chrisl8/ArloBot/issues "Create an Issue"), on the [ROS for Arlobot Google Group](https://groups.google.com/forum/?utm_medium=email&utm_source=footer#!forum/ros-for-arlobot "ROS for Arlobot"), and on my [blog](http://ekpyroticfrood.net/ "My Blog").
+Ask questions in the [Parallax Forums](https://forums.parallax.com/ "Parallax Forums"), on [GitHub](https://github.com/chrisl8/ArloBot/issues "Create an Issue"), on the [ROS for Arlobot Google Group](https://groups.google.com/g/ros-for-arlobot "ROS for Arlobot"), and on my [blog](https://ekpyroticfrood.net/ "My Blog").
 
 Once your robot is built, you can use this package.
 
@@ -148,7 +142,7 @@ To update your code just run the same script again, and it will pull down and co
 
 ## Full Arlobot Setup Instructions: ##
 Complete setup and usage instructions are at my blog:
-http://ekpyroticfrood.net/?p=162
+https://ekpyroticfrood.net/?p=162
 
 ## Edit your robot's Description ##
 `roscd arlobot_ros/urdf`  
@@ -189,7 +183,7 @@ roslaunch arlobot_ros view_navigation.launch
   - Drive and see if the robot appears to move properly on the grid.
 
 ### Remote Control with an xBox 360 Joystick ###
-http://ekpyroticfrood.net/?p=115
+https://ekpyroticfrood.net/?p=115
 ```
 roslaunch arlobot_ros minimal.launch
 # In a new Terminal:
@@ -234,7 +228,7 @@ roslaunch arlobot_ros view_navigation.launch
 ```
 
 Please report an issue for any problems or if you need me to clarify anything!  
- Ask questions in the [Parallax Forums](http://forums.parallax.com/ "Parallax Forums"), on [GitHub](https://github.com/chrisl8/ArloBot/issues "Create an Issue"), on the [ROS for Arlobot Google Group](https://groups.google.com/forum/?utm_medium=email&utm_source=footer#!forum/ros-for-arlobot "ROS for Arlobot"), and on my [blog](http://ekpyroticfrood.net/ "My Blog"). We will write more documentation as we answer questions, and I hope you will also write instructions when you do your build!
+ Ask questions in the [Parallax Forums](https://forums.parallax.com/ "Parallax Forums"), on [GitHub](https://github.com/chrisl8/ArloBot/issues "Create an Issue"), on the [ROS for Arlobot Google Group](https://groups.google.com/g/ros-for-arlobot "ROS for Arlobot"), and on my [blog](https://ekpyroticfrood.net/ "My Blog"). We will write more documentation as we answer questions, and I hope you will also write instructions when you do your build!
 
 
 # Script Based Operation #
