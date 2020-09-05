@@ -28,10 +28,14 @@ if [[ "$(jq '.useMasterPowerRelay' "${HOME}"/.arlobot/personalDataForBehavior.js
   "${HOME}"/catkin_ws/src/ArloBot/scripts/switch_master_relay.sh off
 fi
 
-if [[ -d /home/chrisl8/catkin_ws/src/ArloBot/mycroft-core ]] && [[ "$(jq '.useMyCroft' "${HOME}"/.arlobot/personalDataForBehavior.json)" == true ]]; then
-  cd "${HOME}"/catkin_ws/src/ArloBot/mycroft-core || exit 1
-  ./start-mycroft.sh all
-fi
+# NOTE: If you are using Mycroft, I suggest setting up Mycroft to start inside Xwindows,
+# via the Startup Applications system.
+# This seems to give it the best shot at using the correct audio input/output devices.
+
+# Give the system a moment to finish booting before we come online.
+# This can also give Mycroft time to start, so it speaks, if you are using it.
+# Adjust as needed, or as you see fit.
+sleep 30
 
 cd "${HOME}"/catkin_ws/src/ArloBot/node/ || exit 1
 "${HOME}"/.nvm/current/bin/pm2 start "${HOME}"/catkin_ws/src/ArloBot/node/pm2Config.json
