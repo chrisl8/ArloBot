@@ -462,6 +462,11 @@ int main() {
         timeoutCounter++;
       }
 
+#ifdef hasLEDs
+      ledArray[1] = Escaping;      // Yellow LED indicates escaping
+      ledArray[2] = safeToProceed; // Left Green LED means safe to proceed
+      ledArray[4] = safeToRecede;  // Right Green LED means safe to recede
+#endif
       if (Escaping) {
         newInputLeftSpeed = escapeLeftSpeed;
         newInputRightSpeed = escapeRightSpeed;
@@ -502,6 +507,10 @@ int main() {
               (abd_speedLimit * distancePerCount) -
               fabsf(
                   angularVelocityOffset); // NOLINT(cppcoreguidelines-narrowing-conversions)
+#ifdef hasLEDs
+          ledArray[3] =
+              1; // Blue LED indicates the PINGs are reducing speed below max.
+#endif
           // Use abdR_speedLimit for reverse movement.
         } else if (
             CommandedVelocity < 0 &&
@@ -512,10 +521,18 @@ int main() {
               (abdR_speedLimit *
                distancePerCount) - // NOLINT(cppcoreguidelines-narrowing-conversions)
               fabsf(angularVelocityOffset));
+#ifdef hasLEDs
+          ledArray[3] =
+              1; // Blue LED indicates the PINGs are reducing speed below max.
+#endif
         } else {
           // Not doing this on in place rotations (Velocity = 0)
           // Or if requested speed does not exceed maximum.
           newCommandedVelocity = CommandedVelocity;
+#ifdef hasLEDs
+          ledArray[3] =
+              0; // Blue LED indicates the PINGs are reducing speed below max.
+#endif
         }
 
         expectedLeftSpeed = newCommandedVelocity - angularVelocityOffset;
