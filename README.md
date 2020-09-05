@@ -89,7 +89,10 @@ Be sure to read the instructions that the script will print at the end about edi
 
 To update your code just run the same script again, and it will pull down and compile anything new without erasing custom settings.
 
-Please note that you will need the code to run on your Propeller board. This is stored in the "PropellerCodeForArloBot" folder. Details on the Propeller code and setup are here: [http://ekpyroticfrood.net/?p=165](http://ekpyroticfrood.net/?p=165)
+## Propeller Code
+Please note that you will need the code to run on your Propeller board. This is stored in the "PropellerCodeForArloBot" folder. Details on the Propeller code and setup are here: [https://ekpyroticfrood.net/?p=165](https://ekpyroticfrood.net/?p=551)
+
+You can run the script `install_Propeller_code.sh` to automatically install the required code to your Propeller Activity Board.
 
 ## Propeller Serial Interface Test ##
 Before you start trying to get ROS running, but after you have loaded the C code onto the Propeller Activity board, use the PropellerSerialTest to test the hardware and interface.  
