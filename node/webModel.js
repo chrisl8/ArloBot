@@ -29,7 +29,7 @@ module.exports = {
   haltRobot: false,
   semaphoreFilesRead: false,
   laptopFullyCharged: 'unknown',
-  laptopBatteryPercentage: '???%',
+  laptopBatteryPercentage: '???',
   logStreamerRunning: false,
   colorFollowerRunning: false,
   shutdownRequested: false,
