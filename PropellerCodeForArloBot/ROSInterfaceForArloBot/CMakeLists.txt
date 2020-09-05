@@ -4,7 +4,7 @@ set (BOARD ACTIVITYBOARD)
 set (MODEL cmm)
 
 include_directories(~/.arlobot)
-include_directories(../include)
+include_directories(./include)
 
 project(ROSInterfaceForArloBot C)
 create_simple_executable(${PROJECT_NAME}

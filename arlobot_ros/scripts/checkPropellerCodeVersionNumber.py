@@ -9,7 +9,7 @@ def checkPropellerCodeVersionNumber():
 
     configFilename = (
         os.path.dirname(os.path.realpath(__file__))
-        + "/../../PropellerCodeForArloBot/include/versionNumber.h"
+        + "/../../PropellerCodeForArloBot/ROSInterfaceForArloBot/include/versionNumber.h"
     )
 
     f = open(configFilename, "r")
