@@ -32,7 +32,7 @@ async function polling() {
   }
   /* Some things just need to be polled, there is no way around it. Put those here.
    This only repeats about once per second, so it is a pretty good spacing, even without fancy code to slow things down
-   but if you want to , set it to only happen when interval === some number
+   but if you want to slow it down, set it to only happen when interval === some number
    below intervalTop.
    Or use some division to hit every odd/even number or multiple of 3.
    */

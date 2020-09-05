@@ -63,8 +63,6 @@ app.use(express.static(`${__dirname}/../website/build`));
 const handleSemaphoreFiles = require('./handleSemaphoreFiles');
 
 const saveMap = function (newMapName) {
-  // TODO: Positive feedback that map is saved.
-  // TODO: If the map exists, maybe warn?
   // Text from service when it is finished is:
   // **Finished serializing Dataset**
   const saveMapProcess = new LaunchScript({
@@ -73,7 +71,6 @@ const saveMap = function (newMapName) {
     ROScommand: `${__dirname}/../scripts/save-map.sh ${newMapName}`,
     scriptArguments: newMapName,
   });
-  // console.log(saveMapProcess.ROScommand);
   saveMapProcess.start();
 };
 
