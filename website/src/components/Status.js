@@ -15,7 +15,7 @@ const Status = (props) => {
 
   let laptopFullyChargedClass = 'btn';
   let laptopFullyChargedBadgeClass = 'badge badge-secondary';
-  if (props.laptopFullyCharged) {
+  if (props.laptopFullyCharged === true) {
     laptopFullyChargedClass = 'btn btn-success';
     laptopFullyChargedBadgeClass = 'badge badge-light';
   }
