@@ -26,7 +26,42 @@ glob(batteryLevelFileWildcard, (er, fileName) => {
 });
 
 const checkBattery = (logIt) => {
-  if (batteryLevelFile) {
+  let batteryLevelFoundInROS = false;
+  let pluggedInStatusFoundInROS = false;
+  if (webModel.ROSisRunning) {
+    // If ROS is running, use existing ROS Topic input data.
+    const rosBatteryLevelTopicIndex = webModel.rosTopicItems.findIndex(
+      (x) => x.rosName === 'laptopBatteryPercent',
+    );
+    if (
+      rosBatteryLevelTopicIndex > -1 &&
+      Number.isInteger(webModel.rosTopicItems[rosBatteryLevelTopicIndex].status)
+    ) {
+      webModelFunctions.update(
+        'laptopBatteryPercentage',
+        webModel.rosTopicItems[rosBatteryLevelTopicIndex].status,
+      );
+      batteryLevelFoundInROS = true;
+    }
+
+    const rosAcPowerTopicIndex = webModel.rosTopicItems.findIndex(
+      (x) => x.rosName === 'acPower',
+    );
+    if (
+      rosAcPowerTopicIndex > -1 &&
+      (webModel.rosTopicItems[rosAcPowerTopicIndex].status === true ||
+        webModel.rosTopicItems[rosAcPowerTopicIndex].status === false)
+    ) {
+      webModelFunctions.update(
+        'pluggedIn',
+        webModel.rosTopicItems[rosAcPowerTopicIndex].status,
+      );
+      pluggedInStatusFoundInROS = true;
+    }
+  }
+
+  // If ROS is not running, check Linux files for battery and plugged in state.
+  if (!batteryLevelFoundInROS && batteryLevelFile) {
     fs.readFile(batteryLevelFile, 'utf8', (err, data) => {
       if (err) {
         console.error('Error getting battery level');
@@ -41,27 +76,11 @@ const checkBattery = (logIt) => {
             10,
           ),
         );
-        /** @namespace personalData.batteryConsideredFullAt */
-        if (
-          webModel.laptopBatteryPercentage >=
-          personalData.batteryConsideredFullAt
-        ) {
-          webModelFunctions.update('laptopFullyCharged', true);
-        } else {
-          webModelFunctions.update('laptopFullyCharged', false);
-        }
-        if (logIt) {
-          console.log(
-            webModel.laptopBatteryPercentage,
-            webModel.pluggedIn,
-            webModel.laptopFullyCharged,
-          );
-        }
       }
     });
   }
 
-  if (pluggedInFile) {
+  if (!pluggedInStatusFoundInROS && pluggedInFile) {
     fs.readFile(pluggedInFile, 'utf8', (err, data) => {
       if (err) {
         console.error('Error reading AC status file.');
@@ -72,6 +91,25 @@ const checkBattery = (logIt) => {
         );
       }
     });
+  }
+
+  /** @namespace personalData.batteryConsideredFullAt */
+  if (Number.isInteger(webModel.laptopBatteryPercentage)) {
+    if (
+      webModel.laptopBatteryPercentage >= personalData.batteryConsideredFullAt
+    ) {
+      webModelFunctions.update('laptopFullyCharged', true);
+    } else {
+      webModelFunctions.update('laptopFullyCharged', false);
+    }
+  }
+
+  if (logIt) {
+    console.log(
+      webModel.laptopBatteryPercentage,
+      webModel.pluggedIn,
+      webModel.laptopFullyCharged,
+    );
   }
 };
 module.exports = checkBattery;
