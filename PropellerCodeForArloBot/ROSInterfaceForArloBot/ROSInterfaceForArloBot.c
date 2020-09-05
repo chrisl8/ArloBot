@@ -1,3 +1,5 @@
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "EndlessLoop"
 /*
 This is the code to run on a Parallax Propeller based Activity Board
 in order to interface ROS with an ArloBot.
@@ -8,7 +10,14 @@ URL: https://github.com/chrisl8/ArloBot
 The ROS Node for this code is called propellerbot_node.py
 and can be found in the arlobot_ros package from the above URL.
 
-ATTENTION! ATTENTION! ATTENTION! ATTENTION! ATTENTION! ATTENTION!
+ NOTE: All "doubles" will be converted to 32 bit when compiled.
+ This is the default for Propeller code, and required for compatibility
+ with many Propeller libraries.
+
+ See: https://david.zemon.name/PropWare/#/reference/cmake-reference
+ for CMake settings and how they affect the results.
+
+ ATTENTION! ATTENTION! ATTENTION! ATTENTION! ATTENTION! ATTENTION!
 
 NOTE: This code is for the DHB-10 Motor Controller that comes with the new
 Parallax Arlo kit. You MUST edit the settings in
@@ -23,8 +32,6 @@ preceding QUESTION is commented out.
 
 Example, My robot has a "Thing1", but not a "Thing2"
 */
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "EndlessLoop"
 #define hasThingOne
 //#define hasThingTwo
 
@@ -140,9 +147,12 @@ fdserial *term;
 // We will get this from ROS so that it is easier to tweak between runs without
 // reloading the Propeller EEPROM.
 // http://learn.parallax.com/activitybot/calculating-angles-rotation
-static float distancePerCount = 0.0;
-static float trackWidth = 0.0;
-static float wheelSymmetryError = 0.0;
+static float distancePerCount =
+    0.0; // NOLINT(cppcoreguidelines-narrowing-conversions)
+static float trackWidth =
+    0.0; // NOLINT(cppcoreguidelines-narrowing-conversions)
+static float wheelSymmetryError =
+    0.0; // NOLINT(cppcoreguidelines-narrowing-conversions)
 /* See ~/.arlobot/arlobot.yaml
    to set or change these values
 */
@@ -166,7 +176,8 @@ static uint8_t floorArray[NUMBER_OF_FLOOR_SENSORS] = {0};
 // For Gyroscope:
 // We need this even if there is no Gyro. Just pass 0.0 if it doesn't exist.
 // Otherwise I would have to modify the propeller_node.py too.
-static float gyroHeading = 0.0;
+static float gyroHeading =
+    0.0; // NOLINT(cppcoreguidelines-narrowing-conversions)
 #ifdef hasGyro
 #include "pollGyro.h"
 #endif
@@ -187,8 +198,9 @@ static bool propellerBoardInitialized = false;
 #include "broadcastOdometryAndRunMotors.h"
 
 void clearTwistRequest(float *CommandedVelocity, float *angularVelocityOffset) {
-  *CommandedVelocity = 0.0;
-  *angularVelocityOffset = 0.0;
+  *CommandedVelocity = 0.0; // NOLINT(cppcoreguidelines-narrowing-conversions)
+  *angularVelocityOffset =
+      0.0; // NOLINT(cppcoreguidelines-narrowing-conversions)
 }
 
 int main() {
@@ -244,10 +256,12 @@ int main() {
   bool wasEscaping = false;
 
   // To hold received commands
-  float CommandedVelocity = 0.0;
+  float CommandedVelocity =
+      0.0; // NOLINT(cppcoreguidelines-narrowing-conversions)
   float newCommandedVelocity;
   float CommandedAngularVelocity;
-  float angularVelocityOffset = 0.0;
+  float angularVelocityOffset =
+      0.0; // NOLINT(cppcoreguidelines-narrowing-conversions)
   float expectedLeftSpeed;
   float expectedRightSpeed;
   int newInputLeftSpeed = 0;
@@ -315,7 +329,8 @@ int main() {
         // Manipulate data a little for the test to prove that we can and that
         // our checksum calc is happening
         testData.dataStruct.testByte++;
-        testData.dataStruct.testFloat += 1.02;
+        testData.dataStruct.testFloat +=
+            1.02; // NOLINT(cppcoreguidelines-narrowing-conversions)
 
         // NOTE: Use this as a send data example
         // -------------------------------------
@@ -333,7 +348,8 @@ int main() {
         testData.dataStruct.testIntThree = 0;
         testData.dataStruct.testByte = 0;
         testData.dataStruct.testCharacter = '0';
-        testData.dataStruct.testFloat = 0.0;
+        testData.dataStruct.testFloat =
+            0.0; // NOLINT(cppcoreguidelines-narrowing-conversions)
         testData.dataStruct.dataCheckSum = 0;
       } else if (!initDataReceived && dataTypeReceived == initDataCharacter) {
         // Fill globals with initial data from init packet
@@ -378,7 +394,10 @@ int main() {
       } else if (dataTypeReceived == moveDataCharacter) {
         CommandedVelocity = moveData.dataStruct.CommandedVelocity;
         CommandedAngularVelocity = moveData.dataStruct.CommandedAngularVelocity;
-        angularVelocityOffset = CommandedAngularVelocity * (trackWidth * 0.5);
+        angularVelocityOffset =
+            CommandedAngularVelocity *
+            (trackWidth *
+             0.5); // NOLINT(cppcoreguidelines-narrowing-conversions)
         timeoutCounter = 0;
 #ifdef hasLEDs
       } else if (dataTypeReceived == ledDataCharacter) {
@@ -397,6 +416,9 @@ int main() {
     if (!propellerBoardInitialized) {
       if (initDataReceived && settingsDataReceived) {
         propellerBoardInitialized = true;
+#ifdef hasLEDs
+        ledArray[0] = 1; // White light will be on when board is operating.
+#endif
         pause(1);
       } else {
         // Send signal that we are "ready"
@@ -452,7 +474,8 @@ int main() {
         clearTwistRequest(&CommandedVelocity, &angularVelocityOffset);
         wasEscaping = false;
       } else if (CommandedVelocity >= 0 && (cliff || floorO)) {
-        // Cliffs and cats are no joke!
+        // Cliff and Floor sensors ONLY affect forward motion,
+        // because they are mounted on the front of my robot.
         newInputLeftSpeed = 0;
         newInputRightSpeed = 0;
         clearTwistRequest(&CommandedVelocity, &angularVelocityOffset);
@@ -471,19 +494,24 @@ int main() {
 
         // Use forward speed limit for rotate in place.
         if (CommandedVelocity > 0 &&
-            (abd_speedLimit * distancePerCount) - fabs(angularVelocityOffset) <
+            (abd_speedLimit * distancePerCount) -
+                    fabsf(
+                        angularVelocityOffset) < // NOLINT(cppcoreguidelines-narrowing-conversions)
                 CommandedVelocity) {
           newCommandedVelocity =
-              (abd_speedLimit * distancePerCount) - fabs(angularVelocityOffset);
+              (abd_speedLimit * distancePerCount) -
+              fabsf(
+                  angularVelocityOffset); // NOLINT(cppcoreguidelines-narrowing-conversions)
           // Use abdR_speedLimit for reverse movement.
-        } else if (CommandedVelocity < 0 &&
-                   -((abdR_speedLimit * distancePerCount) -
-                     fabs(angularVelocityOffset)) >
-                       CommandedVelocity) { // In theory ROS never requests a
-                                            // negative angular velocity, only
-                                            // teleop
-          newCommandedVelocity = -((abdR_speedLimit * distancePerCount) -
-                                   fabs(angularVelocityOffset));
+        } else if (
+            CommandedVelocity < 0 &&
+            -((abdR_speedLimit *
+               distancePerCount) - // NOLINT(cppcoreguidelines-narrowing-conversions)
+              fabsf(angularVelocityOffset)) > CommandedVelocity) {
+          newCommandedVelocity = -(
+              (abdR_speedLimit *
+               distancePerCount) - // NOLINT(cppcoreguidelines-narrowing-conversions)
+              fabsf(angularVelocityOffset));
         } else {
           // Not doing this on in place rotations (Velocity = 0)
           // Or if requested speed does not exceed maximum.
