@@ -176,7 +176,7 @@ class PropellerComm(object):
         #     "joint_states", JointState, queue_size=1
         # )
 
-        # Create a service that can be called to send robot to a map based goal
+        # Create a ROS service that can be called
         # http://wiki.ros.org/ROS/Tutorials/CreatingMsgAndSrv
         # http://wiki.ros.org/ROS/Tutorials/WritingServiceClient%28python%29
 
@@ -803,7 +803,7 @@ class PropellerComm(object):
         # then it will get updated to Propeller if it isn't the same when the watchdog runs,
         # and then we'll get the new status via odometry
         # The return value is the CURRENT known value from the propeller though, not the one we set.
-        # So if we don't trust THIS to get the job done, we an also basically say,
+        # So if we don't trust THIS to get the job done, we can also basically say,
         # "Set True until Returns True
 
         # Lengthen array if it is called before it is filled
