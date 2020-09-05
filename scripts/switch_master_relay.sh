@@ -16,4 +16,8 @@ if [[ $# -lt 1 ]]; then
   exit
 fi
 
-node "${SCRIPTDIR}/../node/MasterRelay.js" "${1}"
+if ! (command -v node >/dev/null); then
+  "${HOME}/.nvm/current/bin/node" "${SCRIPTDIR}/../node/MasterRelay.js" "${1}"
+else
+  node "${SCRIPTDIR}/../node/MasterRelay.js" "${1}"
+fi
