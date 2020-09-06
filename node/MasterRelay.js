@@ -36,6 +36,10 @@ function usbRelay(operation, runFromCommandLine) {
         // and update the webModel with the new state.
         usbRelay('read');
       }
+    } else {
+      // Update the USB Relay status too, as it often changes too,
+      // but may not have been able to read while this was running
+      webModelFunctions.update('checkUsbRelayBank', true);
     }
   };
   if (
