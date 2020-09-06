@@ -4,7 +4,7 @@ set (BOARD QUICKSTART)
 set (MODEL cmm)
 
 include_directories(~/.arlobot)
-include_directories(../include)
+include_directories(../ROSInterfaceForArloBot/include)
 
 project(2ndBoardCode)
 create_simple_executable(${PROJECT_NAME}
