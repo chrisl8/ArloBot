@@ -30,7 +30,6 @@
   <depend>diagnostic_aggregator</depend>
   <depend>openni_launch</depend>
   <depend>rocon_app_manager</depend>
-  <depend>depthimage_to_laserscan</depend>
   <depend>urdf</depend>
   <depend>xacro</depend>
   <depend>actionlib</depend>
