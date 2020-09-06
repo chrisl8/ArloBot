@@ -342,7 +342,8 @@ PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-move-base")
 # "ros-${INSTALLING_ROS_DISTRO}-move-base" - Required to build and use Arlobot ROS code.
 PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-joy")
 # "ros-${INSTALLING_ROS_DISTRO}-joy" - Specifically needed by my code if you want to use a joystick and also required to build Turtlebot code
-PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-slam-toolbox")
+# TODO: Uncomment if we ever switch from the github repo to the package version.
+#PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-slam-toolbox")
 # "ros-${INSTALLING_ROS_DISTRO}-slam-toolbox" - Slam Toolbox is the mapping system that I am using now.
 PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-tf2-tools")
 # "ros-${INSTALLING_ROS_DISTRO}-tf2-tools" - Used to display Transform tree as PDF for debugging robot transform tree.
@@ -356,6 +357,7 @@ PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-navigation")
 PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-rosbridge-server")
 # rosbridge is required for the Web interface to communicate with ROS
 if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
+  # TODO: Some of these should probably be in package.xml, but that would require another round of testing.
   PACKAGE_TO_INSTALL_LIST+=(python3-pip)
   # python3-pip - Required to install Python tools for things such as
   #      USB Relay reader.
@@ -548,7 +550,7 @@ fi
 
 # TODO: Remove this if/when the apt package catches up with all needed updates.
 printf "\n${BLUE}Slam Toolbox${NC}\n"
-printf "\n${PURPLE}There *is* a package for this, but the Github Repo is usually much more up to date.${NC}\n"
+printf "${PURPLE}There *is* a package for this, but the Github Repo is usually much more up to date.${NC}\n"
 cd ~/catkin_ws/src
 # If you have the excellent ROS by Example book now is a good time to clone the code for following along in the book:
 if ! [[ -d ~/catkin_ws/src/slam_toolbox ]]; then
