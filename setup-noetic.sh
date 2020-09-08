@@ -622,7 +622,7 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
 fi
 
 cd ~/catkin_ws
-printf "\n${YELLOW}[Installing dependencies for ROS biuld-from-source packages.]${NC}\n"
+printf "\n${YELLOW}[Installing dependencies for ROS build-from-source packages.]${NC}\n"
 rosdep install -q -y -r --from-paths src --ignore-src
 printf "\n${YELLOW}[(Re)Building ROS Source files.]${NC}\n"
 catkin_make
