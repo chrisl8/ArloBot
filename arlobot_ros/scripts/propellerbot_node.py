@@ -564,10 +564,17 @@ class PropellerComm(object):
         #     I think if this is well tuned to avoid low lying obstacles it
         # probably will not work well for mapping features.
         #     IF we could map features with the PING sensors, we wouldn't need the 3D sensor. :)
-        # Right now when the robot spins, it clears the obstacles behind it,
-        # because there are fewer sensors on the back side.
-        # If the obstacle was seen all of the way around the robot, in the same spot,
-        # it may stop returning to the same location as soon as it turns around?
+
+        # NOTE: The above testing was done:
+        #   1. Without a spread of PING sensors on the back.
+        #   2. With a ASUS Xtion sensor that has a very narrow field of view in front, rather than
+        #       the current RPLIDAR that has a 360 degree view of the room at all times.
+        #   3. I don't even use the PING/IR for obstacle avoidance anymore. The ONLY reason they are
+        #       coded here is to view them in Rviz.
+        #      Instead they only affect the robot from inside the Activity board. This means the
+        #       robot may repeatedly try to enter areas with low obstacles, but typically the PING
+        #       sensors end up just preventing it from taking tight corners, and the ultimate
+        #       solution is to provide a room that the robot can navigate with the "Lidar".
 
         #     NOTE: The bump sensors on Turtlebot mark but do not clear.
         # I'm not sure how that works out. It seems like every bump would
@@ -575,9 +582,12 @@ class PropellerComm(object):
         # but maybe there is something I am missing?
 
         # NOTE: Could this be different for PING vs. IR?
-        # Currently I'm not using IR! Just PING. The IR is not being used by costmap.
+        # Currently I'm not using IR! Just PING. NEITHER are  being used by costmap.
         # It is here for seeing in RVIZ, and the Propeller board uses it for emergency stopping,
-        # but costmap isn't watching it at the moment. I think it is too erratic for that.
+        # but costmap isn't watching any of this at the moment.
+        #   Adding PING back in *COULD* be done, but I'm not sure it is wise.
+        #   NEVER give IR to costmap, they are too erratic. If you need better obstacle detection
+        #       than PING alone, consider the new LaserPING in place of the IR sensors.
 
         # Fill sensory arrays with sensor data
         start = 16
@@ -690,8 +700,7 @@ class PropellerComm(object):
         # LaserScan: http://docs.ros.org/api/sensor_msgs/html/msg/LaserScan.html
         ultrasonic_scan = LaserScan()
         infrared_scan = LaserScan()
-        ultrasonic_scan.header.stamp = now
-        infrared_scan.header.stamp = now
+        ultrasonic_scan.header.stamp = infrared_scan.header.stamp = now
         ultrasonic_scan.header.frame_id = "ping_sensor_array"
         infrared_scan.header.frame_id = "ir_sensor_array"
         # For example:
@@ -700,33 +709,37 @@ class PropellerComm(object):
         # if you want to receive a full 360 degrees scan,
         # you should try setting min_angle to -pi/2 and max_angle to 3/2 * pi.
         # Radians: http://en.wikipedia.org/wiki/Radian#Advantages_of_measuring_in_radians
-        ultrasonic_scan.angle_min = 0
-        infrared_scan.angle_min = 0
+        ultrasonic_scan.angle_min = infrared_scan.angle_min = 0
         # ultrasonic_scan.angle_max = 2 * 3.14159 # Full circle # Letting it use default, which I think is the same.
         # infrared_scan.angle_max = 2 * 3.14159 # Full circle # Letting it use default, which I think is the same.
         # ultrasonic_scan.scan_time = 3 # I think this is only really applied for 3D scanning
         # infrared_scan.scan_time = 3 # I think this is only really applied for 3D scanning
         # Make sure the part you divide by num_readings is the same as your angle_max!
         # Might even make sense to use a variable here?
-        ultrasonic_scan.angle_increment = (2 * 3.14) / num_readings
-        infrared_scan.angle_increment = (2 * 3.14) / num_readings
-        ultrasonic_scan.time_increment = (1 / laser_frequency) / num_readings
-        infrared_scan.time_increment = (1 / laser_frequency) / num_readings
+        ultrasonic_scan.angle_increment = infrared_scan.angle_increment = (
+            2 * 3.14
+        ) / num_readings
+        # I'm not sure what the purpose f the time_increment is, but as of
+        # September, 2020, it causes this error when move_base or rviz subscribes to the topic
+        # *** buffer overflow detected ***: terminated
+        # but it seems to work fine if I supply NO time_increment
+        # ultrasonic_scan.time_increment = infrared_scan.time_increment = (
+        #     1 / laser_frequency
+        # ) / num_readings
         # From: http://www.parallax.com/product/28015
         # Range: approximately 1 inch to 10 feet (2 cm to 3 m)
         # This should be adjusted based on the imaginary distance between the actual laser
         # and the laser location in the URDF file.
         # in Meters Distances below this number will be ignored REMEMBER the offset!
-        ultrasonic_scan.range_min = 0.02
+        ultrasonic_scan.range_min = infrared_scan.range_min = 0.02
         # in Meters Distances below this number will be ignored REMEMBER the offset!
-        infrared_scan.range_min = 0.02
         # This has to be above our "artificial_far_distance",
         # otherwise "hits" at artificial_far_distance will be ignored,
         # which means they will not be used to clear the cost map!
         # in Meters Distances above this will be ignored
-        ultrasonic_scan.range_max = artificial_far_distance + 1
-        # in Meters Distances above this will be ignored
-        infrared_scan.range_max = artificial_far_distance + 1
+        ultrasonic_scan.range_max = infrared_scan.range_max = (
+            artificial_far_distance + 1
+        )
         ultrasonic_scan.ranges = ping_ranges
         infrared_scan.ranges = ir_ranges
         # "intensity" is a value specific to each laser scanner model.
