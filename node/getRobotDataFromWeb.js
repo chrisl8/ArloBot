@@ -37,7 +37,11 @@ if (require.main === module) {
   (async function () {
     const returnData = await getRobotDataFromWeb();
     if (returnData) {
-      console.log(returnData);
+      if (process.argv[2] === 'json') {
+        console.log(JSON.stringify(returnData));
+      } else {
+        console.log(returnData);
+      }
     }
   })();
 }

@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
+# Grab and save the path to this script
+# http://stackoverflow.com/a/246128
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+# echo "${SCRIPTDIR}" # For debugging
 
-if (command -v jq >/dev/null) && [[ $(jq '.cloudServer.exists' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-  if ! node "${HOME}/catkin_ws/src/ArloBot/node/addRobotIpToEtcHosts.js" >/dev/null; then
-    echo "You will be asked for your password in order to have root access to edit /etc/hosts"
-    echo "to add the host/ip for your robot."
-    export NVM_DIR="$HOME/.nvm"
-    # shellcheck source=/home/chrisl8/.nvm/nvm.sh
-    [[ -s "$NVM_DIR/nvm.sh" ]] && \. "$NVM_DIR/nvm.sh" # This loads nvm
-    sudo "${HOME}/.nvm/versions/node/$(nvm version)/bin/node" "${HOME}/catkin_ws/src/ArloBot/node/addRobotIpToEtcHosts.js"
-  fi
-fi
+"${SCRIPTDIR}/addRobotIpToEtcHosts.sh"
+
 echo "If you do not have a map loaded,"
 echo "set Global Options->Fixed Frame to"
 echo "'odom' in order to make this work."
