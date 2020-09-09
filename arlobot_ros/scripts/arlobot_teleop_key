@@ -6,7 +6,6 @@ import sys
 import termios
 import tty
 
-# roslib.load_manifest('turtlebot_teleop') # No longer needed in catkin!
 import rospy
 from geometry_msgs.msg import Twist
 
@@ -38,9 +37,10 @@ from geometry_msgs.msg import Twist
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Edited and converted to Python 3 by Christen Lofland 2020
+# Migrated to my ArloBot repository as the Turtlebot code is no longer maintained
 
 msg = """
-Control Your Turtlebot!
+Control Your Robot!
 ---------------------------
 Moving around:
    u    i    o
@@ -169,9 +169,10 @@ if __name__ == "__main__":
             twist.angular.z = control_turn
             pub.publish(twist)
 
+            # Use this for debugging:
             # print("loop: {0}".format(count))
             # print("target: vx: {0}, wz: {1}".format(target_speed, target_turn))
-            # print("publihsed: vx: {0}, wz: {1}".format(twist.linear.x, twist.angular.z))
+            # print("published: vx: {0}, wz: {1}".format(twist.linear.x, twist.angular.z))
 
     except Exception as e:
         print(e)
