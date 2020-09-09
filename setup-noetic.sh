@@ -446,18 +446,6 @@ else
   git pull
 fi
 
-printf "${BLUE}TurtleBot repository${NC}\n"
-printf "${BLUE}TurtleBot has not been ported to Noetic${NC}\n"
-printf "${BLUE}Rather than copying all of the required code to ArloBot,${NC}\n"
-printf "${BLUE}I am cloning it by hand. So far it compiles in Noetic.${NC}\n"
-if ! [[ -d ~/catkin_ws/src/turtlebot ]]; then
-  cd ~/catkin_ws/src
-  git clone https://github.com/turtlebot/turtlebot.git
-else
-  cd ~/catkin_ws/src/turtlebot
-  git pull
-fi
-
 if [[ "${RESPONSE_TO_XV11_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then # Always test in Travis
   printf "\n${BLUE}Neato XV11 repository${NC}\n"
   # Only needed if you have an XV-11 "Neato" Scanner
