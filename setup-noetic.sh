@@ -342,8 +342,9 @@ PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-move-base")
 # "ros-${INSTALLING_ROS_DISTRO}-move-base" - Required to build and use Arlobot ROS code.
 PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-joy")
 # "ros-${INSTALLING_ROS_DISTRO}-joy" - Specifically needed by my code if you want to use a joystick and also required to build Turtlebot code
-# TODO: Uncomment if we ever switch from the github repo to the package version.
-#PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-slam-toolbox")
+# TODO: Currently the source version will not compile unless the apt package is ALSO installed.
+#       https://github.com/SteveMacenski/slam_toolbox/issues/291
+PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-slam-toolbox")
 # "ros-${INSTALLING_ROS_DISTRO}-slam-toolbox" - Slam Toolbox is the mapping system that I am using now.
 PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-tf2-tools")
 # "ros-${INSTALLING_ROS_DISTRO}-tf2-tools" - Used to display Transform tree as PDF for debugging robot transform tree.
