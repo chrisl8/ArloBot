@@ -119,7 +119,6 @@ class AccordionGroup extends Component {
           beQuiet={this.props.beQuiet}
           myCroftSaid={this.props.myCroftSaid}
           ROSisRunning={this.props.ROSisRunning}
-          colorFollowerRunning={this.props.colorFollowerRunning}
           neoPixelsOn={this.props.neoPixelsOn}
         />
         {this.props.ROSisRunning && (

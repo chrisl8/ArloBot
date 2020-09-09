@@ -100,50 +100,6 @@ const stopLogStreamer = function () {
   return process;
 };
 
-// This is a good example of integrating a simple ROS function into the web menu,
-// without having to redesign everything.
-// Place the buttons for things like this into the "Behavior" section,
-// and only show them when ROS is started.
-// Behaviors like these could also fall into "random activities" when robot is "idle",
-// but then I think that it would need to be in the behavior tree
-const startColorFollower = function () {
-  webModelFunctions.scrollingStatusUpdate('Starting Color Follower.');
-  const command = `${__dirname}/../scripts/object_follower.sh`;
-  const colorFollowerProcess = spawn(command);
-  colorFollowerProcess.stdout.setEncoding('utf8');
-  colorFollowerProcess.stdout.on('data', (data) => {
-    if (data.indexOf('ROI messages detected. Starting follower...') > -1) {
-      webModelFunctions.update('colorFollowerRunning', true);
-      webModelFunctions.scrollingStatusUpdate('Color Follower has started.');
-      webModelFunctions.behaviorStatusUpdate('Color Follower started.');
-    }
-    // console.log(data);
-  });
-  colorFollowerProcess.stderr.setEncoding('utf8');
-  colorFollowerProcess.stderr.on('data', (data) => {
-    console.log('colorFollower:', data);
-  });
-  colorFollowerProcess.on('error', (err) => {
-    console.error(err);
-  });
-  colorFollowerProcess.on('exit', (code) => {
-    // Will catch multiple exit codes I think:
-    if (code === 0) {
-      webModelFunctions.scrollingStatusUpdate('Color Follower ended normally.');
-    } else {
-      console.log(`Color Follower failed with code: ${code}`);
-    }
-    webModelFunctions.update('colorFollowerRunning', false);
-  });
-  return colorFollowerProcess;
-};
-const stopColorFollower = function () {
-  // pkill -f "roslaunch arlobot_ros object_follower.launch"
-  const command = '/usr/bin/pkill';
-  const commandArgs = ['-f', 'roslaunch arlobot_ros object_follower.launch'];
-  return spawn(command, commandArgs);
-};
-
 async function start() {
   /** @namespace personalData.webServerPort */
   const webServer = app.listen(personalData.webServerPort);
@@ -324,24 +280,6 @@ async function start() {
         stopLogStreamer();
       } else {
         startLogStreamer();
-      }
-    });
-    socket.on('startColorFollower', () => {
-      if (!personalData.demoWebSite) {
-        startColorFollower();
-      } else {
-        webModelFunctions.scrollingStatusUpdate('Color Follower has started.');
-        webModelFunctions.behaviorStatusUpdate('Color Follower started.');
-        webModelFunctions.update('colorFollowerRunning', true);
-      }
-    });
-    socket.on('stopColorFollower', () => {
-      if (!personalData.demoWebSite) {
-        stopColorFollower();
-      } else {
-        webModelFunctions.scrollingStatusUpdate('Color Follower has stopped.');
-        webModelFunctions.behaviorStatusUpdate('Color Follower stopped.');
-        webModelFunctions.update('colorFollowerRunning', false);
       }
     });
     socket.on('toggleDebug', () => {

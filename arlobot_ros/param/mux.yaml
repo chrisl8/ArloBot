@@ -23,7 +23,3 @@ topics:
     topic:       "cmd_vel_mux/input/web"
     timeout:     1.0
     priority:    4
-  - name:        "ObjectFollower"
-    topic:       "cmd_vel_mux/input/object_follower"
-    timeout:     1.0
-    priority:    1

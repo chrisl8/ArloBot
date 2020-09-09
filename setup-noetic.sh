@@ -416,9 +416,6 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   # TODO: Confirm that Scanse Sweep needs this and add it to the "if scanse" section:
   # ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan - used by Scanse Sweep
 
-  # TODO: What is this for? Color follower maybe? Does that even still work?
-  # "ros-${INSTALLING_ROS_DISTRO}-vision-opencv" libopencv-dev python3-opencv
-
   # NOTE: If you are looking for a ROS package and wonder if it exists, but not for Noetic, check here:
   # http://repositories.ros.org/status_page/compare_melodic_noetic.html
 fi
@@ -552,32 +549,11 @@ fi
 printf "\n${BLUE}Slam Toolbox${NC}\n"
 printf "${PURPLE}There *is* a package for this, but the Github Repo is usually much more up to date.${NC}\n"
 cd ~/catkin_ws/src
-# If you have the excellent ROS by Example book now is a good time to clone the code for following along in the book:
 if ! [[ -d ~/catkin_ws/src/slam_toolbox ]]; then
   git clone -b noetic-devel https://github.com/SteveMacenski/slam_toolbox.git
 else
   cd ~/catkin_ws/src/slam_toolbox
   git checkout noetic-devel
-  git pull
-fi
-
-printf "\n${BLUE}ROS by Example code${NC}\n"
-cd ~/catkin_ws/src
-# If you have the excellent ROS by Example book now is a good time to clone the code for following along in the book:
-if ! [[ -d ~/catkin_ws/src/rbx1 ]]; then
-  git clone -b indigo-devel https://github.com/pirobot/rbx1.git
-else
-  cd ~/catkin_ws/src/rbx1
-  git pull
-fi
-
-printf "\n${BLUE}USB Web Cam code for ROS by Example${NC}\n"
-cd ~/catkin_ws/src
-# If you want to use the USB Camera code from the ROS by Example book:
-if ! [[ -d ~/catkin_ws/src/usb_cam ]]; then
-  git clone https://github.com/bosch-ros-pkg/usb_cam.git
-else
-  cd ~/catkin_ws/src/usb_cam
   git pull
 fi
 

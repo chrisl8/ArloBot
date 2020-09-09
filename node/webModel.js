@@ -31,7 +31,6 @@ module.exports = {
   laptopFullyCharged: 'unknown',
   laptopBatteryPercentage: '???',
   logStreamerRunning: false,
-  colorFollowerRunning: false,
   shutdownRequested: false,
   status: 'Arlo behavior is not running.',
   behaviorStatus: '',

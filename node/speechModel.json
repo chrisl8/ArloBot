@@ -1,219 +1,155 @@
 {
-    "randomGreeting": {
-        "repeatInterval": 10,
-        "delay": 10,
-        "Test": "false",
-        "thingsToSay": {
-            "repeat": false,
-            "morningGreeting": {
-                "text": "Good morning.",
-                "weight": 0.99,
-                "instance": 1
-            },
-            "genericGreeting": {
-                "text": "Hello there",
-                "weight": 0.01,
-                "instance": 10
-            }
-        }
-    },
-    "followObject": {
-        "repeatInterval": 30,
-        "delay": 30,
-        "Test": "robotModel.active_cmd === 'ObjectFollower'",
-        "thingsToSay": {
-            "repeat": false,
-            "wheee": {
-                "text": "WHEEE!",
-                "weight": 0.99,
-                "instance": 1
-            },
-            "genericGreeting": {
-                "text": "follow the lights",
-                "weight": 0.01,
-                "instance": 10
-            }
-        }
-    },
-    "bored": {
-        "repeatInterval": 900,
-        "delay": 900,
-        "Test": "robotModel.active_cmd === 'idle'",
-        "thingsToSay": {
-            "repeat": false,
-            "bored": {
-                "text": "I'm bored.",
-                "weight": 0.02,
-                "instance": 1
-            },
-            "books": {
-                "text": "Have you read any good books lately?",
-                "weight": 0.01,
-                "instance": 1
-            },
-            "hey": {
-                "text": "Hey!",
-                "weight": 0.01,
-                "instance": 1
-            }
-        }
-    },
-    "halt": {
-        "repeatInterval": 10,
-        "delay": 0,
-        "Test": "webModel.haltRobot === true",
-        "thingsToSay": {
-            "repeat": false,
-            "stop": {
-                "text": "stop",
-                "weight": 0.99,
-                "instance": 1
-            },
-            "WallEwhoa": {
-                "text": "~/.arlobot/sounds/whoa.wav",
-                "weight": 0.01,
-                "instance": 10
-            }
-        }
-    },
-    "PIRsensor1st": {
-        "repeatInterval": 300,
-        "delay": 0,
-        "Test": "false",
-        "thingsToSay": {
-            "repeat": true,
-            "Hello": {
-                "text": "Hello?",
-                "weight": 0.99,
-                "instance": 1
-            },
-            "Hi": {
-                "text": "Hi.",
-                "weight": 0.99,
-                "instance": 1
-            },
-            "Greetings": {
-                "text": "Greetings!",
-                "weight": 0.99,
-                "instance": 1
-            }
-        }
-    },
-    "PIRsensor2nd": {
-        "repeatInterval": 300,
-        "delay": 0,
-        "Test": "false",
-        "thingsToSay": {
-            "repeat": true,
-            "anybody": {
-                "text": "Is anybody there?",
-                "weight": 0.99,
-                "instance": 1
-            },
-            "How": {
-                "text": "How are you?",
-                "weight": 0.99,
-                "instance": 1
-            },
-            "talk": {
-                "text": "I talk, but I don't listen.",
-                "weight": 0.99,
-                "instance": 1
-            }
-        }
-    },
-    "PIRsensorOff": {
-        "repeatInterval": 300,
-        "delay": 0,
-        "Test": "false",
-        "thingsToSay": {
-            "repeat": true,
-            "goodBye": {
-                "text": "Goodbye",
-                "weight": 0.99,
-                "instance": 1
-            },
-            "soLong": {
-                "text": "So long.",
-                "weight": 0.99,
-                "instance": 1
-            }
-        }
-    },
-    "shutdown": {
-        "repeatInterval": 300,
-        "delay": 0,
-        "Test": "false",
-        "thingsToSay": {
-            "repeat": true,
-            "shutdown": {
-                "text": "So long, and thanks for all the fish.",
-                "weight": 0.99,
-                "instance": 1
-            }
-        }
-    },
-    "randomChatter": {
-        "repeatInterval": 7200,
-        "delay": 300,
-        "Test": "true",
-        "thingsToSay": {
-            "repeat": false,
-            "hasIt": {
-                "text": "Has it ever occurred to you?",
-                "weight": 0.01,
-                "instance": 1
-            },
-            "misspell": {
-                "text": "undefined",
-                "weight": 0.01,
-                "instance": 1
-            },
-            "whatHappensIf": {
-                "text": "~/.arlobot/sounds/WhatHappensIfIDoThis.wav",
-                "weight": 0.01,
-                "instance": 1
-            },
-            "niceTime": {
-                "text": "Yes, we are having a very nice time.",
-                "weight": 0.01,
-                "instance": 1
-            },
-            "helloWorld": {
-                "text": "Hello world!",
-                "weight": 0.01,
-                "instance": 1
-            },
-            "isAnybody": {
-                "text": "Is anybody there?",
-                "weight": 0.01,
-                "instance": 1
-            },
-            "howAreYou": {
-                "text": "How are you?",
-                "weight": 0.01,
-                "instance": 1
-            },
-            "dontListen": {
-                "text": "I talk, but I don't listen.",
-                "weight": 0.01,
-                "instance": 1
-            },
-            "menuOptions": {
-                "text": "Please listen carefully as my menu options have changed.",
-                "weight": 0.01,
-                "instance": 1
-            },
-            "giblets": {
-                "text": "I just realized that I may have put the gibblets in the hamster.",
-                "weight": 0.01,
-                "instance": 1
-            },
-            "higgs": {
-                "text": "I'm just trying to brew up a good higgs field, but everything keeps getting in the way.",
-                "weight": 0.01,
-                "instance": 1
-            }
-        }
+  "halt": {
+    "repeatInterval": 10,
+    "delay": 0,
+    "Test": "webModel.haltRobot === true",
+    "thingsToSay": {
+      "repeat": false,
+      "stop": {
+        "text": "stop",
+        "weight": 0.99,
+        "instance": 1
+      },
+      "WallEwhoa": {
+        "text": "~/.arlobot/sounds/whoa.wav",
+        "weight": 0.01,
+        "instance": 10
+      }
     }
+  },
+  "PIRsensor1st": {
+    "repeatInterval": 300,
+    "delay": 0,
+    "Test": "false",
+    "thingsToSay": {
+      "repeat": true,
+      "Hello": {
+        "text": "Hello?",
+        "weight": 0.99,
+        "instance": 1
+      },
+      "Hi": {
+        "text": "Hi.",
+        "weight": 0.99,
+        "instance": 1
+      },
+      "Greetings": {
+        "text": "Greetings!",
+        "weight": 0.99,
+        "instance": 1
+      }
+    }
+  },
+  "PIRsensor2nd": {
+    "repeatInterval": 300,
+    "delay": 0,
+    "Test": "false",
+    "thingsToSay": {
+      "repeat": true,
+      "anybody": {
+        "text": "Is anybody there?",
+        "weight": 0.99,
+        "instance": 1
+      },
+      "How": {
+        "text": "How are you?",
+        "weight": 0.99,
+        "instance": 1
+      },
+      "talk": {
+        "text": "I talk, but I don't listen.",
+        "weight": 0.99,
+        "instance": 1
+      }
+    }
+  },
+  "PIRsensorOff": {
+    "repeatInterval": 300,
+    "delay": 0,
+    "Test": "false",
+    "thingsToSay": {
+      "repeat": true,
+      "goodBye": {
+        "text": "Goodbye",
+        "weight": 0.99,
+        "instance": 1
+      },
+      "soLong": {
+        "text": "So long.",
+        "weight": 0.99,
+        "instance": 1
+      }
+    }
+  },
+  "shutdown": {
+    "repeatInterval": 300,
+    "delay": 0,
+    "Test": "false",
+    "thingsToSay": {
+      "repeat": true,
+      "shutdown": {
+        "text": "So long, and thanks for all the fish.",
+        "weight": 0.99,
+        "instance": 1
+      }
+    }
+  },
+  "randomChatter": {
+    "repeatInterval": 7200,
+    "delay": 300,
+    "Test": "true",
+    "thingsToSay": {
+      "repeat": false,
+      "328120__kianda__powerup": {
+        "text": "~/.arlobot/sounds/328120__kianda__powerup.wav",
+        "weight": 0.01,
+        "instance": 1
+      },
+      "CastleInTheSky-Ding": {
+        "text": "~/.arlobot/sounds/CastleInTheSky-Ding.wav",
+        "weight": 0.01,
+        "instance": 1
+      },
+      "CastleInTheSky-Drip2": {
+        "text": "~/.arlobot/sounds/CastleInTheSky-Drip2.wav",
+        "weight": 0.01,
+        "instance": 1
+      },
+      "CastleInTheSky-RobotBeep2a": {
+        "text": "~/.arlobot/sounds/CastleInTheSky-RobotBeep2a.wav",
+        "weight": 0.01,
+        "instance": 1
+      },
+      "CastleInTheSky-RobotBeep2b": {
+        "text": "~/.arlobot/sounds/CastleInTheSky-RobotBeep2b.wav",
+        "weight": 0.01,
+        "instance": 1
+      },
+      "CastleInTheSky-RobotBeep2c": {
+        "text": "~/.arlobot/sounds/CastleInTheSky-RobotBeep2c.wav",
+        "weight": 0.01,
+        "instance": 1
+      },
+      "CastleInTheSky-RobotBeep3a": {
+        "text": "~/.arlobot/sounds/CastleInTheSky-RobotBeep3a.wav",
+        "weight": 0.01,
+        "instance": 1
+      },
+      "CastleInTheSky-RobotBeep3b": {
+        "text": "~/.arlobot/sounds/CastleInTheSky-RobotBeep3b.wav",
+        "weight": 0.01,
+        "instance": 1
+      },
+      "CastleInTheSky-RobotBeep3c": {
+        "text": "~/.arlobot/sounds/CastleInTheSky-RobotBeep3c.wav",
+        "weight": 0.01,
+        "instance": 1
+      },
+      "CastleInTheSky-Zap": {
+        "text": "~/.arlobot/sounds/CastleInTheSky-Zap.wav",
+        "weight": 0.01,
+        "instance": 1
+      }
+    }
+  }
 }
