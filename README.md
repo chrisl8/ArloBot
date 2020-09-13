@@ -188,7 +188,7 @@ https://ekpyroticfrood.net/?p=115
 roslaunch arlobot_ros minimal.launch
 # In a new Terminal:
 rosparam set /joystick/dev "/dev/input/js0"
-roslaunch turtlebot_teleop xbox360_teleop.launch
+roslaunch arlobot_ros xbox360_teleop.launch
 ```
 
 ### Slam Toolbox (SLAM Map building) ###
