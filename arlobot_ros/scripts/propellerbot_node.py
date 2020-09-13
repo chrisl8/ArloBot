@@ -719,9 +719,7 @@ class PropellerComm(object):
         ultrasonic_scan.angle_increment = infrared_scan.angle_increment = (
             2 * 3.14
         ) / num_readings
-        # I'm not sure what the purpose f the time_increment is, but as of
-        # September, 2020, it causes this error when move_base or rviz subscribes to the topic
-        # *** buffer overflow detected ***: terminated
+        # I'm not sure what the purpose of the time_increment is, but as of
         # but it seems to work fine if I supply NO time_increment
         # ultrasonic_scan.time_increment = infrared_scan.time_increment = (
         #     1 / laser_frequency
