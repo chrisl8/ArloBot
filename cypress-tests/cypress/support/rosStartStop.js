@@ -283,9 +283,7 @@ function checkInitialTelemetry() {
   openPanelIfClosed("behavior");
 
   it("Behavior Panel should contain new items when ROS is running", () => {
-    cy.get("#behavior-card")
-      .get("#start-color-follower-button")
-      .should("be.visible");
+    cy.get("#behavior-card").get("#blinky-lights-button").should("be.visible");
   });
 
   openPanelIfClosed("sensors");

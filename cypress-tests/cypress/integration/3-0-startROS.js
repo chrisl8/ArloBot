@@ -114,4 +114,3 @@ describe("Start and Stop ROS", () => {
 // TODO: Test Make Map
 // TODO: Test Load Map
 // TODO: Test Remote Control
-// TODO: Test color follower?

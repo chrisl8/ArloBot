@@ -111,7 +111,6 @@ class App extends Component {
             idleTimeout={this.state.webModel.idleTimeout}
             beQuiet={this.state.webModel.beQuiet}
             myCroftSaid={this.state.webModel.myCroftSaid}
-            colorFollowerRunning={this.state.webModel.colorFollowerRunning}
             neoPixelsOn={this.state.webModel.neoPixelsOn}
             ROSstart={this.state.webModel.ROSstart}
             monitorACconnection={
