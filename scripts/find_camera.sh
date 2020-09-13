@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Find the camera listed on the command line,
-# based on output of 'fswebam'
+# based on output of 'fswebcam'
 if [[ $# -eq 0 ]]; then
   echo "You must provide a camera name such as,"
   echo "HP or C615 or 'Integrated Camera'"
