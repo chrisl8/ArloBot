@@ -106,7 +106,7 @@ describe("site initial layout and page function", () => {
     cy.contains("camera0fpsForWeb:").should("be.visible");
     cy.contains("camera1:").should("be.visible");
     cy.contains("camera1name:").should("be.visible");
-    cy.contains("wait_for_door_confirmation:").should("be.visible");
+    cy.contains("monitorDoors:").should("be.visible");
     cy.contains("hasXboxController:").should("be.visible");
     cy.contains("arlobotModel:").should("be.visible");
     cy.contains("hasActivityBoard:").should("be.visible");

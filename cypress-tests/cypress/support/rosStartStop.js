@@ -3,9 +3,7 @@ import { openPanelIfClosed } from "./reusableTestsAndSetupTasks";
 function startROS() {
   openPanelIfClosed("robot-service-log");
   it("Start ROS", () => {
-    cy.get("#startup-shutdown-card")
-      .contains("Start ROS")
-      .click();
+    cy.get("#startup-shutdown-card").contains("Start ROS").click();
 
     cy.get("#startup-shutdown-card")
       .contains("Start ROS")
@@ -31,9 +29,7 @@ function startROS() {
     cy.get("#statusScrollBox")
       .contains("Turning on Arlo Power supply . . .")
       .should("be.visible");
-    cy.get("#statusScrollBox")
-      .contains("relay on 0")
-      .should("be.visible");
+    cy.get("#statusScrollBox").contains("relay on 0").should("be.visible");
     cy.get("#statusScrollBox")
       .contains("Giving it 1 second to come online . . .")
       .should("be.visible");
@@ -82,9 +78,7 @@ function startROS() {
 function checkInitialTelemetry() {
   openPanelIfClosed("telemetry");
   it("Telemetry Panel should exist and contain correct data", () => {
-    cy.get("#telemetry-card")
-      .contains("Cliff Detected")
-      .should("be.visible");
+    cy.get("#telemetry-card").contains("Cliff Detected").should("be.visible");
     cy.get("#telemetry-card")
       .contains("Cliff Detected")
       .should("not.have.class", "btn-danger");
@@ -93,9 +87,7 @@ function checkInitialTelemetry() {
       .contains("span", "false", { timeout: 30000 })
       .should("be.visible");
 
-    cy.get("#telemetry-card")
-      .contains("Floor Obstacle")
-      .should("be.visible");
+    cy.get("#telemetry-card").contains("Floor Obstacle").should("be.visible");
     cy.get("#telemetry-card")
       .contains("Floor Obstacle")
       .should("not.have.class", "btn-danger");
@@ -104,9 +96,7 @@ function checkInitialTelemetry() {
       .contains("span", "false")
       .should("be.visible");
 
-    cy.get("#telemetry-card")
-      .contains("Safe To Recede")
-      .should("be.visible");
+    cy.get("#telemetry-card").contains("Safe To Recede").should("be.visible");
     cy.get("#telemetry-card")
       .contains("Safe To Recede")
       .should("not.have.class", "btn-danger");
@@ -115,9 +105,7 @@ function checkInitialTelemetry() {
       .contains("span", "true")
       .should("be.visible");
 
-    cy.get("#telemetry-card")
-      .contains("Safe To Proceed")
-      .should("be.visible");
+    cy.get("#telemetry-card").contains("Safe To Proceed").should("be.visible");
     cy.get("#telemetry-card")
       .contains("Safe To Proceed")
       .should("not.have.class", "btn-danger");
@@ -126,9 +114,7 @@ function checkInitialTelemetry() {
       .contains("span", "true")
       .should("be.visible");
 
-    cy.get("#telemetry-card")
-      .contains("Escaping")
-      .should("be.visible");
+    cy.get("#telemetry-card").contains("Escaping").should("be.visible");
     cy.get("#telemetry-card")
       .contains("Escaping")
       .should("not.have.class", "btn-danger");
@@ -173,9 +159,7 @@ function checkInitialTelemetry() {
       .contains(/[0-9]*/)
       .should("be.visible");
 
-    cy.get("#telemetry-card")
-      .contains("AC Power")
-      .should("be.visible");
+    cy.get("#telemetry-card").contains("AC Power").should("be.visible");
     cy.get("#telemetry-card")
       .contains("AC Power")
       .should("have.class", "btn-danger");
@@ -184,9 +168,7 @@ function checkInitialTelemetry() {
       .contains("span", "true")
       .should("be.visible");
 
-    cy.get("#telemetry-card")
-      .contains("Heading")
-      .should("be.visible");
+    cy.get("#telemetry-card").contains("Heading").should("be.visible");
     cy.get("#telemetry-card")
       .contains("Heading")
       .should("not.have.class", "btn-danger");
@@ -196,9 +178,7 @@ function checkInitialTelemetry() {
       .contains(/[0-9]*\.[0-9]*/)
       .should("be.visible");
 
-    cy.get("#telemetry-card")
-      .contains("Gyro Heading")
-      .should("be.visible");
+    cy.get("#telemetry-card").contains("Gyro Heading").should("be.visible");
     cy.get("#telemetry-card")
       .contains("Gyro Heading")
       .should("not.have.class", "btn-danger");
@@ -208,9 +188,7 @@ function checkInitialTelemetry() {
       .contains(/[0-9]*\.[0-9]*/)
       .should("be.visible");
 
-    cy.get("#telemetry-card")
-      .contains("Left Motor Power")
-      .should("be.visible");
+    cy.get("#telemetry-card").contains("Left Motor Power").should("be.visible");
     cy.get("#telemetry-card")
       .contains("Left Motor Power")
       .should("not.have.class", "btn-danger");
@@ -230,9 +208,7 @@ function checkInitialTelemetry() {
       .contains("span", "true")
       .should("be.visible");
 
-    cy.get("#telemetry-card")
-      .contains("Laptop Battery")
-      .should("be.visible");
+    cy.get("#telemetry-card").contains("Laptop Battery").should("be.visible");
     cy.get("#telemetry-card")
       .contains("Laptop Battery")
       .should("not.have.class", "btn-danger");
@@ -290,9 +266,7 @@ function checkInitialTelemetry() {
 
   // Sensors
   it("Sensors Panel should contain correct switches, all off", () => {
-    cy.get("#monitorACconnection")
-      .contains("AC")
-      .should("be.visible");
+    cy.get("#monitorACconnection").contains("AC").should("be.visible");
     cy.get("#monitorACconnection")
       .children("label")
       .contains("Monitor")
@@ -307,9 +281,7 @@ function checkInitialTelemetry() {
       .should("not.have.class", "brightly-negative-text");
 
     // IR Sensors are Ignored by Default.
-    cy.get("#ignoreIRSensors")
-      .contains("Infrared")
-      .should("be.visible");
+    cy.get("#ignoreIRSensors").contains("Infrared").should("be.visible");
     cy.get("#ignoreIRSensors")
       .children("label")
       .contains("Monitor")
@@ -323,9 +295,7 @@ function checkInitialTelemetry() {
       .contains("Ignore")
       .should("have.class", "brightly-negative-text");
 
-    cy.get("#ignoreCliffSensors")
-      .contains("Cliff")
-      .should("be.visible");
+    cy.get("#ignoreCliffSensors").contains("Cliff").should("be.visible");
     cy.get("#ignoreCliffSensors")
       .children("label")
       .contains("Monitor")
@@ -339,9 +309,7 @@ function checkInitialTelemetry() {
       .contains("Ignore")
       .should("not.have.class", "brightly-negative-text");
 
-    cy.get("#ignoreFloorSensors")
-      .contains("Floor")
-      .should("be.visible");
+    cy.get("#ignoreFloorSensors").contains("Floor").should("be.visible");
     cy.get("#ignoreFloorSensors")
       .children("label")
       .contains("Monitor")
@@ -355,9 +323,7 @@ function checkInitialTelemetry() {
       .contains("Ignore")
       .should("not.have.class", "brightly-negative-text");
 
-    cy.get("#ignoreProximity")
-      .contains("PING")
-      .should("be.visible");
+    cy.get("#ignoreProximity").contains("PING").should("be.visible");
     cy.get("#ignoreProximity")
       .children("label")
       .contains("Monitor")
@@ -374,9 +340,7 @@ function checkInitialTelemetry() {
 
   // Test Monitor AC while plugged in
   it("test disable Monitor AC while plugged in", () => {
-    cy.get("#telemetry-card")
-      .contains("AC Power")
-      .should("be.visible");
+    cy.get("#telemetry-card").contains("AC Power").should("be.visible");
     cy.get("#telemetry-card")
       .contains("AC Power")
       .should("have.class", "btn-danger");
@@ -385,9 +349,7 @@ function checkInitialTelemetry() {
       .contains("span", "true")
       .should("be.visible");
 
-    cy.get("#monitorACconnection")
-      .contains("AC")
-      .should("be.visible");
+    cy.get("#monitorACconnection").contains("AC").should("be.visible");
     cy.get("#monitorACconnection")
       .children("label")
       .contains("Monitor")
@@ -403,9 +365,7 @@ function checkInitialTelemetry() {
 
     cy.get("#monitorACconnection").click();
 
-    cy.get("#monitorACconnection")
-      .contains("AC")
-      .should("be.visible");
+    cy.get("#monitorACconnection").contains("AC").should("be.visible");
     cy.get("#monitorACconnection")
       .children("label")
       .contains("Monitor")
@@ -419,9 +379,7 @@ function checkInitialTelemetry() {
       .contains("Ignore")
       .should("have.class", "brightly-negative-text");
 
-    cy.get("#telemetry-card")
-      .contains("AC Power")
-      .should("be.visible");
+    cy.get("#telemetry-card").contains("AC Power").should("be.visible");
     cy.get("#telemetry-card")
       .contains("AC Power")
       .should("not.have.class", "btn-danger");
@@ -432,9 +390,7 @@ function checkInitialTelemetry() {
 
     cy.get("#monitorACconnection").click();
 
-    cy.get("#monitorACconnection")
-      .contains("AC")
-      .should("be.visible");
+    cy.get("#monitorACconnection").contains("AC").should("be.visible");
     cy.get("#monitorACconnection")
       .children("label")
       .contains("Monitor")
@@ -448,9 +404,7 @@ function checkInitialTelemetry() {
       .contains("Ignore")
       .should("not.have.class", "brightly-negative-text");
 
-    cy.get("#telemetry-card")
-      .contains("AC Power")
-      .should("be.visible");
+    cy.get("#telemetry-card").contains("AC Power").should("be.visible");
     cy.get("#telemetry-card")
       .contains("AC Power")
       .should("have.class", "btn-danger");
@@ -462,9 +416,7 @@ function checkInitialTelemetry() {
 
   it("shut off Monitor PING and IR Sensors", () => {
     // IR Sensors are Ignored by Default.
-    cy.get("#ignoreIRSensors")
-      .contains("Infrared")
-      .should("be.visible");
+    cy.get("#ignoreIRSensors").contains("Infrared").should("be.visible");
     cy.get("#ignoreIRSensors")
       .children("label")
       .contains("Monitor")
@@ -478,9 +430,7 @@ function checkInitialTelemetry() {
       .contains("Ignore")
       .should("have.class", "brightly-negative-text");
 
-    cy.get("#ignoreProximity")
-      .contains("PING")
-      .should("be.visible");
+    cy.get("#ignoreProximity").contains("PING").should("be.visible");
     cy.get("#ignoreProximity")
       .children("label")
       .contains("Monitor")
@@ -496,9 +446,7 @@ function checkInitialTelemetry() {
 
     cy.get("#ignoreProximity").click();
 
-    cy.get("#ignoreProximity")
-      .contains("PING")
-      .should("be.visible");
+    cy.get("#ignoreProximity").contains("PING").should("be.visible");
     cy.get("#ignoreProximity")
       .children("label")
       .contains("Monitor")
@@ -541,9 +489,7 @@ function checkInitialTelemetry() {
 
     cy.get("#ignoreProximity").click();
 
-    cy.get("#ignoreProximity")
-      .contains("PING")
-      .should("be.visible");
+    cy.get("#ignoreProximity").contains("PING").should("be.visible");
     cy.get("#ignoreProximity")
       .children("label")
       .contains("Monitor")
@@ -559,9 +505,7 @@ function checkInitialTelemetry() {
   });
 
   it("test enable/disable Monitor IR Sensors", () => {
-    cy.get("#ignoreIRSensors")
-      .contains("Infrared")
-      .should("be.visible");
+    cy.get("#ignoreIRSensors").contains("Infrared").should("be.visible");
     cy.get("#ignoreIRSensors")
       .children("label")
       .contains("Monitor")
@@ -577,9 +521,7 @@ function checkInitialTelemetry() {
 
     cy.get("#ignoreIRSensors").click();
 
-    cy.get("#ignoreIRSensors")
-      .contains("Infrared")
-      .should("be.visible");
+    cy.get("#ignoreIRSensors").contains("Infrared").should("be.visible");
     cy.get("#ignoreIRSensors")
       .children("label")
       .contains("Monitor")
@@ -595,9 +537,7 @@ function checkInitialTelemetry() {
 
     cy.get("#ignoreIRSensors").click();
 
-    cy.get("#ignoreIRSensors")
-      .contains("Infrared")
-      .should("be.visible");
+    cy.get("#ignoreIRSensors").contains("Infrared").should("be.visible");
     cy.get("#ignoreIRSensors")
       .children("label")
       .contains("Monitor")
@@ -613,9 +553,7 @@ function checkInitialTelemetry() {
   });
 
   it("shut off Cliff Sensors", () => {
-    cy.get("#ignoreCliffSensors")
-      .contains("Cliff")
-      .should("be.visible");
+    cy.get("#ignoreCliffSensors").contains("Cliff").should("be.visible");
     cy.get("#ignoreCliffSensors")
       .children("label")
       .contains("Monitor")
@@ -631,9 +569,7 @@ function checkInitialTelemetry() {
 
     cy.get("#ignoreCliffSensors").click();
 
-    cy.get("#ignoreCliffSensors")
-      .contains("Cliff")
-      .should("be.visible");
+    cy.get("#ignoreCliffSensors").contains("Cliff").should("be.visible");
     cy.get("#ignoreCliffSensors")
       .children("label")
       .contains("Monitor")
@@ -649,9 +585,7 @@ function checkInitialTelemetry() {
 
     // With Cliff Sensor Off there can be no Cliff Detected
 
-    cy.get("#telemetry-card")
-      .contains("Cliff Detected")
-      .should("be.visible");
+    cy.get("#telemetry-card").contains("Cliff Detected").should("be.visible");
     cy.get("#telemetry-card")
       .contains("Cliff Detected")
       .should("not.have.class", "btn-danger");
@@ -662,9 +596,7 @@ function checkInitialTelemetry() {
 
     cy.get("#ignoreCliffSensors").click();
 
-    cy.get("#ignoreCliffSensors")
-      .contains("Cliff")
-      .should("be.visible");
+    cy.get("#ignoreCliffSensors").contains("Cliff").should("be.visible");
     cy.get("#ignoreCliffSensors")
       .children("label")
       .contains("Monitor")
@@ -680,9 +612,7 @@ function checkInitialTelemetry() {
   });
 
   it("shut off Floor Sensors", () => {
-    cy.get("#ignoreFloorSensors")
-      .contains("Floor")
-      .should("be.visible");
+    cy.get("#ignoreFloorSensors").contains("Floor").should("be.visible");
     cy.get("#ignoreFloorSensors")
       .children("label")
       .contains("Monitor")
@@ -698,9 +628,7 @@ function checkInitialTelemetry() {
 
     cy.get("#ignoreFloorSensors").click();
 
-    cy.get("#ignoreFloorSensors")
-      .contains("Floor")
-      .should("be.visible");
+    cy.get("#ignoreFloorSensors").contains("Floor").should("be.visible");
     cy.get("#ignoreFloorSensors")
       .children("label")
       .contains("Monitor")
@@ -716,9 +644,7 @@ function checkInitialTelemetry() {
 
     // With Floor Sensor Off there can be no Floor Obstacle Detected
 
-    cy.get("#telemetry-card")
-      .contains("Floor Obstacle")
-      .should("be.visible");
+    cy.get("#telemetry-card").contains("Floor Obstacle").should("be.visible");
     cy.get("#telemetry-card")
       .contains("Floor Obstacle")
       .should("not.have.class", "btn-danger");
@@ -729,9 +655,7 @@ function checkInitialTelemetry() {
 
     cy.get("#ignoreFloorSensors").click();
 
-    cy.get("#ignoreFloorSensors")
-      .contains("Floor")
-      .should("be.visible");
+    cy.get("#ignoreFloorSensors").contains("Floor").should("be.visible");
     cy.get("#ignoreFloorSensors")
       .children("label")
       .contains("Monitor")
@@ -749,11 +673,6 @@ function checkInitialTelemetry() {
   // Startup/Shutdown
   it("Startup/Shutdown contents with ROS Running", () => {
     cy.get("#startup-shutdown-card")
-      .get("#set-all-doors-closed-button")
-      .contains("Set All Doors Closed")
-      .should("be.visible");
-
-    cy.get("#startup-shutdown-card")
       .contains("Start ROS")
       .should("not.be.visible");
 
@@ -765,9 +684,7 @@ function checkInitialTelemetry() {
       .contains("ROS is Running.")
       .should("be.visible");
 
-    cy.get("#startup-shutdown-card")
-      .contains("Stop ROS")
-      .should("be.visible");
+    cy.get("#startup-shutdown-card").contains("Stop ROS").should("be.visible");
 
     cy.get("#startup-shutdown-card")
       .get("#unplug-yourself-button")
@@ -794,9 +711,7 @@ function checkInitialTelemetry() {
 function stopROS() {
   openPanelIfClosed("robot-service-log");
   it("Stop ROS", () => {
-    cy.get("#startup-shutdown-card")
-      .contains("Stop ROS")
-      .click();
+    cy.get("#startup-shutdown-card").contains("Stop ROS").click();
 
     // Log messages:
     cy.get("#statusScrollBox")
@@ -808,9 +723,7 @@ function stopROS() {
     cy.get("#statusScrollBox")
       .contains("Shutdown: Killing everything, please wait...")
       .should("be.visible");
-    cy.get("#statusScrollBox")
-      .contains("Shutdown:")
-      .should("be.visible");
+    cy.get("#statusScrollBox").contains("Shutdown:").should("be.visible");
     cy.get("#statusScrollBox")
       .contains("Shutdown: Waiting for Robot to close . . .")
       .should("be.visible");
@@ -822,7 +735,7 @@ function stopROS() {
       .should("be.visible");
     cy.get("#statusScrollBox")
       .contains("Shutdown: Waiting for roscore to close . . .", {
-        timeout: 10000
+        timeout: 10000,
       })
       .should("be.visible");
     cy.get("#statusScrollBox")
@@ -882,4 +795,9 @@ function checkPostRosShutdownStatus() {
   });
 }
 
-module.exports = { startROS, checkInitialTelemetry, stopROS, checkPostRosShutdownStatus };
+module.exports = {
+  startROS,
+  checkInitialTelemetry,
+  stopROS,
+  checkPostRosShutdownStatus,
+};

@@ -1,23 +1,13 @@
 function additionalItemsAreVisibleWhenRosIsRunning() {
   it("correct items are visible when ROS is running", () => {
-    cy.get("#telemetry-card")
-      .contains("Telemetry")
-      .should("be.visible");
+    cy.get("#telemetry-card").contains("Telemetry").should("be.visible");
 
-    cy.get("#sensors-card")
-      .contains("Sensors")
-      .should("be.visible");
+    cy.get("#sensors-card").contains("Sensors").should("be.visible");
 
-    cy.get("#navigation-card")
-      .contains("Navigation")
-      .should("be.visible");
+    cy.get("#navigation-card").contains("Navigation").should("be.visible");
 
     cy.get("#remote-control-card")
       .contains("Remote Control")
-      .should("be.visible");
-
-    cy.get("#robot-service-log-card")
-      .get("#set-all-doors-closed-button")
       .should("be.visible");
   });
 }
@@ -50,13 +40,9 @@ function navigationPanelShouldBeOpen(trueFalse) {
     openClosed = "Open";
   }
   it(`Navigation Log Panel should be ${openClosed}`, () => {
-    cy.get("#navigation-card")
-      .contains("Make Map")
-      .should(visibilitystatus);
+    cy.get("#navigation-card").contains("Make Map").should(visibilitystatus);
 
-    cy.get("#navigation-card")
-      .contains("Load Map")
-      .should(visibilitystatus);
+    cy.get("#navigation-card").contains("Load Map").should(visibilitystatus);
 
     cy.get("#navigation-card")
       .contains("To make a new map")
@@ -94,5 +80,5 @@ module.exports = {
   additionalItemsAreVisibleWhenRosIsRunning,
   robotServiceLogPanelShouldBeOpen,
   navigationPanelShouldBeOpen,
-  remoteControlPanelShouldBeOpen
+  remoteControlPanelShouldBeOpen,
 };
