@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   actionlib
   move_base_msgs
+  joy
 )
 
 ## Generate messages in the 'msg' folder
@@ -60,12 +61,16 @@ catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES arlobot_ros
   CATKIN_DEPENDS roscpp rospy std_msgs geometry_msgs
+   joy
 #  DEPENDS system_lib
 )
 
 ###########
 ## Build ##
 ###########
+
+add_executable(arlobot_teleop_joy src/turtlebot_joy.cpp)
+target_link_libraries(arlobot_teleop_joy ${catkin_LIBRARIES})
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations

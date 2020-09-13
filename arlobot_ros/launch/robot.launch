@@ -6,7 +6,7 @@
   <include file="$(find arlobot_ros)/launch/arlobot_goto.launch"/>
   <arg name="loadJoystick" value="$(optenv HAS_XBOX_JOYSTICK false)"/>
   <group if="$(arg loadJoystick)">
-    <include file="$(find turtlebot_teleop)/launch/xbox360_teleop.launch"/>
+    <include file="$(find arlobot_ros)/launch/xbox360_teleop.launch"/>
   </group>
 
   <arg name="active3dCamera"

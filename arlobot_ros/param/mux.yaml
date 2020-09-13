@@ -23,3 +23,7 @@ topics:
     topic:       "cmd_vel_mux/input/web"
     timeout:     1.0
     priority:    4
+  - name:        "Joy"
+    topic:       "arlobot_teleop_joystick/cmd_vel"
+    timeout:     1.0
+    priority:    3
