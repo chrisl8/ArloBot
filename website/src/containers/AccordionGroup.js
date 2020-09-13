@@ -101,6 +101,7 @@ class AccordionGroup extends Component {
           myCroftIsRunning={this.props.myCroftIsRunning}
           cloudServerConnected={this.props.cloudServerConnected}
           sendDataToRobot={this.props.sendDataToRobot}
+          personalData={this.props.personalData}
         />
         {this.props.ROSisRunning && (
           <Telemetry
@@ -188,6 +189,7 @@ class AccordionGroup extends Component {
           videoSource={this.props.videoSource}
           robotURL={this.props.robotURL}
           sendDataToRobot={this.props.sendDataToRobot}
+          personalData={this.props.personalData}
         />
       </>
     );

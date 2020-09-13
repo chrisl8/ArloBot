@@ -4,6 +4,9 @@ import boolToOnOff from '../utils/boolToOnOff';
 
 const Video = (props) => {
   let cardTitle = 'Video - Camera Off';
+  if (!props.personalData.camera0) {
+    cardTitle = 'Desktop Screenshot';
+  }
   if (props.cameraOn) {
     cardTitle = (
       <span>
@@ -35,17 +38,19 @@ const Video = (props) => {
       </CardHeader>
       <Collapse id="video-card-body" isOpen={props.isOpen}>
         <CardBody>
-          <button
-            id="cameraButton"
-            type="button"
-            className={cameraClass}
-            onClick={() => props.sendDataToRobot('toggleCamera')}
-          >
-            Camera&nbsp;
-            <span className={cameraBadgeClass}>
-              {boolToOnOff(props.cameraOn)}
-            </span>
-          </button>
+          {props.personalData.camera0 && (
+            <button
+              id="cameraButton"
+              type="button"
+              className={cameraClass}
+              onClick={() => props.sendDataToRobot('toggleCamera')}
+            >
+              Camera&nbsp;
+              <span className={cameraBadgeClass}>
+                {boolToOnOff(props.cameraOn)}
+              </span>
+            </button>
+          )}
           <img
             id="videoFeed"
             alt="Video feed"

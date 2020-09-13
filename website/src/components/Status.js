@@ -147,17 +147,19 @@ const Status = (props) => {
               {boolToYesNo(props.logConsoleMessages)}
             </span>
           </button>
-          <button
-            id="cameraStatusButton"
-            type="button"
-            className={cameraClass}
-            onClick={() => props.openGroup('video')}
-          >
-            Camera&nbsp;
-            <span className={cameraBadgeClass}>
-              {boolToOnOff(props.cameraOn)}
-            </span>
-          </button>
+          {props.personalData.camera0 && (
+            <button
+              id="cameraStatusButton"
+              type="button"
+              className={cameraClass}
+              onClick={() => props.openGroup('video')}
+            >
+              Camera&nbsp;
+              <span className={cameraBadgeClass}>
+                {boolToOnOff(props.cameraOn)}
+              </span>
+            </button>
+          )}
           <button
             id="masterRelayStatusButton"
             type="button"
