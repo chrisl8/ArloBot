@@ -334,6 +334,8 @@ fi
 printf "\n${YELLOW}[Installing additional Ubuntu and ROS Packages for Arlo]${NC}\n"
 printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
 
+# NOTE: In theory these are/will also installed when rosdep install is run,
+#       but ensuring they are installed here is fine too.
 PACKAGE_TO_INSTALL_LIST=()
 # ### Required Packages and Why ###
 PACKAGE_TO_INSTALL_LIST+=(git)
