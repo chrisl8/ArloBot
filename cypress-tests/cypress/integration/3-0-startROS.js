@@ -2,13 +2,18 @@ import {
   resetRobotService,
   initialPageLoadItemsVisible,
   openPanelIfClosed,
-  closePanelIfOpen
+  closePanelIfOpen,
 } from "../support/reusableTestsAndSetupTasks";
 
-import { startROS, checkInitialTelemetry, stopROS, checkPostRosShutdownStatus } from "../support/rosStartStop";
+import {
+  startROS,
+  checkInitialTelemetry,
+  stopROS,
+  checkPostRosShutdownStatus,
+} from "../support/rosStartStop";
 
 import panelTestsWithRosRunning, {
-  additionalItemsAreVisibleWhenRosIsRunning
+  additionalItemsAreVisibleWhenRosIsRunning,
 } from "../support/panelTestsWithRosRunning";
 
 import panelTestsWithRosOff from "../support/panelTestsWithRosOff";
@@ -65,9 +70,7 @@ describe("Start and Stop ROS", () => {
       .get("#view-log-streamer-button")
       .should("be.visible");
 
-    cy.get("#robot-service-log-card")
-      .get("#view-log-streamer-button")
-      .click();
+    cy.get("#robot-service-log-card").get("#view-log-streamer-button").click();
 
     cy.wait(30000);
 

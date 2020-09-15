@@ -2,18 +2,18 @@ import {
   resetRobotService,
   initialPageLoadItemsVisible,
   openPanelIfClosed,
-  closePanelIfOpen
+  closePanelIfOpen,
 } from "../support/reusableTestsAndSetupTasks";
 
 import {
   startROS,
   checkInitialTelemetry,
   stopROS,
-  checkPostRosShutdownStatus
+  checkPostRosShutdownStatus,
 } from "../support/rosStartStop";
 
 import panelTestsWithRosRunning, {
-  additionalItemsAreVisibleWhenRosIsRunning
+  additionalItemsAreVisibleWhenRosIsRunning,
 } from "../support/panelTestsWithRosRunning";
 
 import panelTestsWithRosOff from "../support/panelTestsWithRosOff";
@@ -57,7 +57,7 @@ describe("Start ROS and test Navigation Panel", () => {
 
     cy.contains("Load Map Starting up").should("be.visible");
 
-    cy.contains("Load Map Starting up", { timeout: 30000 }).should(
+    cy.contains("Load Map Starting up", { timeout: 60000 }).should(
       "not.be.visible"
     );
 

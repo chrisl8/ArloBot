@@ -1,7 +1,7 @@
 import {
   resetRobotService,
   openPanelIfClosed,
-  closePanelIfOpen
+  closePanelIfOpen,
 } from "../support/reusableTestsAndSetupTasks";
 
 import { startupShutdownPanelShouldBeOpen } from "../support/panelTestsWithRosOff";
@@ -43,9 +43,7 @@ describe("Toggle Light One", () => {
   it("relays panel is open", () => {
     cy.contains("Light One").should("be.visible");
 
-    cy.get("#lightOneRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
+    cy.get("#lightOneRelayButton").contains("span", "Off").should("be.visible");
     cy.get("#lightOneRelayButton").should("not.have.class", "btn-success");
   });
 
@@ -54,9 +52,7 @@ describe("Toggle Light One", () => {
 
     cy.contains("Relay 8 on").should("be.visible");
 
-    cy.get("#lightOneRelayButton")
-      .contains("span", "On")
-      .should("be.visible");
+    cy.get("#lightOneRelayButton").contains("span", "On").should("be.visible");
     cy.get("#lightOneRelayButton").should("have.class", "btn-success");
   });
 
@@ -70,9 +66,7 @@ describe("Toggle Light One", () => {
 
     cy.contains("Relay 8 off").should("be.visible");
 
-    cy.get("#lightOneRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
+    cy.get("#lightOneRelayButton").contains("span", "Off").should("be.visible");
     cy.get("#lightOneRelayButton").should("not.have.class", "btn-success");
   });
 
@@ -81,9 +75,7 @@ describe("Toggle Light One", () => {
 
     cy.contains("Relay 4 on").should("be.visible");
 
-    cy.get("#lightTwoRelayButton")
-      .contains("span", "On")
-      .should("be.visible");
+    cy.get("#lightTwoRelayButton").contains("span", "On").should("be.visible");
     cy.get("#lightTwoRelayButton").should("have.class", "btn-success");
   });
 
@@ -97,9 +89,7 @@ describe("Toggle Light One", () => {
 
     cy.contains("Relay 4 off").should("be.visible");
 
-    cy.get("#lightTwoRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
+    cy.get("#lightTwoRelayButton").contains("span", "Off").should("be.visible");
     cy.get("#lightTwoRelayButton").should("not.have.class", "btn-success");
   });
 

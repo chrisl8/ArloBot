@@ -24,7 +24,7 @@ describe("Status Panel Functions", () => {
     cy.get("#laptopBatteryStatusButton").should("have.class", "btn-success");
 
     cy.get("#laptopChargedStatusButton")
-      .contains("span", "Yes")
+      .contains("span", "Yes", { timeout: 20000 })
       .should("be.visible");
     cy.get("#laptopChargedStatusButton").should("have.class", "btn-success");
 

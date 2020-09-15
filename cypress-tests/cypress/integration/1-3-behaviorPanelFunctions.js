@@ -4,12 +4,12 @@ import {
   setSoundToQuiet,
   setIdleToTimeout,
   openPanelIfClosed,
-  closePanelIfOpen
+  closePanelIfOpen,
 } from "../support/reusableTestsAndSetupTasks";
 
 import {
   behaviorPanelShouldBeOpen,
-  startupShutdownPanelShouldBeOpen
+  startupShutdownPanelShouldBeOpen,
 } from "../support/panelTestsWithRosOff";
 
 describe("Behavior Panel Functions", () => {
@@ -122,13 +122,9 @@ describe("Behavior Panel Functions", () => {
      * I'm named {{name}}
      */
 
-    cy.get("#robot-said-text")
-      .contains("name")
-      .should("be.visible");
+    cy.get("#robot-said-text").contains("name").should("be.visible");
 
-    cy.get("#robot-said-text")
-      .contains("TwoFlower")
-      .should("be.visible");
+    cy.get("#robot-said-text").contains("TwoFlower").should("be.visible");
   });
 
   it("Sound button should toggle to Quiet", () => {
@@ -158,16 +154,12 @@ describe("Behavior Panel Functions", () => {
 
     cy.contains("Relay 3 on").should("be.visible");
 
-    cy.get("#arduinoRelayButton")
-      .contains("span", "On")
-      .should("be.visible");
+    cy.get("#arduinoRelayButton").contains("span", "On").should("be.visible");
     cy.get("#arduinoRelayButton").should("have.class", "btn-success");
 
     cy.contains("Relay 7 on").should("be.visible");
 
-    cy.get("#fiveVoltRelayButton")
-      .contains("span", "On")
-      .should("be.visible");
+    cy.get("#fiveVoltRelayButton").contains("span", "On").should("be.visible");
     cy.get("#fiveVoltRelayButton").should("have.class", "btn-success");
 
     cy.get("#blinky-lights-button").should("have.class", "btn-warning");
@@ -191,32 +183,24 @@ describe("Behavior Panel Functions", () => {
   });
 
   it("Should be possible to manually clean up", () => {
-    cy.get("#arduinoRelayButton")
-      .contains("span", "On")
-      .should("be.visible");
+    cy.get("#arduinoRelayButton").contains("span", "On").should("be.visible");
     cy.get("#arduinoRelayButton").should("have.class", "btn-success");
 
     cy.get("#arduinoRelayButton").click();
 
     cy.contains("Relay 3 off").should("be.visible");
 
-    cy.get("#arduinoRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
+    cy.get("#arduinoRelayButton").contains("span", "Off").should("be.visible");
     cy.get("#arduinoRelayButton").should("not.have.class", "btn-success");
 
-    cy.get("#fiveVoltRelayButton")
-      .contains("span", "On")
-      .should("be.visible");
+    cy.get("#fiveVoltRelayButton").contains("span", "On").should("be.visible");
     cy.get("#fiveVoltRelayButton").should("have.class", "btn-success");
 
     cy.get("#fiveVoltRelayButton").click();
 
     cy.contains("Relay 7 off").should("be.visible");
 
-    cy.get("#fiveVoltRelayButton")
-      .contains("span", "Off")
-      .should("be.visible");
+    cy.get("#fiveVoltRelayButton").contains("span", "Off").should("be.visible");
     cy.get("#fiveVoltRelayButton").should("not.have.class", "btn-success");
 
     cy.get("#masterRelayStatusButton")
