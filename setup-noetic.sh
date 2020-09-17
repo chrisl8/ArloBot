@@ -547,6 +547,19 @@ else
   git pull
 fi
 
+# TODO: Remove this if/when the apt package is released for noetic.
+printf "\n${BLUE}TEB Local Planner Tutorials${NC}\n"
+printf "${PURPLE}The TEB Local Planner is installed via apt, but there is no noetic package for the tutorials.${NC}\n"
+printf "${PURPLE}The tutorials are not required, but handy for reference.${NC}\n"
+cd ~/catkin_ws/src
+if ! [[ -d ~/catkin_ws/src/teb_local_planner_tutorials ]]; then
+  git clone -b noetic-devel https://github.com/rst-tu-dortmund/teb_local_planner_tutorials.git
+else
+  cd ~/catkin_ws/src/teb_local_planner_tutorials
+  git checkout noetic-devel
+  git pull
+fi
+
 export PIP_DISABLE_PIP_VERSION_CHECK=1
 
 if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
@@ -934,6 +947,18 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     cd "${HOME}/catkin_ws/src/ArloBot/cypress-tests"
     npm outdated || true # Informational, do not crash  script
     printf "${PURPLE}-------------------------------------------------------${NC}\n"
+
+    printf "${YELLOW}Diffing your param files to defaults where available:${NC}\n"
+    printf "${BLUE}teb_local_planner_params:${NC}\n"
+    diff "${HOME}/catkin_ws/src/teb_local_planner_tutorials/cfg/diff_drive/teb_local_planner_params.yaml" "${HOME}/catkin_ws/src/ArloBot/arlobot_ros/param/teb_local_planner_params.yaml" || true
+    printf "${BLUE}twist_mux_locks:${NC}\n"
+    diff /opt/ros/${INSTALLING_ROS_DISTRO}/share/twist_mux/config/twist_mux_locks.yaml "${HOME}/catkin_ws/src/ArloBot/arlobot_ros/param/twist_mux_locks.yaml" || true
+    printf "${BLUE}twist_mux_topics:${NC}\n"
+    diff /opt/ros/${INSTALLING_ROS_DISTRO}/share/twist_mux/config/twist_mux_topics.yaml "${HOME}/catkin_ws/src/ArloBot/arlobot_ros/param/twist_mux_topics.yaml" || true
+    printf "${BLUE}mapper_params_localization:${NC}\n"
+    diff "${HOME}/catkin_ws/src/slam_toolbox/slam_toolbox/config/mapper_params_localization.yaml" "${HOME}/catkin_ws/src/ArloBot/arlobot_ros/param/mapper_params_localization.yaml" || true
+    printf "${BLUE}mapper_params_online_async:${NC}\n"
+    diff "${HOME}/catkin_ws/src/slam_toolbox/slam_toolbox/config/mapper_params_online_async.yaml" "${HOME}/catkin_ws/src/ArloBot/arlobot_ros/param/mapper_params_online_async.yaml" || true
   fi
 
   printf "\n${PURPLE}Anytime you want to update ArloBot code from the web you can run this same script again. It will pull down and compile new code without wiping out custom configs in ~/.arlobot. I run this script myself almost every day.${NC}\n"
