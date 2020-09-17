@@ -105,7 +105,7 @@
       <visual>
         <origin xyz="0 0 0" rpy="-1.5707 0 1.5707"/>
         <geometry>
-          <mesh filename="package://arlobot_ros/meshes/28971-Caster-Wheel-Kit-v1.0.stl"/>
+          <mesh filename="package://arlobot_ros/meshes/28971-Caster-Wheel-Kit-v1.0_simplified.stl"/>
         </geometry>
         <material name="light_grey">
           <color rgba="0.6 0.6 0.6 1"/>
@@ -132,7 +132,7 @@
       <visual>
         <origin xyz="0 0 0" rpy="-1.5707 0 1.5707"/>
         <geometry>
-          <mesh filename="package://arlobot_ros/meshes/28971-Caster-Wheel-Kit-v1.0.stl"/>
+          <mesh filename="package://arlobot_ros/meshes/28971-Caster-Wheel-Kit-v1.0_simplified.stl"/>
         </geometry>
         <material name="light_grey">
           <color rgba="0.6 0.6 0.6 1"/>
