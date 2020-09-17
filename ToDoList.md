@@ -1,135 +1,50 @@
-##TODO List:##
+## TODO List
 
-Navigation:
-It needs to trust the camera over the odometry. It keeps getting twisted when the wheels slip and doesn't correct.
-When going to a waypoint it should do a "clear and rotate", but it doesn't.
-What is the timeout on waypoint navigation?
+ - Watch for new ros-noetic-tf2 to release and ensure I'm getting it and the ros-testing one I do not have anymore.
 
-Use these to put in some delay and idle checkers:
-var bootTime = new Date() // Time the node script was initialized
-var startROSTime = new Date() // Time that ROS start was completed.
-var mapLoadTime = new Date() // Time that map load was complete
+ - Add pip updater to setup script.
+### Check for and update ONLY user packages (OS Level are Ubuntu's problem . . . until they aren't)
+    pip3 install pip-review
 
-TEST:
-After a set time ON,  if no QRcode, turn on light for a set time.
-if (!qrCodeFound)
-    turnonLight, setTimeout(funciton() {
-    if (!lightOnUserRequest) {
-        turnofflight;
-    }
-    })
+    pip-review --user
+    #pip-review --user --auto
 
-Test timeout before it asks where it is or if I can unplug it.
-    Remember to include the turn on light time.
+ - Have the robot say "pardon me" when escaping starts
+ 
+ - Set every button push to have a function
+ 
+ - Voice command to go to locations.
+ 
+ - Get all Sensors to work on Threeflower
+ 
+ - Get Slam Toolbox to come up on Threeflower.
+ 
+ - Mycroft
+   - Speak when things are done like starting ROS, making maps, etc.
+   - Set up a skill to go to load map, unplug, go to waypoints, etc.
+ 
+ - Improve web interface look and feel.
+   - The old LCARS look was fun, can I find something like that to easily skin on?
+ 
+ - Test everything and dump stuff that doesn't work anymore.
+   - See FullTestRoutine.MD
+   
+ - Walk through entire Readme and ensure all instructions are correct/relevant.
+ 
+ - Make a new Youtube video of robot functions.
 
-If you try to plug him in when he is already charged, he unplugs himself again,
-This is actually fun, but I want:
-1. an override
-2. him to comment on it.
+ - Create a system in the web to create automatic mapping of an existing area
+    - Start map
+    - Select goals in RVIZ
+    - System should save them and put them in the web site
+    - You can see them in order.
+    - Then you can save the "list of goals"
+    - Later you can select to make map and it will start a map making session, unplug, go to those goals in order, then save the map, go "home", then load the map use it.
+        - This way you can remap a known area automatically.
+    - Early start might be to just set up to monitor goals and list them out on the site as they are set.
 
-0. Test and move PING, RESET and STAYCLOSE from node to public.
-
-0. If they run setup, but have their OWN local changes, we need to warn them,
-that there are differences, instead of just saying, "up to date."
-
-0. Test: zbarcam is pretty CPU intensive, so it shouldn't run if the robot isn't idle.
-
-0. When idle proceed to random locations from waypoint list.
-
-0. Create speech tree and give text for locations.
-
-0. Go to certain waypoints based on input such as motion cameras and door alarms.
-
-0. Tweak cost_scaling_factor and inflation_radius of global and local planner
-in order to produce smooth path planning into all expected areas without running
-into corners or doorframes.
-     * Doorways make it slow down too much,
-this is very obvious during autonomous navigation,
-but it is easily tested with keyboard teleop.
-So fix the speed regulation through doors,
-probably by adjusting how/when/if the angled sensors affect speed limits.
-     * Also, is there a way to have the global "expansion variable" be wide enough for it to
-give wide berths to corners,
-but not cause it to get stuck trying to get through a door?
-0.5 is great for corners, but doors are often blocked,
-0.25 is great for doors, but it cuts off the corners do close it runs over things
-Maybe ask on ROS answers?
-
-0. Add function for robot to spin in a slow circle if it is stuck, based on
-failing navigation attempts from both WayPoints and Auto Explore (harder).
-
-0. Question: Why doesn't it do a rotate in place when it gets stuck and cannot
-create a plan? I thought that was built in.
-
-0. Consider how to handle timeout on waypoint requests.
-
-0. How to tell when it is "idle" for idle behaviors?
-     * /cmd_vel_mux/active - GOOD
-        * This will say "data: idle" if nothing is driving the robot.
-     * /mobile_base/commands/velocity - GOOD
-        * Should be BLANK/EMPTY unless the robot is moving.
-     * /move_base/status - Good
-        * This is continuous, so look for what you want and see if it repeats X times.
-        * Examples of what is good:
-            * text: Goal reached
-            * Not sure what this does before first goal?
-     * /odom - GOOD
-        * Everything except for seq, secs and nsecs should repeat, so grab X instances and compare for idleness
-     * /serial - GOOD
-        * Continuous, and it should tell you if the motors are still.
-     * Set "switch" to idle on web panel, so it can be turned off or on manually for testing?
-
-0. Keyboard teleop is very smooth now!
-Can the joystick and web op be run through a smoother too?
-
-0. Touch screen teleop?
-
-0. Set up some way to emulate robot for testing?
-http://cs.smith.edu/dftwiki/index.php/PySerial_Simulator
-
-0. Is explore pause working, seems inconsistent.
-
-0c. speech behavior tree.
-
-0d. Upper PING sensors need to be integrated into fake laser data.
-    Not sure if this is going to be the SAME, or if we filter the data?
-        i.e. Do we need to only pass in signals below a certain distance?
-        or above a certain distance?
-    or overlay it, or what?
-        shortest wins?
-        or smarter?
-    This will be a pattern for future adds too.
-    Remember, the planner is 2D essentially, so no need for multiple rows.
-
-0e. Upper front sensor may need to be adjusted so it doesn't see the front of the robot?
-
-0f. Is the obstacle avoidance within the propeller code stopping the robot too fast?
-can it haver a way to slow it to a rapid stop instead of dropping it from 100 to 0 instantly, even if the obstacle wasn't seen in time to use the speed limiting?
-
-5. Create a procedure to get and keep a good map of each floor of my house.
-    * It will have to be updated periodically
-    * But I need to be able to just pull it up instead of doing an "Explore" every time and then fussing with it for an hour.
-
-6. Move speech from babel-fish python ROS node to a behavior3JS based node module controlled by the node program.
-
-8. Interface with SMS text messages so that text messages an tell the robot
-to:
-load a map,
-go to a way-point.
-
-9. Integrate the alarm system with the same, so that open doors will send the robot somewhere.
-
-10. Add speech for all of the statuses.
-
-11. Add "idle" behavior and speech to the robot.
-    * Include wandering and looking for people (see 16.)
-
-13. Can a QR code be used to reset the robot's position to a known one?
-
-14. Follow me. Does this have to be an object?
-
-15. Conversational speech. (Mycroft)
-
-16. Face detection and recognition with either camera while navigating the map, presumably with the XV11 (so that the ASUS xTion is free).
-    * Could the robot wander the house to find a person?
-    * Could it find a specific person, either by facial recognition or by conversation to figure out who someone is?
+ - Set up some logging "options".
+    - Debugging
+    - Console
+    - Behavior loops
+        - Probably want check boxes so you can have multiple active at once
