@@ -40,7 +40,7 @@ class LaunchScript {
     this.process.stdout.on('data', (data) => {
       if (webModel.debugging || webModel.logConsoleMessages) {
         /* istanbul ignore next */
-        console.log(`${this.name} stdout data:${data}`);
+        console.log(`${this.name}:${data.toString().trim()}`);
       }
       if (!this.startupComplete) {
         if (this.successString) {
