@@ -1,0 +1,29 @@
+# Input topics handled/muxed.
+# For each topic:
+# - name    : name identifier to select the topic
+# - topic   : input topic of geometry_msgs::Twist type
+# - timeout : timeout in seconds to start discarding old messages, and use 0.0 speed instead
+# - priority: priority in the range [0, 255]; the higher the more priority over other topics
+
+topics:
+
+  - name: "Safe reactive controller"
+    topic: "cmd_vel_mux/input/safety_controller"
+    timeout: 0.2
+    priority: 10
+  - name: "Teleoperation"
+    topic: "cmd_vel_mux/input/teleop"
+    timeout: 1.0
+    priority: 7
+  - name: "Navigation"
+    topic: "cmd_vel_mux/input/navi"
+    timeout: 1.0
+    priority: 5
+  - name: "Web"
+    topic: "cmd_vel_mux/input/web"
+    timeout: 1.0
+    priority: 4
+  - name: "Joy"
+    topic: "arlobot_teleop_joystick/cmd_vel"
+    timeout: 1.0
+    priority: 3

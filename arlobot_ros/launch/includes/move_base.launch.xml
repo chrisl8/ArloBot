@@ -1,5 +1,5 @@
 <!-- 
-    ROS navigation stack with velocity smoother and safety (reactive) controller
+    ROS navigation stack with safety (reactive) controller
 -->
 <launch>
   <arg name="odom_frame_id" default="odom"/>

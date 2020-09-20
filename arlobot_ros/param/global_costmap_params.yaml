@@ -1,12 +1,11 @@
+# https://wiki.ros.org/costmap_2d
+#
+# If using default, just do NOT include anything, to make it clear,
+# and also ensure we update to new defaults as the come.
+
 global_costmap:
-   obstacle_layer:
-      enabled:              false
-   global_frame: /map
-   robot_base_frame: /base_footprint
-   update_frequency: 1.0
-   publish_frequency: 0.5
-   transform_tolerance: 0.5
-   plugins:
-     - {name: static_layer,            type: "costmap_2d::StaticLayer"}
-     - {name: obstacle_layer,          type: "costmap_2d::VoxelLayer"}
-     - {name: inflation_layer,         type: "costmap_2d::InflationLayer"}
+  robot_base_frame: /base_footprint
+  plugins:
+    - { name: static_layer,            type: "costmap_2d::StaticLayer" }
+    - { name: obstacle_layer,          type: "costmap_2d::VoxelLayer" }
+    - { name: inflation_layer,         type: "costmap_2d::InflationLayer" }

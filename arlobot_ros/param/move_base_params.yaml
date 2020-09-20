@@ -1,24 +1,22 @@
-# Move base node parameters. For full documentation of the parameters in this file, please see
+#  https://wiki.ros.org/move_base
 #
-#  http://www.ros.org/wiki/move_base
-#
-shutdown_costmaps: false # Default false
+# If using default, just do NOT include anything, to make it clear,
+# and also ensure we update to new defaults as the come.
 
-controller_frequency: 20.0 # Default 20.0
+controller_frequency: 10.0 # Default 20.0 - 20.0 produces a lot of "Control loop missed its desired rate of 20.0000Hz" errors
 controller_patience: 3.0 # Default 15.0 - I just get impatient
 
-planner_frequency: 1.0
-planner_patience: 5.0 # Default 5.0
-
-oscillation_timeout: 10.0 # Default 0.0, i.e. never
+oscillation_timeout: 10.0 # AFTER this timeout, recovery behaviors start. Default 0.0, i.e. never.
 oscillation_distance: 0.2 # Default 0.5
 
-# local planner - default is trajectory rollout
 base_local_planner: "teb_local_planner/TebLocalPlannerROS"
+base_global_planner: "global_planner/GlobalPlanner"
+# alternatives:
+# global_planner/GlobalPlanner
+# carrot_planner/CarrotPlanner
+# navfn/NavfnROS
 
-base_global_planner: "global_planner/GlobalPlanner" #alternatives: global_planner/GlobalPlanner, carrot_planner/CarrotPlanner, navfn/NavfnROS
-
-# For testing
+# For testing:
 # This enables me to keep the robot still (stuck) and continually set new 2D Nav goals in RVIZ
 # Otherwise it is just looping and won't let me set a new goal.
 #recovery_behavior_enabled: false

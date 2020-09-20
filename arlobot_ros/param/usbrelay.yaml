@@ -3,7 +3,6 @@
 # If you want to DISABLE the entire USB Relay, change usbRelayInstalled in ~/.arlobot/arlobot.yaml
 # relays that are not enabled will be ignored, as in no status, no on or off commands sent.
 # The label can be used by other nodes to request on/off, so be careful renaming stuff as it could be embedded in code somewhere!
-# TODO: 
 relay1enabled: False
 relay1label: "Empty"
 relay2enabled: True
