@@ -1,5 +1,10 @@
 ## TODO List
 
+ - Fix this error coming from TEB due to something in my config:
+    [ WARN] [1597326961.776132466]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0513 seconds
+
+ - Test remaining "goto" functions with Python 3 and Slam Toolbox
+
  - Watch for new ros-noetic-tf2 to release and ensure I'm getting it and the ros-testing one I do not have anymore.
 
  - Add pip updater to setup script.

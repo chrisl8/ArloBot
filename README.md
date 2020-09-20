@@ -1,22 +1,6 @@
 [![Build Status](https://travis-ci.com/chrisl8/ArloBot.svg)](https://travis-ci.com/chrisl8/ArloBot)
 [![codecov](https://codecov.io/gh/chrisl8/ArloBot/branch/noetic/graph/badge.svg)](https://codecov.io/gh/chrisl8/ArloBot)
 
-# Current Status and my TODO List
-
-Gmapping and AMCL have been **removed** in favor of [Slam Toolbox](https://github.com/SteveMacenski/slam_toolbox) for mapping.
- - Gmapping is no longer maintained.  
-
-DWA Local Planner has been **removed** in favor of [teb_local_planner](https://wiki.ros.org/teb_local_planner) for path planning.  
- - Teb Local Planner is much better behaved for me.
- - It is able to back up, which makes routing much better.
- - It seems to work very well with near default tuning.
-
- # TODO List:
-
- - Fix this error coming from TEB due to something in my config:
-   - [ WARN] [1597326961.776132466]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0513 seconds
- - Test remaining "goto" functions with Python 3 and Slam Toolbox
-
 ArloBot Package for ROS
 =======================
 
@@ -41,6 +25,22 @@ This package also includes:
 ![Alt text](/screenshots/PropellerSerialTest.png "Serial Test Program")
 
 * A Python Curses based serial communications test program allows testing of ALL Propeller board functions over serial with zero use of ROS to more easily ensure the hardware is working before starting ROS.
+
+# Current Status and my To Do List
+
+Gmapping and AMCL have been **removed** in favor of [Slam Toolbox](https://github.com/SteveMacenski/slam_toolbox) for mapping.
+ - Gmapping is no longer maintained.  
+
+DWA Local Planner has been **removed** in favor of [teb_local_planner](https://wiki.ros.org/teb_local_planner) for path planning.  
+ - Teb Local Planner is much better behaved for me.
+ - It is able to back up, which makes routing much better.
+ - It seems to work very well with entirely default tuning.
+ 
+The [Arlo Robot System](https://www.parallax.com/product/28966) by Parallax has been discontinued. At this moment there are 7 kits left for sale, so this project's usefulness slowly grows to an end, although my personal implementation, which has always been the primary focus of this repository, will live on.
+
+I am also working on hardware and software design to translate what I have learned and built here to a more generic robot platform using more readily available "off the shelf" parts.
+
+[TODO List](https://github.com/chrisl8/ArloBot/blob/noetic/ToDoList.md)
 
 # Build a Robot! #
 First you need to build a robot!
