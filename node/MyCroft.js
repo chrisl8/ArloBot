@@ -53,6 +53,7 @@ const init = () => {
         const messageObject = JSON.parse(message.utf8Data);
         if (
           webModel.debugging &&
+          webModel.logOtherMessages &&
           ignoreMessageTypes.indexOf(messageObject.type) === -1
         ) {
           // Use this console logging to debug and replicate Mycroft messages.

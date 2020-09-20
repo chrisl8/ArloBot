@@ -28,7 +28,7 @@ const wait = require('./wait');
 const killROS = require('./killROS');
 
 async function loop() {
-  if (webModel.debugging) {
+  if (webModel.debugging && webModel.logBehaviorMessages) {
     console.log('Behave loop starting:');
   }
   // This is a bit of a catchall.
@@ -77,7 +77,7 @@ async function loop() {
   }
   // TODO: More stuff.
 
-  if (webModel.debugging) {
+  if (webModel.debugging && webModel.logBehaviorMessages) {
     console.log('Nothing stopped this behave loop.');
   }
 }

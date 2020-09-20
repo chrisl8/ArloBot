@@ -288,6 +288,12 @@ async function start() {
     socket.on('toggleLogConsoleMessages', () => {
       webModelFunctions.toggle('logConsoleMessages');
     });
+    socket.on('toggleLogBehaviorMessages', () => {
+      webModelFunctions.toggle('logBehaviorMessages');
+    });
+    socket.on('toggleLogOtherMessages', () => {
+      webModelFunctions.toggle('logOtherMessages');
+    });
     socket.on('toggleCamera', () => {
       camera.toggle();
     });

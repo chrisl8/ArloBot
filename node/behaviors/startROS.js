@@ -6,7 +6,7 @@ const LCD = require('../LCD');
 const killROS = require('../killROS');
 
 async function startROS() {
-  if (webModel.debugging) {
+  if (webModel.debugging && webModel.logBehaviorMessages) {
     console.log('Start ROS');
     webModelFunctions.scrollingStatusUpdate('Start ROS');
   }

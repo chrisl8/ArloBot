@@ -38,6 +38,9 @@ class UsbRelay {
       !robotModel.masterRelayBusy &&
       !robotModel.usbRelayControlBusy
     ) {
+      if (webModel.debugging && webModel.logOtherMessages) {
+        console.log('Updating Relay Status');
+      }
       robotModel.usbRelayControlBusy = true;
       const process = spawn(this.script, ['all', 'state']);
       process.stdout.on('data', (data) => {

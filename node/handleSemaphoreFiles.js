@@ -74,7 +74,7 @@ const setFileValue = async (path, action) => {
   if (deleteFile) {
     fs.unlink(path, (err) => {
       if (err && err.code !== 'ENOENT') console.error(err);
-      if (webModel.debugging) {
+      if (webModel.debugging && webModel.logOtherMessages) {
         console.log(`successfully deleted ${path}`);
       }
     });
@@ -99,7 +99,7 @@ const setSemaphoreFiles = async (text) => {
     webModelFunctions.update('beQuiet', false);
     fs.unlink(quietFile, (err) => {
       if (err && err.code !== 'ENOENT') console.error(err);
-      if (webModel.debugging) {
+      if (webModel.debugging && webModel.logOtherMessages) {
         console.log(`successfully deleted beQuiet file`);
       }
     });
@@ -116,7 +116,7 @@ const setSemaphoreFiles = async (text) => {
     webModelFunctions.update('haltRobot', false);
     fs.unlink(stopFile, (err) => {
       if (err && err.code !== 'ENOENT') console.error(err);
-      if (webModel.debugging) {
+      if (webModel.debugging && webModel.logOtherMessages) {
         console.log(`successfully deleted haltRobot file`);
       }
     });

@@ -26,7 +26,7 @@ async function polling() {
   if (intervalCount > intervalTop) {
     intervalCount = 0;
   }
-  if (webModel.debugging) {
+  if (webModel.debugging && webModel.logBehaviorMessages) {
     console.log('Polling');
     webModelFunctions.scrollingStatusUpdate('Polling', intervalCount);
   }
@@ -125,7 +125,7 @@ async function polling() {
     if (robotModel.cmdTopicIdle) {
       const lastActionDate = new Date(robotModel.lastMovementTime);
       const idleMinutes = (dateNow - lastActionDate) / 1000 / 60;
-      if (webModel.debugging) {
+      if (webModel.debugging && webModel.logOtherMessages) {
         console.log(
           `ROS Idle Check: ${dateNow} - ${lastActionDate} = ${idleMinutes}`,
         );
@@ -136,7 +136,7 @@ async function polling() {
         webModelFunctions.update('shutdownRequested', true);
       }
     }
-  } else if (webModel.debugging) {
+  } else if (webModel.debugging && webModel.logBehaviorMessages) {
     console.log(`ROS Idle Check: Robot not idle.`);
   }
 

@@ -12,7 +12,7 @@ const LaunchScript = require('../LaunchScript');
 const personalData = require('../personalData');
 
 async function loadMap() {
-  if (webModel.debugging) {
+  if (webModel.debugging && webModel.logOtherMessages) {
     console.log('Load Map');
     webModelFunctions.scrollingStatusUpdate('Load Map');
   }

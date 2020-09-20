@@ -162,7 +162,10 @@ class Arduino {
     } else {
       this.arduinoBusy = false;
       this.arduinoBusyStartTime = new Date();
-      if (this.runFromCommandLine || webModel.debugging) {
+      if (
+        this.runFromCommandLine ||
+        (webModel.debugging && webModel.logOtherMessages)
+      ) {
         console.log(
           `${this.currentCommandArray[this.currentCommandArrayPoint]}->`,
         );
@@ -228,7 +231,10 @@ class Arduino {
               inputArray.push(inputStream.split('\r\n'));
               inputStream = '';
               const output = inputArray.shift();
-              if (this.runFromCommandLine || webModel.debugging) {
+              if (
+                this.runFromCommandLine ||
+                (webModel.debugging && webModel.logOtherMessages)
+              ) {
                 console.log(`<-${output[0]}`);
               }
               if (output[0] === 'BUSY') {
@@ -313,7 +319,10 @@ class Arduino {
         `${this.lightPattern.fillSolid},0,0,0,${this.pixel.LOOP_END}` &&
       waitCountdown > 0
     ) {
-      if (this.runFromCommandLine || webModel.debugging) {
+      if (
+        this.runFromCommandLine ||
+        (webModel.debugging && webModel.logOtherMessages)
+      ) {
         console.log('Waiting for Arduino to turn lights off:');
         console.log(this.lastSentData);
         console.log(

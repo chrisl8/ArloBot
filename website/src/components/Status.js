@@ -43,13 +43,6 @@ const Status = (props) => {
     debuggingBadgeClass = 'badge badge-light';
   }
 
-  let logConsoleMessagesClass = 'btn';
-  let logConsoleMessagesBadgeClass = 'badge badge-secondary';
-  if (props.logConsoleMessages) {
-    logConsoleMessagesClass = 'btn btn-warning';
-    logConsoleMessagesBadgeClass = 'badge badge-light';
-  }
-
   let cameraClass = 'btn';
   let cameraBadgeClass = 'badge badge-secondary';
   if (props.cameraOn) {
@@ -136,17 +129,6 @@ const Status = (props) => {
               {boolToYesNo(props.debugging)}
             </span>
           </button>
-          <button
-            id="logConsoleMessagesStatusButton"
-            type="button"
-            className={logConsoleMessagesClass}
-            onClick={() => props.sendDataToRobot('toggleLogConsoleMessages')}
-          >
-            Log Console&nbsp;
-            <span className={logConsoleMessagesBadgeClass}>
-              {boolToYesNo(props.logConsoleMessages)}
-            </span>
-          </button>
           {props.personalData.camera0 && (
             <button
               id="cameraStatusButton"
@@ -191,6 +173,39 @@ const Status = (props) => {
               {boolToUpDown(props.cloudServerConnected)}
             </span>
           </button>
+          {props.debugging && (
+            <p>
+              Active Debugging Log types:
+              <br />
+              Console&nbsp;
+              <input
+                name="console-log"
+                type="checkbox"
+                checked={props.logConsoleMessages}
+                onClick={() =>
+                  props.sendDataToRobot('toggleLogConsoleMessages')
+                }
+              />
+              <br />
+              Behavior&nbsp;
+              <input
+                name="console-log"
+                type="checkbox"
+                checked={props.logBehaviorMessages}
+                onClick={() =>
+                  props.sendDataToRobot('toggleLogBehaviorMessages')
+                }
+              />
+              <br />
+              Other&nbsp;
+              <input
+                name="console-log"
+                type="checkbox"
+                checked={props.logOtherMessages}
+                onClick={() => props.sendDataToRobot('toggleLogOtherMessages')}
+              />
+            </p>
+          )}
         </CardBody>
       </Collapse>
     </Card>

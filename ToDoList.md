@@ -47,9 +47,3 @@
     - Later you can select to make map and it will start a map making session, unplug, go to those goals in order, then save the map, go "home", then load the map use it.
         - This way you can remap a known area automatically.
     - Early start might be to just set up to monitor goals and list them out on the site as they are set.
-
- - Set up some logging "options".
-    - Debugging
-    - Console
-    - Behavior loops
-        - Probably want check boxes so you can have multiple active at once

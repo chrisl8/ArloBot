@@ -3,7 +3,7 @@ const webModelFunctions = require('../webModelFunctions');
 const robotModel = require('../robotModel');
 
 async function goToWaypoint() {
-  if (webModel.debugging) {
+  if (webModel.debugging && webModel.logOtherMessages) {
     console.log('Go to Waypoint');
     webModelFunctions.scrollingStatusUpdate('Go to Waypoint');
   }
@@ -72,7 +72,7 @@ async function goToWaypoint() {
         //  TODO: If we need to kill the goToWayPoint, do it here.
         // Don't change anything else,
         // Let the next loop fall into the "hasExited" option above.c
-        if (webModel.debugging) {
+        if (webModel.debugging && webModel.logOtherMessages) {
           console.log('Go to Waypoint: RUNNING');
           webModelFunctions.scrollingStatusUpdate('Go to Waypoint: RUNNING');
         }
@@ -97,7 +97,7 @@ async function goToWaypoint() {
       // is dependent on how this Behavior node works.
       // GoToWaypoint should exit when the task is done,
       // so we call this running:
-      if (webModel.debugging) {
+      if (webModel.debugging && webModel.logOtherMessages) {
         console.log('Go to Waypoint: RUNNING');
         webModelFunctions.scrollingStatusUpdate('Go to Waypoint: RUNNING');
       }

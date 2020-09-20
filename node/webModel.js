@@ -14,6 +14,8 @@ module.exports = {
   masterRelayOn: false,
   debugging: false,
   logConsoleMessages: false, // Like debugging but ONLY for LaunchScript function
+  logBehaviorMessages: false,
+  logOtherMessages: false,
   cameraOn: false,
   ROSstart: false,
   ROSisRunning: false,

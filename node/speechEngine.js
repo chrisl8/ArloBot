@@ -183,7 +183,7 @@ function talkToMe() {
 
 function talkAboutEvents(key, value) {
   if (key && value) {
-    if (webModel.debugging) {
+    if (webModel.debugging && webModel.logOtherMessages) {
       console.log('---------------');
       console.log('talkAboutEvents change:');
       console.log(key);

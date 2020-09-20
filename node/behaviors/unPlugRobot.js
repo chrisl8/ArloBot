@@ -7,7 +7,7 @@ const textme = require('../textme');
 let UnPlugRobotStarted = false;
 
 async function unPlugRobot() {
-  if (webModel.debugging) {
+  if (webModel.debugging && webModel.logOtherMessages) {
     console.log('Unplug Robot');
     webModelFunctions.scrollingStatusUpdate('Unplug Robot');
   }

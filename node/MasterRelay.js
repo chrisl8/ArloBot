@@ -50,10 +50,10 @@ function usbRelay(operation, runFromCommandLine) {
     robotModel.masterRelayBusy = true;
     getPortName()
       .then((port) => {
-        if (webModel.debugging) {
+        if (webModel.debugging && webModel.logOtherMessages) {
           console.log('Master Relay Port:', port);
         }
-        if (webModel.debugging) {
+        if (webModel.debugging && webModel.logOtherMessages) {
           console.log('Master Relay operation:', operation);
         }
 

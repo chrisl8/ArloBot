@@ -3,7 +3,7 @@ const webModelFunctions = require('../webModelFunctions');
 const robotModel = require('../robotModel');
 
 async function makeMap() {
-  if (webModel.debugging) {
+  if (webModel.debugging && webModel.logOtherMessages) {
     console.log('Make Map');
     webModelFunctions.scrollingStatusUpdate('Make Map');
   }

@@ -100,6 +100,8 @@ class App extends Component {
             mapLoaded={this.state.webModel.mapLoaded}
             debugging={this.state.webModel.debugging}
             logConsoleMessages={this.state.webModel.logConsoleMessages}
+            logBehaviorMessages={this.state.webModel.logBehaviorMessages}
+            logOtherMessages={this.state.webModel.logOtherMessages}
             cameraOn={this.state.webModel.cameraOn}
             videoSource={this.state.webModel.videoSource}
             masterRelayOn={this.state.webModel.masterRelayOn}

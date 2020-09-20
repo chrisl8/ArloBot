@@ -6,7 +6,7 @@ const masterRelay = require('../MasterRelay');
 const wait = require('../wait');
 
 async function handleUsbHubPower() {
-  if (webModel.debugging) {
+  if (webModel.debugging && webModel.logBehaviorMessages) {
     console.log('Handle Power without ROS');
     webModelFunctions.scrollingStatusUpdate('Handle Power without ROS');
   }
@@ -28,7 +28,7 @@ async function handleUsbHubPower() {
     const lastActionDate = new Date(webModel.lastUpdateTime);
 
     const idleMinutes = (dateNow - lastActionDate) / 1000 / 60;
-    if (webModel.debugging) {
+    if (webModel.debugging && webModel.logOtherMessages) {
       console.log(
         `Idle Check: ${dateNow} - ${lastActionDate} = ${idleMinutes}`,
       );
