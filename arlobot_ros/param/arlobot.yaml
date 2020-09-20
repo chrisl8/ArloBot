@@ -11,8 +11,7 @@
 baudRate: 115200
 #
 # trackWidth [m], distancePerCount [m]
-# http://learn.parallax.com/activitybot/calculating-angles-rotation
-# Distance Per Tick for Arlo: http://forums.parallax.com/showthread.php/154274-The-quot-Artist-quot-robot?p=1271544&viewfull=1#post1271544
+# https://learn.parallax.com/activitybot/calculating-angles-rotation
 # Track Width for Arlo is from measurement and then testing
 # You can customize this if you think you have better numbers please post a note in GitHub for me!
 # HB-25 numbers;

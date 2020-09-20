@@ -14,15 +14,15 @@ from actionlib_msgs.msg import GoalID
 """
 An attempt at "autonomous" navigation.
 See:
-http://wiki.ros.org/navigation/Tutorials/SendingSimpleGoals
-http://wiki.ros.org/actionlib_tutorials/Tutorials/Writing%20a%20Simple%20Action%20Client%20%28Python%29
+https://wiki.ros.org/navigation/Tutorials/SendingSimpleGoals
+https://wiki.ros.org/actionlib_tutorials/Tutorials/Writing%20a%20Simple%20Action%20Client%20%28Python%29
 """
 
 
 class ArlobotExplore(object):
     def __init__(self):
         rospy.init_node("arlobot_quaternion_test")
-        # http://wiki.ros.org/rospy_tutorials/Tutorials/WritingPublisherSubscriber
+        # https://wiki.ros.org/rospy_tutorials/Tutorials/WritingPublisherSubscriber
         # self.r = rospy.Rate(1) # 1hz refresh rate
 
         # Creates the SimpleActionClient, passing the type of the action
