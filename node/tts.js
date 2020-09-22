@@ -1,4 +1,4 @@
-const exec = require('child_process').exec;
+const spawn = require('child_process').spawn;
 const Push = require('pushover-notifications');
 const fs = require('fs');
 const { promisify } = require('util');
@@ -34,7 +34,9 @@ async function tts(sound) {
     await checkFileAndSetValue(quietFile, 'beQuiet');
   }
 
-  if (webModel.beQuiet) {
+  if (!sound) {
+    console.error('I was asked to say nothing.');
+  } else if (webModel.beQuiet) {
     if (personalData.useMyCroft) {
       webModelFunctions.update(
         'myCroftSaid',
@@ -46,9 +48,10 @@ async function tts(sound) {
   } else {
     // Set volume at max
     if (!robotModel.volumeHasBeenSet) {
-      const setVolumeCommand = `${__dirname}/../scripts/set_MasterVolume.sh ${personalData.speechVolumeLevelDefault}`;
       // We don't wait for this, so the first speech may be quiet, but this isn't worth waiting for.
-      exec(setVolumeCommand);
+      spawn(`${__dirname}/../scripts/set_MasterVolume.sh`, [
+        personalData.speechVolumeLevelDefault,
+      ]);
       robotModel.volumeHasBeenSet = true;
     }
 
@@ -58,11 +61,40 @@ async function tts(sound) {
     // decide what it is!
     const possibleExtension = sound.slice(-4).toLowerCase();
     if (possibleExtension === '.wav') {
-      exec(`/usr/bin/aplay -q ${sound} > /dev/null 2>&1`);
+      const soundFile = sound.replace('~', process.env.HOME);
+      /*
+       $XDG_RUNTIME_DIR='/run/user/1000' is required for aplay to work,
+       it is set when you log in, but never from cron or any automatic startup,
+       so this fixes that.
+       */
+      const child = spawn('/usr/bin/aplay', ['-q', soundFile], {
+        env: { ...process.env, XDG_RUNTIME_DIR: '/run/user/1000' },
+      });
+      let dataHolder = '';
+      child.stdout.on('data', (data) => {
+        if (data !== '') {
+          dataHolder += data;
+        }
+      });
+
+      child.stderr.on('data', (data) => {
+        if (data !== '') {
+          dataHolder += data;
+        }
+      });
+      child.on('close', (code) => {
+        if (code > 0) {
+          console.error(`aplay closed with code: ${code}`);
+        }
+        if (dataHolder !== '') {
+          // It should never return anything, so any return is an error.
+          console.error(dataHolder);
+        }
+      });
     } else if (personalData.useMyCroft) {
       myCroft.sayText(sound);
     } else if (personalData.speechProgram) {
-      exec(`${personalData.speechProgram} "${sound}"`);
+      spawn(personalData.speechProgram, [sound]);
     }
   }
   // Send 'sound' to myself via Pushover
