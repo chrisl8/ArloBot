@@ -1,5 +1,8 @@
 ## TODO List
 
+ - Replace calls to Mycroft speech intents from Node with just running TTS and my own speech model.
+   - Speak when things are done like starting ROS, making maps, etc.
+
  - Fix this error coming from TEB due to something in my config:
     [ WARN] [1597326961.776132466]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0513 seconds
 
@@ -25,7 +28,6 @@
  - Get Slam Toolbox to come up on Threeflower.
  
  - Mycroft
-   - Speak when things are done like starting ROS, making maps, etc.
    - Set up a skill to go to load map, unplug, go to waypoints, etc.
  
  - Improve web interface look and feel.

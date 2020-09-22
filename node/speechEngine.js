@@ -1,182 +1,84 @@
-/* eslint-disable no-param-reassign */
-// fs.watch sees like 5 updates instead of one,
-// chokidar is smarter,
-// although it is still possible to hit the file when it is empty,
-// thus the timeout and the
-// fancy error checking in the on('change' callback
-const chokidar = require('chokidar');
 // For random selection of items
-const Stochator = require('stochator');
-const fs = require('fs');
-// robotModel *IS* used, don't remove it!
-// eslint-disable-next-line no-unused-vars
-const robotModel = require('./robotModel');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
 const tts = require('./tts');
 const howManySecondsSince = require('./howManySecondsSince');
+const speechModel = require('./speechModel').chatter;
+const eventModel = require('./speechModel').events;
 
-let speechModel = JSON.parse(fs.readFileSync('./speechModel.json', 'utf8'));
-const speechInMemoryObject = {};
-let eventModel = JSON.parse(fs.readFileSync('./eventResponses.json', 'utf8'));
-const eventInMemoryObject = {};
 let lastSpoke = new Date();
 
-function buildInMemoryObject(model, memoryModel) {
-  for (const item in model) {
-    if (model.hasOwnProperty(item)) {
-      // console.log(item);
-      // If this is the first round,
-      // or if this item was added since the last round,
-      // populate the in memory speech model status.
-      if (!memoryModel.hasOwnProperty(item)) {
-        memoryModel[item] = {
-          lastSaid: null,
-        };
-      }
-      // Always reinitialize the random chooser in case any bits of it were changed
-      memoryModel[item].biasedTextChooser = undefined;
-    }
-  }
-}
-
-buildInMemoryObject(speechModel, speechInMemoryObject);
-
-function buildInMemoryEventObject(model, memoryModel) {
-  for (const item in model) {
-    if (model.hasOwnProperty(item)) {
-      // console.log(item);
-      // If this is the first round,
-      // or if this item was added since the last round,
-      // populate the in memory speech model status.
-      if (!memoryModel.hasOwnProperty(item)) {
-        memoryModel[item] = {};
-      }
-      for (const innerItem in model[item]) {
-        if (innerItem !== 'repeatInterval' && innerItem !== 'delay') {
-          // noinspection JSUnfilteredForInLoop
-          memoryModel[item][innerItem] = {
-            lastSaid: null,
-          };
-          // Always reinitialize the random chooser in case any bits of it were changed
-          // noinspection JSUnfilteredForInLoop
-          memoryModel[item][innerItem].biasedTextChooser = undefined;
-        }
-      }
-    }
-  }
-}
-
-buildInMemoryEventObject(eventModel, eventInMemoryObject);
-
-// Watch the speechModel.json file for changes,
-// So that we can dynamically add speech without restarting the robot.
-chokidar.watch('./speechModel.json').on('change', () => {
-  setTimeout(() => {
-    fs.readFile('./speechModel.json', 'utf8', (err, data) => {
-      if (err) {
-        console.log('speechModel.json read error');
-      } else {
-        try {
-          speechModel = JSON.parse(data);
-          buildInMemoryObject(speechModel, speechInMemoryObject);
-        } catch (e) {
-          console.error(e);
-        }
-      }
-    });
-  }, 1000);
-});
-
-chokidar.watch('./eventResponses.json').on('change', () => {
-  setTimeout(() => {
-    fs.readFile('./eventResponses.json', 'utf8', (err, data) => {
-      if (err) {
-        console.log('eventResponses.json read error');
-      } else {
-        try {
-          eventModel = JSON.parse(data);
-          buildInMemoryEventObject(eventModel, eventInMemoryObject);
-        } catch (e) {
-          console.error(e);
-        }
-      }
-    });
-  }, 1000);
-});
-
-// Create an in memory random picker for each speech model entry.
-function initializeBiasedTextChooser(model, memoryModel, item) {
+// Create a random picker for each speech model entry.
+function initializeBiasedTextChooser(model, item) {
   const values = [];
   const weights = [];
-  // Repeat items based on "instance" variable.
+  const repeat = model[item].thingsToSay.repeat;
   for (const text in model[item].thingsToSay) {
     // "repeat" is a setting, not an item to say.
     if (text !== 'repeat' && model[item].thingsToSay.hasOwnProperty(text)) {
-      for (let i = 0; i < model[item].thingsToSay[text].instance; i++) {
-        values.push(model[item].thingsToSay[text].text);
-        weights.push(model[item].thingsToSay[text].weight);
-      }
+      values.push(model[item].thingsToSay[text].text);
+      weights.push(model[item].thingsToSay[text].weight);
     }
   }
-  // replacement must be false for eventResponses.json
-  memoryModel[item].biasedTextChooser = new Stochator({
-    kind: 'set',
-    values,
-    weights,
-    replacement: model[item].thingsToSay.repeat,
-  });
+  // eslint-disable-next-line no-param-reassign
+  model[item].biasedTextChooser = { values, weights, repeat };
 }
 
-function getSomethingToSay(model, memoryModel, item) {
-  // Initialize the generator if it is not already.
-  if (memoryModel[item].biasedTextChooser === undefined) {
-    initializeBiasedTextChooser(model, memoryModel, item);
+// https://stackoverflow.com/a/55671924/4982408
+function chooseWeighted(weights) {
+  const sum = weights.reduce((acc, el) => acc + el, 0);
+  let acc = 0;
+  // eslint-disable-next-line no-return-assign
+  const chances = weights.map((el) => (acc = el + acc));
+  const rand = Math.random() * sum;
+  return chances.filter((el) => el <= rand).length;
+}
+
+function getSomethingToSay(model, item) {
+  if (
+    model[item].biasedTextChooser === undefined ||
+    model[item].biasedTextChooser.values.length === 0
+  ) {
+    if (webModel.debugging && webModel.logOtherMessages) {
+      console.log(`Initializing ${item}`);
+    }
+    // Initialize the generator if it is not already initialized or if it is empty.
+    initializeBiasedTextChooser(model, item);
   }
-  let returnValue = memoryModel[item].biasedTextChooser.next();
-  let count = 0;
-  while (returnValue === undefined && count < 10) {
-    count++; // to prevent an infinite loop due to some failure
-    initializeBiasedTextChooser(model, memoryModel, item);
-    returnValue = memoryModel[item].biasedTextChooser.next();
+  if (webModel.debugging && webModel.logOtherMessages) {
+    console.log(model[item].biasedTextChooser.values);
+    console.log(model[item].biasedTextChooser.weights);
+  }
+  const returnValueIndex = chooseWeighted(
+    model[item].biasedTextChooser.weights,
+  );
+  const returnValue = model[item].biasedTextChooser.values[returnValueIndex];
+  if (!model[item].biasedTextChooser.repeat) {
+    // If not set to repeat, remove used entry:
+    model[item].biasedTextChooser.values.splice(returnValueIndex, 1);
+    model[item].biasedTextChooser.weights.splice(returnValueIndex, 1);
   }
   return returnValue;
 }
-
-// speechModel will hold update-able text and sound file references.
 
 // This function can either be called by the "poll",
 // or just be set up in a setInterval loop
 function talkToMe() {
   for (const speechItem in speechModel) {
-    if (speechModel.hasOwnProperty(speechItem)) {
-      // Check if we should say this
-      try {
-        // eslint-disable-next-line no-eval
-        if (eval(speechModel[speechItem].Test)) {
-          // Check the delay to for this item, this sets how much delay must be between this item and ANY previous speech
-          if (howManySecondsSince(lastSpoke) >= speechModel[speechItem].delay) {
-            // and if we've already said it too recently we should say something else or skip it.
-            if (
-              howManySecondsSince(speechInMemoryObject[speechItem].lastSaid) >=
-              speechModel[speechItem].repeatInterval
-            ) {
-              // TODO: Do we need a "blank" entry, so that sometimes it says nothing, but still counts?
-              const textToSay = getSomethingToSay(
-                speechModel,
-                speechInMemoryObject,
-                speechItem,
-              );
-              tts(textToSay);
-              lastSpoke = new Date();
-              speechInMemoryObject[speechItem].lastSaid = new Date();
-              break; // Now that we said something we are done, start over on the next loop.
-            }
-          }
-        }
-      } catch (e) {
-        console.log(`You broke your speech engine: ${e}`);
-      }
+    if (
+      speechModel.hasOwnProperty(speechItem) &&
+      speechModel[speechItem].Test() &&
+      howManySecondsSince(lastSpoke) >= speechModel[speechItem].spacing &&
+      howManySecondsSince(speechModel[speechItem].lastSaid) >=
+        speechModel[speechItem].repeatInterval
+    ) {
+      const textToSay = getSomethingToSay(speechModel, speechItem);
+      tts(textToSay);
+      lastSpoke = new Date();
+      speechModel[speechItem].lastSaid = new Date();
+      // Now that we said something we are done, start over on the next loop.
+      // That is, we never say two things on the same loop.
+      break;
     }
   }
 }
@@ -188,27 +90,20 @@ function talkAboutEvents(key, value) {
       console.log('talkAboutEvents change:');
       console.log(key);
       console.log(value);
+      console.log(eventModel[key]);
       console.log('---------------');
     }
     if (
       eventModel[key] &&
-      howManySecondsSince(lastSpoke) >= eventModel[key].delay
+      howManySecondsSince(lastSpoke) >= eventModel[key].spacing &&
+      eventModel[key][value] &&
+      howManySecondsSince(eventModel[key][value].lastSaid) >=
+        eventModel[key].repeatInterval
     ) {
-      // and if we've already said it too recently we should say something else or skip it.
-      if (
-        eventInMemoryObject[key][value] &&
-        howManySecondsSince(eventInMemoryObject[key][value].lastSaid) >=
-          eventModel[key].repeatInterval
-      ) {
-        const textToSay = getSomethingToSay(
-          eventModel[key],
-          eventInMemoryObject[key],
-          value,
-        );
-        tts(textToSay);
-        lastSpoke = new Date();
-        eventInMemoryObject[key][value].lastSaid = new Date();
-      }
+      const textToSay = getSomethingToSay(eventModel[key], value);
+      tts(textToSay);
+      lastSpoke = new Date();
+      eventModel[key][value].lastSaid = new Date();
     }
   }
 }
@@ -219,24 +114,5 @@ webModelFunctions.emitter.on('change', (key, value) => {
 webModelFunctions.emitter.on('changeRobotModel', (key, value) => {
   talkAboutEvents(key, value);
 });
-
-// TODO: Track waypoint arrivals.
-
-// For testing watchers:
-// setInterval(function() {
-//    if (webModel.pluggedIn === false) {
-//        webModel.pluggedIn = true;
-//    } else {
-//        webModel.pluggedIn = false;
-//    }
-// }, 2500);
-
-// setInterval(function() {
-//    if (robotModel.fullyCharged === false) {
-//        robotModel.fullyCharged = true;
-//    } else {
-//        robotModel.fullyCharged = false;
-//    }
-// }, 2500);
 
 module.exports = talkToMe;
