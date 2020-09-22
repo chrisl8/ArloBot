@@ -99,7 +99,7 @@ async function main() {
     myCroft.init();
     setTimeout(() => {
       // Give init time to finish.
-      myCroft.injectText(`arlobotstartupskill ${personalData.robotName}`);
+      tts(`Hello, my name is ${personalData.robotName}`);
     }, 3000);
   } else {
     tts(`Hello, my name is ${personalData.robotName}`);
