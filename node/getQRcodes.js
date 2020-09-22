@@ -14,14 +14,14 @@ const kill = require('./reallyKillProcess.js');
      the single line as the input.
 */
 module.exports = function () {
-  const process = spawn('../scripts/getQRcodes.sh');
+  const child = spawn('../scripts/getQRcodes.sh');
   const killOnTimeout = setTimeout(() => {
     // console.log('timeout');
-    kill(process.pid);
+    kill(child.pid);
     robotModel.gettingQRcode = false;
   }, 5000);
-  process.stdout.setEncoding('utf8');
-  process.stdout.on('data', (data) => {
+  child.stdout.setEncoding('utf8');
+  child.stdout.on('data', (data) => {
     const receivedLine = data.split('\n')[0];
     if (receivedLine !== 'Waiting for zbarcam to close . . .') {
       if (receivedLine === '{') {
@@ -49,7 +49,7 @@ module.exports = function () {
       } else {
         webModel.QRcode = receivedLine;
       }
-      kill(process.pid);
+      kill(child.pid);
     }
   });
   // process.stderr.setEncoding('utf8');
@@ -59,7 +59,7 @@ module.exports = function () {
   // process.on('error', function(err) {
   //    console.log('getQRcodes Error:' + err);
   // });
-  process.on('exit', () => {
+  child.on('exit', () => {
     clearTimeout(killOnTimeout);
     robotModel.gettingQRcode = false;
   });

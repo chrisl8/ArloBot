@@ -92,12 +92,12 @@ const startLogStreamer = function () {
 const stopLogStreamer = function () {
   const command = '/usr/bin/pkill';
   const commandArgs = ['-f', 'log.io'];
-  const process = spawn(command, commandArgs);
-  process.on('exit', () => {
+  const child = spawn(command, commandArgs);
+  child.on('exit', () => {
     webModelFunctions.scrollingStatusUpdate('Log streamer killed');
     webModelFunctions.update('logStreamerRunning', false);
   });
-  return process;
+  return child;
 };
 
 async function start() {

@@ -80,14 +80,14 @@ class UsbDevice {
     const getSingleDeviceInfo = (device) => {
       return new Promise((resolve, reject) => {
         let outputData = '';
-        const process = spawn('udevadm', ['info', '-n', `/dev/${device}`]);
-        process.stdout.on('data', (data) => {
+        const child = spawn('udevadm', ['info', '-n', `/dev/${device}`]);
+        child.stdout.on('data', (data) => {
           outputData += data;
         });
-        process.stderr.on('data', (data) => {
+        child.stderr.on('data', (data) => {
           console.log(`stderr: ${data}`);
         });
-        process.on('close', (code) => {
+        child.on('close', (code) => {
           if (code === null || code === 0) {
             const outputAsArray = String(outputData).split('\n');
             resolve({

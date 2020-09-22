@@ -1,15 +1,15 @@
 const spawn = require('child_process').spawn;
 
 const goToMapPosition = (position) => {
-  const process = spawn('unbuffer', [
+  const child = spawn('unbuffer', [
     '../scripts/gotoMapPositionHelperScript.sh',
     position,
   ]);
-  process.stdout.setEncoding('utf8');
-  process.stdout.on('data', (data) => {
+  child.stdout.setEncoding('utf8');
+  child.stdout.on('data', (data) => {
     console.log(data);
   });
-  process.on('close', (code) => {
+  child.on('close', (code) => {
     console.log(`Done: ${code}`);
   });
   this.process.stderr.setEncoding('utf8');

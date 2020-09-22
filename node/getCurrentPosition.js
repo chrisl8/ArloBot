@@ -4,23 +4,21 @@ const spawn = require('child_process').spawn;
 function runGetPositionScript() {
   return new Promise((resolve, reject) => {
     let rawData;
-    const process = spawn('unbuffer', [
-      '../scripts/getPositionHelperScript.sh',
-    ]);
-    process.stdout.on('data', (data) => {
+    const child = spawn('unbuffer', ['../scripts/getPositionHelperScript.sh']);
+    child.stdout.on('data', (data) => {
       if (data.indexOf('Translation') !== -1) {
         rawData = data.toString();
-        process.kill();
+        child.kill();
       }
     });
 
-    process.on('error', (error) => {
+    child.on('error', (error) => {
       console.error('Get position error:');
       console.error(error);
       reject(error);
     });
 
-    process.on('close', () => {
+    child.on('close', () => {
       if (rawData) {
         resolve(rawData);
       } else {
@@ -73,13 +71,7 @@ async function getCurrentPosition() {
     }
   });
 
-  const currentPosition = `pose: { position: { x: ${
-    goalTargetPose.position.x
-  }, y: ${goalTargetPose.position.y}, z: ${
-    goalTargetPose.position.z
-  } }, orientation: { x: ${goalTargetPose.orientation.x}, y: ${
-    goalTargetPose.orientation.y
-  }, z: ${goalTargetPose.orientation.z}, w: ${goalTargetPose.orientation.w}} }`;
+  const currentPosition = `pose: { position: { x: ${goalTargetPose.position.x}, y: ${goalTargetPose.position.y}, z: ${goalTargetPose.position.z} }, orientation: { x: ${goalTargetPose.orientation.x}, y: ${goalTargetPose.orientation.y}, z: ${goalTargetPose.orientation.z}, w: ${goalTargetPose.orientation.w}} }`;
 
   // callback(currentPosition, wayPointName);
 

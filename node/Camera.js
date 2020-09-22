@@ -33,21 +33,21 @@ class Camera {
     webModelFunctions.update('cameraOn', true);
     webModelFunctions.scrollingStatusUpdate(`Starting ${this.cameraName}`);
     // See scripts/streamVideoTest.sh for details on mjpg_streamer usage.
-    const process = spawn('/usr/local/bin/mjpg_streamer', [
+    const child = spawn('/usr/local/bin/mjpg_streamer', [
       '-i',
       `/usr/local/lib/mjpg-streamer/input_uvc.so -d ${this.video} -n -f ${this.frameRate} -r ${this.resolution}`,
       '-o',
       '/usr/local/lib/mjpg-streamer/output_http.so -p 58180 -w /usr/local/share/mjpg-streamer/www',
     ]);
-    process.stdout.on('data', (data) => {
+    child.stdout.on('data', (data) => {
       console.log(`${this.cameraName} stdout: ${data}`);
     });
 
-    process.stderr.on('data', (data) => {
+    child.stderr.on('data', (data) => {
       console.log(`${this.cameraName} stderr: ${data}`);
     });
 
-    process.on('close', (code) => {
+    child.on('close', (code) => {
       // console.log(`child process exited with code ${code}`);
       if (code === null) {
         webModelFunctions.scrollingStatusUpdate(
@@ -74,13 +74,13 @@ class Camera {
     webModelFunctions.scrollingStatusUpdate(
       `Finding Camera ${this.cameraModel}`,
     );
-    const process = spawn(`${__dirname}/../scripts/find_camera.sh`, [
+    const child = spawn(`${__dirname}/../scripts/find_camera.sh`, [
       this.cameraModel,
     ]);
-    process.stdout.on('data', (data) => {
+    child.stdout.on('data', (data) => {
       this.dataHolder = data;
     });
-    process.on('close', (code) => {
+    child.on('close', (code) => {
       // console.log(`child process exited with code ${code}`);
       if (code === 0) {
         this.video = `${this.dataHolder}`.trim();

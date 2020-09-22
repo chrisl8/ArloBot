@@ -42,18 +42,18 @@ class UsbRelay {
         console.log('Updating Relay Status');
       }
       robotModel.usbRelayControlBusy = true;
-      const process = spawn(this.script, ['all', 'state']);
-      process.stdout.on('data', (data) => {
+      const child = spawn(this.script, ['all', 'state']);
+      child.stdout.on('data', (data) => {
         if (data !== '') {
           this.dataHolder += data;
         }
       });
 
-      process.stderr.on('data', (data) => {
+      child.stderr.on('data', (data) => {
         console.log(`UsbRelay output stderr: ${data}`);
       });
 
-      process.on('close', (code) => {
+      child.on('close', (code) => {
         if (code === null || code === 0) {
           const linesArray = this.dataHolder.split('\n');
           const relayStatusArray = [];
@@ -117,13 +117,13 @@ class UsbRelay {
           if (state !== 'on' && state !== 'off') {
             return;
           }
-          const process = spawn(this.script, [relayNumber, state]);
+          const child = spawn(this.script, [relayNumber, state]);
 
-          process.stderr.on('data', (data) => {
+          child.stderr.on('data', (data) => {
             console.log(`UsbRelay output stderr: ${data}`);
           });
 
-          process.on('close', (code) => {
+          child.on('close', (code) => {
             if (code === null || code === 0) {
               webModelFunctions.scrollingStatusUpdate(
                 `Relay ${relayNumber} ${state}`,
