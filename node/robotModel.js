@@ -10,8 +10,6 @@ module.exports = {
   mapLoadTime: undefined, // Time that map load was complete
   makeMap: undefined,
   master: {
-    isClose: false, // Eddy Beacon === 1
-    isInRoom: false, // Eddy Beacon < 1
     isAsleep: false,
   },
   whereamiTextSent: false,
