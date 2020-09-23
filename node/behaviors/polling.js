@@ -27,7 +27,7 @@ async function polling() {
     intervalCount = 0;
   }
   if (webModel.debugging && webModel.logBehaviorMessages) {
-    console.log('Polling');
+    console.log(' - Checking: Polling');
     webModelFunctions.scrollingStatusUpdate('Polling', intervalCount);
   }
   /* Some things just need to be polled, there is no way around it. Put those here.
@@ -137,7 +137,7 @@ async function polling() {
       }
     }
   } else if (webModel.debugging && webModel.logBehaviorMessages) {
-    console.log(`ROS Idle Check: Robot not idle.`);
+    console.log(` - Polling: ROS Idle Check: Robot not idle.`);
   }
 
   // After 2 hours turn on the idle timer again.

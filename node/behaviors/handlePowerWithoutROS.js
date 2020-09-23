@@ -7,7 +7,7 @@ const wait = require('../wait');
 
 async function handleUsbHubPower() {
   if (webModel.debugging && webModel.logBehaviorMessages) {
-    console.log('Handle Power without ROS');
+    console.log(' - Checking: Handle Power without ROS');
     webModelFunctions.scrollingStatusUpdate('Handle Power without ROS');
   }
 

@@ -76,10 +76,9 @@ async function loop() {
     // ROS is NOT running
     await handlePowerWithoutROS();
   }
-  // TODO: More stuff.
 
   if (webModel.debugging && webModel.logBehaviorMessages) {
-    console.log('Nothing stopped this behave loop.');
+    console.log('   - Nothing stopped this behave loop.');
   }
 }
 

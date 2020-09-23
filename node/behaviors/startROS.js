@@ -7,7 +7,7 @@ const killROS = require('../killROS');
 
 async function startROS() {
   if (webModel.debugging && webModel.logBehaviorMessages) {
-    console.log('Start ROS');
+    console.log(' - Checking: Start ROS');
     webModelFunctions.scrollingStatusUpdate('Start ROS');
   }
   // ROS Process launch behavior pattern:
