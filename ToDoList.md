@@ -1,5 +1,7 @@
 ## TODO List
 
+ - Make a new Youtube video of robot functions.
+
  - Speak when things are done like starting ROS, making maps, etc.
 
  - Fix this error coming from TEB due to something in my config:
@@ -7,15 +9,6 @@
     - Might have to look into http://wiki.ros.org/teb_local_planner/Tutorials/Costmap%20conversion
 
  - Test remaining "goto" functions with Python 3 and Slam Toolbox
-
- - Watch for new ros-noetic-tf2 to release and ensure I'm getting it, and the ros-testing one I do not have anymore.
-
- - Add pip updater to setup script.
-### Check for and update ONLY user packages (OS Level are Ubuntu's problem . . . until they aren't)
-    pip3 install pip-review
-
-    pip-review --user
-    #pip-review --user --auto
 
  - Have the robot say "pardon me" when escaping starts
  
@@ -37,8 +30,6 @@
    
  - Walk through entire Readme and ensure all instructions are correct/relevant.
  
- - Make a new Youtube video of robot functions.
-
  - Create a system on the web interface to create automatic mapping of an existing area
     - Start map
     - Select goals in RVIZ
