@@ -4,6 +4,7 @@ const robotModel = require('./robotModel');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
 const LCD = require('./LCD');
+const tts = require('./tts');
 
 function killROS(exitWhenDone) {
   LCD({ operation: 'color', red: 255, green: 0, blue: 0 });
@@ -24,6 +25,7 @@ function killROS(exitWhenDone) {
       input: '  and Exiting...',
       row: 'bottom',
     });
+    tts(`So long, and thanks for all the fish.`);
   }
   const command = `${__dirname}/../scripts/kill_ros.sh`;
   // It is rather catastrophic if this repeats!

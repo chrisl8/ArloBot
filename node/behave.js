@@ -26,7 +26,6 @@ const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
 const wait = require('./wait');
 const killROS = require('./killROS');
-const tts = require('./tts');
 
 async function loop() {
   if (webModel.debugging && webModel.logBehaviorMessages) {
@@ -99,7 +98,6 @@ async function behave() {
     console.log('Shutdown Requested via webModel.');
   }
   webModelFunctions.behaviorStatusUpdate('Shutdown Requested via webModel.');
-  tts(`So long, and thanks for all the fish.`);
   killROS(true);
 }
 
