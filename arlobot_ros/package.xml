@@ -18,15 +18,12 @@
   <depend>rospy</depend>
   <depend>move_base</depend>
   <depend>move_base_msgs</depend>
-  <depend>map_server</depend>
   <depend>std_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>geometry_msgs</depend>
-  <depend>message_runtime</depend>
   <depend>message_generation</depend>
   <depend>twist_mux</depend>
   <depend>robot_state_publisher</depend>
-  <depend>diagnostic_aggregator</depend>
   <depend>urdf</depend>
   <depend>xacro</depend>
   <depend>actionlib</depend>
@@ -34,6 +31,5 @@
   <depend>joint_state_publisher</depend>
   <depend>rviz</depend>
   <depend>joy</depend>
-  <depend>cv_bridge</depend>
   <depend>rosbridge_server</depend>
 </package>
