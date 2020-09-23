@@ -18,7 +18,6 @@ const ignoreMessageTypes = [
   'enclosure.mouth.events.activate',
 ];
 // These types might be useful for other things too someday?
-// TODO: Set up lights on robot to blink when the mouth or eyes of mycroft are supposed to move?
 
 const init = () => {
   const connect = () => {
@@ -68,6 +67,20 @@ const init = () => {
           ];
         } else if (messageObject.type === 'speak') {
           webModelFunctions.update('myCroftSaid', messageObject.data.utterance);
+        } else if (messageObject.type === 'arlobot') {
+          if (messageObject.data.hasOwnProperty('action')) {
+            switch (messageObject.data.action) {
+              case 'startROS':
+                webModelFunctions.update('ROSstart', true);
+                break;
+              // TODO: Add remaining functions.
+              default:
+                console.log(
+                  `Unknown Mycroft action: ${messageObject.data.action}`,
+                );
+            }
+          }
+          // webModelFunctions.update('myCroftSaid', messageObject.data.utterance);
         }
       }
     });

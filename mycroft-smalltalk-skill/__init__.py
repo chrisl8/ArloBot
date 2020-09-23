@@ -1,19 +1,5 @@
-# Copyright 2016 Mycroft AI, Inc.
-#
-# This file is part of Mycroft Core.
-#
-# Mycroft Core is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Mycroft Core is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Mycroft Core.  If not, see <http://www.gnu.org/licenses/>.
+# These are just MY PERSONAL banter that I want my robot to
+# carry on.
 
 from os.path import dirname
 
@@ -34,15 +20,6 @@ class SmallTalkSkill(MycroftSkill):
     def initialize(self):
         self.load_data_files(dirname(__file__))
 
-        # thank_you_intent = IntentBuilder("ThankYouIntent").\
-        #     require("ThankYouKeyword").build()
-        # self.register_intent(thank_you_intent, self.handle_thank_you_intent)
-        #
-        # how_are_you_intent = IntentBuilder("HowAreYouIntent").\
-        #     require("HowAreYouKeyword").build()
-        # self.register_intent(how_are_you_intent,
-        #                      self.handle_how_are_you_intent)
-
         hi_intent = IntentBuilder("HiIntent").require("HiKeyword").build()
         self.register_intent(hi_intent, self.handle_hi_intent)
 
@@ -56,16 +33,13 @@ class SmallTalkSkill(MycroftSkill):
         )
         self.register_intent(do_you_have_my_glasses, self.handle_do_you_have_my_glasses)
 
+        # TODO: Add a fallback catcher to inject My response to unknown requests.
+        # See: https://www.freecodecamp.org/news/how-to-delete-a-git-branch-both-locally-and-remotely/
+
         # This does not work in Mycroft now.
-        # I'm not sure what the replacment is yet, but commenting out
+        # I'm not sure what the replacement is yet, but commenting out
         # until I have time to look into it
         # self.emitter.on('fallback_failure', self.handle_fallback)
-
-    # def handle_thank_you_intent(self, message):
-    #     self.speak_dialog("welcome")
-    #
-    # def handle_how_are_you_intent(self, message):
-    #     self.speak_dialog("how.are.you")
 
     def handle_hi_intent(self, message):
         self.speak_dialog("hi")
