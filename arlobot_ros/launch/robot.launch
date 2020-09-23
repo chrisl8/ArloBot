@@ -61,8 +61,6 @@
     <include file="$(find arlobot_ros)/launch/sweep.launch"/>
   </group>
 
-  <!--  TODO: Set up like XV11 to use /rplidar by default, but /scan if "selected"-->
-  <!--        Which is default if nothing is passed in.-->
   <arg name="loadRPLIDAR" value="$(optenv HAS_RPLIDAR true)"/>
   <group if="$(arg loadRPLIDAR)">
     <include file="$(find arlobot_ros)/launch/rplidar.launch"/>

@@ -48,3 +48,12 @@
     - Later you can select to make map, and it will start a map making session, unplug, go to those goals in order, then save the map, go "home", then load the map use it.
         - This way you can remap a known area automatically.
     - Early start might be to just set up to monitor goals and list them out on the site as they are set.
+
+ - Threeflower testing
+  - robot.launch file:
+    - Set up Scanse to be able to be Scan topic.
+    - Set RPLidar section of up like XV11 to use /rplidar by default, but /scan if "selected" which is default if nothing is passed in.
+    - Test to ensure that if NO ENVIRONMENT VARIABLES OR ROS PARAMS are set, that it uses RPLidar by default.
+
+ - arlobot_goto.py
+    - See TODO's in it: Need to either clean out old "active input" from previous mux package, or update twist_mux to give us the active topic and use it.
