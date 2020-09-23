@@ -396,10 +396,6 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     echo "freenect_stack will be installed from source instead."
     # "ros-${INSTALLING_ROS_DISTRO}-freenect-stack" - Required for Kinect to operate
   fi
-  if ! [[ "${RESPONSE_TO_MYCROFT_QUERY}" == "y" ]]; then
-    PACKAGE_TO_INSTALL_LIST+=(espeak-ng-espeak)
-  # espeak-ng-espeak - Used for robot to speak if MyCroft is not used.
-  fi
   PACKAGE_TO_INSTALL_LIST+=(fswebcam)
   # fswebcam - Used for streaming a camera to the website. Camera streaming will not work without it.
   PACKAGE_TO_INSTALL_LIST+=(zbar-tools)
