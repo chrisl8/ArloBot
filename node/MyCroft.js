@@ -73,7 +73,12 @@ const init = () => {
               case 'startROS':
                 webModelFunctions.update('ROSstart', true);
                 break;
-              // TODO: Add remaining functions.
+              case 'makeMap':
+                webModelFunctions.update('makeMap', true);
+                break;
+              case 'unplugYourself':
+                webModelFunctions.update('unplugYourself', true);
+                break;
               default:
                 console.log(
                   `Unknown Mycroft action: ${messageObject.data.action}`,
