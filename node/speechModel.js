@@ -7,11 +7,10 @@
  Test - Must be a function that returns true or false.
 
  repeat -  under "thingToSay" tells the randomizer whether to
- randomly pick from the entire list on every run,
- or to "mark them off" one by one and only pick from the remaining entries
- on each run until they are all gone and restart.
- If you only have one entry, it is simpler for the code if it is "true".
- If you say false, the "weight" doesn't mean much either, as it basically just indicates which one will be picked first.
+    randomly pick from the entire list on every run,
+    or to "mark them off" one by one and only pick from the remaining entries
+    on each run until they are all gone and restart.
+   If you say false, the "weight" doesn't mean much either, as it basically just indicates which one will be picked first.
  weight - Weight for how likely an entry is to be chosen.
 
  repeatInterval & spacing are typically 0 for events, as presumably you want it to chatter on every instance of an event, but maybe not always.
@@ -29,7 +28,15 @@
  Just remember that point in time event triggered speech need to happen in 'events', not 'chatter'.
  */
 
-module.exports = {
+// TODO: SOME of these may be better off set within the feature that runs them,
+//       in order to clearly only announce an action when it truly happens,
+//       not just when it is requested.
+
+// Received even when goal is set via Rviz:
+// goalStatus: New Goal Set.
+// goalStatus: Goal reached.
+
+const speechModel = {
   chatter: {
     randomChatter: {
       repeatInterval: 600,
@@ -83,6 +90,123 @@ module.exports = {
     },
   },
   events: {
+    goalStatus: {
+      repeatInterval: 10,
+      spacing: 0,
+      newGoalSet: {
+        thingsToSay: {
+          repeat: true,
+          onMyWay: {
+            text: 'On my way!',
+            weight: 100,
+          },
+        },
+      },
+      goalReached: {
+        thingsToSay: {
+          repeat: true,
+          iHaveArrived: {
+            text: 'I have arrived.',
+            weight: 100,
+          },
+          destinationReached: {
+            text: 'Destination reached..',
+            weight: 100,
+          },
+        },
+      },
+    },
+    Escaping: {
+      repeatInterval: 15,
+      spacing: 0,
+      true: {
+        thingsToSay: {
+          repeat: true,
+          WallEwhoa: {
+            text: '~/.arlobot/sounds/whoa.wav',
+            weight: 100,
+          },
+        },
+      },
+    },
+    ROSstart: {
+      repeatInterval: 0,
+      spacing: 0,
+      true: {
+        thingsToSay: {
+          repeat: true,
+          ROSstart: {
+            text: 'Starting ROS.',
+            weight: 100,
+          },
+        },
+      },
+    },
+    ROSisRunning: {
+      repeatInterval: 0,
+      spacing: 0,
+      true: {
+        thingsToSay: {
+          repeat: true,
+          ROSisRunning: {
+            text: 'ROS is running.',
+            weight: 100,
+          },
+        },
+      },
+    },
+    makeMap: {
+      repeatInterval: 0,
+      spacing: 0,
+      true: {
+        thingsToSay: {
+          repeat: true,
+          makeMap: {
+            text: 'Preparing to make map.',
+            weight: 100,
+          },
+        },
+      },
+    },
+    makeMapRunning: {
+      repeatInterval: 0,
+      spacing: 0,
+      true: {
+        thingsToSay: {
+          repeat: true,
+          makeMapRunning: {
+            text: 'Making Map.',
+            weight: 100,
+          },
+        },
+      },
+    },
+    loadMapRequested: {
+      repeatInterval: 0,
+      spacing: 0,
+      true: {
+        thingsToSay: {
+          repeat: true,
+          loadMapRequested: {
+            text: 'Loading map.',
+            weight: 100,
+          },
+        },
+      },
+    },
+    mapLoaded: {
+      repeatInterval: 0,
+      spacing: 0,
+      true: {
+        thingsToSay: {
+          repeat: true,
+          mapLoaded: {
+            text: 'Map Loaded.',
+            weight: 100,
+          },
+        },
+      },
+    },
     haltRobot: {
       repeatInterval: 0,
       spacing: 0,
@@ -193,3 +317,11 @@ module.exports = {
     },
   },
 };
+
+// Sting Keys cannot be set on object literals, so setting them here:
+speechModel.events.goalStatus['New Goal Set.'] =
+  speechModel.events.goalStatus.newGoalSet;
+speechModel.events.goalStatus['Goal reached.'] =
+  speechModel.events.goalStatus.goalReached;
+
+module.exports = speechModel;

@@ -83,15 +83,29 @@ function talkToMe() {
   }
 }
 
+// Some events just spam us, so ignore those to help mostly with the log.
+const eventsToAlwaysIgnore = [
+  'robotBatteryLevel',
+  'abd_speedLimit',
+  'abdR_speedLimit',
+  'Heading',
+  'minDistanceSensor',
+  'myCroftSaid',
+];
+
 function talkAboutEvents(key, value) {
   if (key && value) {
-    if (webModel.debugging && webModel.logOtherMessages) {
-      console.log('---------------');
+    if (
+      webModel.debugging &&
+      webModel.logTalkAboutEvents &&
+      eventsToAlwaysIgnore.indexOf(key) === -1
+    ) {
       console.log('talkAboutEvents change:');
-      console.log(key);
-      console.log(value);
-      console.log(eventModel[key]);
-      console.log('---------------');
+      console.log(` - ${key}: ${value}`);
+      if (eventModel[key]) {
+        console.log(eventModel[key]);
+        console.log('-------------------');
+      }
     }
     if (
       eventModel[key] &&
