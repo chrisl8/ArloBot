@@ -5,8 +5,32 @@ const getCurrentPosition = require('./getCurrentPosition');
 const personalDataFolder = `${process.env.HOME}/.arlobot/`;
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
+const robotModel = require('./robotModel');
 
 class WayPoints {
+  returnToMapZeroPoint() {
+    webModelFunctions.updateWayPointNavigator('wayPointName', 'Zero');
+    robotModel.wayPointNavigator.destinationWaypoint =
+      'pose: { position: { x: 0.0, y: 0.0, z: 0 }, orientation: { x: 0, y: 0, z: 0.0, w: 0.1} }';
+    webModelFunctions.updateWayPointNavigator('goToWaypoint', true);
+  }
+
+  goToWaypoint(name) {
+    if (webModel.debugging && webModel.logOtherMessages) {
+      console.log(name);
+    }
+    if (name && webModel.wayPoints.indexOf(name) > -1) {
+      webModelFunctions.updateWayPointNavigator('wayPointName', name);
+      this.getWayPoint(name, (response) => {
+        if (webModel.debugging && webModel.logOtherMessages) {
+          console.log(response);
+        }
+        robotModel.wayPointNavigator.destinationWaypoint = response;
+        webModelFunctions.updateWayPointNavigator('goToWaypoint', true);
+      });
+    }
+  }
+
   getWayPoint(name, callback) {
     const waypointFolder = `${personalDataFolder}waypoints/${webModel.mapName}/`;
     const wayPointFile = waypointFolder + name;

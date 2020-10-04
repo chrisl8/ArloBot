@@ -27,4 +27,12 @@ module.exports = {
   masterRelayBusy: false,
   volumeHasBeenSet: false,
   semaphoreFilesWatcher: null,
+  lastGoalPose: null,
+  mapMakingGoalList: [],
+  // Define objects that will be filled in later.
+  RosProcess: {},
+  loadMapProcess: {},
+  usbRelay: {},
+  goToWaypointProcess: {},
+  randomWaypointList: [],
 };

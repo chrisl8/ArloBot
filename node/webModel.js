@@ -12,10 +12,11 @@ module.exports = {
   lastUpdateTime: 0,
   videoSource: 'xscreen.png',
   masterRelayOn: false,
-  debugging: false,
+  debugging: false, // TODO: Make the below a set of objects to make them easier to deal with.
   logConsoleMessages: false, // Like debugging but ONLY for LaunchScript function
   logBehaviorMessages: false,
   logOtherMessages: false,
+  logTalkAboutEvents: false,
   cameraOn: false,
   ROSstart: false,
   ROSisRunning: false,
@@ -42,6 +43,7 @@ module.exports = {
   hasSetupViaQRcode: false, // So we only do this once. ;)
   mapName: '',
   mapLoaded: false,
+  loadMapRequested: false,
   triedLightToFindQRcode: false,
   userLightOnRequested: false,
   robotIP: undefined,
@@ -56,7 +58,7 @@ module.exports = {
     ignoreIRSensors: false,
     ignoreFloorSensors: false,
     monitorACconnection: true,
-    mapName: null,
+    mapName: '',
   },
   rosTopicItems: [
     // From ROS Topic /arlo_status
@@ -196,6 +198,15 @@ module.exports = {
     {
       rosName: 'dangerousDoorsOpen',
       fancyName: 'Doors Open',
+      status: '',
+      btnClass: '',
+      alertOn: true,
+      alertBtnClass: 'btn-danger',
+    },
+    // Move base goals
+    {
+      rosName: 'goalStatus',
+      fancyName: 'Goal Status',
       status: '',
       btnClass: '',
       alertOn: true,

@@ -1,3 +1,5 @@
+const fs = require('fs');
+const mkdirp = require('mkdirp');
 const express = require('express');
 const _ = require('lodash');
 const spawn = require('child_process').spawn;
@@ -24,6 +26,8 @@ const rosInterface = require('./rosInterface');
 const masterRelay = require('./MasterRelay');
 const updateMapList = require('./updateMapList');
 const LCD = require('./LCD');
+
+const personalDataFolder = `${process.env.HOME}/.arlobot/`;
 
 LCD({ operation: 'color', red: 0, green: 0, blue: 255 });
 LCD({ operation: 'clear' });
@@ -62,7 +66,25 @@ app.use(express.static(`${__dirname}/../website/build`));
 
 const handleSemaphoreFiles = require('./handleSemaphoreFiles');
 
-const saveMap = function (newMapName) {
+const saveMapMakingGoals = async (newMapName, position, name) => {
+  const waypointFolder = `${personalDataFolder}mapMakingGoals/${newMapName}/`;
+  const wayPointFile = waypointFolder + name;
+  await mkdirp(waypointFolder, 0o777);
+  fs.writeFile(wayPointFile, position, (e) => {
+    if (e) {
+      webModelFunctions.scrollingStatusUpdate(
+        `ERROR writing map making goal ${name} to disk`,
+      );
+      console.error(`ERROR writing map making goal ${name} to disk:`);
+      console.error(e);
+    }
+    webModelFunctions.scrollingStatusUpdate(
+      `Map making point ${name} has been written to disk`,
+    );
+  });
+};
+
+const saveMap = async (newMapName) => {
   // Text from service when it is finished is:
   // **Finished serializing Dataset**
   const saveMapProcess = new LaunchScript({
@@ -72,6 +94,10 @@ const saveMap = function (newMapName) {
     scriptArguments: newMapName,
   });
   saveMapProcess.start();
+  for (let i = 0; i < robotModel.mapMakingGoalList.length; i++) {
+    // eslint-disable-next-line no-await-in-loop
+    await saveMapMakingGoals(newMapName, robotModel.mapMakingGoalList[i], i);
+  }
 };
 
 const startLogStreamer = function () {
@@ -127,6 +153,7 @@ async function start() {
     socket.on('setMap', (data) => {
       if (data) {
         if (webModel.mapList.indexOf(data) > -1) {
+          webModelFunctions.update('loadMapRequested', true);
           webModelFunctions.update('mapName', data);
           wayPointEditor.updateWayPointList();
         }
@@ -144,17 +171,11 @@ async function start() {
     });
 
     socket.on('gotoWayPoint', (data) => {
-      if (data) {
-        if (webModel.wayPoints.indexOf(data) > -1) {
-          webModelFunctions.updateWayPointNavigator('wayPointName', data);
-          wayPointEditor.getWayPoint(data, (response) => {
-            console.log(data);
-            console.log(response);
-            robotModel.wayPointNavigator.destinationWaypoint = response;
-            webModelFunctions.updateWayPointNavigator('goToWaypoint', true);
-          });
-        }
-      }
+      wayPointEditor.goToWaypoint(data);
+    });
+
+    socket.on('returnToMapZeroPoint', () => {
+      wayPointEditor.returnToMapZeroPoint();
     });
 
     // LocalMenu button handlers:
@@ -265,9 +286,11 @@ async function start() {
       rosInterface.setParam('ignoreProximity', true);
     });
 
-    socket.on('saveMap', (data) => {
+    socket.on('saveMap', async (data) => {
       console.log(`Save map as: ${data}`);
-      saveMap(data);
+      // TODO: Map names with spaces do not seem to work,
+      //       Either fix that, or update the web interface to reject them.
+      await saveMap(data);
     });
     socket.on('startLogStreamer', () => {
       startLogStreamer();
@@ -290,6 +313,9 @@ async function start() {
     });
     socket.on('toggleLogBehaviorMessages', () => {
       webModelFunctions.toggle('logBehaviorMessages');
+    });
+    socket.on('toggleLogTalkAboutEvents', () => {
+      webModelFunctions.toggle('logTalkAboutEvents');
     });
     socket.on('toggleLogOtherMessages', () => {
       webModelFunctions.toggle('logOtherMessages');
