@@ -18,7 +18,7 @@ module.exports = function () {
   const killOnTimeout = setTimeout(() => {
     // console.log('timeout');
     kill(child.pid);
-    robotModel.gettingQRcode = false;
+    robotModel.gettingQrCode = false;
   }, 5000);
   child.stdout.setEncoding('utf8');
   child.stdout.on('data', (data) => {
@@ -61,6 +61,6 @@ module.exports = function () {
   // });
   child.on('exit', () => {
     clearTimeout(killOnTimeout);
-    robotModel.gettingQRcode = false;
+    robotModel.gettingQrCode = false;
   });
 };

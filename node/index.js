@@ -111,7 +111,7 @@ async function main() {
   // http://stackoverflow.com/a/11337310
   // http://linux.die.net/man/1/unbuffer
 
-  robotModel.ROSprocess = new LaunchScript({
+  robotModel.RosProcess = new LaunchScript({
     name: 'ROS',
     scriptName: '../scripts/start-robot.sh',
     successString: ']: Propellerbot_node has started.',

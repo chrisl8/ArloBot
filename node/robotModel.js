@@ -12,17 +12,16 @@ module.exports = {
   master: {
     isAsleep: false,
   },
-  whereamiTextSent: false,
+  whereAmITextSent: false,
   unplugMeTextSent: false,
   fullyCharged: false,
   webCamInUse: false,
-  gettingQRcode: false,
+  gettingQrCode: false,
   initialPoseSet: false,
-  cmdTopicIdle: false,
   lastMovementTime: 0,
   active_cmd: 'idle', // Hold the active cmd that is currently driving the robot.
   wayPointNavigator: {
-    destinaitonWaypoint: undefined, // This will be the place we want the robot to go to.
+    destinationWaypoint: undefined, // This will be the place we want the robot to go to.
   },
   usbRelayControlBusy: false,
   masterRelayBusy: false,

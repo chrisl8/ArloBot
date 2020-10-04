@@ -56,6 +56,8 @@ const rosParameters = {
 
 function unplugRobot(value) {
   if (unplug) {
+    // noinspection JSIgnoredPromiseFromCall
+    tts('Unplugging myself now.');
     const unplugRequest = new ROSLIB.ServiceRequest({
       // args from rosservice info <service>
       unPlug: value, // Note javaScript uses true not True for bool
@@ -142,22 +144,31 @@ function subscribeToActiveStatus() {
       // console.log(message.buttons);
       // A, B, X, Y, LB, RB, BACK, START, Xbox360, LeftStick, RightStick, Left, Right, Up, Down
       if (message.buttons[0] === 1) {
+        // noinspection JSIgnoredPromiseFromCall
         tts('Hello, my name is two flower');
       } else if (message.buttons[1] === 1) {
+        // noinspection JSIgnoredPromiseFromCall
         tts('What is your name?');
       } else if (message.buttons[3] === 1) {
+        // noinspection JSIgnoredPromiseFromCall
         tts('Nice to meet you.');
       } else if (message.buttons[2] === 1) {
+        // noinspection JSIgnoredPromiseFromCall
         tts('Excuse me.');
       } else if (message.buttons[5] === 1) {
+        // noinspection JSIgnoredPromiseFromCall
         tts('~/.arlobot/sounds/readyMaster.wav');
       } else if (message.buttons[11] === 1) {
+        // noinspection JSIgnoredPromiseFromCall
         tts('~/.arlobot/sounds/Exterminate.wav');
       } else if (message.buttons[12] === 1) {
+        // noinspection JSIgnoredPromiseFromCall
         tts('~/.arlobot/sounds/input1.wav');
       } else if (message.buttons[13] === 1) {
+        // noinspection JSIgnoredPromiseFromCall
         tts('~/.arlobot/sounds/affirmative.wav');
       } else if (message.buttons[14] === 1) {
+        // noinspection JSIgnoredPromiseFromCall
         tts('~/.arlobot/sounds/depressed.wav');
       }
       /*
