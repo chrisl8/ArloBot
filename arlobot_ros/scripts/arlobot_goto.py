@@ -2,7 +2,6 @@
 import rospy
 import move_base_msgs.msg
 from nav_msgs.msg import Odometry
-from std_msgs.msg import String
 import tf2_ros
 from arlobot_ros.srv import go_to_goal
 
@@ -44,14 +43,6 @@ class ArlobotGoTo(object):
         # Turns out this works great if you have no map and just want to make movements based on odometry,
         # but if you are using a map, you need the /map to /base_link transform!
 
-        # TODO: This is no longer published by any node, so what do I do now?
-        #       https://github.com/ros-teleop/twist_mux/pull/20
-        #       Without this, it just has to time out when timeoutSeconds seconds is over.
-        # Subscribe to the controller topic to check to see if the robot is
-        # actually IDLE even though we THINK we are going somewhere!
-        self._active_controller = ""
-        rospy.Subscriber("/cmd_vel_mux/active", String, self._set_active_controller)
-
         # Create a service that can be called to send robot to a map based goal
         # http://wiki.ros.org/ROS/Tutorials/CreatingMsgAndSrv
         # http://wiki.ros.org/ROS/Tutorials/WritingServiceClient%28python%29
@@ -62,11 +53,6 @@ class ArlobotGoTo(object):
 
     def _SetCurrentOdom(self, currentOdom):
         self.currentOdom = currentOdom
-
-    # TODO: This is no longer published by any node, so what do I do now?
-    def _set_active_controller(self, status):
-        self._active_controller = status.data
-        rospy.loginfo("Active Controller: " + self._active_controller)
 
     def _go_to_goal(self, new_goal):
 
@@ -140,10 +126,11 @@ class ArlobotGoTo(object):
                     rospy.loginfo(
                         "Time-out reached while attempting to reach goal, canceling!"
                     )
-                # TODO: This is no longer published by any node, so what do I do now?
-                if count > 5 and self._active_controller == "idle":
-                    finished = True
-                    rospy.loginfo("Navigation is idle, canceling!")
+                # NOTE: If the robot tends to get stuck without moving at all,
+                #       1. Subscribe to cmd_vel
+                #       2. Increment a timer.
+                #       3. Zero it out whenever cmd_vel is updated.
+                #       4. Cancel this if the timer gets too high.
                 count += 1
                 rospy.sleep(
                     1
