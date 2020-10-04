@@ -36,8 +36,26 @@ class ArlobotSkill(MycroftSkill):
         )
         self.register_intent(start_ros_intent, self.handle_start_ros_intent)
 
+        make_map_intent = (
+            IntentBuilder("MakeMapIntent").require("MakeMapKeyword").build()
+        )
+        self.register_intent(make_map_intent, self.handle_make_map_intent)
+
+        unplug_yourself_intent = (
+            IntentBuilder("UnplugYourselfIntent")
+            .require("UnplugYourselfKeyword")
+            .build()
+        )
+        self.register_intent(unplug_yourself_intent, self.handle_unplug_yourself_intent)
+
     def handle_start_ros_intent(self, message):
         self.bus.emit(Message("arlobot", data={"action": "startROS"}))
+
+    def handle_make_map_intent(self, message):
+        self.bus.emit(Message("arlobot", data={"action": "makeMap"}))
+
+    def handle_unplug_yourself_intent(self, message):
+        self.bus.emit(Message("arlobot", data={"action": "unplugYourself"}))
 
     def stop(self):
         pass
