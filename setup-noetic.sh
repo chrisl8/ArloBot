@@ -681,7 +681,7 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     nvm deactivate
   fi
 
-  wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.35.3/install.sh | bash
+  wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.36.0/install.sh | bash
   export NVM_DIR="${HOME}/.nvm"
   # shellcheck source=/home/chrisl8/.nvm/nvm.sh
   [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
