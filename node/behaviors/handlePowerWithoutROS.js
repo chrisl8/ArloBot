@@ -7,8 +7,9 @@ const wait = require('../wait');
 
 async function handleUsbHubPower() {
   if (webModel.debugging && webModel.logBehaviorMessages) {
-    console.log(' - Checking: Handle Power without ROS');
-    webModelFunctions.scrollingStatusUpdate('Handle Power without ROS');
+    const message = ' - Checking: Handle Power without ROS';
+    console.log(message);
+    webModelFunctions.scrollingStatusUpdate(message);
   }
 
   // Power off the Master Relay and all regular Relays after the idle timeout,
@@ -19,6 +20,7 @@ async function handleUsbHubPower() {
   // NOTE2: The idle timeout for while ROS is running is handled in polling right now.
   /** @namespace personalData.idleTimeoutInMinutes */
   if (
+    !webModel.ROSisRunning &&
     webModel.idleTimeout &&
     personalData.idleTimeoutInMinutes > 0 &&
     webModel.masterRelayOn
@@ -45,8 +47,13 @@ async function handleUsbHubPower() {
         await wait(1); // The usbRelay calls just made by polling can clobber this if we don't wait.
         robotModel.usbRelay.switchRelay('all', 'off');
       }
+      // In theory this is 100% done,
+      // but since we did act, make the loop start over
+      return false;
     }
   }
+  // This behavior is idle, allow behave loop to continue to next entry.
+  return true;
 }
 
 module.exports = handleUsbHubPower;

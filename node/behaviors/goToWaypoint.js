@@ -3,14 +3,14 @@ const webModelFunctions = require('../webModelFunctions');
 const robotModel = require('../robotModel');
 
 async function goToWaypoint() {
-  if (webModel.debugging && webModel.logOtherMessages) {
-    console.log('Go to Waypoint');
-    webModelFunctions.scrollingStatusUpdate('Go to Waypoint');
+  if (webModel.debugging && webModel.logBehaviorMessages) {
+    const message = ' - Checking: Go to Waypoint';
+    console.log(message);
+    webModelFunctions.scrollingStatusUpdate(message);
   }
   // ROS Process launch behavior pattern:
   // FIRST: Is the process already started?
   if (robotModel.goToWaypointProcess.started) {
-    console.log('robotModel.goToWaypointProcess.started');
     // startupComplete indicates either:
     // Script exited
     // Script threw "success string"
@@ -26,9 +26,7 @@ async function goToWaypoint() {
     //          but returned every loop by PERPETUAL behavior scripts.
     // FAILURE <- Usually means we aren't do things.
     if (robotModel.goToWaypointProcess.startupComplete) {
-      console.log('robotModel.goToWaypointProcess.startupComplete');
       if (robotModel.goToWaypointProcess.hasExited) {
-        console.log('robotModel.goToWaypointProcess.hasExited');
         // Once the process has exited:
         // 1. DISABLE whatever user action causes it to be called,
         // so that it won't loop.
@@ -64,7 +62,6 @@ async function goToWaypoint() {
         // KILL a node here if you want it to STOP!
         // Otherwise this is a non-event,
         // Either way the response should probably be RUNNING.
-        console.log('!webModel.wayPointNavigator.goToWaypoint');
         // IF we were told NOT to run, we need to stop the process,
         // and then wait for the failure to arrive here on the next loop.
         // Insert command to stop current function here:
@@ -72,7 +69,7 @@ async function goToWaypoint() {
         //  TODO: If we need to kill the goToWayPoint, do it here.
         // Don't change anything else,
         // Let the next loop fall into the "hasExited" option above.c
-        if (webModel.debugging && webModel.logOtherMessages) {
+        if (webModel.debugging && webModel.logBehaviorMessages) {
           console.log('Go to Waypoint: RUNNING');
           webModelFunctions.scrollingStatusUpdate('Go to Waypoint: RUNNING');
         }
@@ -80,12 +77,11 @@ async function goToWaypoint() {
       }
       // LOOK HERE!
       // If this is a "PERPETUAL" process, then this is where you want
-      // to return "SUCCESS" because "starupComplete" is true,
+      // to return "SUCCESS" because "startupComplete" is true,
       // but it has not exited!
       // If this is a "RUN, WAIT, RETURN" process, then this is where
       // you want to return RUNNING to let behavior tree know
       // that we are IN PROCESS!
-      console.log('GoToWaypoint startup complete without failure.');
       // This is where we go if the start is complete,
       // and did not fail.
       // and we still want it running.
@@ -97,13 +93,14 @@ async function goToWaypoint() {
       // is dependent on how this Behavior node works.
       // GoToWaypoint should exit when the task is done,
       // so we call this running:
-      if (webModel.debugging && webModel.logOtherMessages) {
+      if (webModel.debugging && webModel.logBehaviorMessages) {
         console.log('Go to Waypoint: RUNNING');
         webModelFunctions.scrollingStatusUpdate('Go to Waypoint: RUNNING');
       }
 
       if (robotModel.goToWaypointProcess.finalSuccess) {
         robotModel.goToWaypointProcess.finalSuccess = false;
+        // TODO: Talk about it.
         webModelFunctions.update('lastNavigationResult', 'Success');
         webModelFunctions.update(
           'status',
@@ -113,6 +110,7 @@ async function goToWaypoint() {
 
       if (robotModel.goToWaypointProcess.finalFailure) {
         robotModel.goToWaypointProcess.finalFailure = false;
+        // TODO: Talk about it.
         webModelFunctions.update('lastNavigationResult', 'Failure');
       }
 
@@ -122,8 +120,11 @@ async function goToWaypoint() {
     console.log('Go to Waypoint: RUNNING');
     return false;
   }
-  if (webModel.wayPointNavigator.goToWaypoint) {
-    console.log('webModel.wayPointNavigator.goToWaypoint');
+  if (
+    webModel.ROSisRunning &&
+    !webModel.pluggedIn &&
+    webModel.wayPointNavigator.goToWaypoint
+  ) {
     // IF the process is supposed to start, but wasn't,
     // then run it:
     webModelFunctions.update('lastNavigationResult', false);
@@ -141,8 +142,7 @@ async function goToWaypoint() {
     webModelFunctions.scrollingStatusUpdate('Go to Waypoint Process starting!');
     return false;
   }
-  // If the process isn't running and wasn't requested to run:
-  // Then this node has no action and we can carry on.
+  // This behavior is idle, allow behave loop to continue to next entry.
   return true;
 }
 

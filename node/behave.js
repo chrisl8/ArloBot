@@ -20,7 +20,7 @@ const loadMap = require('./behaviors/loadMap');
 const unPlugRobot = require('./behaviors/unPlugRobot');
 const goToWaypoint = require('./behaviors/goToWaypoint');
 const handlePowerWithoutROS = require('./behaviors/handlePowerWithoutROS');
-// const gotoRandomLocation = require('behaviors/gotoRandomLocation');
+const pickRandomWaypoint = require('./behaviors/pickRandomWaypoint');
 
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
@@ -39,45 +39,38 @@ async function loop() {
   // causing the loop to abort, so that it can keep working uninterrupted.
   // Otherwise it should always return true, to let the loop do the next thing.
 
+  // Each behavior should 100% contain its own logic to decide when
+  // and when not to run it.
+  // This script will call EVERY behavior, EVERY time.
+
+  // Each behavior should only return true if it needs the other behaviors to wait,
+  // Do not return true just because you think nobody else is important.
+
   // A behavior should be callable over and over, even if it is already running.
 
-  if (!(await startROS())) {
-    return;
-  }
+  // The order is only important in that entries higher in the stack
+  // get checked first, and hence get to act and short circuit
+  // the loop before lower entries.
 
-  if (webModel.ROSisRunning) {
-    if (webModel.makeMap) {
-      if (!(await makeMap())) {
-        return;
-      }
-    } else if (!(await loadMap())) {
-      // TODO: Only call if there is a map name, and make another behavior for "Where am I?"
+  const behaviorFunctions = [
+    startROS,
+    makeMap,
+    loadMap,
+    unPlugRobot,
+    goToWaypoint,
+    pickRandomWaypoint,
+    handlePowerWithoutROS,
+  ];
+
+  for (const behavior of behaviorFunctions) {
+    // eslint-disable-next-line no-await-in-loop
+    if (!(await behavior())) {
       return;
     }
-
-    if (webModel.pluggedIn && webModel.mapName !== '') {
-      if (!(await unPlugRobot())) {
-        return;
-      }
-    }
-
-    if (webModel.mapName !== '' && !webModel.pluggedIn) {
-      if (webModel.wayPointNavigator.goToWaypoint) {
-        if (!(await goToWaypoint())) {
-          return;
-        }
-      } else {
-        // Robot has a map loaded, and is not plugged in.
-        // TODO: GO to random location
-      }
-    }
-  } else {
-    // ROS is NOT running
-    await handlePowerWithoutROS();
   }
 
   if (webModel.debugging && webModel.logBehaviorMessages) {
-    console.log('   - Nothing stopped this behave loop.');
+    console.log(' Nothing stopped this behave loop.');
   }
 }
 

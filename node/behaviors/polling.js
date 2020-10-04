@@ -14,6 +14,7 @@ const masterRelay = require('../MasterRelay');
 const getQRcodes = require('../getQRcodes');
 const saveScreenShotForWeb = require('../saveScreenShotForWeb');
 const howManySecondsSince = require('../howManySecondsSince');
+const getCmdVelIdleTime = require('../getCmdVelIdleTime');
 
 const publishRobotURL = require('../publishRobotURL');
 
@@ -27,8 +28,9 @@ async function polling() {
     intervalCount = 0;
   }
   if (webModel.debugging && webModel.logBehaviorMessages) {
-    console.log(' - Checking: Polling');
-    webModelFunctions.scrollingStatusUpdate('Polling', intervalCount);
+    const message = ' - Polling';
+    console.log(message);
+    webModelFunctions.scrollingStatusUpdate(message);
   }
   /* Some things just need to be polled, there is no way around it. Put those here.
    This only repeats about once per second, so it is a pretty good spacing, even without fancy code to slow things down
@@ -41,6 +43,7 @@ async function polling() {
 
   if (intervalCount === 5) {
     // seconds
+    // noinspection ES6MissingAwait
     publishRobotURL.updateRobotURL();
   }
   if (intervalCount === 0) {
@@ -61,33 +64,28 @@ async function polling() {
   }
 
   // Check for QR code:
-  // If ROS has started, only do this when idle, but before ROS starts we can do it also,
-  // that way it can have the map BEFORE ROS starts!
-  // And also it won't text me with "Where am I?" if it is sitting in front of a QR code.
-  // NOTE: At this point, once it gets an "unplug yourself" or "ROSstart" = true,
-  // It will stop polling for QR codes.
-  // But if we want to look for others later, remove "!webModel.hasSetupViaQRcode",
-  // and it still will not set those two again (due to code in getQRcodes),
-  // but it may fill in a map or fill in the webModel.QRcode line.
-  // This may cause it to fight with other camera operations though.
+  // This only runs before ROS is started.
+  // That way it can have the map BEFORE ROS starts.
+  // If we want it to run after starting ROS, it needs to
+  // check and compare the robotModel.lastMovementTime
   /** @namespace personalData.useQRcodes */
   if (
+    !webModel.ROSstart &&
     intervalCount === 9 &&
     !webModel.hasSetupViaQRcode &&
     personalData.useQRcodes &&
-    !robotModel.gettingQRcode &&
-    !webModel.killRosHasRun &&
-    (robotModel.cmdTopicIdle || !webModel.ROSstart)
+    !robotModel.gettingQrCode &&
+    !webModel.killRosHasRun
   ) {
     // Old school thread control
     // It reduces how often zbarcam is run,
     // and prevents it from getting stuck
-    robotModel.gettingQRcode = true;
+    robotModel.gettingQrCode = true;
     // TODO: This doesn't work with the Master & 5volt relays off!
     getQRcodes();
   }
 
-  // If we are not finding a QRcode and no map is listed,
+  // If we are not finding a QR code and no map is listed,
   // try turning on the light for a minute to see if it helps.
   // NOTE: Right now it won't do this if ROSstart is true,
   // assuming that if we started it manually, we don't want it to look
@@ -111,51 +109,37 @@ async function polling() {
     }, 60);
   }
 
+  if (webModel.debugging && webModel.logBehaviorMessages) {
+    console.log(`   - Idle Minutes: ${getCmdVelIdleTime()}`);
+  }
+
   // Idle timer to shut off robot when left unattended
   // NOTE: The handlePowerWithoutROS behavior deals with power when ROS isn't running.
   if (
     webModel.ROSisRunning &&
     webModel.idleTimeout &&
-    personalData.idleTimeoutInMinutes > 0
+    personalData.idleTimeoutInMinutes > 0 &&
+    getCmdVelIdleTime() > personalData.idleTimeoutInMinutes
   ) {
-    // Set to now to fake out idle timer if no action is required.
-    const dateNow = new Date();
-
-    // When ROS is active the idle timer is tied to the twist message command topic.
-    if (robotModel.cmdTopicIdle) {
-      const lastActionDate = new Date(robotModel.lastMovementTime);
-      const idleMinutes = (dateNow - lastActionDate) / 1000 / 60;
-      if (webModel.debugging && webModel.logOtherMessages) {
-        console.log(
-          `ROS Idle Check: ${dateNow} - ${lastActionDate} = ${idleMinutes}`,
-        );
-      }
-      if (idleMinutes > personalData.idleTimeoutInMinutes) {
-        console.log('ROS Idle shutdown.');
-        webModelFunctions.scrollingStatusUpdate('ROS Idle shutdown.');
-        webModelFunctions.update('shutdownRequested', true);
-      }
-    }
-  } else if (webModel.debugging && webModel.logBehaviorMessages) {
-    console.log(` - Polling: ROS Idle Check: Robot not idle.`);
+    console.log('ROS Idle shutdown.');
+    webModelFunctions.scrollingStatusUpdate('ROS Idle shutdown.');
+    webModelFunctions.update('shutdownRequested', true);
   }
 
   // After 2 hours turn on the idle timer again.
-  // NOTE: If you turn on debugging, this will update every behavior loop (1 second)
   const dateNow = new Date();
   const lastActionDate = new Date(webModel.lastUpdateTime);
   const idleMinutes = (dateNow - lastActionDate) / 1000 / 60;
   if (idleMinutes > 120) {
+    if (webModel.debugging && webModel.logBehaviorMessages) {
+      console.log(
+        `   - Enabling Idle Timeout again after 2 hours of inactivity.`,
+      );
+    }
     webModelFunctions.update('idleTimeout', true);
   }
 
-  /* TODO:
-   2. Set up some sort of idle warning:
-   a. Talk
-   b. Web interface popup.
-   */
-
-  // This behavior will always return success,
+  // This behavior is idle, allow behave loop to continue to next entry.
   return true;
 }
 

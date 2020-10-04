@@ -7,25 +7,26 @@ const killROS = require('../killROS');
 
 async function startROS() {
   if (webModel.debugging && webModel.logBehaviorMessages) {
-    console.log(' - Checking: Start ROS');
-    webModelFunctions.scrollingStatusUpdate('Start ROS');
+    const message = ' - Checking: Start ROS';
+    console.log(message);
+    webModelFunctions.scrollingStatusUpdate(message);
   }
   // ROS Process launch behavior pattern:
   // FIRST: Is the process already started?
-  if (robotModel.ROSprocess.started) {
+  if (robotModel.RosProcess.started) {
     // startupComplete indicates either:
     // Script exited
     // Script threw "success string"
     // Script returned any data if it wasn't given a "success string"
-    if (robotModel.ROSprocess.startupComplete) {
-      if (robotModel.ROSprocess.hasExited) {
+    if (robotModel.RosProcess.startupComplete) {
+      if (robotModel.RosProcess.hasExited) {
         // Once the process has exited:
         // 1. DISABLE whatever user action causes it to be called,
         // so that it won't loop.
         webModelFunctions.update('ROSstart', false);
         // 2. Now that it won't loop, set .started to false,
         // so that it can be run again.
-        robotModel.ROSprocess.started = false;
+        robotModel.RosProcess.started = false;
         // 3. Send a status to the web site:
         webModelFunctions.update('status', 'ROS process has closed.');
         // 4. Log the closure to the console,
@@ -42,7 +43,8 @@ async function startROS() {
         // let the next Behavior tick respond as it would,
         // if this function was never requested.
         return false;
-      } else if (!webModel.ROSstart) {
+      }
+      if (!webModel.ROSstart) {
         // IF we were told NOT to run, we need to stop the process,
         // and then wait for the failure to arrive here on the next loop.
         // Insert command to stop current function here:
@@ -69,8 +71,11 @@ async function startROS() {
       }
       if (webModel.behaviorStatus === 'Start ROS: Starting up . . .') {
         webModelFunctions.behaviorStatusUpdate('ROS Startup Complete.');
+        // noinspection ES6MissingAwait
         LCD({ operation: 'color', red: 0, green: 255, blue: 0 });
+        // noinspection ES6MissingAwait
         LCD({ operation: 'clear' });
+        // noinspection ES6MissingAwait
         LCD({
           operation: 'text',
           input: '-ROS is Running-',
@@ -82,25 +87,29 @@ async function startROS() {
     }
     webModelFunctions.behaviorStatusUpdate('Start ROS: Starting up . . .');
     return false;
-  } else if (webModel.ROSstart) {
+  }
+  if (webModel.ROSstart) {
     // IF the process is supposed to start, but wasn't,
     // then run it:
     webModelFunctions.update('status', 'Start ROS Requested.');
+    // noinspection ES6MissingAwait
     LCD({ operation: 'color', red: 0, green: 255, blue: 255 });
+    // noinspection ES6MissingAwait
     LCD({ operation: 'clear' });
+    // noinspection ES6MissingAwait
     LCD({
       operation: 'text',
       input: 'Starting ROS ...',
       row: 'top',
     });
     if (!personalData.demoWebSite) {
-      robotModel.ROSprocess.start();
+      robotModel.RosProcess.start();
     } else {
       // Dummy data for demoWebSite
-      robotModel.ROSprocess.started = true;
+      robotModel.RosProcess.started = true;
       setTimeout(() => {
-        if (!robotModel.ROSprocess.startupComplete) {
-          robotModel.ROSprocess.startupComplete = true;
+        if (!robotModel.RosProcess.startupComplete) {
+          robotModel.RosProcess.startupComplete = true;
           webModelFunctions.updateRosTopicItem('cliff', false);
           webModelFunctions.updateRosTopicItem('floorObstacle', true);
           webModelFunctions.updateRosTopicItem('safeToRecede', true);
@@ -125,11 +134,13 @@ async function startROS() {
   }
   // If the process isn't running and wasn't requested to run:
   webModelFunctions.behaviorStatusUpdate('Waiting for StartROS request.');
+  // noinspection ES6MissingAwait
   LCD({
     operation: 'text',
     input: 'ROS not Running.',
     row: 'bottom',
   });
+  // This behavior is idle, allow behave loop to continue to next entry.
   return true;
 }
 
