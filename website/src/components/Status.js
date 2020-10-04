@@ -197,6 +197,16 @@ const Status = (props) => {
                 }
               />
               <br />
+              Talk About&nbsp;
+              <input
+                name="console-log"
+                type="checkbox"
+                checked={props.logTalkAboutEvents}
+                onClick={() =>
+                  props.sendDataToRobot('toggleLogTalkAboutEvents')
+                }
+              />
+              <br />
               Other&nbsp;
               <input
                 name="console-log"

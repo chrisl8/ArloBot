@@ -139,6 +139,7 @@ class AccordionGroup extends Component {
           ROSisRunning={this.props.ROSisRunning}
           ROSstart={this.props.ROSstart}
           unplugYourself={this.props.unplugYourself}
+          pluggedIn={this.props.pluggedIn}
           sendDataToRobot={this.props.sendDataToRobot}
           handleUpdateStartupElement={this.handleUpdateStartupElement}
         />

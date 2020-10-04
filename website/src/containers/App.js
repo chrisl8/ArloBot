@@ -102,6 +102,7 @@ class App extends Component {
             logConsoleMessages={this.state.webModel.logConsoleMessages}
             logBehaviorMessages={this.state.webModel.logBehaviorMessages}
             logOtherMessages={this.state.webModel.logOtherMessages}
+            logTalkAboutEvents={this.state.webModel.logTalkAboutEvents}
             cameraOn={this.state.webModel.cameraOn}
             videoSource={this.state.webModel.videoSource}
             masterRelayOn={this.state.webModel.masterRelayOn}

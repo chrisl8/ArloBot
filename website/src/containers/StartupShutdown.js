@@ -89,25 +89,27 @@ class StartupShutdown extends Component {
               >
                 Reset Robot Server
               </button>
-              <div
-                className="lcarish-toggle-button no-flex"
-                id="unplug-yourself-button"
-                onClick={() =>
-                  this.props.sendDataToRobot(unplugButtonValueToSend)
-                }
-              >
-                <label className={unplugButtonLeftSideLabelClass}>No</label>
-                <div className={unplugButtonClass}>
-                  <input
-                    type="checkbox"
-                    className="check"
-                    checked={this.props.unplugYourself}
-                    readOnly
-                  />
-                  <span className="b switch">Unplug</span>
+              {this.props.pluggedIn && (
+                <div
+                  className="lcarish-toggle-button no-flex"
+                  id="unplug-yourself-button"
+                  onClick={() =>
+                    this.props.sendDataToRobot(unplugButtonValueToSend)
+                  }
+                >
+                  <label className={unplugButtonLeftSideLabelClass}>No</label>
+                  <div className={unplugButtonClass}>
+                    <input
+                      type="checkbox"
+                      className="check"
+                      checked={this.props.unplugYourself}
+                      readOnly
+                    />
+                    <span className="b switch">Unplug</span>
+                  </div>
+                  <label className={unplugButtonRightSideLabelClass}>Yes</label>
                 </div>
-                <label className={unplugButtonRightSideLabelClass}>Yes</label>
-              </div>
+              )}
             </CardBody>
           </Collapse>
         </Card>

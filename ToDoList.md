@@ -1,30 +1,30 @@
 ## TODO List
 
  - Make a new Youtube video of robot functions.
+ 
+ - Add some response to failed arrival:
+    - Text message.
+    - Fun TTS and/or audio clip.
+    - Track and if repeated, affect the random destination picker.
+
+ - Mycroft: Set up more skills.
+     - Load Map
+   - Voice command to go to locations.
 
  - Speak when things are done like starting ROS, making maps, etc.
+    - Asked to unplug
+    - Uplugged
 
  - Fix this error coming from TEB due to something in my config:
     [ WARN] [1597326961.776132466]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.0513 seconds
     - Might have to look into http://wiki.ros.org/teb_local_planner/Tutorials/Costmap%20conversion
 
- - Test remaining "goto" functions with Python 3 and Slam Toolbox
-
- - Have the robot say "pardon me" when escaping starts
- 
  - Set every button push to have a function
  
  - Get all Sensors to work on Threeflower
  
  - Get Slam Toolbox to come up on Threeflower.
- 
- - Mycroft
-   - Set up a skill to go to load map, unplug, go to waypoints, etc.
-   - Voice command to go to locations.
- 
- - Improve web interface look and feel.
-   - The old LCARS look was fun, can I find something like that to easily skin on?
- 
+
  - Test everything and dump stuff that doesn't work anymore.
    - See FullTestRoutine.MD
    
@@ -34,11 +34,46 @@
     - Start map
     - Select goals in RVIZ
     - System should save them and put them up on the website
+        - Subscribe to /move_base_simple/goal to see goals.
+        
     - You can see them in order.
     - Then you can save the "list of goals"
     - Later you can select to make map, and it will start a map making session, unplug, go to those goals in order, then save the map, go "home", then load the map use it.
         - This way you can remap a known area automatically.
     - Early start might be to just set up to monitor goals and list them out on the site as they are set.
+    
+    NOTES:
+    Options:
+    /move_base/cancel
+    /move_base/feedback
+    /move_base/goal
+    /move_base/parameter_descriptions
+    /move_base/parameter_updates
+    /move_base/result
+    /move_base/status
+    /move_base_simple/goal
+    
+    
+    What they do:
+    /move_base/goal - announces new goals when set
+    /move_base_simple/goal - Same, just less data
+    /move_base/current_goal - Seems to be the same, but THIS IS WHAT RVIZ IS SHOWING!
+    /move_base/result - Will only tell you when it is done doing something.
+    
+    It seems like I want to watch:
+    /move_base/current_goal - To see when a goal is set,
+    and
+    /move_base/result - To see when one is reached (or abandoned).
+    
+    I can infer that whatever came in via /move_base/current_goal last is what was reached or not.
+    
+    I *could* also subscribe to /move_base/status if I don't want to maintain state of any kind,
+    but that seems unnecesary.
+    
+    See rosInterface.js for subscribing to topics and acting on those subscriptions by pumping data into webmodel/robotmodel and/or TTS, etc.
+    
+    TODO: Unsure how to "return to base". It isn't actually just all zereos is it?
+        Maybe I need to "grab" the location upon initial startup (before we unplug).
 
  - Threeflower testing
   - robot.launch file:

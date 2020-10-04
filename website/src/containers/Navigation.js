@@ -181,6 +181,15 @@ class Navigation extends Component {
                   <div>
                     <h3>Send Robot to a Destination:</h3>
                     <ul>{waypointList}</ul>
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={() =>
+                        this.props.sendDataToRobot('returnToMapZeroPoint')
+                      }
+                    >
+                      Return to Map Zero Point
+                    </button>
                   </div>
                 )}
 
@@ -248,11 +257,6 @@ class Navigation extends Component {
                         className="btn btn-primary"
                       />
                     </form>
-                    <p>
-                      If you create a destination waypoint called
-                      &quot;initial&quot; that location will be set as the
-                      current robot location whenever the map is loaded.
-                    </p>
                   </div>
                 )}
 
@@ -271,6 +275,15 @@ class Navigation extends Component {
                     using the remote control feature, or even a joystick or
                     keyboard teleop if you have those working.
                   </p>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() =>
+                      this.props.sendDataToRobot('returnToMapZeroPoint')
+                    }
+                  >
+                    Return to Map Zero Point
+                  </button>
                   <p>
                     When you are satisfied with your map you will need to save
                     it.
