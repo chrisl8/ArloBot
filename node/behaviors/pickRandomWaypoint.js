@@ -4,10 +4,6 @@ const robotModel = require('../robotModel');
 const getCmdVelIdleTime = require('../getCmdVelIdleTime');
 const WayPoints = require('../WayPoints.js');
 
-// TODO: Talk before going,
-//      while going
-//      after arrival.
-
 const wayPointEditor = new WayPoints();
 function pickRandomWaypoint() {
   if (webModel.debugging && webModel.logBehaviorMessages) {
@@ -29,7 +25,6 @@ function pickRandomWaypoint() {
     if (webModel.debugging && webModel.logBehaviorMessages) {
       console.log(`   - Picking a random waypoint!`);
     }
-    console.log(robotModel.randomWaypointList);
     if (robotModel.randomWaypointList.length === 0) {
       robotModel.randomWaypointList = [...webModel.wayPoints];
     }
