@@ -166,7 +166,7 @@ sudo apt upgrade -y
 # Note, while we are NOT building ROS from source, we are building SOME THINGS from source,
 # and hence must also follow the the instructions to set up a build environment
 #      http://wiki.ros.org/noetic/Installation/Source
-if ! (dpkg -s ros-${INSTALLING_ROS_DISTRO}-desktop-full | grep "Status: install ok installed" &>/dev/null); then
+if ! (dpkg -s ros-${INSTALLING_ROS_DISTRO}-desktop-full | grep "Status: install ok installed" &>/dev/null) || ! (command -v rosdep) || ! (command -v rosinstall_generator); then
   printf "\n${YELLOW}[Installing ROS]${NC}\n"
   sudo apt install -y ros-${INSTALLING_ROS_DISTRO}-desktop-full
   printf "${YELLOW}[ROS installed!]${NC}\n"
