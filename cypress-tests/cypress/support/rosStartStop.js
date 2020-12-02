@@ -5,9 +5,7 @@ function startROS() {
   it("Start ROS", () => {
     cy.get("#startup-shutdown-card").contains("Start ROS").click();
 
-    cy.get("#startup-shutdown-card")
-      .contains("Start ROS")
-      .should("not.be.visible");
+    cy.get("#startup-shutdown-card").contains("Start ROS").should("not.exist");
 
     cy.get("#startup-shutdown-card")
       .contains("Starting...")
@@ -64,7 +62,7 @@ function startROS() {
       .contains("ros.sh to close.")
       .should("be.visible");
     cy.get("#statusScrollBox")
-      .contains("Rosapi started", { timeout: 10000 })
+      .contains("ROSLIB Websocket connected.", { timeout: 10000 })
       .should("be.visible");
     cy.get("#statusScrollBox")
       .contains("ROS successfully started.")
@@ -672,13 +670,11 @@ function checkInitialTelemetry() {
 
   // Startup/Shutdown
   it("Startup/Shutdown contents with ROS Running", () => {
-    cy.get("#startup-shutdown-card")
-      .contains("Start ROS")
-      .should("not.be.visible");
+    cy.get("#startup-shutdown-card").contains("Start ROS").should("not.exist");
 
     cy.get("#startup-shutdown-card")
       .contains("Starting...")
-      .should("not.be.visible");
+      .should("not.exist");
 
     cy.get("#startup-shutdown-card")
       .contains("ROS is Running.")
@@ -766,10 +762,10 @@ function stopROS() {
       .contains("ROSLIB Websocket closed")
       .should("be.visible");
 
-    cy.get("#navigation-card").should("not.be.visible");
-    cy.get("#remote-control-card").should("not.be.visible");
-    cy.get("#telemetry-card").should("not.be.visible");
-    cy.get("#sensors-card").should("not.be.visible");
+    cy.get("#navigation-card").should("not.exist");
+    cy.get("#remote-control-card").should("not.exist");
+    cy.get("#telemetry-card").should("not.exist");
+    cy.get("#sensors-card").should("not.exist");
 
     cy.contains("ROS process has closed.").should("be.visible");
     cy.contains("Waiting for StartROS request.").should("be.visible");

@@ -33,6 +33,7 @@ function closePanelIfOpen(id) {
 }
 
 function resetRobotService() {
+  setSoundToTalk();
   it("reset robot service for a fresh start", () => {
     cy.visit("");
 
@@ -49,7 +50,7 @@ function resetRobotService() {
     cy.contains("Robot Service Log").click();
 
     cy.contains("Behavior").click();
-    cy.contains("Hello my name is ").should("be.visible");
+    cy.contains("Hello, my name is ").should("be.visible");
 
     cy.contains("Behavior").click();
   });
@@ -103,6 +104,26 @@ function setSoundToQuiet() {
       .should("have.class", "brightly-negative-text");
 
     cy.contains("Behavior").click();
+  });
+}
+
+function setSoundToTalk() {
+  it("should set sound to Talk if currently set to Quiet", () => {
+    cy.visit("");
+    cy.contains("Behavior").click();
+    cy.get("#talk-bequiet-button")
+      .contains("Quiet")
+      .each(($elm) => {
+        cy.wrap($elm).then(() => {
+          if ($elm.hasClass("brightly-negative-text")) {
+            cy.get("#talk-bequiet-button").click();
+          }
+        });
+      });
+
+    cy.get("#talk-bequiet-button")
+      .contains("Talk")
+      .should("have.class", "brightly-positive-text");
   });
 }
 

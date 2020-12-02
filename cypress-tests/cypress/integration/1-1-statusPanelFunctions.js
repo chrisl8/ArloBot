@@ -75,6 +75,10 @@ describe("Status Panel Functions", () => {
       .should("be.visible");
     cy.get("#debuggingStatusButton").should("have.class", "btn-warning");
 
+    cy.get('input[name="console-log"]').click({ multiple: true });
+
+    cy.get('input[name="console-log"]').should("be.checked");
+
     cy.contains("Handle Power without ROS").should("be.visible");
     cy.get("#startup-shutdown-card").contains("Start ROS").should("be.visible");
     cy.contains("Polling").should("be.visible");

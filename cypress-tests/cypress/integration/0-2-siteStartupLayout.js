@@ -1,7 +1,6 @@
 import {
   resetRobotService,
   initialPageLoadItemsVisible,
-  setSoundToQuiet,
   setIdleToTimeout,
   openPanelIfClosed,
   closePanelIfOpen,
@@ -17,19 +16,18 @@ import {
 
 describe("site initial layout and page function", () => {
   resetRobotService();
-  setSoundToQuiet();
   setIdleToTimeout();
   initialPageLoadItemsVisible();
 
   it("emergency stop button should cycle", () => {
     cy.contains("Emergency STOP").should("be.visible");
-    cy.contains("Resume").should("not.be.visible");
+    cy.contains("Resume").should("not.exist");
     cy.contains("Emergency STOP").click();
-    cy.contains("Emergency STOP").should("not.be.visible");
+    cy.contains("Emergency STOP").should("not.exist");
     cy.contains("Resume").should("be.visible");
     cy.contains("Resume").click();
     cy.contains("Emergency STOP").should("be.visible");
-    cy.contains("Resume").should("not.be.visible");
+    cy.contains("Resume").should("not.exist");
   });
 
   openPanelIfClosed("status");

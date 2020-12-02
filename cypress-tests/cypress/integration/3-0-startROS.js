@@ -50,7 +50,7 @@ describe("Start and Stop ROS", () => {
 
     cy.get("#robot-service-log-card")
       .get("#view-log-streamer-button")
-      .should("not.be.visible");
+      .should("not.exist");
 
     cy.get("#robot-service-log-card")
       .get("#log-streamer-button")
@@ -90,7 +90,7 @@ describe("Start and Stop ROS", () => {
 
     cy.get("#robot-service-log-card")
       .get("#view-log-streamer-button")
-      .should("not.be.visible");
+      .should("not.exist");
   });
   closePanelIfOpen("robot-service-log");
   panelTestsWithRosRunning.robotServiceLogPanelShouldBeOpen(false);
