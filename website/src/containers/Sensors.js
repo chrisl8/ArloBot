@@ -69,6 +69,7 @@ class Sensors extends Component {
           id={entry.status}
           onClick={() => this.props.sendDataToRobot(buttonValueToSend)}
         >
+          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
           <label className={buttonLeftSideLabelClass}>Monitor</label>
           <div className={buttonClass}>
             <input
@@ -79,6 +80,7 @@ class Sensors extends Component {
             />
             <span className="b switch">{entry.title}</span>
           </div>
+          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
           <label className={buttonRightSideLabelClass}>Ignore</label>
         </div>
       );

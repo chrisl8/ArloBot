@@ -97,6 +97,7 @@ class StartupShutdown extends Component {
                     this.props.sendDataToRobot(unplugButtonValueToSend)
                   }
                 >
+                  {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                   <label className={unplugButtonLeftSideLabelClass}>No</label>
                   <div className={unplugButtonClass}>
                     <input
@@ -107,6 +108,7 @@ class StartupShutdown extends Component {
                     />
                     <span className="b switch">Unplug</span>
                   </div>
+                  {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                   <label className={unplugButtonRightSideLabelClass}>Yes</label>
                 </div>
               )}

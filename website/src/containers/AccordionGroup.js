@@ -51,15 +51,9 @@ class AccordionGroup extends Component {
     }
   }
 
-  openGroup(group) {
-    const newState = {};
-    newState[`${group}IsOpen`] = true;
-    this.setState(newState);
-    // TODO: This is always scrolling to start, but sometimes we opened a different group.
-    if (group === 'startupShutdown') {
-      this.handleScrollToStart();
-    } else if (group === 'navigation') {
-      this.handleScrollToNavigation();
+  handleScrollToNavigation() {
+    if (this.navigationElement) {
+      this.navigationElement.scrollIntoView();
     }
   }
 
@@ -69,9 +63,15 @@ class AccordionGroup extends Component {
     this.setState(newState);
   }
 
-  handleScrollToNavigation() {
-    if (this.navigationElement) {
-      this.navigationElement.scrollIntoView();
+  openGroup(group) {
+    const newState = {};
+    newState[`${group}IsOpen`] = true;
+    this.setState(newState);
+    // TODO: This is always scrolling to start, but sometimes we opened a different group.
+    if (group === 'startupShutdown') {
+      this.handleScrollToStart();
+    } else if (group === 'navigation') {
+      this.handleScrollToNavigation();
     }
   }
 

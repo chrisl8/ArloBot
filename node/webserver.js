@@ -129,7 +129,14 @@ const stopLogStreamer = function () {
 async function start() {
   /** @namespace personalData.webServerPort */
   const webServer = app.listen(personalData.webServerPort);
-  const io = socketIo.listen(webServer);
+  const io = socketIo(webServer, {
+    cors: {
+      origin: 'http://localhost:3000',
+      methods: ['GET', 'POST'],
+    },
+  });
+  // NOTE: The cors object is only actually used/needed for testing the site when running it remotely.
+  // For production it isn't used.
 
   const throttledWebModelEmitter = _.throttle(
     () => {

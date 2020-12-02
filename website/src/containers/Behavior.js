@@ -17,12 +17,12 @@ class Behavior extends Component {
     this.toggle = this.toggle.bind(this);
   }
 
-  toggle() {
-    this.setState({ isOpen: !this.state.isOpen });
-  }
-
   handleTextToSpeakChange(event) {
     this.setState({ textToSpeak: event.target.value });
+  }
+
+  handleAskRobotTextChange(event) {
+    this.setState({ askRobot: event.target.value });
   }
 
   sendTextToSpeak(event) {
@@ -30,8 +30,8 @@ class Behavior extends Component {
     event.preventDefault();
   }
 
-  handleAskRobotTextChange(event) {
-    this.setState({ askRobot: event.target.value });
+  toggle() {
+    this.setState({ isOpen: !this.state.isOpen });
   }
 
   askRobot(event) {
@@ -141,9 +141,16 @@ class Behavior extends Component {
                     this.props.sendDataToRobot(idleButtonValueToSend)
                   }
                 >
-                  <label className={idleButtonLeftSideLabelClass}>Never</label>
+                  {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                  <label
+                    htmlFor="idle-timeout-switch"
+                    className={idleButtonLeftSideLabelClass}
+                  >
+                    Never
+                  </label>
                   <div className={idleButtonClass}>
                     <input
+                      id="idle-timeout-switch"
                       type="checkbox"
                       className="check"
                       checked={this.props.idleTimeout}
@@ -151,6 +158,7 @@ class Behavior extends Component {
                     />
                     <span className="b switch">Idle</span>
                   </div>
+                  {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                   <label className={idleButtonRightSideLabelClass}>
                     Timeout
                   </label>
@@ -162,6 +170,7 @@ class Behavior extends Component {
                     this.props.sendDataToRobot(talkButtonValueToSend)
                   }
                 >
+                  {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                   <label className={talkButtonLeftSideLabelClass}>Talk</label>
                   <div className={talkButtonClass}>
                     <input
@@ -172,6 +181,7 @@ class Behavior extends Component {
                     />
                     <span className="b switch">Sound</span>
                   </div>
+                  {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                   <label className={talkButtonRightSideLabelClass}>Quiet</label>
                 </div>
               </div>
