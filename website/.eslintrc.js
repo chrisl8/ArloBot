@@ -13,7 +13,13 @@
 module.exports = {
   parser: 'babel-eslint',
   plugins: ['react', 'prettier'],
-  extends: ['plugin:react/recommended', 'airbnb', 'prettier', 'prettier/react'],
+  extends: [
+    'plugin:react/recommended',
+    'airbnb',
+    'prettier',
+    'prettier/react',
+    'prettier/prettier',
+  ],
   // extends: ['airbnb'],
   env: {
     es6: true, // Probably not needed, because of babel-eslint
