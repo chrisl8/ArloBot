@@ -44,6 +44,6 @@ if [[ "${SCREEN_RESOLUTION}" == "3840x2160" ]] || [[ "${SCREEN_RESOLUTION}" == "
   DPI_ARGUMENT=("--dpi" "200")
 fi
 VAR=$(node "${SCRIPT_DIR}/../node/ipAddress.js")
-X11_DOCKER_ARGUMENT_LIST=("--xpra" "--hostnet" "${DPI_ARGUMENT[@]}" "--env" "ROS_MASTER_URI=${ROS_MASTER_URI}" "--env" "ROS_HOSTNAME=${VAR}" "ros:gui" "$@")
+X11_DOCKER_ARGUMENT_LIST=("--xpra" "--network=host" "${DPI_ARGUMENT[@]}" "--env" "ROS_MASTER_URI=${ROS_MASTER_URI}" "--env" "ROS_HOSTNAME=${VAR}" "ros:gui" "$@")
 
 sudo ~/catkin_ws/src/x11docker/x11docker "${X11_DOCKER_ARGUMENT_LIST[@]}"
