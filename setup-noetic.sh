@@ -360,6 +360,8 @@ PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-rosbridge-server")
 # rosbridge is required for the Web interface to communicate with ROS
 if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   # TODO: Some of these should probably be in package.xml, but that would require another round of testing.
+  PACKAGE_TO_INSTALL_LIST+=(moreutils)
+  # moreutils - sponge is used by some of my scripts
   PACKAGE_TO_INSTALL_LIST+=(python3-pip)
   # python3-pip - Required to install Python tools for things such as
   #      USB Relay reader.
@@ -697,7 +699,18 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   printf "\n${YELLOW}[Grabbing/Updating global dependencies for node packages]${NC}\n"
   printf "${BLUE}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
   cd
+  printf "\n${YELLOW}[PM2 for running Robot service]$NC\n"
   npm install -g pm2
+  printf "\n${YELLOW}[Log Streamer for Website]$NC\n"
+  npm install -g log.io
+  printf "\n${YELLOW}[Log.io File Watcher for Log.io Log Streamer]$NC\n"
+  npm install -g log.io-file-input
+
+  if [[ -d ~/catkin_ws/src/ArloBot/Log.io ]]; then
+    printf "\n"
+    printf "${BLUE}Removing old Log.io Install${NC}\n"
+    rm -rf "${HOME}/catkin_ws/src/ArloBot/Log.io"
+  fi
 
   cd "${HOME}/catkin_ws/src/ArloBot/node"
   printf "\n${YELLOW}[Grabbing node dependencies for scripts]${NC}\n"
@@ -712,22 +725,6 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
 
   cd "${HOME}/catkin_ws/src/ArloBot/cypress-tests"
   printf "\n${YELLOW}[Installing Cypress.io for Tests]$NC\n"
-  rm -rf node_modules
-  npm ci
-
-  cd "${HOME}/catkin_ws/src/ArloBot/"
-  printf "\n"
-  printf "${BLUE}Log.io Log Streamer for Website${NC}\n"
-  if ! [[ -d ~/catkin_ws/src/ArloBot/Log.io ]]; then
-    git clone https://github.com/chrisl8/Log.io.git
-  else
-    cd "${HOME}/catkin_ws/src/ArloBot/Log.io"
-    git pull
-  fi
-
-  cd "${HOME}/catkin_ws/src/ArloBot/Log.io"
-  printf "\n${YELLOW}[Installing Log.io Log Streamer for Website]$NC\n"
-  rm -rf node_modules
   npm ci
 
   if ! (command -v mjpg_streamer >/dev/null); then

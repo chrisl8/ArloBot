@@ -14,7 +14,7 @@ class RobotServiceLog extends Component {
   }
 
   goToLogStreamer() {
-    window.open(`http://${window.location.hostname}:28778/`, '_blank');
+    window.open(`http://${window.location.hostname}:6688/`, '_blank');
   }
 
   render() {
