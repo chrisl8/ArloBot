@@ -2,7 +2,7 @@
 [![codecov](https://codecov.io/gh/chrisl8/ArloBot/branch/noetic/graph/badge.svg)](https://codecov.io/gh/chrisl8/ArloBot)
 
 ArloBot Package for ROS
-=======================lo
+=======================
 
 ## and SO MUCH MORE! ##
 
