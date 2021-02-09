@@ -46,10 +46,6 @@ const speechModel = {
       },
       thingsToSay: {
         repeat: false,
-        '328120__kianda__powerup': {
-          text: '~/.arlobot/sounds/328120__kianda__powerup.wav',
-          weight: 100,
-        },
         'CastleInTheSky-Ding': {
           text: '~/.arlobot/sounds/CastleInTheSky-Ding.wav',
           weight: 100,

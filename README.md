@@ -2,7 +2,7 @@
 [![codecov](https://codecov.io/gh/chrisl8/ArloBot/branch/noetic/graph/badge.svg)](https://codecov.io/gh/chrisl8/ArloBot)
 
 ArloBot Package for ROS
-=======================
+=======================lo
 
 ## and SO MUCH MORE! ##
 
@@ -18,15 +18,17 @@ This package also includes:
  7. Other fun things like Twilio and Pushover integration.
 
 ### Mobile Friendly Web Interface  
-![Alt text](/screenshots/arlobotNewWebInterface.png "Web Interface")
+![Alt text](screenshots/arlobotNewWebInterface.png "Web Interface")
 
 ### Curses Serial Testing Interface:  
 `~/catkin_ws/src/ArloBot/scripts/PropellerSerialTest.sh`  
-![Alt text](/screenshots/PropellerSerialTest.png "Serial Test Program")
+![Alt text](screenshots/PropellerSerialTest.png "Serial Test Program")
 
 * A Python Curses based serial communications test program allows testing of ALL Propeller board functions over serial with zero use of ROS to more easily ensure the hardware is working before starting ROS.
 
 # Current Status and my To Do List
+
+The [Arlo Robot System](https://www.parallax.com/product/28966) by Parallax has been discontinued. At this moment they are entirely out of stock, so this project's usefulness slowly grows to an end, although my personal implementation, which has always been the primary focus of this repository, lives on as I run my robot almost daily.
 
 Gmapping and AMCL have been **removed** in favor of [Slam Toolbox](https://github.com/SteveMacenski/slam_toolbox) for mapping.
  - Gmapping is no longer maintained.  
@@ -36,11 +38,9 @@ DWA Local Planner has been **removed** in favor of [teb_local_planner](https://w
  - It is able to back up, which makes routing much better.
  - It seems to work very well with entirely default tuning.
  
-The [Arlo Robot System](https://www.parallax.com/product/28966) by Parallax has been discontinued. At this moment there are 7 kits left for sale, so this project's usefulness slowly grows to an end, although my personal implementation, which has always been the primary focus of this repository, will live on.
-
 I am also working on hardware and software design to translate what I have learned and built here to a more generic robot platform using more readily available "off the shelf" parts.
 
-[TODO List](https://github.com/chrisl8/ArloBot/blob/noetic/ToDoList.md)
+[My TODO List](https://github.com/chrisl8/ArloBot/blob/noetic/ToDoList.md)
 
 # Build a Robot! #
 First you need to build a robot!
@@ -50,7 +50,7 @@ First you need to build a robot!
 * On board computer
 * 3D Sensor
 
-The Arlo Robotic Platform is a complete kit, which I recommend buying from Parallax: [Arlo Complete Robot System](https://www.parallax.com/product/28966)
+**This code is based on the [Arlo Robotic Platform](https://www.parallax.com/product/28966) from Parallax.  Unfortunately, the [Arlo Robotic Platform](https://www.parallax.com/product/28966) has been DISCONTINUED.**
 
 You will also need a few other items (laptop and 3D sensor) which I have some details about on the [Parts List Wiki Page](https://github.com/chrisl8/ArloBot/wiki/Parts-List " Parts List")
 
@@ -70,10 +70,10 @@ Once your robot is built, you can use this package.
 ## Requirements ##
 Arlobot operates on ROS Noetic which requires Ubuntu *20.04 LTS*.
 
-If you put a fresh copy of Ubuntu 18.04 LTS on your robot's laptop then you can use the quick install script below.
+If you put a fresh copy of Ubuntu 18.04 LTS on your robot's laptop then you can use the installation script below.
 
-## Quick Install: ##
-There is now a script to install everything. Just run:
+## Install
+There is a script to install everything. Run:
 
 ```
 bash <(wget -qO- --no-cache -o /dev/null https://raw.githubusercontent.com/chrisl8/ArloBot/noetic/setup-noetic.sh)
@@ -81,7 +81,7 @@ bash <(wget -qO- --no-cache -o /dev/null https://raw.githubusercontent.com/chris
 
 Be sure to read the instructions that the script will print at the end about editing the config files in `~/.arlobot/`
 
-To update your code just run the same script again, and it will pull down and compile anything new without erasing custom settings.
+To update your code run the same script again, and it will pull down and compile anything new without erasing custom settings.
 
 ## Propeller Code
 Please note that you will need the code to run on your Propeller board. This is stored in the "PropellerCodeForArloBot" folder. Details on the Propeller code and setup are here: [https://ekpyroticfrood.net/?p=165](https://ekpyroticfrood.net/?p=551)

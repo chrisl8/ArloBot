@@ -3,6 +3,7 @@
     {
       "name": "Robot",
       "script": "index.js",
+      "restart_delay": 1000,
       "max_memory_restart": "1G",
       "merge_logs": true,
       "exec_interpreter": "node",
