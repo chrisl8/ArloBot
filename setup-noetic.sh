@@ -702,12 +702,10 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   cd "${HOME}/catkin_ws/src/ArloBot/node"
   printf "\n${YELLOW}[Grabbing node dependencies for scripts]${NC}\n"
   printf "${BLUE}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
-  rm -rf node_modules
   npm ci
 
   cd "${HOME}/catkin_ws/src/ArloBot/website"
   printf "\n${YELLOW}[Grabbing node dependencies for React website]${NC}\n"
-  rm -rf node_modules
   npm ci
   printf "\n${YELLOW}[Building React website]${NC}\n"
   npm run build
