@@ -43,9 +43,6 @@ async function loop() {
   // and when not to run it.
   // This script will call EVERY behavior, EVERY time.
 
-  // Each behavior should only return true if it needs the other behaviors to wait,
-  // Do not return true just because you think nobody else is important.
-
   // A behavior should be callable over and over, even if it is already running.
 
   // The order is only important in that entries higher in the stack
