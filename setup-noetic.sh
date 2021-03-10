@@ -158,7 +158,9 @@ fi
 
 printf "\n${YELLOW}[Updating & upgrading all existing Ubuntu packages]${NC}\n"
 sudo apt update
-sudo apt upgrade -y
+if ! [[ ${TRAVIS} == "true" ]]; then # Upgrading packages in Travis often fails due to timeouts.
+  sudo apt upgrade -y
+fi
 
 # This should follow the official ROS install instructions closely.
 #      http://wiki.ros.org/noetic/Installation/Ubuntu

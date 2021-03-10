@@ -1,11 +1,13 @@
+os: linux
 dist: focal
+language: shell
 notifications:
   email:
     on_success: change
     on_failure: always
-matrix:
+jobs:
   include:
-    - language: minimal
+    - language: shell
       name: "Noetic Robot Setup Script"
       cache:
         directories:
