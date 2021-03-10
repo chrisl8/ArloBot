@@ -11,10 +11,8 @@
 // Less thinking is better than perfect and/or my preferences.
 
 module.exports = {
-  parser: 'babel-eslint',
-  plugins: ['react', 'prettier'],
-  extends: ['plugin:react/recommended', 'airbnb', 'prettier', 'prettier/react'],
-  // extends: ['airbnb'],
+  plugins: ['prettier'],
+  extends: ['airbnb', 'prettier'],
   env: {
     es6: true, // Probably not needed, because of babel-eslint
     node: true, // Probably not needed, because of babel-eslint
@@ -22,15 +20,9 @@ module.exports = {
   },
   rules: {
     'prettier/prettier': 'error',
-    // Even FB says to name JSX files .js these days
-    'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
     // These are not code style or real errors, just "best practices" that really mean
     // me making wonky code to fit requirements I don't need to fulfill.
     // Someday I'll remove these as I get better. ;)
-    'react/prop-types': 0,
-    'jsx-a11y/no-static-element-interactions': 0,
-    'jsx-a11y/click-events-have-key-events': 0,
-    'jsx-a11y/label-has-for': 0,
     'class-methods-use-this': 0,
     'no-console': 'off', // As a node.js app, we clearly need console.
     'no-prototype-builtins': 'off', // This seems like overkill
