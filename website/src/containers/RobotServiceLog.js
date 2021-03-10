@@ -24,15 +24,13 @@ class RobotServiceLog extends Component {
       startRosLogStreamerClass = 'btn btn-success';
       startRosLogStreamerBadgeClass = 'badge badge-light';
     }
-    const scrollingStatus = this.props.scrollingStatus.map((entry, index) => {
-      return (
-        // eslint-disable-next-line react/no-array-index-key
-        <span key={index}>
-          {entry}
-          <br />
-        </span>
-      );
-    });
+    const scrollingStatus = this.props.scrollingStatus.map((entry, index) => (
+      // eslint-disable-next-line react/no-array-index-key
+      <span key={index}>
+        {entry}
+        <br />
+      </span>
+    ));
     return (
       <Card id="robot-service-log-card" className="card-title">
         <CardHeader onClick={this.toggle}>
