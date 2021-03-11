@@ -713,12 +713,14 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     printf "${BLUE}Removing old Log.io Install${NC}\n"
     rm -rf "${HOME}/catkin_ws/src/ArloBot/Log.io"
   fi
+fi
 
-  cd "${HOME}/catkin_ws/src/ArloBot/node"
-  printf "\n${YELLOW}[Grabbing node dependencies for scripts]${NC}\n"
-  printf "${BLUE}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
-  npm ci
+cd "${HOME}/catkin_ws/src/ArloBot/node"
+printf "\n${YELLOW}[Grabbing node dependencies for scripts]${NC}\n"
+printf "${BLUE}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
+npm ci
 
+if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   cd "${HOME}/catkin_ws/src/ArloBot/website"
   printf "\n${YELLOW}[Grabbing node dependencies for React website]${NC}\n"
   npm ci
@@ -747,16 +749,18 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     rm -rf mjpg-streamer
     # See scripts/streamVideoTest.sh for details on mjpg_streamer usage.
   fi
+fi
 
-  if [[ -e ${ARLO_HOME}/personalDataForBehavior.json ]]; then
-    node "${HOME}/catkin_ws/src/ArloBot/node/personalData.js"
-  else
-    printf "\n"
-    cp "${HOME}/catkin_ws/src/ArloBot/scripts/dotarlobot/personalDataForBehavior.json" "${ARLO_HOME}/"
-    printf "${GREEN}A brand new ${RED}${ARLO_HOME}/personalDataForBehavior.json${GREEN} file has been created,${NC}\n"
-    printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
-  fi
+if [[ -e ${ARLO_HOME}/personalDataForBehavior.json ]]; then
+  node "${HOME}/catkin_ws/src/ArloBot/node/personalData.js"
+else
+  printf "\n"
+  cp "${HOME}/catkin_ws/src/ArloBot/scripts/dotarlobot/personalDataForBehavior.json" "${ARLO_HOME}/"
+  printf "${GREEN}A brand new ${RED}${ARLO_HOME}/personalDataForBehavior.json${GREEN} file has been created,${NC}\n"
+  printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
+fi
 
+if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   if [[ ! -d ${ARLO_HOME}/rosmaps ]]; then
     mkdir "${ARLO_HOME}/rosmaps"
   fi
