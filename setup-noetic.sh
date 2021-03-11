@@ -367,7 +367,9 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   PACKAGE_TO_INSTALL_LIST+=(python3-pip)
   # python3-pip - Required to install Python tools for things such as
   #      USB Relay reader.
-  PACKAGE_TO_INSTALL_LIST+=(openssh-server)
+  if ! [[ ${TRAVIS} == "true" ]]; then # Upgrading openssh in Travis often fails due to timeouts.
+    PACKAGE_TO_INSTALL_LIST+=(openssh-server)
+  fi
   # openssh-server - required to SSH into robot remotely
   PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-teb-local-planner")
   # Teb Local Planner is the path planner I use.
