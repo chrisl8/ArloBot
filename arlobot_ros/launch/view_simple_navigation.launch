@@ -1,0 +1,6 @@
+<!--
+  Simplified Rviz view for use on robot's screen.
+ -->
+<launch>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find arlobot_ros)/rviz/simple.rviz"/>
+</launch>
