@@ -360,6 +360,8 @@ PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-navigation")
 # ROS Navigation is required for, well, Navigation.
 PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-rosbridge-server")
 # rosbridge is required for the Web interface to communicate with ROS
+PACKAGE_TO_INSTALL_LIST+=("xvfb")
+# xvfb is required for Cypress testing to work.
 if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   # TODO: Some of these should probably be in package.xml, but that would require another round of testing.
   PACKAGE_TO_INSTALL_LIST+=(moreutils)
@@ -390,14 +392,12 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   fi
   if [[ "$RESPONSE_TO_ASUS_XTION_QUERY" == "y" ]] || [[ "${RESPONSE_TO_KINECT_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
     # Always test in Travis
-    # TODO: Uncomment if they every release depthimage_to_laserscan for Noetic
-    #PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-depthimage-to-laserscan")
-    echo "depthimage_to_laserscan will be installed from source instead."
+    PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-depthimage-to-laserscan")
     # "ros-${INSTALLING_ROS_DISTRO}-depthimage-to-laserscan" - Required for ASUS Xtion and Kinect to operate
   fi
   if [[ "${RESPONSE_TO_KINECT_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
     # Always test in Travis
-    # TODO: Uncomment if they every release freenect_stack for Noetic
+    # TODO: Uncomment if they ever release freenect_stack for Noetic
     #PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-freenect-stack")
     echo "freenect_stack will be installed from source instead."
     # "ros-${INSTALLING_ROS_DISTRO}-freenect-stack" - Required for Kinect to operate
@@ -483,19 +483,6 @@ if [[ "${RESPONSE_TO_SWEEP_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
     git clone https://github.com/chrisl8/sweep-ros.git
   else
     cd ~/catkin_ws/src/sweep-ros
-    git pull
-  fi
-fi
-
-# TODO: Remove if they ever release depthimage_to_laserscan for Noetic
-if [[ "$RESPONSE_TO_ASUS_XTION_QUERY" == "y" ]] || [[ "${RESPONSE_TO_KINECT_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
-  # Always test in Travis
-  printf "\n${BLUE}depthimage_to_laserscan from Source until it is released on Noetic${NC}\n"
-  cd ~/catkin_ws/src
-  if ! [[ -d ~/catkin_ws/src/depthimage_to_laserscan ]]; then
-    git clone https://github.com/ros-perception/depthimage_to_laserscan.git
-  else
-    cd ~/catkin_ws/src/depthimage_to_laserscan
     git pull
   fi
 fi
@@ -687,7 +674,7 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     nvm deactivate
   fi
 
-  wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
+  wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
   export NVM_DIR="${HOME}/.nvm"
   # shellcheck source=/home/chrisl8/.nvm/nvm.sh
   [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm

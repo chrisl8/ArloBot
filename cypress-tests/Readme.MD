@@ -27,3 +27,7 @@ I suggest just running the tests one at a time starting with `0-1-...` until you
 cd cypress-tests
 npx cypress open
 ```
+or if in WSL2, start your Xserver, then
+```
+DISPLAY=192.168.1.88:0.0 npx cypress open # Or whatever your Host IP is.
+```
