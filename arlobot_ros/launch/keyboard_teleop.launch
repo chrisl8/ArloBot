@@ -1,4 +1,3 @@
-<!--Migrated from Turtlebot to my ArloBot repository as the Turtlebot code is no longer maintained-->
 <launch>
   <node pkg="arlobot_ros" type="arlobot_teleop_key" name="arlobot_teleop_keyboard"  output="screen">
     <remap from="arlobot_teleop_keyboard/cmd_vel" to="cmd_vel_mux/input/teleop"/>
