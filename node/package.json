@@ -5,6 +5,7 @@
   "description": "Node scripts to control my ArloBot robot behavior",
   "main": "index.js",
   "dependencies": {
+    "base-64": "^1.0.0",
     "body-parser": "^1.19.0",
     "chokidar": "^3.4.1",
     "express": "^4.17.1",
@@ -30,7 +31,7 @@
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.20.3",
     "eslint-plugin-react-hooks": "^4.0.8",
-    "jest": "^26.4.2",
+    "jest": "^27.0.3",
     "prettier": "^2.1.1"
   },
   "scripts": {
