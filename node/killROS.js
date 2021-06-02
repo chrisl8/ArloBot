@@ -33,7 +33,7 @@ function killROS(exitWhenDone) {
     webModelFunctions.update('killRosHasRun', true);
     webModelFunctions.update('ROSstart', false);
     // ROS drops all knowledge when restarted,
-    // So make it clear to the user that he needs to pick a map again.
+    // So make it clear to the user that they need to pick a map again.
     webModelFunctions.update('mapName', '');
     webModelFunctions.update('mapLoaded', false);
     webModelFunctions.scrollingStatusUpdate('Running kill_ros.sh . . .');

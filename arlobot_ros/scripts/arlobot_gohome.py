@@ -42,7 +42,7 @@ class ArlobotExplore(object):
 
         # Subscribe to the current pose via odometry and populate our own variable with the data
         """
-        I'm not sure of any other way to do this. I'd like to just "grab" it at a point in time, but subscriptions don't work taht way.
+        I'm not sure of any other way to do this. I'd like to just "grab" it at a point in time, but subscriptions don't work that way.
         """
         rospy.Subscriber("odom", Odometry, self._SetCurrentOdom)
         # Turns out this works great if you have no map and just want to make movements based on odometry,
