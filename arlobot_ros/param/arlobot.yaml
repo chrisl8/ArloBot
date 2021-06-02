@@ -58,3 +58,5 @@ ignoreIRSensors: False
 # Use this to tell the Activity Board to ignore JUST the Floor sensors,
 # while still utilizing the PING sensors
 ignoreFloorSensors: False
+## Velocity used for unplugging
+unpluggingVelocity: -0.1

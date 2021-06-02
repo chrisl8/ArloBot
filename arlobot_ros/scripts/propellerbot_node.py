@@ -1086,7 +1086,7 @@ class PropellerComm(object):
             # This should be a slow backward crawl
             # Minimum Linear Velocity: 0.06 m/s (18 TPS)
             rospy.loginfo("Unplugging!")
-            moveData = self.dataTypes.MoveDataPacket(-0.06, 0.0)
+            moveData = self.dataTypes.MoveDataPacket(rospy.get_param("~unpluggingVelocity", -0.1), 0.0)
             self.serialInterface.SendToPropellerOverSerial("move", moveData)
         # Once we are unplugged, stop the robot before returning control to handle_velocity_command
         # And we only need permission to stop at this point.
@@ -1107,6 +1107,7 @@ class PropellerComm(object):
             and not self._clear_to_go("forUnplugging")
             and self._serialAvailable
         ):
+            rospy.logwarn("Unplugging cancelled. No longer Clear to Go for Unplugging.")
             self._wasUnplugging = False
             moveData = self.dataTypes.MoveDataPacket(0.0, 0.0)
             self.serialInterface.SendToPropellerOverSerial("move", moveData)
