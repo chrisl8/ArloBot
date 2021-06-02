@@ -30,6 +30,8 @@ const handleSemaphoreFiles = require('./handleSemaphoreFiles');
 const SocketServerSubscriber = require('./SocketServerSubscriber');
 const RemoteMessageHandler = require('./RemoteMessageHandler');
 
+const cloudServerConnect = require('./cloudServerConnect');
+
 const remoteMessageHandler = new RemoteMessageHandler();
 const socketServerSubscriber = new SocketServerSubscriber(
   remoteMessageHandler.handleMessage,
@@ -157,6 +159,8 @@ async function main() {
     });
     runFirefox.start();
   }
+
+  cloudServerConnect();
 }
 
 if (require.main === module) {
