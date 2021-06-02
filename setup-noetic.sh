@@ -342,24 +342,6 @@ PACKAGE_TO_INSTALL_LIST=()
 # ### Required Packages and Why ###
 PACKAGE_TO_INSTALL_LIST+=(git)
 # git - allows for cloning of repositories
-PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-move-base")
-# "ros-${INSTALLING_ROS_DISTRO}-move-base" - Required to build and use Arlobot ROS code.
-PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-joy")
-# "ros-${INSTALLING_ROS_DISTRO}-joy" - Specifically needed by my code if you want to use a joystick and also required to build Turtlebot code
-# TODO: Currently using source version instead. Change this if the release ever catches up with the repo.
-#PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-slam-toolbox")
-# "ros-${INSTALLING_ROS_DISTRO}-slam-toolbox" - Slam Toolbox is the mapping system that I am using now.
-PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-tf2-tools")
-# "ros-${INSTALLING_ROS_DISTRO}-tf2-tools" - Used to display Transform tree as PDF for debugging robot transform tree.
-PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-twist-mux")
-# twist-mux is used by the Arlobot cmd_vel_mux input controller.
-#      It allows multiple cmd_vel topics to all coexist, and remaps the active on one
-#           to the correct topic for output.
-#      Without it, movement (twist) commands cannot be sent to the robot from ROS.
-PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-navigation")
-# ROS Navigation is required for, well, Navigation.
-PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-rosbridge-server")
-# rosbridge is required for the Web interface to communicate with ROS
 PACKAGE_TO_INSTALL_LIST+=("xvfb")
 # xvfb is required for Cypress testing to work.
 if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
@@ -373,10 +355,6 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     PACKAGE_TO_INSTALL_LIST+=(openssh-server)
   fi
   # openssh-server - required to SSH into robot remotely
-  PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-teb-local-planner")
-  # Teb Local Planner is the path planner I use.
-  #PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-teb-local-planner-tutorials") # TODO: Uncomment this when it is released to Noetic
-  # Teb Local Planner Tutorials contains complete example configuration files
   PACKAGE_TO_INSTALL_LIST+=(python3-serial)
   # python3-serial - required for ROS to talk to the Propeller board
   PACKAGE_TO_INSTALL_LIST+=(expect)
@@ -524,18 +502,6 @@ if [[ "${RESPONSE_TO_RPLIDAR_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; the
   fi
 fi
 
-# TODO: Remove this if/when the apt package catches up with all needed updates.
-printf "\n${BLUE}Slam Toolbox${NC}\n"
-printf "${PURPLE}There *is* a package for this, but the Github Repo is usually much more up to date.${NC}\n"
-cd ~/catkin_ws/src
-if ! [[ -d ~/catkin_ws/src/slam_toolbox ]]; then
-  git clone -b noetic-devel https://github.com/SteveMacenski/slam_toolbox.git
-else
-  cd ~/catkin_ws/src/slam_toolbox
-  git checkout noetic-devel
-  git pull
-fi
-
 # TODO: Remove this if/when the apt package is released for noetic.
 printf "\n${BLUE}TEB Local Planner Tutorials${NC}\n"
 printf "${PURPLE}The TEB Local Planner is installed via apt, but there is no noetic package for the tutorials.${NC}\n"
@@ -591,6 +557,7 @@ fi
 
 cd ~/catkin_ws
 printf "\n${YELLOW}[Installing dependencies for ROS build-from-source packages.]${NC}\n"
+rosdep update
 rosdep install -q -y -r --from-paths src --ignore-src
 printf "\n${YELLOW}[(Re)Building ROS Source files.]${NC}\n"
 catkin_make
@@ -943,9 +910,9 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     printf "${BLUE}twist_mux_topics:${NC}\n"
     diff /opt/ros/${INSTALLING_ROS_DISTRO}/share/twist_mux/config/twist_mux_topics.yaml "${HOME}/catkin_ws/src/ArloBot/arlobot_ros/param/twist_mux_topics.yaml" || true
     printf "${BLUE}mapper_params_localization:${NC}\n"
-    diff "${HOME}/catkin_ws/src/slam_toolbox/slam_toolbox/config/mapper_params_localization.yaml" "${HOME}/catkin_ws/src/ArloBot/arlobot_ros/param/mapper_params_localization.yaml" || true
+    diff "/opt/ros/${INSTALLING_ROS_DISTRO}/share/config/mapper_params_localization.yaml" "${HOME}/catkin_ws/src/ArloBot/arlobot_ros/param/mapper_params_localization.yaml" || true
     printf "${BLUE}mapper_params_online_async:${NC}\n"
-    diff "${HOME}/catkin_ws/src/slam_toolbox/slam_toolbox/config/mapper_params_online_async.yaml" "${HOME}/catkin_ws/src/ArloBot/arlobot_ros/param/mapper_params_online_async.yaml" || true
+    diff "/opt/ros/${INSTALLING_ROS_DISTRO}/share/config/mapper_params_online_async.yaml" "${HOME}/catkin_ws/src/ArloBot/arlobot_ros/param/mapper_params_online_async.yaml" || true
   fi
 
   printf "\n${PURPLE}Anytime you want to update ArloBot code from the web you can run this same script again. It will pull down and compile new code without wiping out custom configs in ~/.arlobot. I run this script myself almost every day.${NC}\n"

@@ -32,4 +32,8 @@
   <depend>rviz</depend>
   <depend>joy</depend>
   <depend>rosbridge_server</depend>
+  <depend>tf2_tools</depend>
+  <depend>navigation</depend>
+  <depend>teleop_twist_keyboard</depend>
+  <depend>teleop_twist_joy</depend>
 </package>
