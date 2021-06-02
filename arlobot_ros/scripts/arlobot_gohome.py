@@ -49,7 +49,7 @@ class ArlobotExplore(object):
         # but if you are using a map, you need the /map to /base_link transform!
 
         # I am going to set the AC power status as a parameter, so that it can be checked by low priority nodes,
-        # and publish the "safeToGo" as a topic so that it can be subscribed to and acted upon immediately
+        # and publish the "safe_to_go" as a topic so that it can be subscribed to and acted upon immediately
         # self.acPower = True # Status of whether laptop is plugged in or not. We assume 1, connected, to start with because that is the most restrictive state.
         # rospy.set_param('~ACpower', self.acPower) # Publish initial state
 

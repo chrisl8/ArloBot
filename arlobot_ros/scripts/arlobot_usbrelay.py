@@ -6,7 +6,7 @@
 
 import rospy
 
-from arlobot_ros.msg import usbRelayStatus
+from arlobot_ros.msg import UsbRelayStatus
 from arlobot_ros.srv import *
 
 # For USB relay board
@@ -154,20 +154,20 @@ class UsbRelay(object):
 
         # Publishers
         self._usbRelayStatusPublisher = rospy.Publisher(
-            "~usbRelayStatus", usbRelayStatus, queue_size=1
+            "~usbRelayStatus", UsbRelayStatus, queue_size=1
         )  # for publishing status of USB Relays
 
     def _FindRelayByName(self, req):
         # This function will return the relay number for a given name based on the usbrelay.yaml loaded parameters
         # In theory any node can do this, but it helps to make this service available, since the topic we publish requires
         # You to know the number of the relay to figure out which array entry is the one you want.
-        boardExists = False
-        foundRelay = False
-        relayNumber = 0
+        board_exists = False
+        found_relay = False
+        relay_number = 0
         if self.relayExists and not rospy.is_shutdown():
             if self.relayExists:  # Do not do this if no relay exists.
                 # Toggle Relay
-                boardExists = True
+                board_exists = True
                 for i in range(
                     1, 9
                 ):  # Walk the relays to find the one with the right name.
@@ -179,17 +179,17 @@ class UsbRelay(object):
                             "~relay" + str(i) + "label", "No Label"
                         )
                         if relayLabel == req.relay:
-                            foundRelay = True
-                            relayNumber = i
-        return boardExists, foundRelay, relayNumber
+                            found_relay = True
+                            relay_number = i
+        return board_exists, found_relay, relay_number
 
     def _ToggleRelayByName(self, req):
-        boardExists = False
-        foundRelay = False
-        toggleSuccess = False
+        board_exists = False
+        found_relay = False
+        toggle_success = False
         if self.relayExists:  # Do not do this if no relay exists.
             # Toggle Relay
-            boardExists = True
+            board_exists = True
             for i in range(
                 1, 9
             ):  # Walk the relays to find the one with the right name.
@@ -201,7 +201,7 @@ class UsbRelay(object):
                         "~relay" + str(i) + "label", "No Label"
                     )
                     if relayLabel == req.relay:
-                        foundRelay = True
+                        found_relay = True
                         while (
                             self._Busy
                         ):  # Prevent simultaneous polling of serial port by multiple processes within this app due to ROS threading.
@@ -232,16 +232,16 @@ class UsbRelay(object):
                         else:
                             newState = True
                         if newState == req.state:
-                            toggleSuccess = True
-        return boardExists, foundRelay, toggleSuccess
+                            toggle_success = True
+        return board_exists, found_relay, toggle_success
 
     def Run(self):
         # Get and broadcast status of all USB Relays.
         while not rospy.is_shutdown():
-            relayStatus = usbRelayStatus()
-            relayStatus.relayOn = [False] * 8  # Fill array for use.
+            relayStatus = UsbRelayStatus()
+            relayStatus.relay_on = [False] * 8  # Fill array for use.
             if self.relayExists:  # Only poll if the relay exists.
-                relayStatus.relayPresent = True
+                relayStatus.relay_present = True
                 # Gather USB Relay status for each relay and publish
                 for i in range(1, 9):
                     if (
@@ -266,13 +266,13 @@ class UsbRelay(object):
                             if state == 0:
                                 # print "Relay " + str(i) + " state:\tOFF (" + str(state) + ")"
                                 # print str(i) + " - " + relayLabel + ": OFF"
-                                relayStatus.relayOn[i - 1] = False
+                                relayStatus.relay_on[i - 1] = False
                             else:
                                 # print "Relay " + str(i) + " state:\tON (" + str(state) + ")"
                                 # print str(i) + " - " + relayLabel + ": ON"
-                                relayStatus.relayOn[i - 1] = True
+                                relayStatus.relay_on[i - 1] = True
             else:  # If the relay does not exist just broadcast "False" to everything.
-                relayStatus.relayPresent = False
+                relayStatus.relay_present = False
             self._usbRelayStatusPublisher.publish(
                 relayStatus
             )  # Publish USB Relay status

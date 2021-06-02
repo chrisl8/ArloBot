@@ -1,0 +1,16 @@
+bool      safe_to_proceed
+bool      safe_to_recede
+bool      escaping
+int16     abd_speed_limit
+int16     abd_reverse_speed_limit
+float32   heading
+float32   gyro_heading
+int16     min_distance_sensor
+bool      left_motor_power
+bool      right_motor_power
+float32   robot_battery_level
+bool      robot_battery_low
+int16     laptop_battery_percent
+bool      ac_power
+bool      cliff
+bool      floor_obstacle

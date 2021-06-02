@@ -3,7 +3,7 @@ import rospy
 import move_base_msgs.msg
 from nav_msgs.msg import Odometry
 import tf2_ros
-from arlobot_ros.srv import go_to_goal
+from arlobot_ros.srv import GoToGoal
 
 # Brings in the SimpleActionClient
 import actionlib
@@ -17,7 +17,7 @@ It is left to another program to collect and save those
 coordinates.
 
 Call this like so:
-rosservice call /arlobot_goto/go_to_goal 'pose: { position: { x: -0.136, y: 0.076, z: 0.101 }, orientation: { x: 0.000, y: 0.000, z: 0.017, w: 1.000} }'
+rosservice call /arlobot_goto/GoToGoal 'pose: { position: { x: -0.136, y: 0.076, z: 0.101 }, orientation: { x: 0.000, y: 0.000, z: 0.017, w: 1.000} }'
 """
 
 
@@ -46,7 +46,7 @@ class ArlobotGoTo(object):
         # Create a service that can be called to send robot to a map based goal
         # http://wiki.ros.org/ROS/Tutorials/CreatingMsgAndSrv
         # http://wiki.ros.org/ROS/Tutorials/WritingServiceClient%28python%29
-        rospy.Service("~go_to_goal", go_to_goal, self._go_to_goal)
+        rospy.Service("~GoToGoal", GoToGoal, self._go_to_goal)
 
         rospy.spin()
         # Now we just wait for someone to call us!

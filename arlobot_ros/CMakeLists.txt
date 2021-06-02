@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.5)
 project(arlobot_ros)
 
 ## Find catkin macros and libraries
@@ -12,15 +12,16 @@ find_package(catkin REQUIRED COMPONENTS
   actionlib
   move_base_msgs
   joy
+  teb_local_planner
 )
 
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  usbRelayStatus.msg
-  arloStatus.msg
-  arloSafety.msg
-  arloButtons.msg
+  UsbRelayStatus.msg
+  ArloStatus.msg
+  ArloSafety.msg
+  ArloButtons.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -30,15 +31,8 @@ add_service_files(
   ToggleLED.srv
   FindRelay.srv
   UnPlug.srv
-  go_to_goal.srv
+  GoToGoal.srv
 )
-
-## Generate actions in the 'action' folder
-# add_action_files(
-#   FILES
-#   Action1.action
-#   Action2.action
-# )
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
@@ -59,21 +53,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES arlobot_ros
-  CATKIN_DEPENDS roscpp rospy std_msgs geometry_msgs
-   joy
+  CATKIN_DEPENDS rospy std_msgs geometry_msgs
+   joy slam_toolbox teb_local_planner
 #  DEPENDS system_lib
-)
-
-###########
-## Build ##
-###########
-
-add_executable(arlobot_teleop_joy src/turtlebot_joy.cpp)
-target_link_libraries(arlobot_teleop_joy ${catkin_LIBRARIES})
-
-## Specify additional locations of header files
-## Your package locations should be listed before other locations
-# include_directories(include)
-include_directories(
-  ${catkin_INCLUDE_DIRS}
 )

@@ -85,11 +85,11 @@ function talkToMe() {
 
 // Some events just spam us, so ignore those to help mostly with the log.
 const eventsToAlwaysIgnore = [
-  'robotBatteryLevel',
-  'abd_speedLimit',
-  'abdR_speedLimit',
-  'Heading',
-  'minDistanceSensor',
+  'robot_battery_level',
+  'abd_speed_limit',
+  'abd_reverse_speed_limit',
+  'heading',
+  'min_distance_sensor',
   'myCroftSaid',
 ];
 

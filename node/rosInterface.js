@@ -60,7 +60,7 @@ function unplugRobot(value) {
     tts('Unplugging myself now.');
     const unplugRequest = new ROSLIB.ServiceRequest({
       // args from rosservice info <service>
-      unPlug: value, // Note javaScript uses true not True for bool
+      unplug: value, // Note javaScript uses true not True for bool
     });
     unplug.callService(unplugRequest, (result) => {
       console.log(result);
@@ -107,7 +107,7 @@ function subscribeToActiveStatus() {
     const arlobotArloStatus = new ROSLIB.Topic({
       ros,
       name: '/arlo_status', // Obtain name by running 'rostopic list'
-      messageType: 'arlobot_ros/arloStatus', // Obtain Type by running 'rostopic info <name>'
+      messageType: 'arlobot_ros/ArloStatus', // Obtain Type by running 'rostopic info <name>'
     }); // Obtain message.??? by running 'rosmsg show <messageType>'
     arlobotArloStatus.subscribe((message) => {
       for (const key in message) {
@@ -121,7 +121,7 @@ function subscribeToActiveStatus() {
     const arlobotSafetyStatus = new ROSLIB.Topic({
       ros,
       name: '/arlobot_safety/safetyStatus', // Obtain name by running 'rostopic list'
-      messageType: 'arlobot_ros/arloSafety', // Obtain Type by running 'rostopic info <name>'
+      messageType: 'arlobot_ros/ArloSafety', // Obtain Type by running 'rostopic info <name>'
     }); // Obtain message.??? by running 'rosmsg show <messageType>'
     arlobotSafetyStatus.subscribe((message) => {
       for (const key in message) {

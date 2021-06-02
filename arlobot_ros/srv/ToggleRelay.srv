@@ -1,6 +1,6 @@
 string relay
 bool state
 ---
-bool boardExists
-bool foundRelay
-bool toggleSuccess
+bool board_exists
+bool found_relay
+bool toggle_success

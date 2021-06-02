@@ -111,21 +111,21 @@ async function startROS() {
         if (!robotModel.RosProcess.startupComplete) {
           robotModel.RosProcess.startupComplete = true;
           webModelFunctions.updateRosTopicItem('cliff', false);
-          webModelFunctions.updateRosTopicItem('floorObstacle', true);
-          webModelFunctions.updateRosTopicItem('safeToRecede', true);
+          webModelFunctions.updateRosTopicItem('floor_obstacle', true);
+          webModelFunctions.updateRosTopicItem('safe_to_recede', true);
           webModelFunctions.updateRosTopicItem('safeToProceed', false);
-          webModelFunctions.updateRosTopicItem('Escaping', false);
-          webModelFunctions.updateRosTopicItem('minDistanceSensor', 2);
-          webModelFunctions.updateRosTopicItem('abd_speedLimit', 93);
-          webModelFunctions.updateRosTopicItem('abdR_speedLimit', 220);
+          webModelFunctions.updateRosTopicItem('escaping', false);
+          webModelFunctions.updateRosTopicItem('min_distance_sensor', 2);
+          webModelFunctions.updateRosTopicItem('abd_speed_limit', 93);
+          webModelFunctions.updateRosTopicItem('abd_reverse_speed_limit', 220);
           webModelFunctions.updateRosTopicItem('acPower', true);
-          webModelFunctions.updateRosTopicItem('Heading', 0.0);
-          webModelFunctions.updateRosTopicItem('gyroHeading', 0.0);
-          webModelFunctions.updateRosTopicItem('leftMotorPower', true);
-          webModelFunctions.updateRosTopicItem('rightMotorPower', true);
+          webModelFunctions.updateRosTopicItem('heading', 0.0);
+          webModelFunctions.updateRosTopicItem('gyro_heading', 0.0);
+          webModelFunctions.updateRosTopicItem('left_motor_power', true);
+          webModelFunctions.updateRosTopicItem('right_motor_power', true);
           webModelFunctions.updateRosTopicItem('laptopBatteryPercent', 85);
-          webModelFunctions.updateRosTopicItem('robotBatteryLevel', 12.6);
-          webModelFunctions.updateRosTopicItem('robotBatteryLow', false);
+          webModelFunctions.updateRosTopicItem('robot_battery_level', 12.6);
+          webModelFunctions.updateRosTopicItem('robot_battery_low', false);
         }
       }, 2000);
     }

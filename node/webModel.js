@@ -71,7 +71,7 @@ module.exports = {
       alertBtnClass: 'btn-danger',
     },
     {
-      rosName: 'floorObstacle',
+      rosName: 'floor_obstacle',
       fancyName: 'Floor Obstacle',
       status: '',
       btnClass: '',
@@ -79,7 +79,7 @@ module.exports = {
       alertBtnClass: 'btn-danger',
     },
     {
-      rosName: 'safeToRecede',
+      rosName: 'safe_to_recede',
       fancyName: 'Safe To Recede',
       status: '',
       btnClass: '',
@@ -87,7 +87,7 @@ module.exports = {
       alertBtnClass: 'btn-danger',
     },
     {
-      rosName: 'safeToProceed',
+      rosName: 'safe_to_proceed',
       fancyName: 'Safe To Proceed',
       status: '',
       btnClass: '',
@@ -95,7 +95,7 @@ module.exports = {
       alertBtnClass: 'btn-danger',
     },
     {
-      rosName: 'Escaping',
+      rosName: 'escaping',
       fancyName: 'Escaping',
       status: '',
       btnClass: '',
@@ -103,7 +103,7 @@ module.exports = {
       alertBtnClass: 'btn-danger',
     },
     {
-      rosName: 'minDistanceSensor',
+      rosName: 'min_distance_sensor',
       fancyName: 'Min Distance Sensor',
       status: '',
       btnClass: '',
@@ -111,7 +111,7 @@ module.exports = {
       alertBtnClass: 'btn-danger',
     },
     {
-      rosName: 'abd_speedLimit',
+      rosName: 'abd_speed_limit',
       fancyName: 'Forward Speed Limit',
       status: '',
       btnClass: '',
@@ -121,7 +121,7 @@ module.exports = {
       specialCompare: true,
     },
     {
-      rosName: 'abdR_speedLimit',
+      rosName: 'abd_reverse_speed_limit',
       fancyName: 'Reverse Speed Limit',
       status: '',
       btnClass: '',
@@ -139,7 +139,7 @@ module.exports = {
       alertBtnClass: 'btn-danger',
     },
     {
-      rosName: 'Heading',
+      rosName: 'heading',
       fancyName: 'Heading',
       status: '',
       btnClass: '',
@@ -147,7 +147,7 @@ module.exports = {
       alertBtnClass: 'btn-danger',
     },
     {
-      rosName: 'gyroHeading',
+      rosName: 'gyro_heading',
       fancyName: 'Gyro Heading',
       status: '',
       btnClass: '',
@@ -155,7 +155,7 @@ module.exports = {
       alertBtnClass: 'btn-danger',
     },
     {
-      rosName: 'leftMotorPower',
+      rosName: 'left_motor_power',
       fancyName: 'Left Motor Power',
       status: '',
       btnClass: '',
@@ -163,7 +163,7 @@ module.exports = {
       alertBtnClass: 'btn-danger',
     },
     {
-      rosName: 'rightMotorPower',
+      rosName: 'right_motor_power',
       fancyName: 'Right Motor Power',
       status: '',
       btnClass: '',
@@ -171,7 +171,7 @@ module.exports = {
       alertBtnClass: 'btn-danger',
     },
     {
-      rosName: 'laptopBatteryPercent',
+      rosName: 'laptop_battery_percent',
       fancyName: 'Laptop Battery %',
       status: '',
       btnClass: '',
@@ -179,16 +179,16 @@ module.exports = {
       alertBtnClass: 'btn-danger',
     },
     {
-      rosName: 'robotBatteryLevel',
+      rosName: 'robot_battery_level',
       fancyName: 'Robot Battery Volts',
       status: '',
       btnClass: '',
       alertOn: '<',
-      alertValue: 12,
+      alertValue: 11.8,
       alertBtnClass: 'btn-danger',
     },
     {
-      rosName: 'robotBatteryLow',
+      rosName: 'robot_battery_low',
       fancyName: 'Robot Battery Low',
       status: '',
       btnClass: '',
@@ -196,7 +196,7 @@ module.exports = {
       alertBtnClass: 'btn-danger',
     },
     {
-      rosName: 'dangerousDoorsOpen',
+      rosName: 'dangerous_doors_open',
       fancyName: 'Doors Open',
       status: '',
       btnClass: '',

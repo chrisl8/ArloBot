@@ -27,7 +27,7 @@ from geometry_msgs.msg import Quaternion, TransformStamped
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
-from arlobot_ros.msg import usbRelayStatus, arloStatus, arloSafety, arloButtons
+from arlobot_ros.msg import UsbRelayStatus, ArloStatus, ArloSafety, ArloButtons
 from arlobot_ros.srv import FindRelay, ToggleRelay, ToggleLED
 
 from checkPropellerCodeVersionNumber import checkPropellerCodeVersionNumber
@@ -87,20 +87,20 @@ class PropellerComm(object):
                 )
                 self.leftMotorRelay = find_relay(self.usbLeftMotorRelayLabel)
                 self.rightMotorRelay = find_relay(self.usbRightMotorRelayLabel)
-                if self.leftMotorRelay.foundRelay and self.leftMotorRelay.foundRelay:
+                if self.leftMotorRelay.found_relay and self.leftMotorRelay.found_relay:
                     rospy.loginfo(
                         "Left = "
-                        + str(self.leftMotorRelay.relayNumber)
+                        + str(self.leftMotorRelay.relay_number)
                         + " & Right = "
-                        + str(self.rightMotorRelay.relayNumber)
+                        + str(self.rightMotorRelay.relay_number)
                     )
                 else:
                     self.relayExists = False
             except rospy.ServiceException as e:
                 rospy.loginfo("Service call failed: %s" % e)
             rospy.Subscriber(
-                "arlobot_usbrelay/usbRelayStatus",
-                usbRelayStatus,
+                "arlobot_usbrelay/UsbRelayStatus",
+                UsbRelayStatus,
                 self._handle_usb_relay_status,
             )  # Safety Shutdown
 
@@ -142,7 +142,7 @@ class PropellerComm(object):
         # Otherwise strange behavior occurs, even the robot responding to commands very late, like stopping and then starting a command given moments ago!
         rospy.Subscriber(
             "arlobot_safety/safetyStatus",
-            arloSafety,
+            ArloSafety,
             self._safety_shutdown,
             queue_size=1,
         )  # Safety Shutdown
@@ -151,9 +151,9 @@ class PropellerComm(object):
         # for publishing PIR status
         # self._pirPublisher = rospy.Publisher("~pirState", Bool, queue_size=1)
         self._arlo_status_publisher = rospy.Publisher(
-            "arlo_status", arloStatus, queue_size=1
+            "arlo_status", ArloStatus, queue_size=1
         )
-        self._buttons_publisher = rospy.Publisher("buttons", arloButtons, queue_size=1)
+        self._buttons_publisher = rospy.Publisher("buttons", ArloButtons, queue_size=1)
 
         # IF the Odometry Transform is done with the robot_pose_ekf do not publish it,
         # but we are not using robot_pose_ekf, because it does nothing for us if you don't have a full IMU!
@@ -250,13 +250,13 @@ class PropellerComm(object):
         """
         # This should never get called otherwise, but just in case the relay is in use but the motors are not.
         if self.relayExists:
-            # print (status.relayOn)
-            # print (status.relayOn[self.leftMotorRelay.relayNumber])
-            # print (status.relayOn[self.leftMotorRelay.relayNumber])
+            # print (status.relay_on)
+            # print (status.relay_on[self.leftMotorRelay.relay_number])
+            # print (status.relay_on[self.leftMotorRelay.relay_number])
             # Zero indexed arrays!
             if (
-                status.relayOn[self.leftMotorRelay.relayNumber - 1]
-                and status.relayOn[self.rightMotorRelay.relayNumber - 1]
+                status.relay_on[self.leftMotorRelay.relay_number - 1]
+                and status.relay_on[self.rightMotorRelay.relay_number - 1]
             ):
                 self._motorsOn = True
             else:
@@ -267,13 +267,13 @@ class PropellerComm(object):
         Prevent sending twist commands if the SafeToOperate topic goes false.
         Set unPlugging variable to allow for safe unplug operation.
         """
-        self._unPlugging = status.unPlugging
-        self._SafeToOperate = status.safeToOperate
-        self._safeToGo = status.safeToGo
+        self._unPlugging = status.unplugging
+        self._SafeToOperate = status.safe_to_operate
+        self._safeToGo = status.safe_to_go
 
-        self._settings_from_ros["pluggedIn"] = status.acPower
+        self._settings_from_ros["pluggedIn"] = status.ac_power
 
-        self._laptop_battery_percent = status.laptopBatteryPercent
+        self._laptop_battery_percent = status.laptop_battery_percent
 
     # noinspection Duplicates
     def _propellerOdomDataHandler(self, data):
@@ -362,42 +362,42 @@ class PropellerComm(object):
         self.alternate_heading = alternate_theta
 
         # Get and publish other telemetry data
-        arlo_status = arloStatus()
+        arlo_status = ArloStatus()
         # Order from ROS Interface for ArloBot.c
         left_motor_voltage = (15 / 4.69) * data[6]
         right_motor_voltage = (15 / 4.69) * data[7]
-        arlo_status.robotBatteryLevel = 12.0
+        arlo_status.robot_battery_level = 12.0
         if left_motor_voltage < 1:
-            arlo_status.leftMotorPower = False
+            arlo_status.left_motor_power = False
         else:
-            arlo_status.leftMotorPower = True
-            arlo_status.robotBatteryLevel = left_motor_voltage
-        self._leftMotorPower = arlo_status.leftMotorPower
+            arlo_status.left_motor_power = True
+            arlo_status.robot_battery_level = left_motor_voltage
+        self._leftMotorPower = arlo_status.left_motor_power
         if right_motor_voltage < 1:
-            arlo_status.rightMotorPower = False
+            arlo_status.right_motor_power = False
         else:
-            arlo_status.rightMotorPower = True
-            arlo_status.robotBatteryLevel = right_motor_voltage
-        self._rightMotorPower = arlo_status.rightMotorPower
+            arlo_status.right_motor_power = True
+            arlo_status.robot_battery_level = right_motor_voltage
+        self._rightMotorPower = arlo_status.right_motor_power
         # 11.6 volts is the cutoff for an SLA battery.
-        if arlo_status.robotBatteryLevel < 12:
-            arlo_status.robotBatteryLow = True
+        if arlo_status.robot_battery_level < 12:
+            arlo_status.robot_battery_low = True
         else:
-            arlo_status.robotBatteryLow = False
+            arlo_status.robot_battery_low = False
 
-        arlo_status.abd_speedLimit = data[8]
-        arlo_status.abdR_speedLimit = data[9]
-        arlo_status.Heading = self.lastHeading
-        arlo_status.gyroHeading = self.alternate_heading
-        arlo_status.minDistanceSensor = data[10]
-        arlo_status.safeToProceed = True if data[11] == 1 else False
-        arlo_status.safeToRecede = True if data[12] == 1 else False
-        arlo_status.Escaping = True if data[13] == 1 else False
+        arlo_status.abd_speed_limit = data[8]
+        arlo_status.abd_reverse_speed_limit = data[9]
+        arlo_status.heading = self.lastHeading
+        arlo_status.gyro_heading = self.alternate_heading
+        arlo_status.min_distance_sensor = data[10]
+        arlo_status.safe_to_proceed = True if data[11] == 1 else False
+        arlo_status.safe_to_recede = True if data[12] == 1 else False
+        arlo_status.escaping = True if data[13] == 1 else False
         arlo_status.cliff = True if data[14] == 1 else False
-        arlo_status.floorObstacle = True if data[15] == 1 else False
+        arlo_status.floor_obstacle = True if data[15] == 1 else False
 
-        arlo_status.laptopBatteryPercent = self._laptop_battery_percent
-        arlo_status.acPower = self._settings_from_ros["pluggedIn"]
+        arlo_status.laptop_battery_percent = self._laptop_battery_percent
+        arlo_status.ac_power = self._settings_from_ros["pluggedIn"]
         self._arlo_status_publisher.publish(arlo_status)
 
         # Get and publish sensor data
@@ -750,9 +750,9 @@ class PropellerComm(object):
         for entry in telemetry_buttonInputData:
             if entry == 1:
                 rospy.loginfo("Button " + str(entry) + " was pushed.")
-                arlo_buttons = arloButtons()
-                arlo_buttons.buttonNumber = entry
-                arlo_buttons.buttonPressed = True
+                arlo_buttons = ArloButtons()
+                arlo_buttons.button_number = entry
+                arlo_buttons.button_pressed = True
                 self._buttons_publisher.publish(arlo_buttons)
 
     def start(self):
@@ -1006,8 +1006,8 @@ class PropellerComm(object):
                         self.usbRightMotorRelayLabel, state
                     )
                     if (
-                        left_relay_result.toggleSuccess
-                        and right_relay_result.toggleSuccess
+                        left_relay_result.toggle_success
+                        and right_relay_result.toggle_success
                     ):
                         self._motorsOn = True
                     else:

@@ -31,7 +31,7 @@ const checkBattery = (logIt) => {
   if (webModel.ROSisRunning) {
     // If ROS is running, use existing ROS Topic input data.
     const rosBatteryLevelTopicIndex = webModel.rosTopicItems.findIndex(
-      (x) => x.rosName === 'laptopBatteryPercent',
+      (x) => x.rosName === 'laptop_battery_percent',
     );
     if (
       rosBatteryLevelTopicIndex > -1 &&

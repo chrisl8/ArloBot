@@ -17,7 +17,7 @@ if pgrep -f robot.launch >/dev/null; then
   # shellcheck source=/home/chrisl8/catkin_ws/src/ArloBot/scripts/rosEnvironmentSetup.sh
   source "${SCRIPTDIR}/rosEnvironmentSetup.sh"
 
-  unbuffer rosservice call /arlobot_goto/go_to_goal "${1}"
+  unbuffer rosservice call /arlobot_goto/GoToGoal "${1}"
 else
   echo "Robot must be running to start this."
   exit 1

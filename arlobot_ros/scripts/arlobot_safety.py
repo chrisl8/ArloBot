@@ -3,7 +3,7 @@ import rospy
 import subprocess
 import os
 import fnmatch
-from arlobot_ros.msg import arloSafety
+from arlobot_ros.msg import ArloSafety
 from arlobot_ros.srv import UnPlug
 
 """
@@ -30,12 +30,12 @@ class ArlobotSafety(object):
         self._laptopBatteryPercent = 100
 
         # I am going to set the AC power status as a parameter, so that it can be checked by low priority nodes,
-        # and publish the "arloSafety" as a topic so that it can be subscribed to and acted upon immediately
-        self.acPower = True  # Status of whether laptop is plugged in or not. We assume 1, connected, to start with because that is the most restrictive state.
-        rospy.set_param("~ACpower", self.acPower)  # Publish initial state
+        # and publish the "ArloSafety" as a topic so that it can be subscribed to and acted upon immediately
+        self._acPower = True  # Status of whether laptop is plugged in or not. We assume 1, connected, to start with because that is the most restrictive state.
+        rospy.set_param("~ACpower", self._acPower)  # Publish initial state
 
         self._safetyStatusPublisher = rospy.Publisher(
-            "~safetyStatus", arloSafety, queue_size=1
+            "~safetyStatus", ArloSafety, queue_size=1
         )  # for publishing status of AC adapter
 
         rospy.Service("arlobot_unplug", UnPlug, self._handle_unplug_request)
@@ -73,54 +73,54 @@ class ArlobotSafety(object):
                         upowerOutput = line.split()
                         if upowerOutput[1] == "no":
                             if (
-                                self.acPower
+                                self._acPower
                             ):  # Only log and set parameters if there is a change!
                                 rospy.loginfo("AC Power DISconnected.")
-                                self.acPower = False
-                                rospy.set_param("~ACpower", self.acPower)
+                                self._acPower = False
+                                rospy.set_param("~ACpower", self._acPower)
                         elif upowerOutput[1] == "yes":
                             if (
-                                self.acPower is False
+                                self._acPower is False
                             ):  # Only log and set parameters if there is a change!
                                 rospy.loginfo("AC Power Connected.")
-                                self.acPower = True
-                                rospy.set_param("~ACpower", self.acPower)
+                                self._acPower = True
+                                rospy.set_param("~ACpower", self._acPower)
                     if "percentage" in line and not gotBatteryPercent:
                         upowerOutput = line.split()
                         self._laptopBatteryPercent = int(upowerOutput[1].rstrip("%"))
                         gotBatteryPercent = True
             else:  # Just set to 0 if we were told to ignore AC power status.
-                if self.acPower:  # Only log and set parameters if there is a change!
-                    self.acPower = False
-                    rospy.set_param("~ACpower", self.acPower)
+                if self._acPower:  # Only log and set parameters if there is a change!
+                    self._acPower = False
+                    rospy.set_param("~ACpower", self._acPower)
 
-            # arloSafety Status message
-            safety_status = arloSafety()
+            # ArloSafety Status message
+            safety_status = ArloSafety()
 
-            safety_status.laptopBatteryPercent = self._laptopBatteryPercent
+            safety_status.laptop_battery_percent = self._laptopBatteryPercent
 
             # Set AC Power status message
-            safety_status.acPower = self.acPower
+            safety_status.ac_power = self._acPower
 
             # Determine safety status based on what we know
-            if self.acPower:
-                safety_status.safeToGo = False
+            if self._acPower:
+                safety_status.safe_to_go = False
             else:
-                safety_status.safeToGo = True
+                safety_status.safe_to_go = True
                 if self._unPlug:
                     # Turn off unPlug now that it is unplugged
                     self._unPlug = False
 
-            safety_status.unPlugging = self._unPlug
-            if safety_status.unPlugging:
-                # If we've been asked to unplug, then set safeToGo
-                safety_status.safeToGo = True
+            safety_status.unplugging = self._unPlug
+            if safety_status.unplugging:
+                # If we've been asked to unplug, then set safe_to_go to True to allow movement
+                safety_status.safe_to_go = True
 
             # This is a new status meant to separate being safe to MOVE,
             # from being safe to OPERATE, so that the motors and Activity Board
             # do not shut down every time we need to be still,
             # and instead we can just be still
-            safety_status.safeToOperate = True
+            safety_status.safe_to_operate = True
             # For now it is just tagged "True", but if we find
             # a reason to do a full shutdown, use this!
 
@@ -133,9 +133,9 @@ class ArlobotSafety(object):
             if os.path.isdir(status_dir):
                 for file_name in os.listdir(status_dir):
                     if fnmatch.fnmatch(file_name, "STOP"):
-                        safety_status.safeToGo = False
+                        safety_status.safe_to_go = False
             else:
-                safety_status.safeToGo = False
+                safety_status.safe_to_go = False
 
             # Check for open doors
             if rospy.has_param("/arlobot/monitorDoors"):  # If arlobot_ros is running
@@ -154,9 +154,9 @@ class ArlobotSafety(object):
                     stdout=subprocess.PIPE,
                 ).stdout.decode("utf-8")
                 dangerousDoorsOpen = doorStatus != "true\n"
-                safety_status.dangerousDoorsOpen = dangerousDoorsOpen
+                safety_status.dangerous_doors_open = dangerousDoorsOpen
                 if dangerousDoorsOpen:
-                    safety_status.safeToGo = False
+                    safety_status.safe_to_go = False
 
             self._safetyStatusPublisher.publish(safety_status)  # Publish safety status
 
@@ -167,7 +167,7 @@ class ArlobotSafety(object):
             rospy.loginfo("Unplug requested.")
         else:
             rospy.loginfo("Unplug cancel requested.")
-        self._unPlug = request.unPlug
+        self._unPlug = request.unplug
         return True
 
 
