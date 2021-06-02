@@ -137,36 +137,60 @@ function subscribeToActiveStatus() {
       name: '/joy', // Obtain name by running 'rostopic list'
       messageType: 'sensor_msgs/Joy', // Obtain Type by running 'rostopic info <name>'
     }); // Obtain message.??? by running 'rosmsg show <messageType>'
+    let readyToTalkAgain = true;
     arlobotJoystick.subscribe((message) => {
       // console.log(message.buttons);
       // A, B, X, Y, LB, RB, BACK, START, Xbox360, LeftStick, RightStick, Left, Right, Up, Down
-      if (message.buttons[0] === 1) {
-        // noinspection JSIgnoredPromiseFromCall
-        tts('Hello, my name is two flower');
-      } else if (message.buttons[1] === 1) {
-        // noinspection JSIgnoredPromiseFromCall
-        tts('What is your name?');
-      } else if (message.buttons[3] === 1) {
-        // noinspection JSIgnoredPromiseFromCall
-        tts('Nice to meet you.');
-      } else if (message.buttons[2] === 1) {
-        // noinspection JSIgnoredPromiseFromCall
-        tts('Excuse me.');
-      } else if (message.buttons[5] === 1) {
-        // noinspection JSIgnoredPromiseFromCall
-        tts('~/.arlobot/sounds/readyMaster.wav');
-      } else if (message.buttons[11] === 1) {
-        // noinspection JSIgnoredPromiseFromCall
-        tts('~/.arlobot/sounds/Exterminate.wav');
-      } else if (message.buttons[12] === 1) {
-        // noinspection JSIgnoredPromiseFromCall
-        tts('~/.arlobot/sounds/input1.wav');
-      } else if (message.buttons[13] === 1) {
-        // noinspection JSIgnoredPromiseFromCall
-        tts('~/.arlobot/sounds/affirmative.wav');
-      } else if (message.buttons[14] === 1) {
-        // noinspection JSIgnoredPromiseFromCall
-        tts('~/.arlobot/sounds/depressed.wav');
+      if (readyToTalkAgain) {
+        let spoke = false;
+        if (message.buttons[0] === 1) {
+          // noinspection JSIgnoredPromiseFromCall
+          tts('Hello, my name is two flower');
+          spoke = true;
+        } else if (message.buttons[1] === 1) {
+          // noinspection JSIgnoredPromiseFromCall
+          tts('What is your name?');
+          spoke = true;
+        } else if (message.buttons[3] === 1) {
+          // noinspection JSIgnoredPromiseFromCall
+          tts('Nice to meet you.');
+          spoke = true;
+        } else if (message.buttons[2] === 1) {
+          // noinspection JSIgnoredPromiseFromCall
+          tts('Excuse me.');
+          spoke = true;
+        } else if (message.buttons[5] === 1) {
+          // noinspection JSIgnoredPromiseFromCall
+          tts('~/.arlobot/sounds/readyMaster.wav');
+          spoke = true;
+        } else if (message.buttons[11] === 1) {
+          // noinspection JSIgnoredPromiseFromCall
+          tts('~/.arlobot/sounds/Exterminate.wav');
+          spoke = true;
+        } else if (message.buttons[12] === 1) {
+          // noinspection JSIgnoredPromiseFromCall
+          tts('~/.arlobot/sounds/input1.wav');
+          spoke = true;
+        } else if (message.buttons[13] === 1) {
+          // noinspection JSIgnoredPromiseFromCall
+          tts('~/.arlobot/sounds/affirmative.wav');
+          spoke = true;
+        } else if (message.buttons[14] === 1) {
+          // noinspection JSIgnoredPromiseFromCall
+          tts('~/.arlobot/sounds/depressed.wav');
+          spoke = true;
+        }
+        if (spoke) {
+          // The joy node sets a repeat on the output
+          // of joystick inputs to ensure that movement continues.
+          // ROS only keeps the robot moving if twist commands keep coming in,
+          // but this causes problems for buttons doing other things,
+          // hence a cool down.
+          readyToTalkAgain = false;
+          setTimeout(() => {
+            readyToTalkAgain = true;
+          }, 1000);
+        }
       }
       /*
        for (let key in message) {
