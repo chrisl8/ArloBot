@@ -125,35 +125,25 @@ if ! [[ ${DOCKER_TEST_INSTALL=true} == "true" ]]; then # This does not work on D
   printf "\n"
 fi
 
+printf "${YELLOW}[Adding/Updating ROS Repository Key]${NC}\n"
+# As explained in the official ROS install instruction
+#      http://wiki.ros.org/noetic/Installation/Ubuntu
+# The pool options are listed here: https://sks-keyservers.net/overview-of-pools.php
+# https://github.com/tianon/gosu/issues/39#issuecomment-362544059
+for server in ha.pool.sks-keyservers.net \
+  hkp://p80.pool.sks-keyservers.net:80 \
+  keyserver.ubuntu.com \
+  hkp://keyserver.ubuntu.com:80 \
+  pgp.mit.edu; do
+  sudo apt-key adv --keyserver "$server" --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 && break || echo "Trying new server..."
+  #gpg --keyserver "$server" --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 && break || echo "Trying new server..."
+done
+
 if ! [[ -e /etc/apt/sources.list.d/ros-latest.list ]]; then
   printf "${YELLOW}[Adding the ROS repository]${NC}\n"
-  # This should follow the official ROS install instructions closely.
+  # As explained in the official ROS install instruction
   #      http://wiki.ros.org/noetic/Installation/Ubuntu
-  # That is why there is a separate section for extra packages that I need for Arlo.
   sudo sh -c "echo \"deb http://packages.ros.org/ros/ubuntu ${version} main\" > /etc/apt/sources.list.d/ros-latest.list"
-  printf "${BLUE}[Checking the ROS keys]${NC}\n"
-  export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
-  if ! apt-key list | grep -i "ROS builder"; then
-    printf "${BLUE}[Adding the ROS keys]${NC}\n"
-    # The pool options are listed here: https://sks-keyservers.net/overview-of-pools.php
-    APT_KEY_SERVER=pool.sks-keyservers.net
-    COMMAND_DONE=1
-    COMMAND_LOOPS=0
-    while [[ ${COMMAND_DONE} -gt 0 ]]; do
-      if [[ ${COMMAND_LOOPS} -gt 10 ]]; then
-        printf "${RED}Too many retires attempting to get ROS apt key.${NC}\n"
-        rm /etc/apt/sources.list.d/ros-latest.list
-        exit 1
-      fi
-      if [[ ${COMMAND_LOOPS} -gt 0 ]]; then
-        printf "${RED}Failed to retrieve ROS apt key. Retrying...${NC}\n"
-        sleep 5
-      fi
-      sudo apt-key adv --keyserver hkp://${APT_KEY_SERVER}:80 --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 && COMMAND_DONE=$?
-      COMMAND_LOOPS=$((COMMAND_LOOPS + 1))
-    done
-    printf "${BLUE}Finished adding keys for ROS install sources.${NC}\n"
-  fi
 fi
 
 printf "\n${YELLOW}[Updating & upgrading all existing Ubuntu packages]${NC}\n"
