@@ -12,31 +12,31 @@ INSTALLING_ROS_DISTRO=melodic
 # Testing install with Docker:
 #
 # You can Test this with Docker by installing Docker, then pulling down the Ubuntu 18.04 image:
-# sudo docker pull ubuntu:18.04
+# docker pull ubuntu:18.04
 # cd ~/catkin_ws/src/ArloBot
 #
 # Then either kick it off all in one shot:
-# sudo docker run -ti -v $PWD:/home/user ubuntu:18.04 /bin/bash -c "/home/user/setup-melodic.sh"
+# docker run -ti -v $PWD:/home/user ubuntu:18.04 /bin/bash -c "/home/user/setup-melodic.sh"
 #
 # Or start an interactive shell in Docker and run it, with the ability to make changes and start it again when it finishes:
-# sudo docker run -ti -v $PWD:/home/user ubuntu:18.04 /bin/bash
+# docker run -ti -v $PWD:/home/user ubuntu:18.04 /bin/bash
 # /home/user/setup-melodic.sh
 #
 # If you started a non-interactive ("one shot") build and then it crashed and you want to get in and look around:
 # https://docs.docker.com/engine/reference/commandline/commit/
 # Find the name of the container:
-# sudo docker ps -a
-# sudo docker commit $CONTAINER_ID mytestimage
-# sudo docker run -ti -v $PWD:/home/user mytestimage /bin/bash
+# docker ps -a
+# docker commit $CONTAINER_ID mytestimage
+# docker run -ti -v $PWD:/home/user mytestimage /bin/bash
 #
 # and when you are done delete the image:
-# sudo docker image rm mytestimage
+# docker image rm mytestimage
 #
 # Then you can look around and try running the script if you want again.
 #
 #
 # To clean up Docker when you are done run:
-# sudo docker system prune
+# docker system prune
 #
 # Also note that if you add --rm to the run command on any docker command above, it will automatically remove the container
 # after you leave it, instead of leaving it hanging around.
@@ -60,9 +60,11 @@ function finish() {
   if [[ -z ${INSTALL_FINISHED} ]]; then
     printf "\n"
     printf "${RED}INSTALL FAILURE!!!${NC}\n"
-    printf "${RED}The Install Script has failed. Please investigate cause, correct, and run again before proceeding.${NC}\n"
+    printf "${RED}The Install Script has failed. Please investigate the cause, correct, and run again before proceeding.${NC}\n"
     printf "\n"
     printf "${YELLOW}If this was a transient error, such as a network failure connecting to something, you may just need to run it again.${NC}\n"
+    printf "\n"
+    printf "${YELLOW}If this persists, please file an issue against the repository at https://github.com/chrisl8/ArloBot/issues${NC}\n"
     printf "\n"
     exit 1
   fi
@@ -91,6 +93,9 @@ if [[ ! -e /etc/localtime ]]; then
   apt install -y tzdata sudo lsb-release gnupg cron
   # Now the rest of the script should work as if it was in a normal Ubuntu install.
 
+  # Installing this now appears to prevent it from hanging up the Docker setup later.
+  apt install -y keyboard-configuration
+
   DOCKER_TEST_INSTALL=true
 fi
 
@@ -114,35 +119,25 @@ if ! [[ ${DOCKER_TEST_INSTALL=true} == "true" ]]; then # This does not work on D
   printf "\n"
 fi
 
+printf "${YELLOW}[Adding/Updating ROS Repository Key]${NC}\n"
+# As explained in the official ROS install instruction
+#      http://wiki.ros.org/noetic/Installation/Ubuntu
+# The pool options are listed here: https://sks-keyservers.net/overview-of-pools.php
+# https://github.com/tianon/gosu/issues/39#issuecomment-362544059
+for server in ha.pool.sks-keyservers.net \
+  hkp://p80.pool.sks-keyservers.net:80 \
+  keyserver.ubuntu.com \
+  hkp://keyserver.ubuntu.com:80 \
+  pgp.mit.edu; do
+  sudo apt-key adv --keyserver "$server" --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 && break || echo "Trying new server..."
+  #gpg --keyserver "$server" --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 && break || echo "Trying new server..."
+done
+
 if ! [[ -e /etc/apt/sources.list.d/ros-latest.list ]]; then
-  printf "${YELLOW}[Adding the ROS repository]${NC}\n"
-  # This should follow the official ROS install instructions closely.
+  printf "\n${YELLOW}[Adding the ROS repository]${NC}\n"
+  # As explained in the official ROS install instruction
   #      http://wiki.ros.org/melodic/Installation/Ubuntu
-  # That is why there is a separate section for extra packages that I need for Arlo.
   sudo sh -c "echo \"deb http://packages.ros.org/ros/ubuntu ${version} main\" > /etc/apt/sources.list.d/ros-latest.list"
-  printf "${BLUE}[Checking the ROS keys]${NC}\n"
-  export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
-  if ! apt-key list | grep -i "ROS builder"; then
-    printf "${BLUE}[Adding the ROS keys]${NC}\n"
-    # The pool options are listed here: https://sks-keyservers.net/overview-of-pools.php
-    APT_KEY_SERVER=pool.sks-keyservers.net
-    COMMAND_DONE=1
-    COMMAND_LOOPS=0
-    while [[ ${COMMAND_DONE} -gt 0 ]]; do
-      if [[ ${COMMAND_LOOPS} -gt 10 ]]; then
-        printf "${RED}Too many retires attempting to get ROS apt key.${NC}\n"
-        rm /etc/apt/sources.list.d/ros-latest.list
-        exit 1
-      fi
-      if [[ ${COMMAND_LOOPS} -gt 0 ]]; then
-        printf "${RED}Failed to retrieve ROS apt key. Retrying...${NC}\n"
-        sleep 5
-      fi
-      sudo apt-key adv --keyserver hkp://${APT_KEY_SERVER}:80 --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 && COMMAND_DONE=$?
-      COMMAND_LOOPS=$((COMMAND_LOOPS + 1))
-    done
-    printf "${BLUE}Finished adding keys for ROS install sources.${NC}\n"
-  fi
 fi
 
 printf "\n${YELLOW}[Updating & upgrading all existing Ubuntu packages]${NC}\n"
@@ -221,7 +216,7 @@ if ! [[ -e ${SETUP_RESPONSE_FILE} ]]; then
   printf "${BLUE}rm ${SETUP_RESPONSE_FILE}${NC}\n"
   printf "${BLUE}before running this script.${NC}\n\n"
   if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
-    read -n 1 -s -r -p "Press any key to continue "
+    read -n 1 -s -r -p "Press any key to continue"
   fi
 fi
 
@@ -522,7 +517,7 @@ if [[ "${RESPONSE_TO_RPLIDAR_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; the
   printf "\n${BLUE}Slamtec RPLIDAR${NC}\n"
   cd ~/catkin_ws/src
   if ! [[ -d ~/catkin_ws/src/rplidar_ros ]]; then
-    git clone https://github.com/chrisl8/rplidar_ros.git
+    git clone https://github.com/Slamtec/rplidar_ros.git
   else
     cd ~/catkin_ws/src/rplidar_ros
     git pull
@@ -568,11 +563,6 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
       printf "\n${BLUE}[There will be a lot of questions. I answer Yes to all of them personally.]${NC}\n"
       ./dev_setup.sh
       ./start-mycroft.sh all
-      printf "\n${YELLOW}Giving Mycoroft time to download skills.${NC}\n"
-      #sleep 60
-      #./stop-mycroft.sh
-      #cd mycroft/tts/
-      #ln -s ${HOME}/catkin_ws/src/ArloBot/mycroft-things/arlobot_tts.py
 
       printf "\n${YELLOW}[IF you want to use Mycroft:]${NC}\n"
       printf "\n${YELLOW}[Then see https://docs.mycroft.ai/development/cerberus for configuration info.]${NC}\n"
@@ -594,8 +584,11 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   fi
 fi
 
-printf "\n${YELLOW}[(Re)Building ROS Source files.]${NC}\n"
 cd ~/catkin_ws
+printf "\n${YELLOW}[Installing dependencies for ROS build-from-source packages.]${NC}\n"
+rosdep update
+rosdep install -q -y -r --from-paths src --ignore-src
+printf "\n${YELLOW}[(Re)Building ROS Source files.]${NC}\n"
 catkin_make
 # shellcheck source=/home/chrisl8/catkin_ws/devel/setup.bash
 source ~/catkin_ws/devel/setup.bash
@@ -677,7 +670,7 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     nvm deactivate
   fi
 
-  wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.35.3/install.sh | bash
+  wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
   export NVM_DIR="${HOME}/.nvm"
   # shellcheck source=/home/chrisl8/.nvm/nvm.sh
   [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
@@ -693,39 +686,33 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   printf "\n${YELLOW}[Grabbing/Updating global dependencies for node packages]${NC}\n"
   printf "${BLUE}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
   cd
+  printf "\n${YELLOW}[PM2 for running Robot service]$NC\n"
   npm install -g pm2
+  printf "\n${YELLOW}[Log Streamer for Website]$NC\n"
+  npm install -g log.io
+  printf "\n${YELLOW}[Log.io File Watcher for Log.io Log Streamer]$NC\n"
+  npm install -g log.io-file-input
+
+  if [[ -d ~/catkin_ws/src/ArloBot/Log.io ]]; then
+    printf "\n"
+    printf "${BLUE}Removing old Log.io Install${NC}\n"
+    rm -rf "${HOME}/catkin_ws/src/ArloBot/Log.io"
+  fi
+fi
 
   cd "${HOME}/catkin_ws/src/ArloBot/node"
   printf "\n${YELLOW}[Grabbing node dependencies for scripts]${NC}\n"
   printf "${BLUE}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
-  rm -rf node_modules
   npm ci
 
   cd "${HOME}/catkin_ws/src/ArloBot/website"
   printf "\n${YELLOW}[Grabbing node dependencies for React website]${NC}\n"
-  rm -rf node_modules
   npm ci
   printf "\n${YELLOW}[Building React website]${NC}\n"
   npm run build
 
   cd "${HOME}/catkin_ws/src/ArloBot/cypress-tests"
   printf "\n${YELLOW}[Installing Cypress.io for Tests]$NC\n"
-  rm -rf node_modules
-  npm ci
-
-  cd "${HOME}/catkin_ws/src/ArloBot/"
-  printf "\n"
-  printf "${BLUE}Log.io Log Streamer for Website${NC}\n"
-  if ! [[ -d ~/catkin_ws/src/ArloBot/Log.io ]]; then
-    git clone https://github.com/chrisl8/Log.io.git
-  else
-    cd "${HOME}/catkin_ws/src/ArloBot/Log.io"
-    git pull
-  fi
-
-  cd "${HOME}/catkin_ws/src/ArloBot/Log.io"
-  printf "\n${YELLOW}[Installing Log.io Log Streamer for Website]$NC\n"
-  rm -rf node_modules
   npm ci
 
   if ! (command -v mjpg_streamer >/dev/null); then
