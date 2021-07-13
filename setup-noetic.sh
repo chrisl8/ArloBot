@@ -11,32 +11,33 @@ INSTALLING_ROS_DISTRO=noetic
 #
 # Testing install with Docker:
 #
-# You can Test this with Docker by installing Docker, then pulling down the Ubuntu 20.04 image:
-# sudo docker pull ubuntu:20.04
+# You can Test this with Docker by installing Docker, then pulling down the Ubuntu 20.04 (Focal) image:
+# docker pull ubuntu:focal
 # cd ~/catkin_ws/src/ArloBot
 #
 # Then either kick it off all in one shot:
-# sudo docker run -ti -v $PWD:/home/user ubuntu:20.04 /bin/bash -c "/home/user/setup-noetic.sh"
+# docker run -ti -v $PWD:/home/user ubuntu:focal /bin/bash -c "export TRAVIS=true;/home/user/setup-noetic.sh"
 #
 # Or start an interactive shell in Docker and run it, with the ability to make changes and start it again when it finishes:
-# sudo docker run -ti -v $PWD:/home/user ubuntu:20.04 /bin/bash
+# docker run -ti -v $PWD:/home/user ubuntu:focal /bin/bash
+# export TRAVIS=true
 # /home/user/setup-noetic.sh
 #
 # If you started a non-interactive ("one shot") build and then it crashed and you want to get in and look around:
 # https://docs.docker.com/engine/reference/commandline/commit/
 # Find the name of the container:
-# sudo docker ps -a
-# sudo docker commit $CONTAINER_ID mytestimage
-# sudo docker run -ti -v $PWD:/home/user mytestimage /bin/bash
+# docker ps -a
+# docker commit $CONTAINER_ID mytestimage
+# docker run -ti -v $PWD:/home/user mytestimage /bin/bash
 #
 # and when you are done delete the image:
-# sudo docker image rm mytestimage
+# docker image rm mytestimage
 #
 # Then you can look around and try running the script if you want again.
 #
 #
 # To clean up Docker when you are done run:
-# sudo docker system prune
+# docker system prune
 #
 # Also note that if you add --rm to the run command on any docker command above, it will automatically remove the container
 # after you leave it, instead of leaving it hanging around.
@@ -140,7 +141,7 @@ for server in ha.pool.sks-keyservers.net \
 done
 
 if ! [[ -e /etc/apt/sources.list.d/ros-latest.list ]]; then
-  printf "${YELLOW}[Adding the ROS repository]${NC}\n"
+  printf "\n${YELLOW}[Adding the ROS repository]${NC}\n"
   # As explained in the official ROS install instruction
   #      http://wiki.ros.org/noetic/Installation/Ubuntu
   sudo sh -c "echo \"deb http://packages.ros.org/ros/ubuntu ${version} main\" > /etc/apt/sources.list.d/ros-latest.list"
@@ -336,6 +337,8 @@ PACKAGE_TO_INSTALL_LIST+=("xvfb")
 # xvfb is required for Cypress testing to work.
 if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   # TODO: Some of these should probably be in package.xml, but that would require another round of testing.
+  PACKAGE_TO_INSTALL_LIST+=(wget)
+  # wget - This is almost certainly already installed, but if not, this setup will fail.
   PACKAGE_TO_INSTALL_LIST+=(moreutils)
   # moreutils - sponge is used by some of my scripts
   PACKAGE_TO_INSTALL_LIST+=(python3-pip)
