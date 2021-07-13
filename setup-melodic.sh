@@ -698,7 +698,6 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     printf "${BLUE}Removing old Log.io Install${NC}\n"
     rm -rf "${HOME}/catkin_ws/src/ArloBot/Log.io"
   fi
-fi
 
   cd "${HOME}/catkin_ws/src/ArloBot/node"
   printf "\n${YELLOW}[Grabbing node dependencies for scripts]${NC}\n"
