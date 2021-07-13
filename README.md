@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/chrisl8/ArloBot.svg)](https://travis-ci.com/chrisl8/ArloBot)
+[![Build Status](https://travis-ci.com/chrisl8/ArloBot.svg?branch=melodic)](https://travis-ci.com/chrisl8/ArloBot)
 [![codecov](https://codecov.io/gh/chrisl8/ArloBot/branch/melodic/graph/badge.svg)](https://codecov.io/gh/chrisl8/ArloBot)
 
  # End of Melodic Support
