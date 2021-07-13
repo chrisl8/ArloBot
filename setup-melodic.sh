@@ -794,9 +794,9 @@ if ! [[ -e ~/Documents/SimpleIDE/Learn/Simple\ Libraries/Robotics/Arlo/libarlodr
     mkdir -p ~/Documents/SimpleIDE/
   fi
   cd ~/Documents/SimpleIDE/
-  wget -O Learn-Folder-Updated-2019.07.02_0.zip https://www.parallax.com/sites/default/files/downloads/Learn-Folder-Updated-2019.07.02_0.zip
-  # NOTE: I have this stored in my Dropbox also if the above link dies use:
-  # https://www.dropbox.com/s/6ny53cmbljwfk9u/Learn-Folder-Updated-2019.07.02_0.zip?dl=1
+  # NOTE: Using my personal Dropbox for this, because the original link has died.
+  # Original Link: https://www.parallax.com/sites/default/files/downloads/Learn-Folder-Updated-2019.07.02_0.zip
+  wget -O Learn-Folder-Updated-2019.07.02_0.zip https://www.dropbox.com/s/6ny53cmbljwfk9u/Learn-Folder-Updated-2019.07.02_0.zip?dl=1
   unzip -q Learn-Folder-Updated-2019.07.02_0.zip
   cd
 fi
