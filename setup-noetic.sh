@@ -373,7 +373,11 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   # fswebcam - Used for streaming a camera to the website. Camera streaming will not work without it.
   PACKAGE_TO_INSTALL_LIST+=(zbar-tools)
   # zbar-tools - Used by node service to read QR codes via on board camera
-  PACKAGE_TO_INSTALL_LIST+=(libftdi1-dev)
+  if [[ ${architecture} == "x86_64" ]]; then
+    PACKAGE_TO_INSTALL_LIST+=(libftdi1-dev)
+  else
+    PACKAGE_TO_INSTALL_LIST+=(libftdi-dev)
+  fi
   # libftdi1-dev - required by pylibftdi for talking to USB based serial boards like relay boards, etc.
   #           https://pylibftdi.readthedocs.io/en/0.18.0/installation.html
   #      For 8-CH USB Relay board:
@@ -383,6 +387,7 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   #           Should return:
   #           FTDI:FT245R USB FIFO:A9026EI5
   #           If you have a USB Relay board attached via USB.
+  # I'm not entirely sure if libftdi1-dev or libftdi-dev is correct for x86, but I DO KNOW that libftdi1-dev segfaults on Pi.
 
   # TODO: Confirm that Scanse Sweep needs this and add it to the "if scanse" section:
   # ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan - used by Scanse Sweep
