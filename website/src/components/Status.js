@@ -142,27 +142,31 @@ const Status = (props) => {
               </span>
             </button>
           )}
-          <button
-            id="masterRelayStatusButton"
-            type="button"
-            className={masterRelayClass}
-            onClick={() => props.sendDataToRobot('toggleMasterRelay')}
-          >
-            Master Relay&nbsp;
-            <span className={masterRelayBadgeClass}>
-              {boolToOnOff(props.masterRelayOn)}
-            </span>
-          </button>
-          <button
-            id="mycroftStatusButton"
-            type="button"
-            className={myCroftClass}
-          >
-            Mycroft&nbsp;
-            <span className={myCroftBadgeClass}>
-              {boolToUpDown(props.myCroftIsRunning)}
-            </span>
-          </button>
+          {props.useMasterPowerRelay && (
+            <button
+              id="masterRelayStatusButton"
+              type="button"
+              className={masterRelayClass}
+              onClick={() => props.sendDataToRobot('toggleMasterRelay')}
+            >
+              Master Relay&nbsp;
+              <span className={masterRelayBadgeClass}>
+                {boolToOnOff(props.masterRelayOn)}
+              </span>
+            </button>
+          )}
+          {props.useMyCroft && (
+            <button
+              id="mycroftStatusButton"
+              type="button"
+              className={myCroftClass}
+            >
+              Mycroft&nbsp;
+              <span className={myCroftBadgeClass}>
+                {boolToUpDown(props.myCroftIsRunning)}
+              </span>
+            </button>
+          )}
           <button
             id="cloudStatusButton"
             type="button"

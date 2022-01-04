@@ -105,7 +105,9 @@ class App extends Component {
             logTalkAboutEvents={this.state.webModel.logTalkAboutEvents}
             cameraOn={this.state.webModel.cameraOn}
             videoSource={this.state.webModel.videoSource}
+            useMasterPowerRelay={this.state.webModel.useMasterPowerRelay}
             masterRelayOn={this.state.webModel.masterRelayOn}
+            useMyCroft={this.state.webModel.useMyCroft}
             myCroftIsRunning={this.state.webModel.myCroftIsRunning}
             cloudServerConnected={this.state.webModel.cloudServerConnected}
             ROSisRunning={this.state.webModel.ROSisRunning}
