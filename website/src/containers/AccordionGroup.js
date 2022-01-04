@@ -101,6 +101,7 @@ class AccordionGroup extends Component {
           masterRelayOn={this.props.masterRelayOn}
           useMyCroft={this.props.useMyCroft}
           myCroftIsRunning={this.props.myCroftIsRunning}
+          clouServerExists={this.props.clouServerExists}
           cloudServerConnected={this.props.cloudServerConnected}
           sendDataToRobot={this.props.sendDataToRobot}
           personalData={this.props.personalData}
@@ -188,15 +189,17 @@ class AccordionGroup extends Component {
             sendDataToRobot={this.props.sendDataToRobot}
           />
         )}
-        <Video
-          isOpen={this.state.videoIsOpen}
-          toggle={this.toggle}
-          cameraOn={this.props.cameraOn}
-          videoSource={this.props.videoSource}
-          robotURL={this.props.robotURL}
-          sendDataToRobot={this.props.sendDataToRobot}
-          personalData={this.props.personalData}
-        />
+        {Boolean(this.props.thisSystemHasAScreen || this.props.camera0) && (
+          <Video
+            isOpen={this.state.videoIsOpen}
+            toggle={this.toggle}
+            cameraOn={this.props.cameraOn}
+            videoSource={this.props.videoSource}
+            robotURL={this.props.robotURL}
+            sendDataToRobot={this.props.sendDataToRobot}
+            personalData={this.props.personalData}
+          />
+        )}
       </>
     );
   }

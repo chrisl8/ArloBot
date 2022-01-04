@@ -103,12 +103,19 @@ class App extends Component {
             logBehaviorMessages={this.state.webModel.logBehaviorMessages}
             logOtherMessages={this.state.webModel.logOtherMessages}
             logTalkAboutEvents={this.state.webModel.logTalkAboutEvents}
+            thisSystemHasAScreen={this.state.webModel.thisSystemHasAScreen}
+            camera0={this.state.personalData.camera0}
             cameraOn={this.state.webModel.cameraOn}
             videoSource={this.state.webModel.videoSource}
             useMasterPowerRelay={this.state.personalData.useMasterPowerRelay}
             masterRelayOn={this.state.webModel.masterRelayOn}
             useMyCroft={this.state.personalData.useMyCroft}
             myCroftIsRunning={this.state.webModel.myCroftIsRunning}
+            clouServerExists={
+              this.state.personalData.cloudServer
+                ? this.state.personalData.cloudServer.exists
+                : false
+            }
             cloudServerConnected={this.state.webModel.cloudServerConnected}
             ROSisRunning={this.state.webModel.ROSisRunning}
             rosTopicItems={this.state.webModel.rosTopicItems}

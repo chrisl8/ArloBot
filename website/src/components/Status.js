@@ -167,16 +167,18 @@ const Status = (props) => {
               </span>
             </button>
           )}
-          <button
-            id="cloudStatusButton"
-            type="button"
-            className={cloudServerClass}
-          >
-            Cloud&nbsp;
-            <span className={cloudServerBadgeClass}>
-              {boolToUpDown(props.cloudServerConnected)}
-            </span>
-          </button>
+          {props.clouServerExists && (
+            <button
+              id="cloudStatusButton"
+              type="button"
+              className={cloudServerClass}
+            >
+              Cloud&nbsp;
+              <span className={cloudServerBadgeClass}>
+                {boolToUpDown(props.cloudServerConnected)}
+              </span>
+            </button>
+          )}
           {props.debugging && (
             <p>
               Active Debugging Log types:

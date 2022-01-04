@@ -6,6 +6,7 @@ const webModelFunctions = require('./webModelFunctions');
 const personalData = require('./personalData');
 
 let thisSystemHasAScreen = true;
+webModelFunctions.update('thisSystemHasAScreen', thisSystemHasAScreen);
 
 function resolvePath(str) {
   if (str.substr(0, 2) === '~/') {
@@ -39,6 +40,7 @@ const saveScreenShotForWeb = () => {
         console.error(stderr);
         console.error('Suspending screenshots.');
         thisSystemHasAScreen = false;
+        webModelFunctions.update('thisSystemHasAScreen', thisSystemHasAScreen);
       } else {
         // Argument options: error, stdout, stderr
         const compare = `compare -metric RMSE ${newFileName} ${oldFileName} /dev/null`;
