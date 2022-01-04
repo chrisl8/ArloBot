@@ -133,13 +133,29 @@ class RemoteControl extends Component {
     // console.log(this.joystickContainer.id);
   }
 
+  componentWillUnmount() {
+    this.clearRepeater();
+  }
+
   sendTwistCommandToROS(linearSpeed, angularSpeed) {
     // We'll use it to stop too!
     // The best way to see if this is working is:
     // rostopic echo /cmd_vel_mux/input/web # From the robot itself.
+
+    this.clearRepeater();
+
     if (this.rosConnected && this.cmdVel !== undefined) {
       const twist = this.RosService.twist(linearSpeed, angularSpeed);
       this.cmdVel.publish(twist); // cmdVel is assigned in startROSfunctions()
+      this.repeater = setTimeout(() => {
+        this.sendTwistCommandToROS(linearSpeed, angularSpeed);
+      }, 500);
+    }
+  }
+
+  clearRepeater() {
+    if (this.repeater) {
+      clearTimeout(this.repeater);
     }
   }
 
