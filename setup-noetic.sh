@@ -331,6 +331,9 @@ PACKAGE_TO_INSTALL_LIST+=(git)
 # git - allows for cloning of repositories
 PACKAGE_TO_INSTALL_LIST+=("xvfb")
 # xvfb is required for Cypress testing to work.
+PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-slam-toolbox")
+PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-slam-toolbox-rviz")
+# We always need Slam Toolbox, so just install both it and the Rviz pacakge.
 if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   # TODO: Some of these should probably be in package.xml, but that would require another round of testing.
   PACKAGE_TO_INSTALL_LIST+=(wget)
