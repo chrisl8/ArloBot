@@ -42,7 +42,6 @@
   <depend>fake_localization</depend>
   <depend>global_planner</depend>
   <depend>map_server</depend>
-  <depend>move_base</depend>
   <depend>move_slow_and_clear</depend>
   <depend>nav_core</depend>
   <depend>navfn</depend>
