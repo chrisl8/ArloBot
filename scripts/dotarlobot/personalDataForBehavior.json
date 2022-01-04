@@ -97,14 +97,14 @@
     "_has_leftMotor": "Set if you have the Left Motor attached to a USB Relay",
     "has_leftMotor": false,
     "_leftMotor": "List the number on the USB Relay controller that Left Motor is attached to.",
-    "leftMotor": 6,
+    "leftMotor": 999,
     "_has_rightMotor": "Set if you have the Right Motor attached to a USB Relay",
     "has_rightMotor": false,
     "_rightMotor": "List the number on the USB Relay controller that right Motor is attached to.",
-    "rightMotor": 2,
+    "rightMotor": 999,
     "has_speaker": false,
     "_speaker": "Relay used to turn on speaker by rapid power cycling it.",
-    "speaker": 2
+    "speaker": 999
   },
   "maxPingRangeAccepted": 0.5,
   "socketEmitterThrottle": 500,
