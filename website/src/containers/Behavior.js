@@ -101,36 +101,42 @@ class Behavior extends Component {
                     />
                   </form>
                 </div>
-                <div className="no-flex">
-                  <form
-                    id="askRobotSomethingForm"
-                    name="askRobotSomethingForm"
-                    onSubmit={this.askRobot}
-                  >
-                    <input
-                      type="text"
-                      id="ask-something"
-                      placeholder="Ask me anything!"
-                      value={this.state.askRobot}
-                      onChange={this.handleAskRobotTextChange}
-                    />
-                    <input
-                      type="submit"
-                      value="Ask"
-                      className="btn btn-primary"
-                    />
-                  </form>
-                </div>
-                {/* TODO: Pretty up or move this response text. */}
-                <div className="no-flex">
-                  Response:&nbsp;
-                  <div id="robot-said-text" className="robot-said-text">
-                    {this.props.myCroftSaid !== '' && (
-                      <p>{this.props.myCroftSaid}</p>
-                    )}
+                {Boolean(
+                  this.props.useMyCroft && this.props.myCroftIsRunning,
+                ) && (
+                  <div className="no-flex">
+                    <form
+                      id="askRobotSomethingForm"
+                      name="askRobotSomethingForm"
+                      onSubmit={this.askRobot}
+                    >
+                      <input
+                        type="text"
+                        id="ask-something"
+                        placeholder="Ask me anything!"
+                        value={this.state.askRobot}
+                        onChange={this.handleAskRobotTextChange}
+                      />
+                      <input
+                        type="submit"
+                        value="Ask"
+                        className="btn btn-primary"
+                      />
+                    </form>
                   </div>
-                </div>
-                {/* TODO: Let us know when the Mycroft service is not running. */}
+                )}
+                {Boolean(
+                  this.props.useMyCroft && this.props.myCroftIsRunning,
+                ) && (
+                  <div className="no-flex">
+                    Response:&nbsp;
+                    <div id="robot-said-text" className="robot-said-text">
+                      {this.props.myCroftSaid !== '' && (
+                        <p>{this.props.myCroftSaid}</p>
+                      )}
+                    </div>
+                  </div>
+                )}
                 {/* TODO: Can we see when mycroft heard and is thinking and let everybody know? */}
               </div>
               <div className="flex-row-wrap">

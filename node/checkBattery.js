@@ -80,17 +80,21 @@ const checkBattery = (logIt) => {
     });
   }
 
-  if (!pluggedInStatusFoundInROS && pluggedInFile) {
-    fs.readFile(pluggedInFile, 'utf8', (err, data) => {
-      if (err) {
-        console.error('Error reading AC status file.');
-      } else {
-        webModelFunctions.update(
-          'pluggedIn',
-          data.split('\n').indexOf('POWER_SUPPLY_ONLINE=1') > -1,
-        );
-      }
-    });
+  if (!pluggedInStatusFoundInROS) {
+    if (pluggedInFile) {
+      fs.readFile(pluggedInFile, 'utf8', (err, data) => {
+        if (err) {
+          console.error('Error reading AC status file.');
+        } else {
+          webModelFunctions.update(
+            'pluggedIn',
+            data.split('\n').indexOf('POWER_SUPPLY_ONLINE=1') > -1,
+          );
+        }
+      });
+    } else {
+      webModelFunctions.update('pluggedIn', 'unknown');
+    }
   }
 
   /** @namespace personalData.batteryConsideredFullAt */

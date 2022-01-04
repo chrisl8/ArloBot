@@ -78,37 +78,49 @@ const Status = (props) => {
       </CardHeader>
       <Collapse id="status-card-body" isOpen={props.isOpen}>
         <CardBody>
-          <button
-            id="laptopBatteryStatusButton"
-            type="button"
-            className={laptopBatteryClass}
-          >
-            Laptop Battery&nbsp;
-            <span className="badge rounded-pill bg-dark">
-              {props.laptopBatteryPercentage}%
-            </span>
-          </button>
-          <button
-            id="laptopChargedStatusButton"
-            type="button"
-            className={laptopFullyChargedClass}
-          >
-            Laptop Fully Charged&nbsp;
-            <span className={laptopFullyChargedBadgeClass}>
-              {boolToYesNo(props.laptopFullyCharged)}
-            </span>
-          </button>
-          <button
-            id="pluggedInStatusButton"
-            type="button"
-            className={pluggedInClass}
-            onClick={() => props.openGroup('startupShutdown')}
-          >
-            Plugged In&nbsp;
-            <span className={pluggedInBadgeClass}>
-              {boolToYesNo(props.pluggedIn)}
-            </span>
-          </button>
+          {props.laptopBatteryPercentage !== '???' &&
+            !props.monitorACconnection && (
+              <button
+                id="laptopBatteryStatusButton"
+                type="button"
+                className={laptopBatteryClass}
+              >
+                Laptop Battery&nbsp;
+                <span className="badge rounded-pill bg-dark">
+                  {props.laptopBatteryPercentage}%
+                </span>
+              </button>
+            )}
+          {props.laptopFullyCharged !== 'unknown' &&
+            !props.monitorACconnection && (
+              <button
+                id="laptopChargedStatusButton"
+                type="button"
+                className={laptopFullyChargedClass}
+              >
+                Laptop Fully Charged&nbsp;
+                <span className={laptopFullyChargedBadgeClass}>
+                  {boolToYesNo(props.laptopFullyCharged)}
+                </span>
+              </button>
+            )}
+          {Boolean(
+            (!props.monitorACconnection && props.pluggedIn) ||
+              props.pluggedIn === true ||
+              props.pluggedIn === false,
+          ) && (
+            <button
+              id="pluggedInStatusButton"
+              type="button"
+              className={pluggedInClass}
+              onClick={() => props.openGroup('startupShutdown')}
+            >
+              Plugged In&nbsp;
+              <span className={pluggedInBadgeClass}>
+                {boolToYesNo(props.pluggedIn)}
+              </span>
+            </button>
+          )}
           <button
             id="mapStatusButton"
             type="button"

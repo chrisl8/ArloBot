@@ -4,6 +4,7 @@ import nipplejs from 'nipplejs';
 import './RemoteControl.css';
 // This is the only component that uses the ROS Service, so I'm importing it and setting it up here
 import RosService from '../utils/RosService';
+import boolToYesNo from '../utils/boolToYesNo';
 
 class RemoteControl extends Component {
   constructor(props) {
@@ -180,14 +181,19 @@ class RemoteControl extends Component {
                 ROS Stopped
               </button>
             )}
-            {this.props.pluggedIn && (
+            {Boolean(
+              (!this.props.monitorACconnection && this.props.pluggedIn) ||
+                this.props.pluggedIn === true,
+            ) && (
               <button
                 type="button"
                 className="btn btn-danger"
                 onClick={() => this.props.openGroup('startupShutdown')}
               >
                 Plugged In&nbsp;
-                <span className="badge rounded-pill bg-dark">Yes</span>
+                <span className="badge rounded-pill bg-dark">
+                  {boolToYesNo(this.props.pluggedIn)}
+                </span>
               </button>
             )}
             {this.state.joystickOutput}
@@ -198,6 +204,8 @@ class RemoteControl extends Component {
                 this.joystickContainer = div;
               }}
             />
+            If robot does not respond, check the Telemetry section. You can
+            override sensors in the Sensors section if you need to.
           </CardBody>
         </Collapse>
       </Card>

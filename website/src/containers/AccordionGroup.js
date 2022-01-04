@@ -89,6 +89,7 @@ class AccordionGroup extends Component {
         <Status
           laptopBatteryPercentage={this.props.laptopBatteryPercentage}
           laptopFullyCharged={this.props.laptopFullyCharged}
+          monitorACconnection={this.props.monitorACconnection}
           pluggedIn={this.props.pluggedIn}
           mapName={this.props.mapName}
           debugging={this.props.debugging}
@@ -123,6 +124,8 @@ class AccordionGroup extends Component {
           idleTimeout={this.props.idleTimeout}
           sendDataToRobot={this.props.sendDataToRobot}
           beQuiet={this.props.beQuiet}
+          useMyCroft={this.props.useMyCroft}
+          myCroftIsRunning={this.props.myCroftIsRunning}
           myCroftSaid={this.props.myCroftSaid}
           ROSisRunning={this.props.ROSisRunning}
           useArduinoForBlinkenLights={this.props.useArduinoForBlinkenLights}
@@ -186,6 +189,7 @@ class AccordionGroup extends Component {
             openGroup={this.openGroup}
             RosService={this.props.RosService}
             pluggedIn={this.props.pluggedIn}
+            monitorACconnection={this.props.monitorACconnection}
             sendDataToRobot={this.props.sendDataToRobot}
           />
         )}
