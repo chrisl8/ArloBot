@@ -136,7 +136,8 @@ async function start() {
     },
   });
   // NOTE: The cors object is only actually used/needed for testing the site when running it remotely.
-  // For production it isn't used.
+  // For production, it isn't used because we connect back to the same IP address
+  // that the server runs on!
 
   const throttledWebModelEmitter = _.throttle(
     () => {

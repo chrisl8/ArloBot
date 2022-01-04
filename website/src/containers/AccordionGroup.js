@@ -111,17 +111,20 @@ class AccordionGroup extends Component {
             rosTopicItems={this.props.rosTopicItems}
           />
         )}
-        <Relays
-          relays={this.props.relays}
-          masterRelayOn={this.props.masterRelayOn}
-          sendDataToRobot={this.props.sendDataToRobot}
-        />
+        {this.props.useUSBrelay && (
+          <Relays
+            relays={this.props.relays}
+            masterRelayOn={this.props.masterRelayOn}
+            sendDataToRobot={this.props.sendDataToRobot}
+          />
+        )}
         <Behavior
           idleTimeout={this.props.idleTimeout}
           sendDataToRobot={this.props.sendDataToRobot}
           beQuiet={this.props.beQuiet}
           myCroftSaid={this.props.myCroftSaid}
           ROSisRunning={this.props.ROSisRunning}
+          useArduinoForBlinkenLights={this.props.useArduinoForBlinkenLights}
           neoPixelsOn={this.props.neoPixelsOn}
         />
         {this.props.ROSisRunning && (

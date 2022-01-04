@@ -185,16 +185,18 @@ class Behavior extends Component {
                   <label className={talkButtonRightSideLabelClass}>Quiet</label>
                 </div>
               </div>
-              <div className="flex-row-wrap behavior-buttons">
-                <button
-                  id="blinky-lights-button"
-                  type="button"
-                  className={blinkyLightButtonClass}
-                  onClick={() => this.props.sendDataToRobot('arduino')}
-                >
-                  Blinky Lights
-                </button>
-              </div>
+              {this.props.useArduinoForBlinkenLights && (
+                <div className="flex-row-wrap behavior-buttons">
+                  <button
+                    id="blinky-lights-button"
+                    type="button"
+                    className={blinkyLightButtonClass}
+                    onClick={() => this.props.sendDataToRobot('arduino')}
+                  >
+                    Blinky Lights
+                  </button>
+                </div>
+              )}
             </div>
           </CardBody>
         </Collapse>

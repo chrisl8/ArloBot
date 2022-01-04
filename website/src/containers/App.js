@@ -105,17 +105,21 @@ class App extends Component {
             logTalkAboutEvents={this.state.webModel.logTalkAboutEvents}
             cameraOn={this.state.webModel.cameraOn}
             videoSource={this.state.webModel.videoSource}
-            useMasterPowerRelay={this.state.webModel.useMasterPowerRelay}
+            useMasterPowerRelay={this.state.personalData.useMasterPowerRelay}
             masterRelayOn={this.state.webModel.masterRelayOn}
-            useMyCroft={this.state.webModel.useMyCroft}
+            useMyCroft={this.state.personalData.useMyCroft}
             myCroftIsRunning={this.state.webModel.myCroftIsRunning}
             cloudServerConnected={this.state.webModel.cloudServerConnected}
             ROSisRunning={this.state.webModel.ROSisRunning}
             rosTopicItems={this.state.webModel.rosTopicItems}
+            useUSBrelay={this.state.personalData.useUSBrelay}
             relays={this.state.webModel.relays}
             idleTimeout={this.state.webModel.idleTimeout}
             beQuiet={this.state.webModel.beQuiet}
             myCroftSaid={this.state.webModel.myCroftSaid}
+            useArduinoForBlinkenLights={
+              this.state.personalData.useArduinoForBlinkenLights
+            }
             neoPixelsOn={this.state.webModel.neoPixelsOn}
             ROSstart={this.state.webModel.ROSstart}
             monitorACconnection={

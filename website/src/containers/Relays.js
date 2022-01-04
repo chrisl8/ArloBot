@@ -16,6 +16,9 @@ class Relays extends Component {
   render() {
     const buttonIdList = [];
     const cardBody = this.props.relays.map((entry) => {
+      if (entry.name === 'empty') {
+        return null;
+      }
       let buttonId = `${entry.name}RelayButton`;
       if (buttonIdList.indexOf(buttonId) > -1) {
         buttonId = `${buttonId}${entry.number}`;
