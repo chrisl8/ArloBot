@@ -72,8 +72,8 @@ class App extends Component {
   }
 
   render() {
-    let pageContent = <></>;
-    let bottomButton = <></>;
+    let pageContent;
+    let bottomButton;
     if (this.state.webModel.status !== 'Robot Offline') {
       if (this.state.appFunction === 'settings') {
         pageContent = <Settings personalData={this.state.personalData} />;
