@@ -12,7 +12,7 @@
     "react-dom": "^17.0.1",
     "react-scripts": "^5.0.0",
     "reactstrap": "^9.0.1",
-    "roslib": "^1.1.0",
+    "roslib": "git+https://github.com/RobotWebTools/roslibjs.git",
     "socket.io-client": "^4.0.0",
     "patch-package": "^6.4.7"
   },
