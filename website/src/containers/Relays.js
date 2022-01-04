@@ -21,11 +21,11 @@ class Relays extends Component {
         buttonId = `${buttonId}${entry.number}`;
       }
       buttonIdList.push(buttonId);
-      let thisButtonClass = 'btn';
-      let thisButtonBadgeClass = 'badge badge-secondary';
+      let thisButtonClass = 'btn btn-light';
+      let thisButtonBadgeClass = 'badge rounded-pill bg-secondary';
       if (entry.relayOn) {
         thisButtonClass = 'btn btn-success';
-        thisButtonBadgeClass = 'badge badge-light';
+        thisButtonBadgeClass = 'badge rounded-pill bg-dark';
       }
       return (
         <span key={entry.number}>

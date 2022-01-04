@@ -18,11 +18,11 @@ class RobotServiceLog extends Component {
   }
 
   render() {
-    let startRosLogStreamerClass = 'btn';
-    let startRosLogStreamerBadgeClass = 'badge badge-secondary';
+    let startRosLogStreamerClass = 'btn btn-light';
+    let startRosLogStreamerBadgeClass = 'badge rounded-pill bg-secondary';
     if (this.props.logStreamerRunning) {
       startRosLogStreamerClass = 'btn btn-success';
-      startRosLogStreamerBadgeClass = 'badge badge-light';
+      startRosLogStreamerBadgeClass = 'badge rounded-pill bg-dark';
     }
     const scrollingStatus = this.props.scrollingStatus.map((entry, index) => (
       // eslint-disable-next-line react/no-array-index-key

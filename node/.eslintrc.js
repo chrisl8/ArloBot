@@ -11,13 +11,14 @@
 // Less thinking is better than perfect and/or my preferences.
 
 module.exports = {
+  // https://gils-blog.tayar.org/posts/using-jsm-esm-in-nodejs-a-practical-guide-part-3/
+  parser: '@babel/eslint-parser', // Required to allow top level await
+  parserOptions: {
+    ecmaVersion: 2020,
+    sourceType: 'module',
+  },
   plugins: ['prettier'],
   extends: ['airbnb', 'prettier'],
-  env: {
-    es6: true, // Probably not needed, because of babel-eslint
-    node: true, // Probably not needed, because of babel-eslint
-    jest: true,
-  },
   rules: {
     'prettier/prettier': 'error',
     // These are not code style or real errors, just "best practices" that really mean

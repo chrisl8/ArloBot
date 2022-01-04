@@ -15,11 +15,11 @@ const Video = (props) => {
     );
   }
 
-  let cameraClass = 'btn';
-  let cameraBadgeClass = 'badge badge-secondary';
+  let cameraClass = 'btn btn-light';
+  let cameraBadgeClass = 'badge rounded-pill bg-secondary';
   if (props.cameraOn) {
     cameraClass = 'btn btn-success';
-    cameraBadgeClass = 'badge badge-light';
+    cameraBadgeClass = 'badge rounded-pill bg-dark';
   }
 
   let { videoSource } = props;

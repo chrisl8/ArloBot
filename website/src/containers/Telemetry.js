@@ -16,11 +16,11 @@ class Telemetry extends Component {
     let cardBody = <p>These do not work until ROS is Running.</p>;
     if (this.props.ROSisRunning) {
       cardBody = this.props.rosTopicItems.map((entry) => {
-        let thisButtonClass = 'btn';
-        let thisButtonBadgeClass = 'badge badge-secondary';
+        let thisButtonClass = 'btn btn-light';
+        let thisButtonBadgeClass = 'badge rounded-pill bg-secondary';
         if (entry.btnClass !== '') {
           thisButtonClass = `btn ${entry.btnClass}`;
-          thisButtonBadgeClass = 'badge badge-light';
+          thisButtonBadgeClass = 'badge rounded-pill bg-dark';
         }
         return (
           <span key={entry.rosName}>

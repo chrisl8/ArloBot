@@ -13,62 +13,62 @@ const Status = (props) => {
     laptopBatteryClass = 'btn btn-warning';
   }
 
-  let laptopFullyChargedClass = 'btn';
-  let laptopFullyChargedBadgeClass = 'badge badge-secondary';
+  let laptopFullyChargedClass = 'btn btn-light';
+  let laptopFullyChargedBadgeClass = 'badge rounded-pill bg-secondary';
   if (props.laptopFullyCharged === true) {
     laptopFullyChargedClass = 'btn btn-success';
-    laptopFullyChargedBadgeClass = 'badge badge-light';
+    laptopFullyChargedBadgeClass = 'badge rounded-pill bg-dark';
   }
 
-  let pluggedInClass = 'btn';
-  let pluggedInBadgeClass = 'badge badge-secondary';
+  let pluggedInClass = 'btn btn-light';
+  let pluggedInBadgeClass = 'badge rounded-pill bg-secondary';
   if (props.pluggedIn) {
     pluggedInClass = 'btn btn-danger';
-    pluggedInBadgeClass = 'badge badge-light';
+    pluggedInBadgeClass = 'badge rounded-pill bg-dark';
   }
 
-  let mapClass = 'btn';
-  let mapBadgeClass = 'badge badge-secondary';
+  let mapClass = 'btn btn-light';
+  let mapBadgeClass = 'badge rounded-pill bg-secondary';
   let mapBadgeText = 'None';
   if (props.mapName !== '') {
     mapClass = 'btn btn-success';
-    mapBadgeClass = 'badge badge-light';
+    mapBadgeClass = 'badge rounded-pill bg-dark';
     mapBadgeText = props.mapName;
   }
 
-  let debuggingClass = 'btn';
-  let debuggingBadgeClass = 'badge badge-secondary';
+  let debuggingClass = 'btn btn-light';
+  let debuggingBadgeClass = 'badge rounded-pill bg-secondary';
   if (props.debugging) {
     debuggingClass = 'btn btn-warning';
-    debuggingBadgeClass = 'badge badge-light';
+    debuggingBadgeClass = 'badge rounded-pill bg-dark';
   }
 
-  let cameraClass = 'btn';
-  let cameraBadgeClass = 'badge badge-secondary';
+  let cameraClass = 'btn btn-light';
+  let cameraBadgeClass = 'badge rounded-pill bg-secondary';
   if (props.cameraOn) {
     cameraClass = 'btn btn-success';
-    cameraBadgeClass = 'badge badge-light';
+    cameraBadgeClass = 'badge rounded-pill bg-dark';
   }
 
-  let masterRelayClass = 'btn';
-  let masterRelayBadgeClass = 'badge badge-secondary';
+  let masterRelayClass = 'btn btn-light';
+  let masterRelayBadgeClass = 'badge rounded-pill bg-secondary';
   if (props.masterRelayOn) {
     masterRelayClass = 'btn btn-success';
-    masterRelayBadgeClass = 'badge badge-light';
+    masterRelayBadgeClass = 'badge rounded-pill bg-dark';
   }
 
-  let myCroftClass = 'btn';
-  let myCroftBadgeClass = 'badge badge-secondary';
+  let myCroftClass = 'btn btn-light';
+  let myCroftBadgeClass = 'badge rounded-pill bg-secondary';
   if (props.myCroftIsRunning) {
     myCroftClass = 'btn btn-success';
-    myCroftBadgeClass = 'badge badge-light';
+    myCroftBadgeClass = 'badge rounded-pill bg-dark';
   }
 
-  let cloudServerClass = 'btn';
-  let cloudServerBadgeClass = 'badge badge-secondary';
+  let cloudServerClass = 'btn btn-light';
+  let cloudServerBadgeClass = 'badge rounded-pill bg-secondary';
   if (props.cloudServerConnected) {
     cloudServerClass = 'btn btn-success';
-    cloudServerBadgeClass = 'badge badge-light';
+    cloudServerBadgeClass = 'badge rounded-pill bg-dark';
   }
 
   return (
@@ -84,7 +84,7 @@ const Status = (props) => {
             className={laptopBatteryClass}
           >
             Laptop Battery&nbsp;
-            <span className="badge badge-light">
+            <span className="badge rounded-pill bg-dark">
               {props.laptopBatteryPercentage}%
             </span>
           </button>

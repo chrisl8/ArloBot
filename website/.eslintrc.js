@@ -11,15 +11,27 @@
 // Less thinking is better than perfect and/or my preferences.
 
 module.exports = {
-  parser: 'babel-eslint',
-  plugins: ['react', 'prettier'],
-  extends: ['plugin:react/recommended', 'airbnb', 'prettier'],
-  // extends: ['airbnb'],
-  env: {
-    es6: true, // Probably not needed, because of babel-eslint
-    node: true, // Probably not needed, because of babel-eslint
-    browser: true, // Allows usage of window global
+  parser: '@babel/eslint-parser',
+  settings: {
+    react: {
+      version: 'detect',
+    },
   },
+  env: {
+    browser: true,
+    es2021: true,
+  },
+  parserOptions: {
+    sourceType: 'module',
+  },
+  plugins: ['react', 'prettier'],
+  extends: [
+    'plugin:react/recommended',
+    'plugin:react/jsx-runtime',
+    'plugin:testing-library/react',
+    'airbnb',
+    'prettier',
+  ],
   rules: {
     'prettier/prettier': 'error',
     // Even FB says to name JSX files .js these days
@@ -38,5 +50,13 @@ module.exports = {
     'no-restricted-syntax': 'off',
     'react/no-access-state-in-setstate': 'off',
     'react/no-did-update-set-state': 'off',
+    'react/function-component-definition': [
+      2,
+      {
+        namedComponents: 'arrow-function',
+        unnamedComponents: 'arrow-function',
+      },
+    ], // https://github.com/airbnb/javascript/issues/2505
+    // https://stackoverflow.com/a/69931909/4982408
   },
 };

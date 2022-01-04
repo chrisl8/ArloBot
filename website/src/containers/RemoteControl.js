@@ -171,7 +171,7 @@ class RemoteControl extends Component {
                 onClick={() => this.props.openGroup('startupShutdown')}
               >
                 Plugged In&nbsp;
-                <span className="badge badge-light">Yes</span>
+                <span className="badge rounded-pill bg-dark">Yes</span>
               </button>
             )}
             {this.state.joystickOutput}

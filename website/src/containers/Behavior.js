@@ -66,7 +66,7 @@ class Behavior extends Component {
       talkButtonLeftSideLabelClass += ' brightly-positive-text';
     }
 
-    let blinkyLightButtonClass = 'btn';
+    let blinkyLightButtonClass = 'btn btn-light';
     if (this.props.neoPixelsOn) {
       blinkyLightButtonClass = 'btn btn-warning';
     }
