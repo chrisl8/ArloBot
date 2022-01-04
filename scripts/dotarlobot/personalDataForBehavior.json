@@ -36,7 +36,7 @@
   "useLCD": false,
   "LCDString": "Adafruit_Industries",
   "LCDLocation": "ID_MODEL",
-  "useArduinoForBlinkenLights": true,
+  "useArduinoForBlinkenLights": false,
   "arduinoUniqueString": "Arduino__www.arduino.cc__0043_8533434373835150C141",
   "arduinoStringLocation": "ID_SERIAL",
   "_useUSBrelay": "Set to true if you have a USB Relay board",
