@@ -148,9 +148,11 @@ class RemoteControl extends Component {
     if (this.rosConnected && this.cmdVel !== undefined) {
       const twist = this.RosService.twist(linearSpeed, angularSpeed);
       this.cmdVel.publish(twist); // cmdVel is assigned in startROSfunctions()
-      this.repeater = setTimeout(() => {
-        this.sendTwistCommandToROS(linearSpeed, angularSpeed);
-      }, 500);
+      if (linearSpeed !== 0 || angularSpeed !== 0) {
+        this.repeater = setTimeout(() => {
+          this.sendTwistCommandToROS(linearSpeed, angularSpeed);
+        }, 500);
+      }
     }
   }
 
