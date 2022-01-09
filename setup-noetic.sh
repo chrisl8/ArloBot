@@ -335,10 +335,11 @@ PACKAGE_TO_INSTALL_LIST=()
 # ### Required Packages and Why ###
 PACKAGE_TO_INSTALL_LIST+=(git)
 # git - allows for cloning of repositories
-PACKAGE_TO_INSTALL_LIST+=("xvfb")
-# xvfb is required for Cypress testing to work.
+if [[ "${ROS_META_PACKAGE}" == "desktop-full" ]]; then
+  PACKAGE_TO_INSTALL_LIST+=("xvfb")
+  # xvfb is required for Cypress testing to work.
+fi
 if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
-  # TODO: Some of these should probably be in package.xml, but that would require another round of testing.
   PACKAGE_TO_INSTALL_LIST+=(wget)
   # wget - This is almost certainly already installed, but if not, this setup will fail.
   PACKAGE_TO_INSTALL_LIST+=(moreutils)
@@ -687,9 +688,11 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   printf "\n${YELLOW}[Building React website]${NC}\n"
   npm run build
 
-  cd "${HOME}/catkin_ws/src/ArloBot/cypress-tests"
-  printf "\n${YELLOW}[Installing Cypress.io for Tests]$NC\n"
-  npm ci
+  if [[ "${ROS_META_PACKAGE}" == "desktop-full" ]]; then
+    cd "${HOME}/catkin_ws/src/ArloBot/cypress-tests"
+    printf "\n${YELLOW}[Installing Cypress.io for Tests]$NC\n"
+    npm ci
+  fi
 
   if ! (command -v mjpg_streamer >/dev/null); then
     printf "\n${YELLOW}[Installing mjpg_streamer for Web Page camera viewing]${NC}\n"
