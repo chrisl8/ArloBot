@@ -150,7 +150,7 @@ sudo apt update
 sudo apt upgrade -y
 
 # Determine whether to install ros desktop-full or base, based on the presence of X windows components.
-ROS_META_PACKAGE=base
+ROS_META_PACKAGE=ros-base
 if (dpkg -l | grep xserver-xorg-core); then
   ROS_META_PACKAGE=desktop-full
 fi
