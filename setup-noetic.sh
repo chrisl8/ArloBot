@@ -357,8 +357,10 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   # expect - required to get 'unbuffer' which is required by node to spawn ROS commands and get real time stdout data
   # http://stackoverflow.com/a/11337310
   # http://linux.die.net/man/1/unbuffer
-  PACKAGE_TO_INSTALL_LIST+=(imagemagick)
-  # imagemagick - used to grab screen shots of desktop for web local robot website display
+  if [[ "${ROS_META_PACKAGE}" == "desktop-full" ]]; then
+    PACKAGE_TO_INSTALL_LIST+=(imagemagick)
+    # imagemagick - used to grab screen shots of desktop for web local robot website display
+  fi
   if [[ "${RESPONSE_TO_ASUS_XTION_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
     # Always test in Travis
     PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-openni2-launch")
