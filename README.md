@@ -168,7 +168,7 @@ Depending on what you want to do there are different ways to "bring up" the robo
 
 ### Basic TeleOp with 3D sensor use ###
 ```
-~/catkin_ws/src/ArloBot/scripts/start-robot.sh
+start-robot.sh
 # In a new Terminal:
 roslaunch arlobot_ros keyboard_teleop.launch
 # From a Terminal in the desktop (NOT over SSH):
@@ -182,7 +182,7 @@ roslaunch arlobot_ros view_navigation.launch
 ### Remote Control with an xBox 360 Joystick ###
 https://ekpyroticfrood.net/?p=115
 ```
-roslaunch arlobot_ros minimal.launch
+start-robot.sh
 # In a new Terminal:
 rosparam set /joystick/dev "/dev/input/js0"
 roslaunch arlobot_ros xbox360_teleop.launch
