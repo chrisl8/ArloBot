@@ -168,12 +168,9 @@ Depending on what you want to do there are different ways to "bring up" the robo
 
 ### Basic TeleOp with 3D sensor use ###
 ```
-roslaunch arlobot_ros minimal.launch
+~/catkin_ws/src/ArloBot/scripts/start-robot.sh
 # In a new Terminal:
 roslaunch arlobot_ros keyboard_teleop.launch
-# In a new Terminal:
-RPLIDAR_USB_PORT=$(find_RPLIDAR.sh) 
-roslaunch arlobot_ros rplidar.launch
 # From a Terminal in the desktop (NOT over SSH):
 roslaunch arlobot_ros view_navigation.launch
 ```
