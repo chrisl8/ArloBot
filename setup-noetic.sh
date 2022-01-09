@@ -149,15 +149,21 @@ printf "\n${YELLOW}[Updating & upgrading all existing Ubuntu packages]${NC}\n"
 sudo apt update
 sudo apt upgrade -y
 
+# Determine whether to install ros desktop-full or base, based on the presence of X windows components.
+ROS_META_PACKAGE=base
+if (dpkg -l | grep xserver-xorg-core); then
+  ROS_META_PACKAGE=desktop-full
+fi
+
 # This should follow the official ROS install instructions closely.
 #      http://wiki.ros.org/noetic/Installation/Ubuntu
 # That is why there is a separate section for extra packages that I need for Arlo.
 # Note, while we are NOT building ROS from source, we are building SOME THINGS from source,
 # and hence must also follow the the instructions to set up a build environment
 #      http://wiki.ros.org/noetic/Installation/Source
-if ! (dpkg -s ros-${INSTALLING_ROS_DISTRO}-desktop-full | grep "Status: install ok installed" &>/dev/null) || ! (command -v rosdep) || ! (command -v rosinstall_generator); then
+if ! (dpkg -s ros-${INSTALLING_ROS_DISTRO}-${ROS_META_PACKAGE} | grep "Status: install ok installed" &>/dev/null) || ! (command -v rosdep) || ! (command -v rosinstall_generator); then
   printf "\n${YELLOW}[Installing ROS]${NC}\n"
-  sudo apt install -y ros-${INSTALLING_ROS_DISTRO}-desktop-full
+  sudo apt install -y ros-${INSTALLING_ROS_DISTRO}-${ROS_META_PACKAGE}
   printf "${YELLOW}[ROS installed!]${NC}\n"
   printf "\n${LIGHTBLUE}Installing ROS Dependencies for building packages${NC}\n"
   sudo apt install -y python3-rosdep python3-rosinstall-generator python3-vcstool build-essential
