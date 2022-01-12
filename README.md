@@ -193,7 +193,7 @@ https://github.com/SteveMacenski/slam_toolbox
 ```
 start-robot.sh
 # In a new Terminal:
-roslaunch arlobot_ros slam_toolbox.launch
+make-map.sh
 # From a Terminal in the desktop (NOT over SSH):
 roslaunch arlobot_ros view_navigation.launch
 # When you are done, save your map!
@@ -218,8 +218,7 @@ save-map.sh
 ```
 start-robot.sh
 # In a new Terminal:
-export MAP_FILE_NAME="${HOME}/.arlobot/rosmaps/my_map1"
-roslaunch arlobot_ros slam_toolbox.launch
+load-map.sh "${HOME}/.arlobot/rosmaps/my_map1"
 # From a Terminal in the desktop (NOT over SSH):
 roslaunch arlobot_ros view_navigation.launch
 ```
