@@ -167,7 +167,10 @@ Notice that you must run that **AFTER ROS is started**, and run it every time yo
 Depending on what you want to do there are different ways to "bring up" the robot with just ROS.<br/>These are the "recipes" that are well tested so far:
 
 ### Basic TeleOp with 3D sensor use ###
+Note that the `start-robot.sh` script is the **same thing** as pressing the "Start ROS" button in the Web Interface.  
+It helps to make sure that it runs properly from the command line though before relying on the web interface, in case there were setup issues.
 ```
+# Run:
 start-robot.sh
 # In a new Terminal:
 roslaunch arlobot_ros keyboard_teleop.launch
@@ -179,43 +182,32 @@ view-navigation.sh
   - Look at the Scan output to see if it is producing an image of the room.
   - Drive and see if the robot appears to move properly on the grid.
 
-### Remote Control with an xBox 360 Joystick ###
-https://ekpyroticfrood.net/?p=115
-```
-start-robot.sh
-# In a new Terminal:
-rosparam set /joystick/dev "/dev/input/js0"
-roslaunch arlobot_ros xbox360_teleop.launch
-```
-
 ### Slam Toolbox (SLAM Map building) ###
-https://github.com/SteveMacenski/slam_toolbox
+https://github.com/SteveMacenski/slam_toolbox  
+Note that the `make-map.sh` script is the **same thing** as pressing the "Make Map" button in the Web Interface, and  
+`save-map.sh` is the SAME thing as pressing the "Save Map" button in the Web Interface.  
+It helps to make sure that it runs properly from the command line though before relying on the web interface, in case there were setup issues.
 ```
+# Run:
 start-robot.sh
 # In a new Terminal:
 make-map.sh
 # From a Terminal in the desktop (NOT over SSH):
 view-navigation.sh
 # When you are done, save your map!
-rosservice" call /slam_toolbox/serialize_map "${HOME}/.arlobot/rosmaps/my_map1"
+save-map.sh "${HOME}/.arlobot/rosmaps/my_map1"
 ```
 ##### Do this:
-  - Ensure obstacles in the 3D Camera view are shown in the local cost map
-  - Use the "2D Nav Goal" to set destinations for the robot to navigate to.
-  - Once you have built a map you are happy with, save it.
-
-##### Note you can also run these scripts to accomplish the same thing more easily:
-```
-start-robot.sh
-make-map.sh
-view-navigation.sh
-# and to save the map:
-save-map.sh
-```    
-
+- Ensure obstacles in the 3D Camera view are shown in the local cost map
+- Use the "2D Nav Goal" to set destinations for the robot to navigate to.
+- Once you have built a map you are happy with, save it.
 
 ### Localization (Navigating the map we built above ###
+Note that the `load-map.sh` script is the **same thing** as pressing the "Load Map" button in the Web Interface, and  
+`save-map.sh` is the SAME thing as pressing the "Save Map" button in the Web Interface.  
+It helps to make sure that it runs properly from the command line though before relying on the web interface, in case there were setup issues.
 ```
+# Run:
 start-robot.sh
 # In a new Terminal:
 load-map.sh "${HOME}/.arlobot/rosmaps/my_map1"
@@ -223,11 +215,30 @@ load-map.sh "${HOME}/.arlobot/rosmaps/my_map1"
 view-navigation.sh
 ```
 
+### Remote Control with an xBox 360 Joystick ###
+https://ekpyroticfrood.net/?p=115
+This should work as soon as you Start ROS, either with `start-robot.sh` or with the Web Interface.
+
+# Rviz
+The easiest way to bring up Rviz is with the script:
+```
+view-navigation.sh
+```
+In theory one may want to bring this up on a different computer than the robot's on-board computer.
+That is possible, especially if you ran the bash setup script on that other computer and selected "Y" to make it a "workstation".
+That said, you will need to ensure your ROS environment variables are set up correctly. If you are having trouble either with ROS on your remote workstation saying that it cannot see the robot, or with setting destination snot working in Rviz, check out this page for assistance:  
+
+http://wiki.ros.org/ROS/NetworkSetup
+
+# Assistance
+
 Please report an issue for any problems or if you need me to clarify anything!  
- Ask questions in the [Parallax Forums](https://forums.parallax.com/ "Parallax Forums"), on [GitHub](https://github.com/chrisl8/ArloBot/issues "Create an Issue"), on the [ROS for Arlobot Google Group](https://groups.google.com/g/ros-for-arlobot "ROS for Arlobot"), and on my [blog](https://ekpyroticfrood.net/ "My Blog"). We will write more documentation as we answer questions, and I hope you will also write instructions when you do your build!
+ Ask questions in the [Parallax Forums](https://forums.parallax.com/ "Parallax Forums"), on [GitHub](https://github.com/chrisl8/ArloBot/issues "Create an Issue"), on the [ROS for Arlobot Google Group](https://groups.google.com/g/ros-for-arlobot "ROS for Arlobot"), and on my [blog](https://ekpyroticfrood.net/ "My Blog"). I will write more documentation as I answer questions, and I hope you will also write instructions when you do your build!
 
 
-# Script Based Operation #
+# Scripts
+
+Here is a list of the "convenience scripts" that I have written for Arlobot. Many are used by the web site. All of them can be run directly by you if you need or want to. 
 
 All of the functions above also have quick launch scripts.
 `cd ~/catkin_ws/src/ArloBot/scripts`
