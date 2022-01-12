@@ -405,6 +405,9 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   # http://repositories.ros.org/status_page/compare_melodic_noetic.html
   PACKAGE_TO_INSTALL_LIST+=(speech-dispatcher)
   # speech-dispatcher - Contains spd-say which is used by the service to announce status.
+  # NOTE: speech-dispatcher forces the install of x11-common, which I'm not wild about for a Pi with no desktop,
+  # BUT, I'm 99% sure that Slam Toolbox along with other ROS Navigation pieces installed later also depend on
+  # x11-common, so removing this will not help.
   PACKAGE_TO_INSTALL_LIST+=(alsa-utils)
   # alsa-utils - Contains aplay, which is used by the service to play sounds.
 fi
@@ -501,12 +504,18 @@ if [[ "${RESPONSE_TO_RPLIDAR_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; the
   # Always test in Travis
   printf "\n${LIGHTBLUE}Slamtec RPLIDAR${NC}\n"
   cd ~/catkin_ws/src
+  # NOTICE: The latest version entirely breaks functionality with slam_toolbox,
+  # so I am switching to the last working commit.
   if ! [[ -d ~/catkin_ws/src/rplidar_ros ]]; then
     git clone https://github.com/Slamtec/rplidar_ros.git
+    cd ~/catkin_ws/src/rplidar_ros
   else
     cd ~/catkin_ws/src/rplidar_ros
     git pull
   fi
+  # NOTICE: The latest version entirely breaks functionality with slam_toolbox,
+  # so I am switching to the last working commit.
+  git checkout 4f899e670bec2c9e1f26b0969f2de36d23618ef3
 fi
 
 # TODO: Remove this if/when the apt package is released for noetic.

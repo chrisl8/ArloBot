@@ -10,7 +10,7 @@
 <!-- Note that the 3.1 (approximately PI) lines it up "backwards" with the cord toward the back of the robot)-->
 <launch>
   <!--  The default USB port MIGHT work, but you really do typically need to inject the port
-   possibly using some script finds it. -->
+   possibly using some script that finds it for you. -->
   <!--  My find_RPLIDAR.sh script will do the trick. -->
   <!--  See comment at top for how to use it to run this launch file standalone. -->
   <arg name="usb_port" value="$(optenv RPLIDAR_USB_PORT /dev/ttyUSB1)"/>
