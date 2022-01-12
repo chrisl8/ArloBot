@@ -172,7 +172,7 @@ start-robot.sh
 # In a new Terminal:
 roslaunch arlobot_ros keyboard_teleop.launch
 # From a Terminal in the desktop (NOT over SSH):
-roslaunch arlobot_ros view_navigation.launch
+view-navigation.sh
 ```
 ##### Do this:
   - Set your Global Options->Fixed Frame to "odom
@@ -195,7 +195,7 @@ start-robot.sh
 # In a new Terminal:
 make-map.sh
 # From a Terminal in the desktop (NOT over SSH):
-roslaunch arlobot_ros view_navigation.launch
+view-navigation.sh
 # When you are done, save your map!
 rosservice" call /slam_toolbox/serialize_map "${HOME}/.arlobot/rosmaps/my_map1"
 ```
@@ -220,7 +220,7 @@ start-robot.sh
 # In a new Terminal:
 load-map.sh "${HOME}/.arlobot/rosmaps/my_map1"
 # From a Terminal in the desktop (NOT over SSH):
-roslaunch arlobot_ros view_navigation.launch
+view-navigation.sh
 ```
 
 Please report an issue for any problems or if you need me to clarify anything!  
