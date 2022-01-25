@@ -3,6 +3,8 @@ dist: focal
 language: shell
 notifications:
   email:
+    recipients:
+      - christenlofland@gmail.com
     on_success: change
     on_failure: always
 jobs:
