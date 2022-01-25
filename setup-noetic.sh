@@ -511,7 +511,7 @@ if [[ "${RESPONSE_TO_RPLIDAR_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; the
     cd ~/catkin_ws/src/rplidar_ros
   else
     cd ~/catkin_ws/src/rplidar_ros
-    git pull
+    #git pull # git pull does not work if you have checked out a specific commit, as we are currently doing.
   fi
   # NOTICE: The latest version entirely breaks functionality with slam_toolbox,
   # so I am switching to the last working commit.
