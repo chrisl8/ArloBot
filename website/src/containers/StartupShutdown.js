@@ -89,7 +89,7 @@ class StartupShutdown extends Component {
               >
                 Reset Robot Server
               </button>
-              {this.props.pluggedIn && (
+              {this.props.pluggedIn === true && (
                 <div
                   className="lcarish-toggle-button no-flex"
                   id="unplug-yourself-button"
