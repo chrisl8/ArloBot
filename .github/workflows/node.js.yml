@@ -42,7 +42,7 @@ jobs:
       run: |
         mkdir -p ~/.arlobot/rosmaps ~/catkin_ws/src ~/.arlobot/status
         touch ~/.arlobot/rosmaps/dummymap.data ~/.arlobot/rosmaps/dummymap.posegraph
-        cp scripts/dotarlobot/personalDataForBehavior.json ~/.arlobot/
+        cp ${{ github.workspace }}/scripts/dotarlobot/personalDataForBehavior.json ~/.arlobot/
         ln -s ${{ github.workspace }} ~/catkin_ws/src/ArloBot
         cd node
     - run: npm test
