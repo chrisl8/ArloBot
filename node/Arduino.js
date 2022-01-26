@@ -112,6 +112,7 @@ class Arduino {
         let delayTwo = 0;
         if (
           personalData.relays.has_arduino &&
+          webModel.relays.find((x) => x.name === 'arduino') &&
           !webModel.relays.find((x) => x.name === 'arduino').relayOn
         ) {
           robotModel.usbRelay.switchRelay(
@@ -122,6 +123,7 @@ class Arduino {
         }
         if (
           personalData.relays.has_fiveVolt &&
+          webModel.relays.find((x) => x.name === 'fiveVolt') &&
           !webModel.relays.find((x) => x.name === 'fiveVolt').relayOn
         ) {
           robotModel.usbRelay.switchRelay(
@@ -133,10 +135,24 @@ class Arduino {
         setTimeout(() => {
           // TODO: This assumes both relays exist.
           // TODO: Rely on results to continue instead of delay and fail.
+          let relayOn = true;
+
           if (
-            webModel.relays.find((x) => x.name === 'arduino').relayOn &&
-            webModel.relays.find((x) => x.name === 'fiveVolt').relayOn
+            personalData.relays.has_arduino &&
+            webModel.relays.find((x) => x.name === 'arduino') &&
+            !webModel.relays.find((x) => x.name === 'arduino').relayOn
           ) {
+            relayOn = false;
+          }
+          if (
+            personalData.relays.has_fiveVolt &&
+            webModel.relays.find((x) => x.name === 'fiveVolt') &&
+            !webModel.relays.find((x) => x.name === 'fiveVolt').relayOn
+          ) {
+            relayOn = false;
+          }
+
+          if (relayOn) {
             resolve();
           } else {
             reject(new Error('Relays did not turn on.'));
