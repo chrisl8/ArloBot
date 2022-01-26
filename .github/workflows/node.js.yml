@@ -37,5 +37,11 @@ jobs:
       working-directory: node
     - run: npm run build --if-present
       working-directory: node
+    - name: Copy required config files for testing
+      run: |
+        mkdir -p ~/.arlobot/rosmaps ~/catkin_ws/src ~/.arlobot/status
+        touch ~/.arlobot/rosmaps/dummymap.data ~/.arlobot/rosmaps/dummymap.posegraph
+        cp scripts/dotarlobot/personalDataForBehavior.json ~/.arlobot/
+        cd node
     - run: npm test
       working-directory: node
