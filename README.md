@@ -1,4 +1,5 @@
-[![Node.js CI](https://github.com/chrisl8/ArloBot/actions/workflows/node.js.yml/badge.svg)](https://github.com/chrisl8/ArloBot/actions/workflows/node.js.yml)
+[![Node Script Tests](https://github.com/chrisl8/ArloBot/actions/workflows/node.js.yml/badge.svg)](https://github.com/chrisl8/ArloBot/actions/workflows/node.js.yml)
+[![React Build Test](https://github.com/chrisl8/ArloBot/actions/workflows/react.js.yml/badge.svg)](https://github.com/chrisl8/ArloBot/actions/workflows/react.js.yml)
 [![codecov](https://codecov.io/gh/chrisl8/ArloBot/branch/noetic/graph/badge.svg)](https://codecov.io/gh/chrisl8/ArloBot)
 
 ArloBot Package for ROS
