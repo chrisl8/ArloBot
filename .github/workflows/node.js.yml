@@ -1,0 +1,30 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ noetic ]
+    paths:
+      - "node/**"
+  pull_request:
+    branches: [ noetic ]
+    paths:
+      - "node/**"
+jobs:
+  build:
+
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js LTS
+      uses: actions/setup-node@v2
+      with:
+        node-version: 'lts/*'
+        cache: 'npm'
+    - run: cd node
+    - run: npm ci
+    - run: npm run build --if-present
+    - run: npm test
