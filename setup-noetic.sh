@@ -16,11 +16,11 @@ INSTALLING_ROS_DISTRO=noetic
 # cd ~/catkin_ws/src/ArloBot
 #
 # Then either kick it off all in one shot:
-# docker run -ti -v $PWD:/home/user ubuntu:focal /bin/bash -c "export TRAVIS=true;/home/user/setup-noetic.sh"
+# docker run -ti -v $PWD:/home/user ubuntu:focal /bin/bash -c "export CI=true;/home/user/setup-noetic.sh"
 #
 # Or start an interactive shell in Docker and run it, with the ability to make changes and start it again when it finishes:
 # docker run -ti -v $PWD:/home/user ubuntu:focal /bin/bash
-# export TRAVIS=true
+# export CI=true
 # /home/user/setup-noetic.sh
 #
 # If you started a non-interactive ("one shot") build and then it crashed and you want to get in and look around:
@@ -229,7 +229,7 @@ if ! [[ -e ${SETUP_RESPONSE_FILE} ]]; then
   printf "${LIGHTBLUE}If you want to erase your answers and answer again run:${NC}\n"
   printf "${LIGHTBLUE}rm ${SETUP_RESPONSE_FILE}${NC}\n"
   printf "${LIGHTBLUE}before running this script.${NC}\n\n"
-  if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
+  if ! [[ ${CI} == "true" ]]; then # Never ask questions in Travis test environment
     read -n 1 -s -r -p "Press any key to continue"
   fi
 fi
@@ -242,7 +242,7 @@ if [[ ${WORKSTATION_INSTALL} == 'null' ]]; then
   printf "${LIGHTBLUE}but that you want to develop on and/or run ROS tools remotely${NC}\n\n"
   printf "${LIGHTBLUE}to operate and debug your robot.${NC}\n\n"
   printf "${LIGHTBLUE}This includes things like running RVIZ to view/control navigation and map making.${NC}\n\n"
-  if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
+  if ! [[ ${CI} == "true" ]]; then # Never ask questions in Travis test environment
     read -n 1 -s -r -p "Press 'y' to set as Workstation ONLY install " WORKSTATION_INSTALL
   fi
   printf "\n"
@@ -256,7 +256,7 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     printf "${LIGHTBLUE}Mycroft can be used to talk to your robot, and have it talk to you.${NC}\n"
     printf "${LIGHTBLUE}Mycroft can be heavy on system resources on older systems though.${NC}\n\n"
     printf "${LIGHTBLUE}Mycroft is NOT hardware related, it is a software application.${NC}\n\n"
-    if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
+    if ! [[ ${CI} == "true" ]]; then # Never ask questions in Travis test environment
       read -n 1 -s -r -p "Press 'y' to install Mycroft " RESPONSE_TO_MYCROFT_QUERY
     fi
     printf "\n"
@@ -269,7 +269,7 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     printf "${LIGHTBLUE}The Scanse Sweep is a rotating laser scanner.${NC}\n"
     printf "${LIGHTBLUE}It is no longer available.${NC}\n\n"
     printf "${LIGHTBLUE}https://scanse.io/home/${NC}\n\n"
-    if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
+    if ! [[ ${CI} == "true" ]]; then # Never ask questions in Travis test environment
       read -n 1 -s -r -p "Press 'y' to install Scanse Sweep code " RESPONSE_TO_SWEEP_QUERY
     fi
     printf "\n"
@@ -281,7 +281,7 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     printf "\n${YELLOW}Do you want to install code for Neato XV11?${NC}\n"
     printf "${LIGHTBLUE}The XV11 was a rotating laser scanner pulled from old vacuum cleaners.${NC}\n"
     printf "${LIGHTBLUE}If you have one you will need this code.${NC}\n\n"
-    if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
+    if ! [[ ${CI} == "true" ]]; then # Never ask questions in Travis test environment
       read -n 1 -s -r -p "Press 'y' to install Neato XV11 code " RESPONSE_TO_XV11_QUERY
     fi
     printf "\n"
@@ -294,7 +294,7 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     printf "${LIGHTBLUE}The RPLIDAR is a series of commercially available, low cost rotating laser scanners.${NC}\n"
     printf "${LIGHTBLUE}This should work for the A1, A2, and A3 models.${NC}\n"
     printf "${LIGHTBLUE}https://www.slamtec.com/en${NC}\n\n"
-    if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
+    if ! [[ ${CI} == "true" ]]; then # Never ask questions in Travis test environment
       read -n 1 -s -r -p "Press 'y' to install Slamtec RPLIDAR code " RESPONSE_TO_RPLIDAR_QUERY
     fi
     printf "\n"
@@ -305,7 +305,7 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   if [[ ${RESPONSE_TO_KINECT_QUERY} == 'null' ]]; then
     printf "\n${YELLOW}Do you want to install code for Xbox 360 Kinect?${NC}\n"
     printf "${LIGHTBLUE}If you are using an Xbox 360 Kinect, extra code must be installed.${NC}\n"
-    if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
+    if ! [[ ${CI} == "true" ]]; then # Never ask questions in Travis test environment
       read -n 1 -s -r -p "Press 'y' to install Xbox 360 Kinect code " RESPONSE_TO_KINECT_QUERY
     fi
     printf "\n"
@@ -316,7 +316,7 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   if [[ ${RESPONSE_TO_ASUS_XTION_QUERY} == 'null' ]]; then
     printf "\n${YELLOW}Do you want to install code for ASUS Xtion?${NC}\n"
     printf "${LIGHTBLUE}If you are using an ASUS Xtion, extra code must be installed.${NC}\n"
-    if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
+    if ! [[ ${CI} == "true" ]]; then # Never ask questions in Travis test environment
       read -n 1 -s -r -p "Press 'y' to install ASUS Xtion code " RESPONSE_TO_ASUS_XTION_QUERY
     fi
     printf "\n"
@@ -347,7 +347,7 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   PACKAGE_TO_INSTALL_LIST+=(python3-pip)
   # python3-pip - Required to install Python tools for things such as
   #      USB Relay reader.
-  if ! [[ ${TRAVIS} == "true" ]]; then # Upgrading openssh in Travis often fails due to timeouts.
+  if ! [[ ${CI} == "true" ]]; then # Upgrading openssh in Travis often fails due to timeouts.
     PACKAGE_TO_INSTALL_LIST+=(openssh-server)
   fi
   # openssh-server - required to SSH into robot remotely
@@ -361,17 +361,17 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     PACKAGE_TO_INSTALL_LIST+=(imagemagick)
     # imagemagick - used to grab screen shots of desktop for web local robot website display
   fi
-  if [[ "${RESPONSE_TO_ASUS_XTION_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
+  if [[ "${RESPONSE_TO_ASUS_XTION_QUERY}" == "y" ]] || [[ ${CI} == "true" ]]; then
     # Always test in Travis
     PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-openni2-launch")
     # ros-noetic-openni2-launch - Required for ASUS Xtion to operate
   fi
-  if [[ "$RESPONSE_TO_ASUS_XTION_QUERY" == "y" ]] || [[ "${RESPONSE_TO_KINECT_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
+  if [[ "$RESPONSE_TO_ASUS_XTION_QUERY" == "y" ]] || [[ "${RESPONSE_TO_KINECT_QUERY}" == "y" ]] || [[ ${CI} == "true" ]]; then
     # Always test in Travis
     PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-depthimage-to-laserscan")
     # "ros-${INSTALLING_ROS_DISTRO}-depthimage-to-laserscan" - Required for ASUS Xtion and Kinect to operate
   fi
-  if [[ "${RESPONSE_TO_KINECT_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
+  if [[ "${RESPONSE_TO_KINECT_QUERY}" == "y" ]] || [[ ${CI} == "true" ]]; then
     # Always test in Travis
     # TODO: Uncomment if they ever release freenect_stack for Noetic
     #PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-freenect-stack")
@@ -438,7 +438,7 @@ else
   git pull
 fi
 
-if [[ "${RESPONSE_TO_XV11_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then # Always test in Travis
+if [[ "${RESPONSE_TO_XV11_QUERY}" == "y" ]] || [[ ${CI} == "true" ]]; then # Always test in Travis
   printf "\n${LIGHTBLUE}Neato XV11 repository${NC}\n"
   # Only needed if you have an XV-11 "Neato" Scanner
   cd ~/catkin_ws/src
@@ -450,7 +450,7 @@ if [[ "${RESPONSE_TO_XV11_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then #
   fi
 fi
 
-if [[ "${RESPONSE_TO_SWEEP_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
+if [[ "${RESPONSE_TO_SWEEP_QUERY}" == "y" ]] || [[ ${CI} == "true" ]]; then
   # Always test in Travis
   printf "\n${LIGHTBLUE}Scanse Sweep repository${NC}\n"
   # Only needed if you have a Scanse Sweep
@@ -476,7 +476,7 @@ if [[ "${RESPONSE_TO_SWEEP_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
 fi
 
 # TODO: Remove if they ever release freenect_stack for Noetic
-if [[ "${RESPONSE_TO_KINECT_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
+if [[ "${RESPONSE_TO_KINECT_QUERY}" == "y" ]] || [[ ${CI} == "true" ]]; then
   # Always test in Travis
   printf "\n${LIGHTBLUE}OpenKinect for Kinect${NC}\n"
   # If you have a Kinect. Noetic seems to be missing the package
@@ -500,7 +500,7 @@ if [[ "${RESPONSE_TO_KINECT_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
   fi
 fi
 
-if [[ "${RESPONSE_TO_RPLIDAR_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
+if [[ "${RESPONSE_TO_RPLIDAR_QUERY}" == "y" ]] || [[ ${CI} == "true" ]]; then
   # Always test in Travis
   printf "\n${LIGHTBLUE}Slamtec RPLIDAR${NC}\n"
   cd ~/catkin_ws/src
