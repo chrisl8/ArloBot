@@ -47,3 +47,5 @@ jobs:
         cd node
     - run: npm test
       working-directory: node
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
