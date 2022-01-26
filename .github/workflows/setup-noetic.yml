@@ -19,4 +19,4 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - run: setup-noetic.sh
+      - run: ${{ github.workspace }}/setup-noetic.sh
