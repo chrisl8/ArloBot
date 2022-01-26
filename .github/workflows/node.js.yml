@@ -12,6 +12,14 @@ on:
     branches: [ noetic ]
     paths:
       - "node/**"
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'     
+        required: true
+        default: 'warning'
+      tags:
+        description: 'Manually run Node test'
 jobs:
   build:
 
