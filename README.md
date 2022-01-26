@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/chrisl8/ArloBot.svg?branch=noetic)](https://app.travis-ci.com/github/chrisl8/ArloBot)
+[![Node.js CI](https://github.com/chrisl8/ArloBot/actions/workflows/node.js.yml/badge.svg)](https://github.com/chrisl8/ArloBot/actions/workflows/node.js.yml)
 [![codecov](https://codecov.io/gh/chrisl8/ArloBot/branch/noetic/graph/badge.svg)](https://codecov.io/gh/chrisl8/ArloBot)
 
 ArloBot Package for ROS
