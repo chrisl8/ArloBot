@@ -28,10 +28,6 @@
  Just remember that point in time event triggered speech need to happen in 'events', not 'chatter'.
  */
 
-// TODO: SOME of these may be better off set within the feature that runs them,
-//       in order to clearly only announce an action when it truly happens,
-//       not just when it is requested.
-
 // Received even when goal is set via Rviz:
 // goalStatus: New Goal Set.
 // goalStatus: Goal reached.
@@ -41,9 +37,7 @@ const speechModel = {
     randomChatter: {
       repeatInterval: 600,
       spacing: 300,
-      Test: () => {
-        return true;
-      },
+      Test: () => true,
       thingsToSay: {
         repeat: false,
         'CastleInTheSky-Ding': {
@@ -244,13 +238,9 @@ const speechModel = {
       false: {
         thingsToSay: {
           repeat: true,
-          depressed: {
-            text: 'I suddenly feel very depressed.',
-            weight: 10,
-          },
           thankYou: {
             text: 'Thank you for unplugging me.',
-            weight: 90,
+            weight: 100,
           },
         },
       },
@@ -261,13 +251,9 @@ const speechModel = {
       true: {
         thingsToSay: {
           repeat: true,
-          True: {
-            text: 'That was refreshing.',
-            weight: 40,
-          },
-          True2: {
-            text: "I'm ready to go!",
-            weight: 60,
+          charged: {
+            text: 'Computer battery fully charged!',
+            weight: 100,
           },
         },
       },
