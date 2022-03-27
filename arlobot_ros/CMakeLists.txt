@@ -57,3 +57,18 @@ catkin_package(
    joy slam_toolbox teb_local_planner
 #  DEPENDS system_lib
 )
+
+###########
+## Build ##
+###########
+add_executable(autodocking_irCode src/autodocking_irCode.cpp)
+target_link_libraries(autodocking_irCode
+   ${catkin_LIBRARIES}
+)
+## Specify additional locations of header files
+## Your package locations should be listed before other locations
+# include_directories(include)
+# This is required to build ROS CPP packages in your own workspace
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+)
