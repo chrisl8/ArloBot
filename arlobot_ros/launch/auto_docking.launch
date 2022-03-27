@@ -1,0 +1,18 @@
+<launch>
+  <arg name="usb_port" value="$(optenv USB_PORT)"/>
+  <arg name="angular_z" value="$(optenv ANGULAR_Z)"/>
+  <arg name="linear_x" value="$(optenv LINEAR_X)"/>
+
+  <!-- Serial Port listener -->
+  <node pkg="rosserial_python" type="serial_node.py" name="serial_node" respawn="false">
+    <param name="port" value="$(arg usb_port)"/>
+    <param name="angular_z" value="$(arg angular_z)"/>
+    <param name="linear_x" value="$(arg linear_x)"/>
+  </node>
+
+  <!-- ROS Receiver -->
+  <node pkg="arlobot_ros" type="autodocking_irCode" name="autodocking_irCode">
+    <param name="scale_angular" value="1.5"/>
+    <param name="enable_button" value="4"/>
+  </node>
+</launch>

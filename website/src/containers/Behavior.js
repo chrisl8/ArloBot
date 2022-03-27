@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Collapse, Card, CardBody, CardHeader, CardTitle } from 'reactstrap';
+import boolToOnOff from '../utils/boolToOnOff';
 
 class Behavior extends Component {
   constructor(props) {
@@ -69,6 +70,13 @@ class Behavior extends Component {
     let blinkyLightButtonClass = 'btn btn-light';
     if (this.props.neoPixelsOn) {
       blinkyLightButtonClass = 'btn btn-warning';
+    }
+
+    let autoDockingClass = 'btn btn-light';
+    let autoDockingBadgeClass = 'badge rounded-pill bg-secondary';
+    if (this.props.autoDockingInProgress) {
+      autoDockingClass = 'btn btn-success';
+      autoDockingBadgeClass = 'badge rounded-pill bg-dark';
     }
 
     return (
@@ -202,6 +210,23 @@ class Behavior extends Component {
                     Blinky Lights
                   </button>
                 </div>
+              )}
+              {Boolean(
+                this.props.ROSisRunning && this.props.autoDockingAvailable,
+              ) && (
+                <button
+                  id="auto-docking-button"
+                  type="button"
+                  className={autoDockingClass}
+                  onClick={() =>
+                    this.props.sendDataToRobot('toggleAutoDocking')
+                  }
+                >
+                  Auto Docking&nbsp;
+                  <span className={autoDockingBadgeClass}>
+                    {boolToOnOff(this.props.autoDockingInProgress)}
+                  </span>
+                </button>
               )}
             </div>
           </CardBody>

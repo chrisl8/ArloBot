@@ -209,6 +209,23 @@ check_hardware() {
       return 1
     fi
   fi
+
+  # Docking IR Receiver
+  if [[ $(jq '.dockingStation.has_dockingStation' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
+    echo "Checking Docking IR Receiver . . ."
+    if ! "${SCRIPT_DIR}/find_docking_IR_Receiver.sh" >/dev/null; then
+      FAILURE_REASON="Docking IR Receiver missing!"
+      CHECK_GOOD=false
+      return 1
+    fi
+    USB_DEVICE=$("${SCRIPT_DIR}/find_camera.sh")
+
+    if ! ls "${USB_DEVICE}" &>/dev/null; then
+      FAILURE_REASON="Docking IR Receiver missing!"
+      CHECK_GOOD=false
+      return 1
+    fi
+  fi
 }
 
 check_hardware

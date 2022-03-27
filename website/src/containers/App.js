@@ -128,6 +128,11 @@ class App extends Component {
               this.state.personalData.useArduinoForBlinkenLights
             }
             neoPixelsOn={this.state.webModel.neoPixelsOn}
+            autoDockingAvailable={
+              this.state.personalData.dockingStation &&
+              this.state.personalData.dockingStation.has_dockingStation
+            }
+            autoDockingInProgress={this.state.webModel.autoDockingInProgress}
             ROSstart={this.state.webModel.ROSstart}
             monitorACconnection={
               !this.state.webModel.rosParameters.monitorACconnection

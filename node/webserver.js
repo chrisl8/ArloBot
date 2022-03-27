@@ -100,10 +100,37 @@ const saveMap = async (newMapName) => {
   }
 };
 
+const startAutoDocking = () => {
+  webModelFunctions.scrollingStatusUpdate('Running AutoDocking');
+  const command = `${__dirname}/../scripts/auto-docking.sh`;
+  const thisProcess = spawn(command);
+  thisProcess.on('exit', (code) => {
+    // Will catch multiple exit codes I think:
+    if (code === 0) {
+      webModelFunctions.scrollingStatusUpdate('Auto Docking started');
+      webModelFunctions.update('autoDockingInProgress', true);
+    } else {
+      console.log(`Auto Docking script failed with code: ${code}`);
+      webModelFunctions.update('autoDockingInProgress', false);
+    }
+  });
+  return thisProcess;
+};
+const stopAutoDocking = () => {
+  const command = '/usr/bin/pkill';
+  const commandArgs = ['-f', 'auto-docking.sh'];
+  const child = spawn(command, commandArgs);
+  child.on('exit', () => {
+    webModelFunctions.scrollingStatusUpdate('Auto Docking Script killed');
+    webModelFunctions.update('autoDockingInProgress', false);
+  });
+  return child;
+};
+
 const startLogStreamer = function () {
   const command = `${__dirname}/../scripts/log-watcher.sh`;
-  const logStreamerProcess = spawn(command);
-  logStreamerProcess.on('exit', (code) => {
+  const thisProcess = spawn(command);
+  thisProcess.on('exit', (code) => {
     // Will catch multiple exit codes I think:
     if (code === 0) {
       webModelFunctions.scrollingStatusUpdate('Log streamer started');
@@ -113,7 +140,7 @@ const startLogStreamer = function () {
       webModelFunctions.update('logStreamerRunning', false);
     }
   });
-  return logStreamerProcess;
+  return thisProcess;
 };
 const stopLogStreamer = function () {
   const command = '/usr/bin/pkill';
@@ -313,6 +340,21 @@ async function start() {
         startLogStreamer();
       }
     });
+
+    socket.on('startAutoDocking', () => {
+      startAutoDocking();
+    });
+    socket.on('stopAutoDocking', () => {
+      stopAutoDocking();
+    });
+    socket.on('toggleAutoDocking', () => {
+      if (webModel.autoDockingInProgress) {
+        stopAutoDocking();
+      } else {
+        startAutoDocking();
+      }
+    });
+
     socket.on('toggleDebug', () => {
       webModelFunctions.toggle('debugging');
     });

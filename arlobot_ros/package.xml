@@ -49,4 +49,5 @@
   <depend>voxel_grid</depend>
   <depend>teleop_twist_keyboard</depend>
   <depend>teleop_twist_joy</depend>
+  <depend>rosserial_python</depend>
 </package>
