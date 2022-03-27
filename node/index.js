@@ -117,7 +117,6 @@ async function main() {
     name: 'ROS',
     scriptName: '../scripts/start-robot.sh',
     successString: ']: Propellerbot_node has started.',
-    // TODO: Could this be set to "true" by the ROSlibJS connection instead??
   });
 
   robotModel.goToWaypointProcess = new LaunchScript({
