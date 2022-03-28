@@ -36,12 +36,13 @@ void irValueCallback(const geometry_msgs::Vector3 &vector3)
 
 int main(int argc, char** argv)
 {
-  n.param<std::string>("angular_z", angularZ, 0.1);
-  n.param<std::string>("linear_x", linearX, -0.08);
-
   ros::init(argc, argv, "autodocking_irCode");
 
   ros::NodeHandle nh;
+
+  nh.param("angular_z", angularZ, 0.1);
+  nh.param("linear_x", linearX, -0.08);
+
   cmd_vel_pub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 50);
   irValue_sub = nh.subscribe("/irCode", 10, irValueCallback);
 
