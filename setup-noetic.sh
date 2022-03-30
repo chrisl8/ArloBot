@@ -62,7 +62,7 @@ function finish() {
     printf "\n"
     printf "${YELLOW}If this was a transient error, such as a network failure connecting to something, you may just need to run it again.${NC}\n"
     printf "\n"
-    printf "${YELLOW}If this persists, please file an issue against the repository at https://github.com/chrisl8/ArloBot/issues${NC}\n"
+    printf "${YELLOW}If this persists, please copy the output of the script above showing what the error was and file an issue against the repository at https://github.com/chrisl8/ArloBot/issues${NC}\n"
     printf "\n"
     exit 1
   fi

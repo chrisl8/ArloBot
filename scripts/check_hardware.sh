@@ -218,7 +218,7 @@ check_hardware() {
       CHECK_GOOD=false
       return 1
     fi
-    USB_DEVICE=$("${SCRIPT_DIR}/find_camera.sh")
+    USB_DEVICE=$("${SCRIPT_DIR}/find_docking_IR_Receiver.sh")
 
     if ! ls "${USB_DEVICE}" &>/dev/null; then
       FAILURE_REASON="Docking IR Receiver missing!"
