@@ -24,7 +24,7 @@ if pgrep -f robot.launch >/dev/null; then
   export ANGULAR_Z=$(jq '.dockingStation.angular_z' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
   export LINEAR_X=$(jq '.dockingStation.linear_x' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
 
-  unbuffer roslaunch arlobot_ros auto_docking.launch
+  unbuffer roslaunch arlobot_ros auto_docking.launch --screen
   echo "Auto Docking closed." # For testing
 else
   echo "Robot must be running to start this."
