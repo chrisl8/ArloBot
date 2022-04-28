@@ -6,6 +6,8 @@
 ArloBot Package for ROS
 =======================
 
+Here is a [YouTube Video](https://youtu.be/k15B0RdpVYQ) of this robot in action.
+
 ## and SO MUCH MORE! ##
 
  - This package provides a set of ROS packages for using a [Parallax Arlo Platform](https://www.parallax.com/product/arlo-robotic-platform-system "Parallax") robot to create and navigate a map of a room (Simultaneous Mapping and Localization) via [Robot Operating System (ROS)](https://www.ros.org/ "ROS").  Originally based on the old [TurtleBot](https://wiki.ros.org/Robots/TurtleBot "TurtleBot").
