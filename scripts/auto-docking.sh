@@ -24,6 +24,9 @@ if pgrep -f robot.launch >/dev/null; then
   export ANGULAR_Z=$(jq '.dockingStation.angular_z' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
   export LINEAR_X=$(jq '.dockingStation.linear_x' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
 
+  # Ignore proximity sensors when docking
+  rosparam set /arlobot/ignoreProximity true
+
   unbuffer roslaunch arlobot_ros auto_docking.launch --screen
   echo "Auto Docking closed." # For testing
 else
