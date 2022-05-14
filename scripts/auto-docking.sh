@@ -21,7 +21,8 @@ if pgrep -f robot.launch >/dev/null; then
     exit 1
   fi
   export USB_PORT=$("${SCRIPT_DIR}/find_docking_IR_Receiver.sh")
-  export ANGULAR_Z=$(jq '.dockingStation.angular_z' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
+  export ACQUISITION_ANGULAR_Z=$(jq '.dockingStation.acquisition_angular_z' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
+  export APPROACH_ANGULAR_Z=$(jq '.dockingStation.approach_angular_z' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
   export LINEAR_X=$(jq '.dockingStation.linear_x' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
 
   # Ignore proximity sensors when docking
