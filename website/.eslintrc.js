@@ -24,7 +24,7 @@ module.exports = {
   parserOptions: {
     sourceType: 'module',
   },
-  plugins: ['react', 'prettier'],
+  plugins: ['react'],
   extends: [
     'plugin:react/recommended',
     'plugin:react/jsx-runtime',
@@ -33,7 +33,6 @@ module.exports = {
     'prettier',
   ],
   rules: {
-    'prettier/prettier': 'error',
     // Even FB says to name JSX files .js these days
     'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
     // These are not code style or real errors, just "best practices" that really mean

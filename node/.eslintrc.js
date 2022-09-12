@@ -17,10 +17,8 @@ module.exports = {
     ecmaVersion: 2020,
     sourceType: 'module',
   },
-  plugins: ['prettier'],
   extends: ['airbnb', 'prettier'],
   rules: {
-    'prettier/prettier': 'error',
     // These are not code style or real errors, just "best practices" that really mean
     // me making wonky code to fit requirements I don't need to fulfill.
     // Someday I'll remove these as I get better. ;)
