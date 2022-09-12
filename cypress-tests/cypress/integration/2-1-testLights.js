@@ -10,11 +10,11 @@ describe("Toggle Light One", () => {
   resetRobotService();
 
   it("page loads correctly", () => {
-    cy.contains("Master Relay").should("be.visible");
+    // cy.contains("Master Relay").should("be.visible");
 
-    cy.get("#masterRelayStatusButton")
-      .contains("span", "Off", { timeout: 15000 })
-      .should("be.visible");
+    // cy.get("#masterRelayStatusButton")
+    //   .contains("span", "Off", { timeout: 15000 })
+    //   .should("be.visible");
 
     cy.contains("Light One").should("not.be.visible");
 
@@ -25,18 +25,18 @@ describe("Toggle Light One", () => {
   startupShutdownPanelShouldBeOpen(false);
   openPanelIfClosed("robot-service-log");
 
-  it("toggle Master Relay On", () => {
-    cy.get("#masterRelayStatusButton").click();
-
-    cy.contains("Switching Master Relay on.").should("be.visible");
-
-    cy.contains("Master Relay on").should("be.visible");
-
-    cy.get("#masterRelayStatusButton")
-      .contains("span", "On", { timeout: 15000 })
-      .should("be.visible");
-    cy.get("#masterRelayStatusButton").should("have.class", "btn-success");
-  });
+  // it("toggle Master Relay On", () => {
+  //   cy.get("#masterRelayStatusButton").click();
+  //
+  //   cy.contains("Switching Master Relay on.").should("be.visible");
+  //
+  //   cy.contains("Master Relay on").should("be.visible");
+  //
+  //   cy.get("#masterRelayStatusButton")
+  //     .contains("span", "On", { timeout: 15000 })
+  //     .should("be.visible");
+  //   cy.get("#masterRelayStatusButton").should("have.class", "btn-success");
+  // });
 
   openPanelIfClosed("relays");
 
@@ -95,16 +95,16 @@ describe("Toggle Light One", () => {
 
   closePanelIfOpen("relays");
 
-  it("toggle Master Relay Off", () => {
-    cy.get("#masterRelayStatusButton").click();
-
-    cy.contains("Switching Master Relay off.").should("be.visible");
-
-    cy.contains("Master Relay off").should("be.visible");
-
-    cy.get("#masterRelayStatusButton")
-      .contains("span", "Off", { timeout: 15000 })
-      .should("be.visible");
-    cy.get("#masterRelayStatusButton").should("not.have.class", "btn-success");
-  });
+  // it("toggle Master Relay Off", () => {
+  //   cy.get("#masterRelayStatusButton").click();
+  //
+  //   cy.contains("Switching Master Relay off.").should("be.visible");
+  //
+  //   cy.contains("Master Relay off").should("be.visible");
+  //
+  //   cy.get("#masterRelayStatusButton")
+  //     .contains("span", "Off", { timeout: 15000 })
+  //     .should("be.visible");
+  //   cy.get("#masterRelayStatusButton").should("not.have.class", "btn-success");
+  // });
 });

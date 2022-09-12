@@ -62,9 +62,9 @@ function remoteControlPanelShouldBeOpen(trueFalse) {
     openClosed = "Open";
   }
   it(`Remote Control Panel should be ${openClosed}`, () => {
-    cy.get("#remote-control-card")
-      .contains("Plugged In")
-      .should(visibilitystatus);
+    // cy.get("#remote-control-card")
+    //   .contains("Plugged In")
+    //   .should(visibilitystatus);
 
     cy.get("#remote-control-card")
       .contains("Use finger or mouse to drive robot!")

@@ -66,12 +66,12 @@ describe("site initial layout and page function", () => {
     cy.get("#statusScrollBox").should("not.be.visible");
   });
 
-  closePanelIfOpen("video");
+  // closePanelIfOpen("video");
 
-  it("video tab should be closed", () => {
-    cy.get("#cameraButton").contains("span", "Off").should("not.be.visible");
-    cy.get("#videoFeed").should("not.be.visible");
-  });
+  // it("video tab should be closed", () => {
+  //   cy.get("#cameraButton").contains("span", "Off").should("not.be.visible");
+  //   cy.get("#videoFeed").should("not.be.visible");
+  // });
 
   it("settings page should work and close", () => {
     cy.get("#settings").should("be.visible");
