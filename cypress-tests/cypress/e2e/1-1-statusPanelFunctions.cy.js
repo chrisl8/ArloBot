@@ -29,7 +29,7 @@ describe("Status Panel Functions", () => {
     // cy.get("#laptopChargedStatusButton").should("have.class", "btn-success");
 
     cy.get("#pluggedInStatusButton")
-      .contains("span", "Yes")
+      .contains("span", "unknown")
       .should("be.visible");
     cy.get("#pluggedInStatusButton").should("have.class", "btn-danger");
 

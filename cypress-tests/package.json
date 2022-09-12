@@ -10,6 +10,6 @@
   "author": "Christen Lofland",
   "license": "ISC",
   "dependencies": {
-    "cypress": "^9.0.0"
+    "cypress": "^10.0.0"
   }
 }

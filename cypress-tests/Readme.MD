@@ -19,15 +19,16 @@ These tests literally test the robot, not just web the site. This has some reper
 NOTE that each test file is supposed to run 100% by itself.  
 This results in a lot of duplicate test code, but also means each test is easily self-contained, and we retest some of the more basic functions a lot, which is good.  
 
+## Prerequsites
+
+You may have to install some things on your Linux box to get Cypress to work:  
+https://docs.cypress.io/guides/getting-started/installing-cypress#Linux-Prerequisites
+
 ## Usage
 I suggest just running the tests one at a time starting with `0-1-...` until you finish them all.
 
 ### To start Cypress
 ```
 cd cypress-tests
-npx cypress open
-```
-or if in WSL2, start your Xserver, then
-```
-DISPLAY=192.168.1.88:0.0 npx cypress open # Or whatever your Host IP is.
+npx cypress open --e2e --browser=electron
 ```
