@@ -1,8 +1,8 @@
 // Numato Lab - http://numato.com
 // https://github.com/numato/samplecode/blob/master/RelayAndGPIOModules/USBRelayAndGPIOModules/node.js/usbrelay/UsbRelay.js
-const SerialPort = require('serialport');
+const { SerialPort } = require('serialport');
 const webModelFunctions = require('./webModelFunctions');
-const UsbDevice = require('./UsbDevice.js');
+const UsbDevice = require('./UsbDevice');
 const personalData = require('./personalData');
 
 let working = false; // Prevent multiple instances from running at once in the same program
@@ -27,7 +27,8 @@ function ScanseSweep(operation, runFromCommandLine) {
     working = true;
     getPortName()
       .then((port) => {
-        const portObj = new SerialPort(port, {
+        const portObj = new SerialPort({
+          path: port,
           baudRate: 115200,
           autoOpen: false,
         });

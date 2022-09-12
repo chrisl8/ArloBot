@@ -4,11 +4,11 @@
  Set this.currentCommandArrayPoint to 0 to put it back at command 0.
  */
 
-const SerialPort = require('serialport');
+const { SerialPort } = require('serialport');
 const webModel = require('./webModel');
 const robotModel = require('./robotModel');
 const webModelFunctions = require('./webModelFunctions');
-const UsbDevice = require('./UsbDevice.js');
+const UsbDevice = require('./UsbDevice');
 const howManySecondsSince = require('./howManySecondsSince');
 const masterRelay = require('./MasterRelay');
 const personalData = require('./personalData');
@@ -233,7 +233,8 @@ class Arduino {
           //     this.programIsBusy = false;
           // };
 
-          this.portObj = new SerialPort(port, {
+          this.portObj = new SerialPort({
+            path: port,
             baudRate: baudrate,
             autoOpen: false,
           });

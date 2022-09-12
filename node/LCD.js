@@ -1,5 +1,5 @@
-const SerialPort = require('serialport');
-const UsbDevice = require('./UsbDevice.js');
+const { SerialPort } = require('serialport');
+const UsbDevice = require('./UsbDevice');
 const personalData = require('./personalData');
 const wait = require('./wait');
 
@@ -65,7 +65,8 @@ async function LCD({
     if (!port) {
       port = await getPortName();
     }
-    const portObj = new SerialPort(port, {
+    const portObj = new SerialPort({
+      path: port,
       baudRate: 19200,
       autoOpen: false,
     });

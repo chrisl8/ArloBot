@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 // Numato Lab - http://numato.com
 // https://github.com/numato/samplecode/blob/master/RelayAndGPIOModules/USBRelayAndGPIOModules/node.js/usbrelay/UsbRelay.js
-const SerialPort = require('serialport');
+const { SerialPort } = require('serialport');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
 const UsbDevice = require('./UsbDevice.js');
@@ -67,7 +67,8 @@ function usbRelay(operation, runFromCommandLine) {
           }
         }
 
-        const portObj = new SerialPort(port, {
+        const portObj = new SerialPort({
+          path: port,
           baudRate: 19200,
           autoOpen: false,
         });
