@@ -1,4 +1,3 @@
-const fetch = require('node-fetch');
 const personalData = require('./personalData');
 
 const getRobotDataFromWeb = async () => {

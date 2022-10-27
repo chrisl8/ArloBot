@@ -1,4 +1,3 @@
-const fetch = require('node-fetch');
 const https = require('https');
 const personalData = require('./personalData');
 
@@ -39,10 +38,7 @@ const doorClosed = async (specificDoor) => {
           //   currentTime,
           //   currentTime - updateTime,
           // );
-          if (doorStatus === 'CLOSED' && currentTime - updateTime < 2) {
-            return true;
-          }
-          return false;
+          return doorStatus === 'CLOSED' && currentTime - updateTime < 2;
         }
       }
       console.error('Unable to obtain door status.');

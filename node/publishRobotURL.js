@@ -1,5 +1,4 @@
 const os = require('os');
-const fetch = require('node-fetch');
 const personalData = require('./personalData');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');

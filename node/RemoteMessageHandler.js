@@ -40,9 +40,8 @@ class RemoteMessageHandler {
      Robot-0 { event: 'newMessage',
      Robot-0   data: '{"smsText":"Test","smsTo":"+13162851661","smsFrom":"+13162087309"}' }
      */
-    const parsedTextMessage = RemoteMessageHandler.parseMessageFromTwilio(
-      message,
-    );
+    const parsedTextMessage =
+      RemoteMessageHandler.parseMessageFromTwilio(message);
     // Here we make use of some common input:
     switch (message.event) {
       case 'newMessage':

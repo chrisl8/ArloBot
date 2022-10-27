@@ -1,5 +1,4 @@
 const os = require('os');
-const fetch = require('node-fetch');
 const base64 = require('base-64');
 const ipAddress = require('./ipAddress');
 const personalData = require('./personalData');
@@ -29,7 +28,9 @@ const cloudServerConnect = async () => {
 
       if (result.ok) {
         console.log('Cloud Server updated, connect to local site via:');
-        console.log(`${personalData.cloudServer.service}://${personalData.cloudServer.fqdn}/redirect/${hostname}`);
+        console.log(
+          `${personalData.cloudServer.service}://${personalData.cloudServer.fqdn}/redirect/${hostname}`,
+        );
       } else {
         console.error('Error connecting to Cloud Server:');
         console.error(result);
