@@ -12,13 +12,13 @@
 
 module.exports = {
   parser: "babel-eslint",
-  plugins: ["react", "prettier", "cypress"],
+  plugins: ["react", "cypress"],
   extends: ["plugin:react/recommended", "airbnb", "prettier", "prettier/react"],
   // extends: ['airbnb'],
   env: {
     es6: true, // Probably not needed, because of babel-eslint
     node: true, // Probably not needed, because of babel-eslint
-    "cypress/globals": true
+    "cypress/globals": true,
   },
   rules: {
     "prettier/prettier": "error",
@@ -36,6 +36,6 @@ module.exports = {
     "no-prototype-builtins": "off", // This seems like overkill
     "prefer-destructuring": "off",
     "no-plusplus": "off",
-    "no-restricted-syntax": "off"
-  }
+    "no-restricted-syntax": "off",
+  },
 };
