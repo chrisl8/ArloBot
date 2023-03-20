@@ -62,12 +62,12 @@ You will also need a few other items (laptop and 3D sensor) which I have some de
 Follow the excellent [Arlo Robot Assembly Guide](https://learn.parallax.com/tutorials/robot/arlo/arlo-robot-assembly-guide "Assembly Guide") at Parallax to both assemble and test your Arlo Robot platform.  
  Be sure you have fully understood and run all of their tests before moving on with using ROS.
 
-Check out my blog: [ArloBot Build Index](https://ekpyroticfrood.net/?p=162 "Ekpyrotic Frood Blog")
+Check out my blog: [ArloBot Build Index](https://log.voidshipephemeral.space/Arlobot/ArloBot+Build+Index "Ekpyrotic Frood Blog")
 
 And also jump on the [Parallax Forums](https://forums.parallax.com/ "Parallax Forums") and start searching and asking questions!
 
 Because the Arlo platform comes as a kit, building it should be pretty straight forward, but we will all help you out with any problems you run into.  
-Ask questions in the [Parallax Forums](https://forums.parallax.com/ "Parallax Forums"), on [GitHub](https://github.com/chrisl8/ArloBot/issues "Create an Issue"), on the [ROS for Arlobot Google Group](https://groups.google.com/g/ros-for-arlobot "ROS for Arlobot"), and on my [blog](https://ekpyroticfrood.net/ "My Blog").
+Ask questions in the [Parallax Forums](https://forums.parallax.com/ "Parallax Forums"), on [GitHub](https://github.com/chrisl8/ArloBot/issues "Create an Issue") and on the [ROS for Arlobot Google Group](https://groups.google.com/g/ros-for-arlobot "ROS for Arlobot").
 
 Once your robot is built, you can use this package.
 
@@ -88,7 +88,7 @@ Be sure to read the instructions that the script will print at the end about edi
 To update your code run the same script again, and it will pull down and compile anything new without erasing custom settings.
 
 ## Propeller Code
-Please note that you will need the code to run on your Propeller board. This is stored in the "PropellerCodeForArloBot" folder. Details on the Propeller code and setup are here: [https://ekpyroticfrood.net/?p=165](https://ekpyroticfrood.net/?p=551)
+Please note that you will need the code to run on your Propeller board. This is stored in the "PropellerCodeForArloBot" folder. Details on the Propeller code and setup are here: [Propeller Cdoe for Arlobot](https://log.voidshipephemeral.space/Arlobot/Propeller+Code+for+Arlobot+(PropWare+Version))
 
 You can run the script `install_Propeller_code.sh` to automatically install the required code to your Propeller Activity Board.
 
@@ -145,8 +145,8 @@ The above works for me on Ubuntu 19.10.
 To update your code just run the same script again, and it will pull down and compile anything new without erasing custom settings.
 
 ## Full Arlobot Setup Instructions: ##
-Complete setup and usage instructions are at my blog:
-https://ekpyroticfrood.net/?p=162
+Complete setup and usage instructions are at my blog:  
+[ArloBot Build Index](https://log.voidshipephemeral.space/Arlobot/ArloBot+Build+Index)
 
 ## Edit your robot's Description ##
 `roscd arlobot_ros/urdf`  
@@ -220,7 +220,7 @@ view-navigation.sh
 ```
 
 ### Remote Control with an xBox 360 Joystick ###
-https://ekpyroticfrood.net/?p=115
+[Using an xBox 360 Joystick with ROS](https://log.voidshipephemeral.space/Ancient+History/2014/Using+an+xBox+360+Joystick+with+ROS)  
 This should work as soon as you Start ROS, either with `start-robot.sh` or with the Web Interface.
 
 # Rviz
@@ -237,7 +237,7 @@ http://wiki.ros.org/ROS/NetworkSetup
 # Assistance
 
 Please report an issue for any problems or if you need me to clarify anything!  
- Ask questions in the [Parallax Forums](https://forums.parallax.com/ "Parallax Forums"), on [GitHub](https://github.com/chrisl8/ArloBot/issues "Create an Issue"), on the [ROS for Arlobot Google Group](https://groups.google.com/g/ros-for-arlobot "ROS for Arlobot"), and on my [blog](https://ekpyroticfrood.net/ "My Blog"). I will write more documentation as I answer questions, and I hope you will also write instructions when you do your build!
+ Ask questions in the [Parallax Forums](https://forums.parallax.com/ "Parallax Forums"), on [GitHub](https://github.com/chrisl8/ArloBot/issues "Create an Issue") and on the [ROS for Arlobot Google Group](https://groups.google.com/g/ros-for-arlobot "ROS for Arlobot"). I will write more documentation as I answer questions, and I hope you will also write instructions when you do your build!
 
 
 # Scripts
