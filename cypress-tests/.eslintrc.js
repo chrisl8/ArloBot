@@ -13,15 +13,13 @@
 module.exports = {
   parser: "babel-eslint",
   plugins: ["react", "cypress"],
-  extends: ["plugin:react/recommended", "airbnb", "prettier", "prettier/react"],
-  // extends: ['airbnb'],
+  extends: ["plugin:react/recommended", "airbnb", "prettier"],
   env: {
     es6: true, // Probably not needed, because of babel-eslint
     node: true, // Probably not needed, because of babel-eslint
-    "cypress/globals": true,
+    "cypress/globals": true
   },
   rules: {
-    "prettier/prettier": "error",
     // Even FB says to name JSX files .js these days
     "react/jsx-filename-extension": [1, { extensions: [".js", ".jsx"] }],
     // These are not code style or real errors, just "best practices" that really mean
@@ -36,6 +34,6 @@ module.exports = {
     "no-prototype-builtins": "off", // This seems like overkill
     "prefer-destructuring": "off",
     "no-plusplus": "off",
-    "no-restricted-syntax": "off",
-  },
+    "no-restricted-syntax": "off"
+  }
 };
