@@ -646,7 +646,7 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     printf "${RED}You may have to reboot before the USB Relay board will function!${NC}\n"
   fi
 
-  printf "\n${YELLOW}[Installing and Initializing the Current Node LTS version]${NC}\n"
+  printf "\n${YELLOW}[Installing and Initializing the Latest Version of Node.js]${NC}\n"
 
   printf "${LIGHTBLUE}[Installing/Updating Node Version Manager]${NC}\n"
   if [[ -e ${HOME}/.nvm/nvm.sh ]]; then
@@ -657,7 +657,7 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     nvm deactivate
   fi
 
-  wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
+  wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
   export NVM_DIR="${HOME}/.nvm"
   # shellcheck source=/home/chrisl8/.nvm/nvm.sh
   [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
