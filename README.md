@@ -140,6 +140,12 @@ Then use these commands to run various remote functions via Docker:
 
 The above works for me on Ubuntu 19.10.
 
+## RViz on Windows
+
+Another option is to do a minimal instal of RViz on your windows host if that is your primary OS, just for watching and controlling navigation:  
+
+[Running Rviz on Windows](https://github.com/chrisl8/ArloBot/wiki/Running-Rviz-on-Windows)
+
 ## Updating Code
 
 To update your code just run the same script again, and it will pull down and compile anything new without erasing custom settings.
