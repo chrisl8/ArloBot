@@ -102,8 +102,7 @@ async function tts(sound) {
     personalData.pushover.USER !== '' &&
     sound !== '' &&
     sound !== undefined &&
-    sound !== null &&
-    webModel.pushoverOn
+    sound !== null
   ) {
     const p = new Push({
       user: personalData.pushover.USER,

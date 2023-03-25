@@ -12,7 +12,7 @@ module.exports = {
   lastUpdateTime: 0,
   videoSource: 'xscreen.png',
   masterRelayOn: false,
-  debugging: false, // TODO: Make the below a set of objects to make them easier to deal with.
+  debugging: false,
   logConsoleMessages: false, // Like debugging but ONLY for LaunchScript function
   logBehaviorMessages: false,
   logOtherMessages: false,
@@ -28,7 +28,6 @@ module.exports = {
   beQuiet: false,
   checkMasterRelay: true, // Always read once on load
   checkUsbRelayBank: true, // Always read once on load
-  pushoverOn: false, // TODO: Add this to web interface, to enable by hand IF enabled in json config
   haltRobot: false,
   semaphoreFilesRead: false,
   laptopFullyCharged: 'unknown',
