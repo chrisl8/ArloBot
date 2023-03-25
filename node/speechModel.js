@@ -1,3 +1,4 @@
+const fs = require('fs');
 /*
  chatter happens every second, based on the results of Test,
  events happens when webModel is updated with the listed entry.
@@ -300,7 +301,18 @@ const speechModel = {
   },
 };
 
-// Sting Keys cannot be set on object literals, so setting them here:
+// Look for, Import, and add text from a "private" speech file in the personal data config folder.
+try {
+  const personalSpeechDataFile = `${process.env.HOME}/.arlobot/personalSpeechData.json`;
+  const personalSpeechData = JSON.parse(
+    fs.readFileSync(personalSpeechDataFile, 'utf8'),
+  );
+  console.log(personalSpeechData);
+} catch (e) {
+  console.log('No personal speech data file found.');
+}
+
+// String Keys cannot be set on object literals, so setting them here:
 speechModel.events.goalStatus['New Goal Set.'] =
   speechModel.events.goalStatus.newGoalSet;
 speechModel.events.goalStatus['Goal reached.'] =
