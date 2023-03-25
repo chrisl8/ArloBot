@@ -218,7 +218,7 @@ function checkInitialTelemetry() {
       .should("be.visible");
     cy.get("#telemetry-card")
       .contains("Robot Battery Volts")
-      .should("not.have.class", "btn-success"); // TODO: Put this back.
+      .should("not.have.class", "btn-success");
     cy.get("#telemetry-card")
       .contains("Robot Battery Volts")
       .children("span")
@@ -230,10 +230,10 @@ function checkInitialTelemetry() {
       .should("be.visible");
     cy.get("#telemetry-card")
       .contains("Robot Battery Low")
-      .should("not.have.class", "btn-success"); // TODO: Put this back.
+      .should("not.have.class", "btn-success");
     cy.get("#telemetry-card")
       .contains("Robot Battery Low")
-      .contains("span", "true") // TODO: Put this back.
+      .contains("span", "false")
       .should("be.visible");
   });
 

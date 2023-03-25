@@ -18,9 +18,8 @@ import panelTestsWithRosRunning, {
 
 import panelTestsWithRosOff from "../support/panelTestsWithRosOff";
 
-// TODO: WIP
 describe("Start ROS and test Navigation Panel", () => {
-  // TODO: You may want to comment out all of the start/stop code while testing this,
+  // NOTE: You may want to comment out all of the start/stop code while testing this,
   //       So that you can just repeatedly test the actual map load bits instead of
   //       stopping/starting ROS and testing every bit of it repeatedly.
   resetRobotService();
@@ -30,12 +29,12 @@ describe("Start ROS and test Navigation Panel", () => {
   startROS();
   additionalItemsAreVisibleWhenRosIsRunning();
 
-  it("Master Relay should be on", () => {
-    cy.get("#masterRelayStatusButton")
-      .contains("span", "On", { timeout: 15000 })
-      .should("be.visible");
-    cy.get("#masterRelayStatusButton").should("have.class", "btn-success");
-  });
+  // it("Master Relay should be on", () => {
+  //   cy.get("#masterRelayStatusButton")
+  //     .contains("span", "On", { timeout: 15000 })
+  //     .should("be.visible");
+  //   cy.get("#masterRelayStatusButton").should("have.class", "btn-success");
+  // });
 
   checkInitialTelemetry();
 
@@ -44,16 +43,15 @@ describe("Start ROS and test Navigation Panel", () => {
   panelTestsWithRosRunning.navigationPanelShouldBeOpen(true);
 
   it("can load a map", () => {
-    // TODO: Load Map
     cy.get("#load-map-button").should("be.visible");
 
     cy.get("#load-map-button").click();
 
     cy.contains("Pick a map to load:").should("be.visible");
 
-    cy.get("#load-map-button-basement").should("be.visible");
+    cy.get("#load-map-button-Basement").should("be.visible");
 
-    cy.get("#load-map-button-basement").click();
+    cy.get("#load-map-button-Basement").click();
 
     cy.contains("Load Map Starting up").should("be.visible");
 

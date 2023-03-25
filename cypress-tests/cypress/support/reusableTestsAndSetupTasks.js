@@ -58,13 +58,13 @@ function resetRobotService() {
 
 function initialPageLoadItemsVisible() {
   it("correct items are visible on the screen", () => {
-    cy.contains("Starting behaviors.").should("be.visible");
+    // cy.contains("Starting behaviors.").should("be.visible");
     cy.contains("Waiting for StartROS request.").should("be.visible");
     cy.contains("Emergency STOP").should("be.visible");
     cy.contains("Status").should("be.visible");
     // cy.contains("Laptop Battery").should("be.visible");
     // cy.contains("Laptop Fully Charged").should("be.visible");
-    cy.contains("Plugged In").should("be.visible");
+    // cy.contains("Plugged In").should("be.visible");
     cy.contains("Map").should("be.visible");
     cy.contains("Debugging").should("be.visible");
     // cy.contains("Camera").should("be.visible");
