@@ -41,42 +41,8 @@ const speechModel = {
       Test: () => true,
       thingsToSay: {
         repeat: false,
-        'CastleInTheSky-Ding': {
-          text: '~/.arlobot/sounds/CastleInTheSky-Ding.wav',
-          weight: 100,
-        },
-        'CastleInTheSky-Drip2': {
-          text: '~/.arlobot/sounds/CastleInTheSky-Drip2.wav',
-          weight: 100,
-        },
-        'CastleInTheSky-RobotBeep2a': {
-          text: '~/.arlobot/sounds/CastleInTheSky-RobotBeep2a.wav',
-          weight: 100,
-        },
-        'CastleInTheSky-RobotBeep2b': {
-          text: '~/.arlobot/sounds/CastleInTheSky-RobotBeep2b.wav',
-          weight: 100,
-        },
-        'CastleInTheSky-RobotBeep2c': {
-          text: '~/.arlobot/sounds/CastleInTheSky-RobotBeep2c.wav',
-          weight: 100,
-        },
-        'CastleInTheSky-RobotBeep3a': {
-          text: '~/.arlobot/sounds/CastleInTheSky-RobotBeep3a.wav',
-          weight: 100,
-        },
-        'CastleInTheSky-RobotBeep3b': {
-          text: '~/.arlobot/sounds/CastleInTheSky-RobotBeep3b.wav',
-          weight: 100,
-        },
-        'CastleInTheSky-RobotBeep3c': {
-          text: '~/.arlobot/sounds/CastleInTheSky-RobotBeep3c.wav',
-          weight: 100,
-        },
-        'CastleInTheSky-Zap': {
-          text: '~/.arlobot/sounds/CastleInTheSky-Zap.wav',
-          weight: 100,
-        },
+        text: 'Hello World!',
+        weight: 100,
       },
     },
   },
