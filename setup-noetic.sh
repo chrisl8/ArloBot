@@ -442,7 +442,7 @@ fi
   cd ~/catkin_ws/src
   # NOTICE: 1.5.6 is the last version that can still load its own saved maps on Noetic, so sticking with it.
   if ! [[ -d ~/catkin_ws/src/slam_toolbox ]]; then
-    git clone -b noetic-devel git@github.com:SteveMacenski/slam_toolbox.git
+    git clone -b noetic-devel https://github.com/SteveMacenski/slam_toolbox.git
     cd ~/catkin_ws/src/slam_toolbox
   else
     cd ~/catkin_ws/src/slam_toolbox
