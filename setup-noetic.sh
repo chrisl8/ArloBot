@@ -438,6 +438,19 @@ else
   git pull
 fi
 
+  printf "\n${LIGHTBLUE}Slam Toolbox 1.5.6${NC}\n"
+  cd ~/catkin_ws/src
+  # NOTICE: 1.5.6 is the last version that can still load its own saved maps on Noetic, so sticking with it.
+  if ! [[ -d ~/catkin_ws/src/slam_toolbox ]]; then
+    git clone -b noetic-devel git@github.com:SteveMacenski/slam_toolbox.git
+    cd ~/catkin_ws/src/slam_toolbox
+  else
+    cd ~/catkin_ws/src/slam_toolbox
+    #git pull # git pull does not work if you have checked out a specific commit, as we are currently doing.
+  fi
+  # NOTICE: 1.5.6 is the last version that can still load its own saved maps on Noetic, so sticking with it.
+  git checkout 1.5.6
+
 if [[ "${RESPONSE_TO_XV11_QUERY}" == "y" ]] || [[ ${CI} == "true" ]]; then # Always test in Travis
   printf "\n${LIGHTBLUE}Neato XV11 repository${NC}\n"
   # Only needed if you have an XV-11 "Neato" Scanner
