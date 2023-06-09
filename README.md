@@ -18,7 +18,7 @@ This package also includes:
  4. A set of Node.js based utilities to automate many repeated tasks.
  5. A Node.js based Server to run the robot at all times, along with:
  6. A React based web GUI to interact with the robot.
- 7. Other fun things like Twilio and Pushover integration.
+ 7. Other fun things like Pushover integration.
 
 ### Mobile Friendly Web Interface  
 ![Alt text](screenshots/arlobotNewWebInterface.png "Web Interface")

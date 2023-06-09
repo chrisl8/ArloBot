@@ -2,7 +2,7 @@ const webModel = require('../webModel');
 const webModelFunctions = require('../webModelFunctions');
 const robotModel = require('../robotModel');
 const rosInterface = require('../rosInterface');
-const textme = require('../textme');
+const pushMe = require('../pushMe');
 
 let UnPlugRobotStarted = false;
 
@@ -35,7 +35,7 @@ async function unPlugRobot() {
         return false;
       }
       if (!robotModel.unplugMeTextSent) {
-        textme('Please unplug me!');
+        pushMe('Please unplug me!');
         robotModel.unplugMeTextSent = true;
         webModelFunctions.scrollingStatusUpdate(
           'Unplug Robot:  requesting assistance.',

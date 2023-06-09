@@ -2,7 +2,6 @@ const webModel = require('../webModel');
 const webModelFunctions = require('../webModelFunctions');
 const robotModel = require('../robotModel');
 const howManySecondsSince = require('../howManySecondsSince');
-const textme = require('../textme');
 const rosInterface = require('../rosInterface');
 const WayPoints = require('../WayPoints.js');
 const LCD = require('../LCD');
@@ -10,6 +9,7 @@ const LCD = require('../LCD');
 const wayPointEditor = new WayPoints();
 const LaunchScript = require('../LaunchScript');
 const personalData = require('../personalData');
+const pushMe = require('../pushMe');
 
 async function loadMap() {
   if (webModel.debugging && webModel.logBehaviorMessages) {
@@ -28,7 +28,7 @@ async function loadMap() {
       ) {
         // Putting the "Where am I" here may not be the best design,
         // but it works.
-        textme('Where am I?');
+        pushMe('Where am I?');
         robotModel.whereAmITextSent = true;
       }
       // This behavior is idle, allow behave loop to continue to next entry.

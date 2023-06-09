@@ -12,14 +12,6 @@
     "USER": "",
     "sound": ""
   },
-  "_twilio": "Required data to use Twilio if you want",
-  "twilio": {
-    "account_sid": "",
-    "auth_token": "",
-    "number": "+",
-    "my_phone_number": "",
-    "smsWebhook": ""
-  },
   "_cloudServer": "For use if you have a cloud based server that the robot communicates with for various online functions.",
   "cloudServer": {
     "exists": false,
