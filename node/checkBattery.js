@@ -1,5 +1,5 @@
 const fs = require('fs');
-const glob = require('glob');
+const { glob } = require('glob');
 const personalData = require('./personalData');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');

@@ -6,10 +6,9 @@
   "main": "index.js",
   "dependencies": {
     "base-64": "^1.0.0",
-    "body-parser": "^1.19.0",
     "chokidar": "^3.4.1",
     "express": "^4.17.1",
-    "glob": "^9.3.2",
+    "glob": "^10.2.7",
     "lodash": "^4.17.19",
     "mkdirp": "^2.1.6",
     "ps-tree": "^1.2.0",
