@@ -3,7 +3,6 @@ const mkdirp = require('mkdirp');
 const express = require('express');
 const _ = require('lodash');
 const spawn = require('child_process').spawn;
-const bodyParser = require('body-parser');
 const socketIo = require('socket.io');
 
 const personalData = require('./personalData');
@@ -48,10 +47,10 @@ updateMapList();
 const app = express();
 
 // For json encoded post requests, which I use:
-app.use(bodyParser.json());
+app.use(express.json());
 // Required for Twilio:
 app.use(
-  bodyParser.urlencoded({
+  express.urlencoded({
     extended: true,
   }),
 );
