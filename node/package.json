@@ -10,7 +10,7 @@
     "express": "^4.17.1",
     "glob": "^10.2.7",
     "lodash": "^4.17.19",
-    "mkdirp": "^2.1.6",
+    "mkdirp": "^3.0.1",
     "ps-tree": "^1.2.0",
     "pushover-notifications": "^1.2.2",
     "roslib": "^1.2.0",

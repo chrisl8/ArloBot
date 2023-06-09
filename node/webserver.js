@@ -1,5 +1,5 @@
 const fs = require('fs');
-const mkdirp = require('mkdirp');
+const { mkdirp } = require('mkdirp');
 const express = require('express');
 const _ = require('lodash');
 const spawn = require('child_process').spawn;

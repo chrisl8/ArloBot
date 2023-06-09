@@ -1,5 +1,5 @@
 const fs = require('fs');
-const mkdirp = require('mkdirp');
+const { mkdirp } = require('mkdirp');
 const getCurrentPosition = require('./getCurrentPosition');
 
 const personalDataFolder = `${process.env.HOME}/.arlobot/`;

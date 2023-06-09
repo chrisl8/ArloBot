@@ -12,7 +12,7 @@ const { promisify } = require('util');
 
 const access = promisify(fs.access);
 const chmod = promisify(fs.chmod);
-const mkdirp = require('mkdirp');
+const { mkdirp } = require('mkdirp');
 const webModelFunctions = require('./webModelFunctions');
 const webModel = require('./webModel');
 const robotModel = require('./robotModel');
