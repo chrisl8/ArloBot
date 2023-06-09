@@ -157,7 +157,7 @@ async function start() {
   const webServer = app.listen(personalData.webServerPort);
   const io = socketIo(webServer, {
     cors: {
-      origin: 'http://localhost:3000',
+      origin: 'http://localhost:5173',
       methods: ['GET', 'POST'],
     },
   });

@@ -3,26 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@testing-library/jest-dom": "^5.11.6",
-    "@testing-library/react": "^14.0.0",
-    "@testing-library/user-event": "^14.4.3",
+    "vite": "^4.3.9",
+    "@vitejs/plugin-react": "^4.0.0",
     "bootstrap": "^5.1.3",
     "nipplejs": "^0.10.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-scripts": "^5.0.0",
     "reactstrap": "^9.0.1",
     "roslib": "^1.2.0",
     "socket.io-client": "^4.0.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "browserslist": {
     "production": [
@@ -37,23 +31,15 @@
     ]
   },
   "devDependencies": {
-    "eslint": "^8.26.0",
     "@babel/eslint-parser": "^7.16.3",
     "@babel/preset-react": "^7.16.7",
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "eslint": "^8.26.0",
     "eslint-config-airbnb": "^19.0.2",
     "eslint-config-prettier": "^8.0.0",
-    "eslint-plugin-cypress": "^2.11.1",
     "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-jasmine": "^4.1.2",
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "eslint-plugin-react": "^7.20.3",
     "eslint-plugin-react-hooks": "^4.1.0",
     "prettier": "^2.2.1"
-  },
-  "overrides": {
-    "@typescript-eslint/typescript-estree": "^5.57.1",
-    "fork-ts-checker-webpack-plugin": "^6.5.3",
-    "typescript": "^5.0.3"
   }
 }
