@@ -98,6 +98,7 @@ async function tts(sound) {
     }
   }
   // Send 'sound' to myself via Pushover
+  // TODO: Replace this with call to pushMe.js
   if (
     personalData.pushover.USER !== '' &&
     sound !== '' &&

@@ -48,7 +48,6 @@ const app = express();
 
 // For json encoded post requests, which I use:
 app.use(express.json());
-// Required for Twilio:
 app.use(
   express.urlencoded({
     extended: true,

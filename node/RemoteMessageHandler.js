@@ -4,8 +4,7 @@ const webModelFunctions = require('./webModelFunctions');
 const tts = require('./tts');
 const handleSemaphoreFiles = require('./handleSemaphoreFiles');
 // This will handle messages from the remote cloud based web server.
-// Presumably these will be mostly SMS messages from Twilio,
-// but anything we could want to poll or push to the robot,
+// Anything we could want to poll or push to the robot,
 // via an Internet accessible web server will arrive here.
 
 class RemoteMessageHandler {
