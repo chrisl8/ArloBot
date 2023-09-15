@@ -1,6 +1,8 @@
-## TODO List
+## ABANDONED TODO List 
 
- - Make a new Youtube video of robot functions.
+**I am no loner planning to do any of this!** Sorry if you were waiting on me, but I have moved on to other things.
+
+ - [x] Make a new Youtube video of robot functions.
  
  - Add some response to failed arrival:
     - Text message.

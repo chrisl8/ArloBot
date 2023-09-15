@@ -2,6 +2,16 @@
 [![React Build Test](https://github.com/chrisl8/ArloBot/actions/workflows/react.js.yml/badge.svg)](https://github.com/chrisl8/ArloBot/actions/workflows/react.js.yml)
 [![Setup Script Test](https://github.com/chrisl8/ArloBot/actions/workflows/setup-noetic.yml/badge.svg)](https://github.com/chrisl8/ArloBot/actions/workflows/setup-noetic.yml)
 
+**STATUS: Maintained but not ehanced.**  
+This code works on **my** roobt, but my robot is built with parts that are no longer sold.  
+Further, ROS 1, on Ubuntu 20.04 Focal will become End Of Life soon.  
+I have no plans currently to port all of this to ROS 2 nor to develop a new hardware platform with available parts.  
+I thoroughly enjoyed working on this for many years, and what you see here is a stable platform that is easy to deploy, but now I am not developing further.  
+
+I do update the dependencies from time to time. I still run my robot around my basement from time to time to prove that everything still works. However, there are always updates to the ROS code that this works on, and they often break existing things. So this code will start to "rot" as I pin various ROS dependencies (like ROS 1 entirely) to the last point when they worked with my hardware.  
+
+Feel free to file issues if you are trying to use this code, but while I would love to build a new version of this robot, I haven't the free time for it. Perhaps I will return to this when I retire or someone will hire me full time to maintain open-source robotics platforms. Until then, enjoy this for what it is, and understand that any commits you see will just be to update dependencies.
+
 ArloBot Package for ROS
 =======================
 
@@ -29,7 +39,7 @@ This package also includes:
 
 * A Python Curses based serial communications test program allows testing of ALL Propeller board functions over serial with zero use of ROS to more easily ensure the hardware is working before starting ROS.
 
-# Current Status and my To Do List
+# Maintenance Only Status Notes
 
 The [Arlo Robot System](https://www.parallax.com/product/28966) by Parallax has been discontinued. At this moment they are entirely out of stock, so this project's usefulness slowly grows to an end, although my personal implementation, which has always been the primary focus of this repository, lives on as I run my robot almost daily.
 
@@ -41,10 +51,6 @@ DWA Local Planner has been **removed** in favor of [teb_local_planner](https://w
  - It is able to back up, which makes routing much better.
  - It seems to work very well with entirely default tuning.
  
-I am also working on hardware and software design to translate what I have learned and built here to a more generic robot platform using more readily available "off the shelf" parts.
-
-[My TODO List](https://github.com/chrisl8/ArloBot/blob/noetic/ToDoList.md)
-
 # Build a Robot! #
 First you need to build a robot!
 
