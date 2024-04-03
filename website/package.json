@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "vite": "^5.1.5",
+    "vite": "^5.1.7",
     "@vitejs/plugin-react": "^4.0.0",
     "bootstrap": "^5.1.3",
     "nipplejs": "^0.10.0",
