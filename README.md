@@ -2,8 +2,8 @@
 [![React Build Test](https://github.com/chrisl8/ArloBot/actions/workflows/react.js.yml/badge.svg)](https://github.com/chrisl8/ArloBot/actions/workflows/react.js.yml)
 [![Setup Script Test](https://github.com/chrisl8/ArloBot/actions/workflows/setup-noetic.yml/badge.svg)](https://github.com/chrisl8/ArloBot/actions/workflows/setup-noetic.yml)
 
-**STATUS: Maintained but not ehanced.**  
-This code works on **my** roobt, but my robot is built with parts that are no longer sold.  
+**STATUS: Maintained but not enhanced.**  
+This code works on **my** robot, but my robot is built with parts that are no longer sold.  
 Further, ROS 1, on Ubuntu 20.04 Focal will become End Of Life soon.  
 I have no plans currently to port all of this to ROS 2 nor to develop a new hardware platform with available parts.  
 I thoroughly enjoyed working on this for many years, and what you see here is a stable platform that is easy to deploy, but now I am not developing further.  
