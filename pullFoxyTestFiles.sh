@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# TODO: Delete this file when I don't need the notes anymore.
+
 # This script is part of my personal attempt to make Foxy work on this robot,
 # but it doesn't work and probably never will.
 

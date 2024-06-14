@@ -2,6 +2,8 @@
 # shellcheck disable=SC2059 disable=SC2129
 # ROS Arlobot Automated Install
 
+# TODO: Remove all noetic references.
+
 INSTALLING_ROS_DISTRO=jazzy
 
 # Run this straight off of github like this:
@@ -435,10 +437,10 @@ cd ~/dev_ws/src
 
 printf "${BLUE}ArloBot repository${NC}\n"
 if ! [[ -d ~/dev_ws/src/ArloBot ]]; then
-  git clone -b noetic https://github.com/chrisl8/ArloBot.git
+  git clone -b jazzy https://github.com/chrisl8/ArloBot.git
 else
   cd ~/dev_ws/src/ArloBot
-  git checkout noetic
+  git checkout jazzy
   git pull
 fi
 

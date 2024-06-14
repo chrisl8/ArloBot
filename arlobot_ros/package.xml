@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<package format="2">
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
   <name>arlobot_ros</name>
   <version>0.1.0</version>
   <description>
@@ -10,44 +11,44 @@
   <url type="website">https://github.com/chrisl8/ArloBot</url>
   <author email="christenlofland@gmail.com">Christen Lofland</author>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
 
-  <depend>roscpp</depend>
-  <depend>slam_toolbox</depend>
-  <depend>tf2_ros</depend>
-  <depend>rospy</depend>
-  <depend>move_base</depend>
-  <depend>move_base_msgs</depend>
-  <depend>std_msgs</depend>
-  <depend>sensor_msgs</depend>
-  <depend>geometry_msgs</depend>
-  <depend>message_generation</depend>
-  <depend>twist_mux</depend>
-  <depend>robot_state_publisher</depend>
-  <depend>urdf</depend>
-  <depend>xacro</depend>
-  <depend>actionlib</depend>
-  <depend>teb_local_planner</depend>
-  <depend>joint_state_publisher</depend>
-  <depend>rviz</depend>
-  <depend>joy</depend>
-  <depend>rosbridge_server</depend>
-  <depend>tf2_tools</depend>
-  <depend>amcl</depend>
-  <depend>base_local_planner</depend>
-  <depend>carrot_planner</depend>
-  <depend>clear_costmap_recovery</depend>
-  <depend>costmap_2d</depend>
-  <depend>dwa_local_planner</depend>
-  <depend>fake_localization</depend>
-  <depend>global_planner</depend>
-  <depend>map_server</depend>
-  <depend>move_slow_and_clear</depend>
-  <depend>nav_core</depend>
-  <depend>navfn</depend>
-  <depend>rotate_recovery</depend>
-  <depend>voxel_grid</depend>
-  <depend>teleop_twist_keyboard</depend>
-  <depend>teleop_twist_joy</depend>
-  <depend>rosserial_python</depend>
+  <buildtool_depend>rosidl_default_generators</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>rclpy</depend>
+
+  <build_depend>std_msgs</build_depend>
+
+  <exec_depend>slam_toolbox</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>move_base</exec_depend>
+  <exec_depend>move_base_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>message_generation</exec_depend>
+  <exec_depend>twist_mux</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>urdf</exec_depend>
+  <exec_depend>xacro</exec_depend>
+  <exec_depend>actionlib</exec_depend>
+  <exec_depend>teb_local_planner</exec_depend>
+  <exec_depend>joint_state_publisher</exec_depend>
+  <exec_depend>rviz</exec_depend>
+  <exec_depend>joy</exec_depend>
+  <exec_depend>rosbridge_server</exec_depend>
+  <exec_depend>teleop_twist_keyboard</exec_depend>
+  <exec_depend>teleop_twist_joy</exec_depend>
+  <exec_depend>navigation2</exec_depend>
+
+  <exec_depend>rosidl_default_runtime</exec_depend>
+
+  <member_of_group>rosidl_interface_packages</member_of_group>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>
