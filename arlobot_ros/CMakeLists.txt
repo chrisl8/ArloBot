@@ -17,10 +17,12 @@ find_package(rclcpp REQUIRED)
 find_package(rclpy REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(move_base_msgs REQUIRED)
+# TODO: How is this replaced in ROS2?
+#find_package(move_base_msgs REQUIRED)
 find_package(joy REQUIRED)
 find_package(slam_toolbox REQUIRED)
-find_package(teb_local_planner REQUIRED)
+# TODO: What do I do for this in ROS2?
+#find_package(teb_local_planner REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/UsbRelayStatus.msg"
