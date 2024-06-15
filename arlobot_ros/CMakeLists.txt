@@ -71,7 +71,7 @@ ament_target_dependencies(autodocking_irCode
    "sensor_msgs"
    "geometry_msgs"
    "std_msgs"
-   "actionlib_msgs"
+#   "actionlib_msgs"
    "move_base_msgs"
 )
 ament_export_dependencies(rclpy std_msgs geometry_msgs joy slam_toolbox teb_local_planner)
