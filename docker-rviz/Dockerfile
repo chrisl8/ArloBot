@@ -12,12 +12,12 @@ RUN apt-get update && apt-get install -y \
         xterm
 ENV DEBIAN_FRONTEND=newt
 
-RUN mkdir -p /catkin_ws/src
-WORKDIR /catkin_ws
+RUN mkdir -p /dev_ws/src
+WORKDIR /dev_ws
 RUN source /opt/ros/noetic/setup.bash && catkin_make
 
 # clone Arlobot source required for rviz files
-WORKDIR /catkin_ws/src
+WORKDIR /dev_ws/src
 # This defeats the cache
 ADD https://api.github.com/repos/chrisl8/ArloBot/compare/noetic...HEAD /dev/null
 RUN git clone -b noetic https://github.com/chrisl8/ArloBot.git
@@ -26,10 +26,10 @@ RUN git clone -b noetic https://github.com/chrisl8/ArloBot.git
 # so we link the ones we call externally to root.
 # You can always use xterm to run other things if you want to.
 WORKDIR /
-RUN ln -s /catkin_ws/src/ArloBot/scripts/view-navigation.sh
-RUN ln -s /catkin_ws/src/ArloBot/scripts/view-robot.sh
-RUN ln -s /catkin_ws/src/ArloBot/scripts/runReconfigure.sh
-RUN ln -s /catkin_ws/src/ArloBot/scripts/view-all-sources.sh
+RUN ln -s /dev_ws/src/ArloBot/scripts/view-navigation.sh
+RUN ln -s /dev_ws/src/ArloBot/scripts/view-robot.sh
+RUN ln -s /dev_ws/src/ArloBot/scripts/runReconfigure.sh
+RUN ln -s /dev_ws/src/ArloBot/scripts/view-all-sources.sh
 
 # initialize ROS (master uri, environments, etc.)
 COPY docker-entrypoint.sh /

@@ -3,7 +3,7 @@
 
 if [[ $(jq '.hasActivityBoard' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
   check_hardware.sh
-  cd "${HOME}/catkin_ws/src/ArloBot/PropellerCodeForArloBot/ROSInterfaceForArloBot/bin" || exit
+  cd "${HOME}/dev_ws/src/ArloBot/PropellerCodeForArloBot/ROSInterfaceForArloBot/bin" || exit
   rm -rf ./*
   cmake -G "Unix Makefiles" ..
   PROPELLER_LOAD_PORT=$(find_ActivityBoard.sh) make run

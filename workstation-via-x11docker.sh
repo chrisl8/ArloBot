@@ -72,23 +72,23 @@ if ! (command -v node >/dev/null); then
 fi
 
 printf "\n${YELLOW}[Cloning or Updating ArloBot Code]${NC}\n"
-if ! [[ -d ~/catkin_ws/src ]]; then
-  mkdir -p ~/catkin_ws/src
+if ! [[ -d ~/dev_ws/src ]]; then
+  mkdir -p ~/dev_ws/src
 fi
-cd ~/catkin_ws/src
-if ! [[ -d ~/catkin_ws/src/ArloBot ]]; then
+cd ~/dev_ws/src
+if ! [[ -d ~/dev_ws/src/ArloBot ]]; then
   git clone -b noetic https://github.com/chrisl8/ArloBot.git
 else
-  cd ~/catkin_ws/src/ArloBot
+  cd ~/dev_ws/src/ArloBot
   git pull
 fi
 
 printf "\n${YELLOW}[Cloning or Updating x11docker repository]${NC}\n"
-cd ~/catkin_ws/src
-if ! [[ -d ~/catkin_ws/src/x11docker ]]; then
+cd ~/dev_ws/src
+if ! [[ -d ~/dev_ws/src/x11docker ]]; then
   git clone https://github.com/mviereck/x11docker.git
 else
-  cd ~/catkin_ws/src/x11docker
+  cd ~/dev_ws/src/x11docker
   git pull
 fi
 
@@ -103,9 +103,9 @@ if [[ -f ~/.bashrc ]]; then
   if ! (grep ROS_HOSTNAME ~/.bashrc >/dev/null); then
     sh -c "echo \"export ROS_HOSTNAME=$(uname -n).local\" >> ~/.bashrc"
   fi
-  if ! (grep "${HOME}/catkin_ws/src/ArloBot/scripts" ~/.bashrc >/dev/null); then
+  if ! (grep "${HOME}/dev_ws/src/ArloBot/scripts" ~/.bashrc >/dev/null); then
     printf "\n${YELLOW}[Adding ArloBot Scripts folder to your path in .bashrc]${NC}\n"
-    sh -c "echo \"export PATH=\\\$PATH:${HOME}/catkin_ws/src/ArloBot/scripts\" >> ~/.bashrc"
+    sh -c "echo \"export PATH=\\\$PATH:${HOME}/dev_ws/src/ArloBot/scripts\" >> ~/.bashrc"
   fi
 fi
 
@@ -120,21 +120,21 @@ if [[ -f ~/.zshrc ]]; then
   if ! (grep ROS_HOSTNAME ~/.zshrc >/dev/null); then
     sh -c "echo \"export ROS_HOSTNAME=$(uname -n).local\" >> ~/.zshrc"
   fi
-  if ! (grep "${HOME}/catkin_ws/src/ArloBot/scripts" ~/.zshrc >/dev/null); then
+  if ! (grep "${HOME}/dev_ws/src/ArloBot/scripts" ~/.zshrc >/dev/null); then
     printf "\n${YELLOW}[Adding ArloBot Scripts folder to your path in .zshrc]${NC}\n"
-    sh -c "echo \"export PATH=\\\$PATH:${HOME}/catkin_ws/src/ArloBot/scripts\" >> ~/.zshrc"
+    sh -c "echo \"export PATH=\\\$PATH:${HOME}/dev_ws/src/ArloBot/scripts\" >> ~/.zshrc"
   fi
 fi
 
 printf "\n${YELLOW}[Building Docker Image]${NC}\n"
-cd ~/catkin_ws/src/ArloBot/docker-rviz/
+cd ~/dev_ws/src/ArloBot/docker-rviz/
 sudo docker build -t ros:gui . # Run again if you change any settings
 
 # TODO: Should we set the individual scripts to run via sudo instead of the whole command?
 #       https://github.com/mviereck/x11docker/issues/265
 if ! (sudo -nl | grep x11docker >/dev/null); then
   printf "\n${YELLOW}[Setting up required sudo entries.]${NC}\n"
-  echo "${USER} ALL = NOPASSWD: ${HOME}/catkin_ws/src/x11docker/x11docker" >/tmp/x11docker_sudoers
+  echo "${USER} ALL = NOPASSWD: ${HOME}/dev_ws/src/x11docker/x11docker" >/tmp/x11docker_sudoers
   chmod 0440 /tmp/x11docker_sudoers
   sudo chown root:root /tmp/x11docker_sudoers
   sudo mv /tmp/x11docker_sudoers /etc/sudoers.d/

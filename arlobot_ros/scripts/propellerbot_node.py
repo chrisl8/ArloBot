@@ -183,9 +183,9 @@ class PropellerComm(object):
 
         node.create_service(ToggleLED, "~ToggleLED", self._toggleLED)
 
-        # You can use the ~/catkin_ws/src/ArloBot/scripts/find_ActivityBoard.sh script to find this, and
+        # You can use the ~/dev_ws/src/ArloBot/scripts/find_ActivityBoard.sh script to find this, and
         # You can set it by running this before starting this:
-        # rosparam set /arlobot/port $(~/catkin_ws/src/ArloBot/scripts/find_ActivityBoard.sh)
+        # rosparam set /arlobot/port $(~/dev_ws/src/ArloBot/scripts/find_ActivityBoard.sh)
         port = rospy.get_param("~port", "/dev/ttyUSB0")
         baud_rate = int(rospy.get_param("~baudRate", 115200))
 

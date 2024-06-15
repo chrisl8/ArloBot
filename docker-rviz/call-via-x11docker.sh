@@ -29,10 +29,10 @@ if ! (command -v xpra >/dev/null); then
   sudo apt install xpra # xpra lets you run the application in a resizable window!
 fi
 
-if ! [[ -d ~/catkin_ws/src/x11docker ]]; then
+if ! [[ -d ~/dev_ws/src/x11docker ]]; then
   printf "${RED}[You must run workstation-via-x11docker.sh first to prepare your system for this tool]${NC}\n"
 else
-  cd ~/catkin_ws/src/x11docker
+  cd ~/dev_ws/src/x11docker
   git pull
 fi
 
@@ -46,4 +46,4 @@ fi
 VAR=$(node "${SCRIPT_DIR}/../node/ipAddress.js")
 X11_DOCKER_ARGUMENT_LIST=("--xpra" "--network=host" "${DPI_ARGUMENT[@]}" "--env" "ROS_MASTER_URI=${ROS_MASTER_URI}" "--env" "ROS_HOSTNAME=${VAR}" "ros:gui" "$@")
 
-sudo ~/catkin_ws/src/x11docker/x11docker "${X11_DOCKER_ARGUMENT_LIST[@]}"
+sudo ~/dev_ws/src/x11docker/x11docker "${X11_DOCKER_ARGUMENT_LIST[@]}"

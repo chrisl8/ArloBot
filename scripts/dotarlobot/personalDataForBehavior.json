@@ -62,7 +62,7 @@
   "speechVolumeLevelDefault": 100,
   "_speechProgram": "Set this to a script that will convert text to speech and play it. Use 'spd-say' if you do not have one.",
   "speechProgram": "spd-say",
-  "web_folder": "~/catkin_ws/src/ArloBot/website/build",
+  "web_folder": "~/dev_ws/src/ArloBot/website/build",
   "webServerPort": 8080,
   "launchBrowser": true,
   "useQRcodes": false,

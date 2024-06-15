@@ -7,7 +7,7 @@ This summary assumes you’ve read that. I’m just consolidating some informati
 NOTE: The only way to find all of the parameters is to use rqt_reconfigure, because many parameters are not in the files, but just set to defaults.  
 `rosrun rqt_reconfigure rqt_reconfigure`  
 or  
-`~/catkin_ws/src/ArloBot/scripts/runReconfigure.sh`  
+`~/dev_ws/src/ArloBot/scripts/runReconfigure.sh`  
 
 ## Key
 *filename*  

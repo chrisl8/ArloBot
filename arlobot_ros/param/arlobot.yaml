@@ -2,9 +2,9 @@
 # TODO: Edit the copy in ~/.arlobot/ instead. That is the instance you are expected to edit and keep between updates.
 
 # Note, the port where your Propeller is plugged in can be found with a script now,
-# This is in the scripts folder called ~/catkin_ws/src/ArloBot/scripts/find_ActivityBoard.sh
+# This is in the scripts folder called ~/dev_ws/src/ArloBot/scripts/find_ActivityBoard.sh
 # So you can run this to set the port once roscore is started, but before starting Arlobot:
-# rosparam set /arlobot/port $(~/catkin_ws/src/ArloBot/scripts/find_ActivityBoard.sh)
+# rosparam set /arlobot/port $(~/dev_ws/src/ArloBot/scripts/find_ActivityBoard.sh)
 #port: /dev/ttyUSB1
 #
 # I always use 115200 for the ActivityBoard
@@ -30,7 +30,7 @@ usbRelayInstalled: False
 #
 # The other usbRelay... settings do not matter if usbRelayInstalled is False
 # For the port numbers and other specifics about the USB Relay setup see and change arlobot_usbrelay/param/usbrelay.yaml
-# Get this serial number running ~/catkin_ws/src/ArloBot/scripts/drcontrol.py -l
+# Get this serial number running ~/dev_ws/src/ArloBot/scripts/drcontrol.py -l
 # Actually the serial number is now pulled programmatically.
 #usbRelaySerialNumber: "A9026EI5"
 # You can connect the motors to any relay you want, and just put them here.

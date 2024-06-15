@@ -27,7 +27,7 @@ This package also includes:
 ![Alt text](screenshots/arlobotNewWebInterface.png "Web Interface")
 
 ### Curses Serial Testing Interface:  
-`~/catkin_ws/src/ArloBot/scripts/PropellerSerialTest.sh`  
+`~/dev_ws/src/ArloBot/scripts/PropellerSerialTest.sh`  
 ![Alt text](screenshots/PropellerSerialTest.png "Serial Test Program")
 
 * A Python Curses based serial communications test program allows testing of ALL Propeller board functions over serial with zero use of ROS to more easily ensure the hardware is working before starting ROS.
@@ -94,12 +94,12 @@ You can run the script `install_Propeller_code.sh` to automatically install the 
 Before you start trying to get ROS running, but after you have loaded the C code onto the Propeller Activity board, use the PropellerSerialTest to test the hardware and interface.  
 
 Place the robot up on blocks, so it won't drive into anything if it goes nuts, and then run:  
-`~/catkin_ws/src/ArloBot/scripts/PropellerSerialTest.sh`  
+`~/dev_ws/src/ArloBot/scripts/PropellerSerialTest.sh`  
 This provides an interface to send all controls, commands, and settings directly to the Propeller Activity Board without involving ROS. Use this to test everything and make sure your robot's hardware is functioning before you start playing with ROS.
 
 #### Serial Test Usage
 0. Make sure the robot is on blocks off of the floor so when the motors run it will stay still and not run into anything.  
-1. On the robot run `~/catkin_ws/src/ArloBot/scripts/PropellerSerialTest.sh` It will not start moving or doing anything yet, but it may soon! 
+1. On the robot run `~/dev_ws/src/ArloBot/scripts/PropellerSerialTest.sh` It will not start moving or doing anything yet, but it may soon! 
 2. The Proximity Sensors, that is the PING and/or InfraRed (IR) sensors, can cause the robot to move to avoid obstacles or refuse to move when commanded to. The bottom row of the status shows their measurements. The second from the bottom row shows if the Propeller Activity Board's built in safety code has determined if it is safe to move forward or backward or not at all.  There is also the line `Escaping:False` which indicates if the code is attempting to move to get away from something too close.  
 Since we are on blocks, let's turn this off, so it won't run the motors unless we tell it to. This will prevent it from just driving the wheels in response to you or something close to your test setup.  
 Pres `s` for Settings and then `a` to ignore All proximity sensors.  
@@ -118,7 +118,7 @@ You will even see the URL to use printed in the log output.
 
 If the Web Interface is not already running, you can start it by hand by running:
 ```
-~/catkin_ws/src/ArloBot/startRobot.sh
+~/dev_ws/src/ArloBot/startRobot.sh
 ```
 and point your web browser at the URL it gives you.
 
@@ -167,7 +167,7 @@ If you want to disable AC connection monitoring in real time, while ROS is runni
 ## NOTE: Robot may be stuck or moving in response to sensors
 The Infrared, PING, and "plugged in" state of the robot can prevent it from moving or cause it to move by itself.  
 Once ROS is running, if you want to ensure that ONLY ROS input causes movement, and that the robot responds to ROS even if the PING or IR sensors sense an obstacle, you can quickly tell it to ignore all sensor input by running:  
-`~/catkin_ws/src/ArloBot/scripts/ignoreAllSensors.sh`  
+`~/dev_ws/src/ArloBot/scripts/ignoreAllSensors.sh`  
 Notice that you must run that **AFTER ROS is started**, and run it every time you start ROS when testing with sensors ignored.
 
 # Basic ROS based usage instructions #
@@ -249,7 +249,7 @@ Please report an issue for any problems or if you need me to clarify anything!
 Here is a list of the "convenience scripts" that I have written for Arlobot. Many are used by the web site. All of them can be run directly by you if you need or want to. 
 
 All of the functions above also have quick launch scripts.
-`cd ~/catkin_ws/src/ArloBot/scripts`
+`cd ~/dev_ws/src/ArloBot/scripts`
 
 ### Start ROS ###
 Start just the most basic pieces  

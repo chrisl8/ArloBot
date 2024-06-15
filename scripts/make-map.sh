@@ -11,7 +11,7 @@ done
 SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 # echo "${SCRIPTDIR}" # For debugging
 
-# shellcheck source=/home/chrisl8/catkin_ws/src/ArloBot/scripts/rosEnvironmentSetup.sh
+# shellcheck source=/home/chrisl8/dev_ws/src/ArloBot/scripts/rosEnvironmentSetup.sh
 source "${SCRIPTDIR}/rosEnvironmentSetup.sh"
 
 if pgrep -f robot.launch >/dev/null; then

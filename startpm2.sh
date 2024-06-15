@@ -6,7 +6,7 @@ export NVM_DIR="${HOME}/.nvm"
 # USB Relay Controller
 if [[ "$(jq '.useUSBrelay' "${HOME}"/.arlobot/personalDataForBehavior.json)" == true ]]; then
   echo "Turning off all relays"
-  "${HOME}"/catkin_ws/src/ArloBot/scripts/switch_relay_name.sh all off
+  "${HOME}"/dev_ws/src/ArloBot/scripts/switch_relay_name.sh all off
 fi
 
 MAX_RETRY_COUNT=10
@@ -17,15 +17,15 @@ if [[ "$(jq '.useMasterPowerRelay' "${HOME}"/.arlobot/personalDataForBehavior.js
   echo "Turning off Arlo Power."
 
   # It takes a while before it works after boot up.
-  while ! "${HOME}"/catkin_ws/src/ArloBot/scripts/switch_master_relay.sh off && [[ ${RETRY_COUNT} -lt ${MAX_RETRY_COUNT} ]]; do
+  while ! "${HOME}"/dev_ws/src/ArloBot/scripts/switch_master_relay.sh off && [[ ${RETRY_COUNT} -lt ${MAX_RETRY_COUNT} ]]; do
     echo ${RETRY_COUNT}
     sleep 1
-    "${HOME}"/catkin_ws/src/ArloBot/scripts/switch_master_relay.sh off
+    "${HOME}"/dev_ws/src/ArloBot/scripts/switch_master_relay.sh off
     RETRY_COUNT=$((RETRY_COUNT + 1))
   done
   # The first one always results in some odd output and a failure, so do it one more time.
   sleep 1
-  "${HOME}"/catkin_ws/src/ArloBot/scripts/switch_master_relay.sh off
+  "${HOME}"/dev_ws/src/ArloBot/scripts/switch_master_relay.sh off
 fi
 
 # NOTE: If you are using Mycroft, I suggest setting up Mycroft to start inside Xwindows,
@@ -53,5 +53,5 @@ else
   sleep 15
 fi
 
-cd "${HOME}"/catkin_ws/src/ArloBot/node/ || exit 1
-"${HOME}"/.nvm/current/bin/pm2 start "${HOME}"/catkin_ws/src/ArloBot/node/pm2Config.json
+cd "${HOME}"/dev_ws/src/ArloBot/node/ || exit 1
+"${HOME}"/.nvm/current/bin/pm2 start "${HOME}"/dev_ws/src/ArloBot/node/pm2Config.json

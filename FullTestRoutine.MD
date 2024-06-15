@@ -26,7 +26,7 @@
     b. "Can Cypress run?"
 
     ```shell script
-    cd ~/catkin_ws/src/ArloBot/cypress-tests
+    cd ~/dev_ws/src/ArloBot/cypress-tests
     npx cypress open
     ```  
 

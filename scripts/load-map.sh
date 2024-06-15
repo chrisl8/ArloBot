@@ -25,7 +25,7 @@ if [[ ! -f ${MAP_FILE_NAME}.data ]]; then
 fi
 
 if pgrep -f robot.launch >/dev/null; then
-  # shellcheck source=/home/chrisl8/catkin_ws/src/ArloBot/scripts/rosEnvironmentSetup.sh
+  # shellcheck source=/home/chrisl8/dev_ws/src/ArloBot/scripts/rosEnvironmentSetup.sh
   source "${SCRIPTDIR}/rosEnvironmentSetup.sh"
 
   unbuffer roslaunch arlobot_ros slam_toolbox.launch

@@ -92,7 +92,7 @@ fi
 
 # Shut off Scanse Sweep
 if [[ $(jq '.hasScanseSweep' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-  node "${HOME}/catkin_ws/src/ArloBot/node/ScanseSweepControl.js" stop
+  node "${HOME}/dev_ws/src/ArloBot/node/ScanseSweepControl.js" stop
 fi
 
 # USB Relay Controller
