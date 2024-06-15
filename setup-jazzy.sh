@@ -664,7 +664,7 @@ fi
 
 if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   # For 8-CH USB Relay board:
-  pip3 install pylibftdi
+  pip3 install pylibftdi --break-system-packages
   # Required by pylibftdi
   # https://pylibftdi.readthedocs.io/en/0.15.0/installation.html
   if ! [[ -f /etc/udev/rules.d/99-libftdi.rules ]]; then
