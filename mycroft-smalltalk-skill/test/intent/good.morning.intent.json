@@ -1,7 +1,0 @@
-{
-  "utterance": "good morning",
-  "intent_type": "GoodMorningIntent",
-  "intent": {
-    "GoodMorningKeyword": "good morning"
-  }
-}
