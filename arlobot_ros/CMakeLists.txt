@@ -10,10 +10,13 @@ find_package(ament_cmake REQUIRED)
 find_package(rclpy REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(actionlib REQUIRED)
+# TODO: Do we need this?
+#find_package(actionlib REQUIRED)
 find_package(move_base_msgs REQUIRED)
 find_package(joy REQUIRED)
-find_package(teb_local_planner REQUIRED)
+find_package(slam_toolbox REQUIRED)
+# TODO: What do I do for this in ROS2?
+#find_package(teb_local_planner REQUIRED)
 set(CMAKE_CXX_STANDARD 1 4)
 
 ## Generate messages in the 'msg' folder

@@ -57,9 +57,9 @@ LIGHTPURPLE='\033[1;35m'
 NC='\033[0m' # NoColor
 
 printf "\n"
-printf "${RED}THIS IS NOT MEANT FOR USE!!! It is just me testing junk.${NC}\n"
+printf "${RED}THIS IS NOT MEANT FOR USE!!! It is just me testing.${NC}\n"
 printf "This script is part of my personal attempt to make Jazzy work on this robot,\n"
-printf "but it doesn't work and probably never will.\n"
+printf "but it doesn't work and possibly never will.\n"
 #exit 1
 
 ARLO_HOME=${HOME}/.arlobot
