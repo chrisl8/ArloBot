@@ -12,7 +12,8 @@ find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 # TODO: Do we need this?
 #find_package(actionlib REQUIRED)
-find_package(move_base_msgs REQUIRED)
+# TODO: How is this replaced in ROS2?
+#find_package(move_base_msgs REQUIRED)
 find_package(joy REQUIRED)
 find_package(slam_toolbox REQUIRED)
 # TODO: What do I do for this in ROS2?
