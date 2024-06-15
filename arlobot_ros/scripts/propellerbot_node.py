@@ -42,7 +42,8 @@ class PropellerComm(object):
     """
 
     def __init__(self):
-        rospy.init_node("arlobot")
+        rclpy.init()
+        node = rclpy.create_node("arlobot")
 
         self.r = rospy.Rate(1)  # 1hz refresh rate
         self._motorsOn = (
@@ -137,7 +138,7 @@ class PropellerComm(object):
         self._ledRequestedState_from_ROS = []
 
         # Subscriptions
-        rospy.Subscriber("cmd_vel", Twist, self._handle_velocity_command, queue_size=1)
+        node.create_subscription(Twist, "cmd_vel", self._handle_velocity_command, queue_size=1)
         # NOTE: Keep the cmd_vel subscription queue_size to 1, because we never want to allow a backlog of twist commands. Always just send the most recent one.
         # Otherwise strange behavior occurs, even the robot responding to commands very late, like stopping and then starting a command given moments ago!
         rospy.Subscriber(
@@ -149,38 +150,38 @@ class PropellerComm(object):
 
         # Publishers
         # for publishing PIR status
-        # self._pirPublisher = rospy.Publisher("~pirState", Bool, queue_size=1)
-        self._arlo_status_publisher = rospy.Publisher(
-            "arlo_status", ArloStatus, queue_size=1
-        )
-        self._buttons_publisher = rospy.Publisher("buttons", ArloButtons, queue_size=1)
+        # self._pirPublisher = node.create_publisher(Bool, queue_size=1, "~pirState")
+        self._arlo_status_publisher = node.create_publisher(ArloStatus, queue_size=1
+        , 
+            "arlo_status")
+        self._buttons_publisher = node.create_publisher(ArloButtons, queue_size=1, "buttons")
 
         # IF the Odometry Transform is done with the robot_pose_ekf do not publish it,
         # but we are not using robot_pose_ekf, because it does nothing for us if you don't have a full IMU!
         # REMOVE this line if you use robot_pose_ekf
         self._OdometryTransformBroadcaster = tf2_ros.TransformBroadcaster()
 
-        self._OdometryPublisher = rospy.Publisher("odom", Odometry, queue_size=1)
+        self._OdometryPublisher = node.create_publisher(Odometry, queue_size=1, "odom")
 
         # We don't need to broadcast a transform, as it is static and contained within the URDF files
         # self._SonarTransformBroadcaster = tf2_ros.TransformBroadcaster()
-        self._UltraSonicPublisher = rospy.Publisher(
-            "ultrasonic_scan", LaserScan, queue_size=1
-        )
-        self._InfraredPublisher = rospy.Publisher(
-            "infrared_scan", LaserScan, queue_size=1
-        )
+        self._UltraSonicPublisher = node.create_publisher(LaserScan, queue_size=1
+        , 
+            "ultrasonic_scan")
+        self._InfraredPublisher = node.create_publisher(LaserScan, queue_size=1
+        , 
+            "infrared_scan")
 
         # For Camera Joint Testing
-        # self._JointStatePublisher = rospy.Publisher(
-        #     "joint_states", JointState, queue_size=1
-        # )
+        # self._JointStatePublisher = node.create_publisher(JointState, queue_size=1
+        # , 
+        #     "joint_states")
 
         # Create a ROS service that can be called
         # http://wiki.ros.org/ROS/Tutorials/CreatingMsgAndSrv
         # http://wiki.ros.org/ROS/Tutorials/WritingServiceClient%28python%29
 
-        rospy.Service("~ToggleLED", ToggleLED, self._toggleLED)
+        node.create_service(ToggleLED, "~ToggleLED", self._toggleLED)
 
         # You can use the ~/catkin_ws/src/ArloBot/scripts/find_ActivityBoard.sh script to find this, and
         # You can set it by running this before starting this:

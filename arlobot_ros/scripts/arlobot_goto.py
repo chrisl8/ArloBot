@@ -23,7 +23,8 @@ rosservice call /arlobot_goto/GoToGoal 'pose: { position: { x: -0.136, y: 0.076,
 
 class ArlobotGoTo(object):
     def __init__(self):
-        rospy.init_node("arlobot_goto")
+        rclpy.init()
+        node = rclpy.create_node("arlobot_goto")
         # http://wiki.ros.org/rospy_tutorials/Tutorials/WritingPublisherSubscriber
 
         # Creates the SimpleActionClient, passing the type of the action
@@ -39,14 +40,14 @@ class ArlobotGoTo(object):
         self.currentOdom = Odometry()
 
         # Subscribe to the current pose via odometry and populate our own variable with the data
-        rospy.Subscriber("odom", Odometry, self._SetCurrentOdom)
+        node.create_subscription(Odometry, "odom", self._SetCurrentOdom)
         # Turns out this works great if you have no map and just want to make movements based on odometry,
         # but if you are using a map, you need the /map to /base_link transform!
 
         # Create a service that can be called to send robot to a map based goal
         # http://wiki.ros.org/ROS/Tutorials/CreatingMsgAndSrv
         # http://wiki.ros.org/ROS/Tutorials/WritingServiceClient%28python%29
-        rospy.Service("~GoToGoal", GoToGoal, self._go_to_goal)
+        node.create_service(GoToGoal, "~GoToGoal", self._go_to_goal)
 
         rospy.spin()
         # Now we just wait for someone to call us!

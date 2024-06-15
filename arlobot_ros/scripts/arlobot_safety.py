@@ -19,7 +19,8 @@ This should be usable from web interfaces, or possibly other sensors.
 
 class ArlobotSafety(object):
     def __init__(self):
-        rospy.init_node("arlobot_safety")
+        rclpy.init()
+        node = rclpy.create_node("arlobot_safety")
         # http://wiki.ros.org/rospy_tutorials/Tutorials/WritingPublisherSubscriber
         self.r = rospy.Rate(1)  # 1hz refresh rate
 
@@ -34,11 +35,11 @@ class ArlobotSafety(object):
         self._acPower = True  # Status of whether laptop is plugged in or not. We assume 1, connected, to start with because that is the most restrictive state.
         rospy.set_param("~ACpower", self._acPower)  # Publish initial state
 
-        self._safetyStatusPublisher = rospy.Publisher(
-            "~safetyStatus", ArloSafety, queue_size=1
-        )  # for publishing status of AC adapter
+        self._safetyStatusPublisher = node.create_publisher(ArloSafety, queue_size=1
+        , 
+            "~safetyStatus")  # for publishing status of AC adapter
 
-        rospy.Service("arlobot_unplug", UnPlug, self._handle_unplug_request)
+        node.create_service(UnPlug, "arlobot_unplug", self._handle_unplug_request)
 
     def Stop(self):
         rospy.loginfo("ArlobotSafety id is shutting down.")

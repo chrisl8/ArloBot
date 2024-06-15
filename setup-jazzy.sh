@@ -149,8 +149,8 @@ if ! (locale | grep "en_US.UTF-8" >/dev/null); then
 fi
 
 printf "\n${YELLOW}[Ensuring Ubuntu Universe repository is enabled.]${NC}\n"
-sudo apt install software-properties-common
-sudo add-apt-repository universe
+sudo apt install -y software-properties-common
+sudo add-apt-repository -y universe
 
 if ! [[ -e /etc/apt/sources.list.d/ros2.list ]]; then
   printf "${YELLOW}[Adding the ROS repository]${NC}\n"
@@ -361,8 +361,11 @@ PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-twist-mux")
 #      Without it, movement (twist) commands cannot be sent to the robot from ROS.
 PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-rosbridge-server")
 # rosbridge is required for the Web interface to communicate with ROS
+PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-cv-bridge")
+# cv-bridge is required by the costmap converter package
 PACKAGE_TO_INSTALL_LIST+=("xvfb")
 # xvfb is required for Cypress testing to work.
+
 if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   # TODO: Some of these should probably be in package.xml, but that would require another round of testing.
   PACKAGE_TO_INSTALL_LIST+=(moreutils)
@@ -440,6 +443,7 @@ if ! [[ -d ~/dev_ws/src/ArloBot ]]; then
   git clone -b jazzy https://github.com/chrisl8/ArloBot.git
 else
   cd ~/dev_ws/src/ArloBot
+  git fetch
   git checkout jazzy
   git pull
 fi
@@ -511,47 +515,84 @@ if [[ "${RESPONSE_TO_RPLIDAR_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; the
   printf "\n${BLUE}Slamtec RPLIDAR${NC}\n"
   cd ~/dev_ws/src
   if ! [[ -d ~/dev_ws/src/rplidar_ros ]]; then
-    git clone https://github.com/Slamtec/rplidar_ros.git
+    git clone -b dev-ros2 https://github.com/Slamtec/rplidar_ros.git
   else
     cd ~/dev_ws/src/rplidar_ros
+    git fetch
+    git checkout dev-ros2
     git pull
   fi
 fi
 
 # TODO: Remove this if/when the apt package is released for jazzy.
-printf "\n${BLUE}Costmap Converter Msgs${NC}\n"
-printf "${PURPLE}This is required by TEB Local Planner, but has not been released for ${INSTALLING_ROS_DISTRO}.${NC}\n"
+# TODO: This won't build on Jazzy.
+#printf "\n${BLUE}Costmap Converter Msgs${NC}\n"
+#printf "${PURPLE}This is required by TEB Local Planner, but has not been released for ${INSTALLING_ROS_DISTRO}.${NC}\n"
+#cd ~/dev_ws/src
+#if ! [[ -d ~/dev_ws/src/costmap_converter ]]; then
+#  git clone -b ros2 https://github.com/rst-tu-dortmund/costmap_converter.git
+#else
+#  cd ~/dev_ws/src/costmap_converter
+#  git checkout ros2
+#  git pull
+#fi
+
+# TODO: Remove this if/when the apt package is released for jazzy.
+# TODO: This won't build without costmap converter, which I haven't made build on Jazzy.
+#printf "\n${BLUE}TEB Local Planner${NC}\n"
+#printf "${PURPLE}The TEB Local Planner has not been released for ${INSTALLING_ROS_DISTRO}.${NC}\n"
+#cd ~/dev_ws/src
+#if ! [[ -d ~/dev_ws/src/teb_local_planner ]]; then
+#  git clone -b ros2-master https://github.com/rst-tu-dortmund/teb_local_planner.git
+#else
+#  cd ~/dev_ws/src/teb_local_planner
+#  git checkout ros2-master
+#  git pull
+#fi
+
+# TODO: Remove this if/when the apt package is released for jazzy.
+# TODO: This won't build and doesn't matter either without TEB Local planner
+#printf "\n${BLUE}TEB Local Planner Tutorials${NC}\n"
+#printf "${PURPLE}The TEB Local Planner tutorials have not been ported to ${INSTALLING_ROS_DISTRO}.${NC}\n"
+#printf "${PURPLE}The tutorials are not required, but handy for reference.${NC}\n"
+#cd ~/dev_ws/src
+#if ! [[ -d ~/dev_ws/src/teb_local_planner_tutorials ]]; then
+#  git clone -b noetic-devel https://github.com/rst-tu-dortmund/teb_local_planner_tutorials.git
+#else
+#  cd ~/dev_ws/src/teb_local_planner_tutorials
+#  git checkout noetic-devel
+#  git pull
+#fi
+
+# TODO: Remove this if/when the apt package is released for jazzy.
+printf "\n${BLUE}Slam Toolbox${NC}\n"
 cd ~/dev_ws/src
-if ! [[ -d ~/dev_ws/src/costmap_converter ]]; then
-  git clone -b ros2 https://github.com/rst-tu-dortmund/costmap_converter.git
+if ! [[ -d ~/dev_ws/src/slam_toolbox ]]; then
+  git clone https://github.com/SteveMacenski/slam_toolbox.git
 else
-  cd ~/dev_ws/src/costmap_converter
-  git checkout ros2
+  cd ~/dev_ws/src/slam_toolbox
   git pull
 fi
 
 # TODO: Remove this if/when the apt package is released for jazzy.
-printf "\n${BLUE}TEB Local Planner${NC}\n"
-printf "${PURPLE}The TEB Local Planner has not been released for ${INSTALLING_ROS_DISTRO}.${NC}\n"
+# Required by Nav2
+printf "\n${BLUE}Minimal Turtlebot Simulation${NC}\n"
+printf "${PURPLE}This is required by Navigation 2.${NC}\n"
 cd ~/dev_ws/src
-if ! [[ -d ~/dev_ws/src/teb_local_planner ]]; then
-  git clone -b ros2-master https://github.com/rst-tu-dortmund/teb_local_planner.git
+if ! [[ -d ~/dev_ws/src/nav2_minimal_turtlebot_simulation ]]; then
+  git clone https://github.com/ros-navigation/nav2_minimal_turtlebot_simulation.git
 else
-  cd ~/dev_ws/src/teb_local_planner
-  git checkout ros2-master
+  cd ~/dev_ws/src/nav2_minimal_turtlebot_simulation
   git pull
 fi
 
 # TODO: Remove this if/when the apt package is released for jazzy.
-printf "\n${BLUE}TEB Local Planner Tutorials${NC}\n"
-printf "${PURPLE}The TEB Local Planner tutorials have not been ported to ${INSTALLING_ROS_DISTRO}.${NC}\n"
-printf "${PURPLE}The tutorials are not required, but handy for reference.${NC}\n"
+printf "\n${BLUE}Slam Toolbox${NC}\n"
 cd ~/dev_ws/src
-if ! [[ -d ~/dev_ws/src/teb_local_planner_tutorials ]]; then
-  git clone -b noetic-devel https://github.com/rst-tu-dortmund/teb_local_planner_tutorials.git
+if ! [[ -d ~/dev_ws/src/navigation2 ]]; then
+  git clone https://github.com/ros-navigation/navigation2.git
 else
-  cd ~/dev_ws/src/teb_local_planner_tutorials
-  git checkout noetic-devel
+  cd ~/dev_ws/src/navigation2
   git pull
 fi
 
@@ -932,5 +973,5 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   printf "${GREEN}for more information on installing code on your Propeller board.${NC}\n"
   printf "${YELLOW}------------------------------------------------------------${NC}\n"
 fi
-# TODO: Some post install instructions for the workstation build.
+
 INSTALL_FINISHED="true"

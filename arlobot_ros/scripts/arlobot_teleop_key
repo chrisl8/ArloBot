@@ -100,8 +100,10 @@ def vels(speed, turn):
 if __name__ == "__main__":
     settings = termios.tcgetattr(sys.stdin)
 
-    rospy.init_node("arlobot_teleop")
-    pub = rospy.Publisher("~cmd_vel", Twist, queue_size=1)
+    rclpy.init()
+
+    node = rclpy.create_node("arlobot_teleop")
+    pub = node.create_publisher(Twist, queue_size=1, "~cmd_vel")
 
     x = 0
     th = 0

@@ -121,7 +121,8 @@ class UsbRelay(object):
     """
 
     def __init__(self):
-        rospy.init_node("arlobot_usbrelay")
+        rclpy.init()
+        node = rclpy.create_node("arlobot_usbrelay")
         # http://wiki.ros.org/rospy_tutorials/Tutorials/WritingPublisherSubscriber
         self.r = rospy.Rate(0.25)  # 1hz refresh rate
         # self.r = rospy.Rate(1) # 1hz refresh rate
@@ -149,13 +150,13 @@ class UsbRelay(object):
         # Create a service that can be called to toggle any relay by name:
         # http://wiki.ros.org/ROS/Tutorials/CreatingMsgAndSrv
         # http://wiki.ros.org/ROS/Tutorials/WritingServiceClient%28python%29
-        rospy.Service("~toggle_relay", ToggleRelay, self._ToggleRelayByName)
-        rospy.Service("~find_relay", FindRelay, self._FindRelayByName)
+        node.create_service(ToggleRelay, "~toggle_relay", self._ToggleRelayByName)
+        node.create_service(FindRelay, "~find_relay", self._FindRelayByName)
 
         # Publishers
-        self._usbRelayStatusPublisher = rospy.Publisher(
-            "~usbRelayStatus", UsbRelayStatus, queue_size=1
-        )  # for publishing status of USB Relays
+        self._usbRelayStatusPublisher = node.create_publisher(UsbRelayStatus, queue_size=1
+        , 
+            "~usbRelayStatus")  # for publishing status of USB Relays
 
     def _FindRelayByName(self, req):
         # This function will return the relay number for a given name based on the usbrelay.yaml loaded parameters

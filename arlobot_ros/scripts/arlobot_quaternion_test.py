@@ -21,7 +21,8 @@ https://wiki.ros.org/actionlib_tutorials/Tutorials/Writing%20a%20Simple%20Action
 
 class ArlobotExplore(object):
     def __init__(self):
-        rospy.init_node("arlobot_quaternion_test")
+        rclpy.init()
+        node = rclpy.create_node("arlobot_quaternion_test")
         # https://wiki.ros.org/rospy_tutorials/Tutorials/WritingPublisherSubscriber
         # self.r = rospy.Rate(1) # 1hz refresh rate
 
@@ -35,7 +36,7 @@ class ArlobotExplore(object):
         """
         I'm not sure of any other way to do this. I'd like to just "grab" it at a point in time, but subscriptions don't work that way.
         """
-        rospy.Subscriber("odom", Odometry, self._SetCurrentOdom)
+        node.create_subscription(Odometry, "odom", self._SetCurrentOdom)
 
         # I am going to set the AC power status as a parameter, so that it can be checked by low priority nodes,
         # and publish the "safeToGo" as a topic so that it can be subscribed to and acted upon immediately
@@ -43,7 +44,7 @@ class ArlobotExplore(object):
         # rospy.set_param('~ACpower', self.acPower) # Publish initial state
 
         # self.safeToGo = False # Set false as default until we check things
-        # self._safetyStatusPublisher = rospy.Publisher('~safeToGo', Bool, queue_size=1) # for publishing status of AC adapter
+        # self._safetyStatusPublisher = node.create_publisher(Bool, queue_size=1, '~safeToGo') # for publishing status of AC adapter
 
     def _SetCurrentOdom(self, currentOdom):
         self.currentOdom = currentOdom
@@ -83,7 +84,7 @@ class ArlobotExplore(object):
         # print(current_odom)
         print("current_odom.pose:")
         print(current_odom.pose)
-        # rospy.Subscriber("cmd_vel", Twist, self._HandleVelocityCommand)
+        # node.create_subscription(Twist, "cmd_vel", self._HandleVelocityCommand)
 
         rosNow = rospy.Time.now()
         # we'll create a goal to send to move_base

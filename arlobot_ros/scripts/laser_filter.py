@@ -23,11 +23,12 @@ def callback(data):
 
 # Intializes everything
 def start():
-    rospy.init_node("laser_filter")
+    rclpy.init()
+    node = rclpy.create_node("laser_filter")
     scan_topic = rospy.get_param("~scan_topic", "xv11")
     global pub
-    pub = rospy.Publisher(scan_topic + "_filtered", LaserScan, queue_size=10)
-    rospy.Subscriber(scan_topic, LaserScan, callback)
+    pub = node.create_publisher(LaserScan, queue_size=10, scan_topic + "_filtered")
+    node.create_subscription(LaserScan, scan_topic, callback)
     rospy.spin()
 
 

@@ -33,7 +33,8 @@ class ArlobotExplore(object):
     # TODO: Test for robot movement before sending it places! It could get really goofy to send to -90 from it's position ten seconds ago!
 
     def __init__(self):
-        rospy.init_node("arlobot_movement_test")
+        rclpy.init()
+        node = rclpy.create_node("arlobot_movement_test")
         # http://wiki.ros.org/rospy_tutorials/Tutorials/WritingPublisherSubscriber
         # self.r = rospy.Rate(1) # 1hz refresh rate
 
@@ -55,7 +56,7 @@ class ArlobotExplore(object):
         """
         I'm not sure of any other way to do this. I'd like to just "grab" it at a point in time, but subscriptions don't work taht way.
         """
-        rospy.Subscriber("odom", Odometry, self._SetCurrentOdom)
+        node.create_subscription(Odometry, "odom", self._SetCurrentOdom)
         # Turns out this works great if you have no map and just want to make movements based on odometry,
         # but if you are using a map, you need the map to base_link transform!
 
@@ -65,7 +66,7 @@ class ArlobotExplore(object):
         # rospy.set_param('~ACpower', self.acPower) # Publish initial state
 
         # self.safeToGo = False # Set false as default until we check things
-        # self._safetyStatusPublisher = rospy.Publisher('~safeToGo', Bool, queue_size=1) # for publishing status of AC adapter
+        # self._safetyStatusPublisher = node.create_publisher(Bool, queue_size=1, '~safeToGo') # for publishing status of AC adapter
 
     def _SetCurrentOdom(self, currentOdom):
         self.currentOdom = currentOdom
@@ -78,7 +79,7 @@ class ArlobotExplore(object):
         # NOTE: Do not use cancel_all_goals here as it can cancel future goals sometimes!
         # Send a series of BE STILL commands just in case to make sure robot is left stationary
         print("Stopping . . . ")
-        pub = rospy.Publisher("cmd_vel_mux/input/teleop", Twist, queue_size=5)
+        pub = node.create_publisher(Twist, queue_size=5, "cmd_vel_mux/input/teleop")
         twist = Twist()
         twist.linear.x = 0
         twist.linear.y = 0
@@ -150,7 +151,7 @@ class ArlobotExplore(object):
         # print(current_odom)
         # print("current_odom.pose:")
         # print(current_odom.pose)
-        # rospy.Subscriber("cmd_vel", Twist, self._HandleVelocityCommand)
+        # node.create_subscription(Twist, "cmd_vel", self._HandleVelocityCommand)
 
         rosNow = rospy.Time.now()
         # we'll create a goal to send to move_base
@@ -617,8 +618,8 @@ class ArlobotExplore(object):
         # or for this one:
         # <remap from="arlobot_explore/cmd_vel" to="cmd_vel_mux/input/teleop"/>
         # or just publish to cmd_vel_mux/input/teleop
-        # pub = rospy.Publisher('cmd_vel', Twist, queue_size=5)
-        pub = rospy.Publisher("cmd_vel_mux/input/teleop", Twist, queue_size=5)
+        # pub = node.create_publisher(Twist, queue_size=5, 'cmd_vel')
+        pub = node.create_publisher(Twist, queue_size=5, "cmd_vel_mux/input/teleop")
         twist = Twist()
         linear_speed = 0  # Rotate in place, no liner movement
         angular_speed = 1  # This can be positive or negative
