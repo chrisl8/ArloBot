@@ -2,7 +2,7 @@
 const fs = require('fs');
 
 const personalDataFile = `${process.env.HOME}/.arlobot/personalDataForBehavior.json`;
-const defaultDataFile = `${process.env.HOME}/catkin_ws/src/ArloBot/scripts/dotarlobot/personalDataForBehavior.json`;
+const defaultDataFile = `${process.env.HOME}/dev_ws/src/ArloBot/scripts/dotarlobot/personalDataForBehavior.json`;
 const personalData = JSON.parse(fs.readFileSync(personalDataFile, 'utf8'));
 const defaultData = JSON.parse(fs.readFileSync(defaultDataFile, 'utf8'));
 
