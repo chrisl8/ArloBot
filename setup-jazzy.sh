@@ -368,6 +368,8 @@ PACKAGE_TO_INSTALL_LIST+=("xvfb")
 
 if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   # TODO: Some of these should probably be in package.xml, but that would require another round of testing.
+  PACKAGE_TO_INSTALL_LIST+=(cron)
+  # cron - required for running scheduled tasks
   PACKAGE_TO_INSTALL_LIST+=(moreutils)
   # moreutils - sponge is used by some of my scripts
   PACKAGE_TO_INSTALL_LIST+=(python3-pip)
