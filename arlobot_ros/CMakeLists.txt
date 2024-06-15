@@ -66,8 +66,10 @@ include_directories(
 ###########
 ## Build ##
 ###########
-add_executable(autodocking_irCode src/autodocking_irCode.cpp)
-ament_target_dependencies(autodocking_irCode
+# autodocking_irCode does not build in ROS2
+#add_executable(autodocking_irCode src/autodocking_irCode.cpp)
+ament_target_dependencies(
+#   "autodocking_irCode"
    "rclpy"
 #   "actionlib"
    "nav_msgs"
