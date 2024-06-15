@@ -42,7 +42,7 @@
   <exec_depend>rosbridge_server</exec_depend>
   <exec_depend>teleop_twist_keyboard</exec_depend>
   <exec_depend>teleop_twist_joy</exec_depend>
-  <exec_depend>navigation2</exec_depend>
+  <exec_depend>navigation</exec_depend>
 
   <exec_depend>rosidl_default_runtime</exec_depend>
 
