@@ -23,6 +23,7 @@ find_package(joy REQUIRED)
 find_package(slam_toolbox REQUIRED)
 # TODO: What do I do for this in ROS2?
 #find_package(teb_local_planner REQUIRED)
+find_package(rosidl_default_generatorss REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/UsbRelayStatus.msg"
