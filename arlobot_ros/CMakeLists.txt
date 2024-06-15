@@ -1,10 +1,16 @@
 cmake_minimum_required(VERSION 3.5)
 project(arlobot_ros)
 
+# Default to C++14
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 14)
+endif()
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 
+# Find dependencies
 find_package(rosidl_default_generators REQUIRED)
 find_package(ament_cmake REQUIRED)
 find_package(rclpy REQUIRED)
@@ -18,7 +24,6 @@ find_package(joy REQUIRED)
 find_package(slam_toolbox REQUIRED)
 # TODO: What do I do for this in ROS2?
 #find_package(teb_local_planner REQUIRED)
-set(CMAKE_CXX_STANDARD 1 4)
 
 ## Generate messages in the 'msg' folder
 
