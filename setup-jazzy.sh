@@ -675,7 +675,68 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     printf "${RED}You may have to reboot before the USB Relay board will function!${NC}\n"
   fi
 
-  printf "\n${YELLOW}[Installing and Initializing the Current Node LTS version]${NC}\n"
+  export NVM_DIR="${HOME}/.nvm"
+  export NVM_SYMLINK_CURRENT=true
+  NVM_TAG=$(curl -s curl -s https://api.github.com/repos/nvm-sh/nvm/releases/latest | grep tag_name | cut -d '"' -f 4)
+  NVM_VERSION_LATEST="${NVM_TAG//v/}"
+  NVM_VERSION=None
+
+  if [[ -e "${NVM_DIR}/nvm.sh" ]]; then
+    # shellcheck source=/home/chrisl8/.nvm/nvm.sh
+    [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
+  fi
+
+  if (command -v nvm); then
+    NVM_VERSION=$(nvm --version)
+  fi
+
+  if [ "$NVM_VERSION" != "$NVM_VERSION_LATEST" ]; then
+    printf "\n${BRIGHT_MAGENTA}Updating NVM from ${NVM_VERSION} to ${NVM_VERSION_LATEST}${NC}\n"
+
+    if [[ -e ${HOME}/.nvm/nvm.sh ]]; then
+      printf "${LIGHTBLUE}Deactivating existing Node Version Manager:${NC}\n"
+      export NVM_DIR="${HOME}/.nvm"
+      # shellcheck source=/home/chrisl8/.nvm/nvm.sh
+      [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
+      nvm deactivate
+    fi
+
+    wget -qO- "https://raw.githubusercontent.com/nvm-sh/nvm/$NVM_TAG/install.sh" | bash
+    export NVM_DIR="${HOME}/.nvm"
+    # shellcheck source=/home/chrisl8/.nvm/nvm.sh
+    [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
+
+    export NVM_SYMLINK_CURRENT=true
+    if ! (grep NVM_SYMLINK_CURRENT ~/.bashrc >/dev/null); then
+      printf "\n${YELLOW}[Setting the NVM current environment in your .bashrc file]${NC}\n"
+      sh -c "echo \"export NVM_SYMLINK_CURRENT=true\" >> ~/.bashrc"
+    fi
+    if ! (grep NVM_SYMLINK_CURRENT ~/.zshrc >/dev/null); then
+      printf "\n${YELLOW}[Setting the NVM current environment in your .zshrc file]${NC}\n"
+      sh -c "echo \"export NVM_SYMLINK_CURRENT=true\" >> ~/.zshrc"
+    fi
+  fi
+
+  printf "\n${YELLOW}[Installing and Initializing the Latest Node version]${NC}\n"
+
+  NODE_VERSION=$(node -v)
+
+  printf "\n${BRIGHT_MAGENTA}Node.js Updates${NC}\n"
+  nvm install node
+  nvm use node
+  nvm alias default node
+
+  NODE_VERSION_NEW=$(node -v)
+
+  NPM_VERSION=$(npm -v)
+  NPM_VERSION_LATEST=$(npm view npm version)
+  if [ "$NPM_VERSION" != "$NPM_VERSION_LATEST" ]; then
+    printf "\n${BRIGHT_MAGENTA}Updating NPM from ${NPM_VERSION} to ${NPM_VERSION_LATEST}${NC}\n"
+    npm i -g npm
+  fi
+
+
+
 
   printf "${BLUE}[Installing/Updating Node Version Manager]${NC}\n"
   if [[ -e ${HOME}/.nvm/nvm.sh ]]; then
@@ -686,7 +747,8 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     nvm deactivate
   fi
 
-  wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+  NVM_TAG=$(curl -s curl -s https://api.github.com/repos/nvm-sh/nvm/releases/latest | grep tag_name | cut -d '"' -f 4)
+  wget -qO- "https://raw.githubusercontent.com/nvm-sh/nvm/$NVM_TAG/install.sh" | bash
   export NVM_DIR="${HOME}/.nvm"
   # shellcheck source=/home/chrisl8/.nvm/nvm.sh
   [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
@@ -696,8 +758,9 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     printf "\n${YELLOW}[Setting the NVM current environment in your .bashrc file]${NC}\n"
     sh -c "echo \"export NVM_SYMLINK_CURRENT=true\" >> ~/.bashrc"
   fi
-  nvm install --lts
-  nvm alias default "lts/*"
+  nvm install node
+  nvm use node
+  nvm alias default node
 
   printf "\n${YELLOW}[Grabbing/Updating global dependencies for node packages]${NC}\n"
   printf "${BLUE}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
