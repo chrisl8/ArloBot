@@ -782,18 +782,18 @@ fi
 cd "${HOME}/dev_ws/src/ArloBot/node"
 printf "\n${YELLOW}[Grabbing node dependencies for scripts]${NC}\n"
 printf "${BLUE}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
-npm ci
+npm update
 
 if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   cd "${HOME}/dev_ws/src/ArloBot/website"
   printf "\n${YELLOW}[Grabbing node dependencies for React website]${NC}\n"
-  npm ci
+  npm update
   printf "\n${YELLOW}[Building React website]${NC}\n"
   npm run build
 
   cd "${HOME}/dev_ws/src/ArloBot/cypress-tests"
   printf "\n${YELLOW}[Installing Cypress.io for Tests]$NC\n"
-  npm ci
+  npm update
 
   if ! (command -v mjpg_streamer >/dev/null); then
     printf "\n${YELLOW}[Installing mjpg_streamer for Web Page camera viewing]${NC}\n"
