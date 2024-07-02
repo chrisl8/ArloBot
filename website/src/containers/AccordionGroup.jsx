@@ -130,8 +130,6 @@ class AccordionGroup extends Component {
           ROSisRunning={this.props.ROSisRunning}
           useArduinoForBlinkenLights={this.props.useArduinoForBlinkenLights}
           neoPixelsOn={this.props.neoPixelsOn}
-          autoDockingAvailable={this.props.autoDockingAvailable}
-          autoDockingInProgress={this.props.autoDockingInProgress}
         />
         {this.props.ROSisRunning && (
           <Sensors

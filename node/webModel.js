@@ -48,7 +48,6 @@ module.exports = {
   robotIP: undefined,
   robotURL: undefined,
   neoPixelsOn: false,
-  autoDockingInProgress: false,
   relays: [],
   wayPoints: [],
   rosParameters: {
