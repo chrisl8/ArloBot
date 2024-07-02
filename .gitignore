@@ -30,3 +30,6 @@ cmake-build-none/
 /PropellerCodeForArloBot/MotorResponseTesting/bin/
 /PropellerCodeForArloBot/ROSInterfaceForArloBot/bin/
 .eslintcache
+/cypress-tests/package-lock.json
+/node/package-lock.json
+/website/package-lock.json
