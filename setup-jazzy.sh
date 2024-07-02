@@ -528,7 +528,7 @@ if [[ "${RESPONSE_TO_RPLIDAR_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; the
   fi
 fi
 
-# TODO: Remove this if/when the apt package is released for jazzy.
+# TODO: How do we replace this in Jazzy?
 # TODO: This won't build on Jazzy.
 #printf "\n${BLUE}Costmap Converter Msgs${NC}\n"
 #printf "${PURPLE}This is required by TEB Local Planner, but has not been released for ${INSTALLING_ROS_DISTRO}.${NC}\n"
@@ -541,7 +541,7 @@ fi
 #  git pull
 #fi
 
-# TODO: Remove this if/when the apt package is released for jazzy.
+# TODO: How do we replace this in Jazzy?
 # TODO: This won't build without costmap converter, which I haven't made build on Jazzy.
 #printf "\n${BLUE}TEB Local Planner${NC}\n"
 #printf "${PURPLE}The TEB Local Planner has not been released for ${INSTALLING_ROS_DISTRO}.${NC}\n"
@@ -572,31 +572,32 @@ fi
 printf "\n${BLUE}Slam Toolbox${NC}\n"
 cd ~/dev_ws/src
 if ! [[ -d ~/dev_ws/src/slam_toolbox ]]; then
-  git clone https://github.com/SteveMacenski/slam_toolbox.git
+  git clone -b jazzy https://github.com/SteveMacenski/slam_toolbox.git
 else
   cd ~/dev_ws/src/slam_toolbox
+  git checkout jazzy
   git pull
 fi
 
 # TODO: Remove this if/when the apt package is released for jazzy.
-# Required by Nav2
-printf "\n${BLUE}Minimal Turtlebot Simulation${NC}\n"
-printf "${PURPLE}This is required by Navigation 2.${NC}\n"
-cd ~/dev_ws/src
-if ! [[ -d ~/dev_ws/src/nav2_minimal_turtlebot_simulation ]]; then
-  git clone https://github.com/ros-navigation/nav2_minimal_turtlebot_simulation.git
-else
-  cd ~/dev_ws/src/nav2_minimal_turtlebot_simulation
-  git pull
-fi
-
-# TODO: Remove this if/when the apt package is released for jazzy.
-printf "\n${BLUE}Slam Toolbox${NC}\n"
+printf "\n${BLUE}Navigation 2${NC}\n"
 cd ~/dev_ws/src
 if ! [[ -d ~/dev_ws/src/navigation2 ]]; then
-  git clone https://github.com/ros-navigation/navigation2.git
+  git clone -b jazzy https://github.com/ros-navigation/navigation2.git
 else
   cd ~/dev_ws/src/navigation2
+  git checkout jazzy
+  git pull
+fi
+
+# TODO: Remove this if/when https://github.com/ros-navigation/navigation2/pull/4480#issuecomment-2190664979 is cleared up.
+printf "\n${BLUE}bond_core${NC}\n"
+cd ~/dev_ws/src
+if ! [[ -d ~/dev_ws/src/bond_core ]]; then
+  git clone -b ros2 https://github.com/ros/bond_core.git
+else
+  cd ~/dev_ws/src/bond_core
+  git checkout ros2
   git pull
 fi
 
