@@ -40,6 +40,7 @@ fi
 
 USB_PORT=$("${SCRIPTDIR}/find_ActivityBoard.sh")
 
-source ~/dev_ws/devel/setup.bash
+# shellcheck source=/home/chrisl8/dev_ws/install/setup.bash
+source ~/dev_ws/install/setup.bash
 
 python "${SCRIPTDIR}/../arlobot_ros/scripts/PropellerSerialTest.py" "${USB_PORT}"

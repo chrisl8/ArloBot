@@ -16,8 +16,8 @@ echo "${ECHO_PREFIX}" "sourced ROS installation:" "${ROS}"
 
 # workspace holding custom ROS packages
 workspace=/dev_ws
-# shellcheck source=/catkin/devel/setup.bash
-source "${workspace}"/devel/setup.bash
+# shellcheck source=/home/chrisl8/dev_ws/install/setup.bash
+source "${workspace}"/install/setup.bash
 echo "${ECHO_PREFIX}" "sourced workspace:" "${workspace}"
 
 echo "${ECHO_PREFIX}" "call" "$@"

@@ -15,5 +15,6 @@ SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 echo "If you do not have a map loaded,"
 echo "set Global Options->Fixed Frame to"
 echo "'odom' in order to make this work."
-source ~/dev_ws/devel/setup.bash
+# shellcheck source=/home/chrisl8/dev_ws/install/setup.bash
+source ~/dev_ws/install/setup.bash
 roslaunch arlobot_ros view_simple_navigation.launch --screen
