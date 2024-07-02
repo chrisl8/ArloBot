@@ -720,14 +720,10 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
 
   printf "\n${YELLOW}[Installing and Initializing the Latest Node version]${NC}\n"
 
-  NODE_VERSION=$(node -v)
-
   printf "\n${BRIGHT_MAGENTA}Node.js Updates${NC}\n"
   nvm install node
   nvm use node
   nvm alias default node
-
-  NODE_VERSION_NEW=$(node -v)
 
   NPM_VERSION=$(npm -v)
   NPM_VERSION_LATEST=$(npm view npm version)
