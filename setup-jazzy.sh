@@ -359,6 +359,10 @@ PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-twist-mux")
 #      It allows multiple cmd_vel topics to all coexist, and remaps the active on one
 #           to the correct topic for output.
 #      Without it, movement (twist) commands cannot be sent to the robot from ROS.
+PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-navigation2")
+# navigation2 is the ROS2 navigation stack for robot navigation
+PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-slam-toolbox")
+# Slam-Toolbox is the official ROS2 SLAM package.
 PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-rosbridge-server")
 # rosbridge is required for the Web interface to communicate with ROS
 PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-cv-bridge")
@@ -554,7 +558,6 @@ fi
 #  git pull
 #fi
 
-# TODO: Remove this if/when the apt package is released for jazzy.
 # TODO: This won't build and doesn't matter either without TEB Local planner
 #printf "\n${BLUE}TEB Local Planner Tutorials${NC}\n"
 #printf "${PURPLE}The TEB Local Planner tutorials have not been ported to ${INSTALLING_ROS_DISTRO}.${NC}\n"
@@ -567,39 +570,6 @@ fi
 #  git checkout noetic-devel
 #  git pull
 #fi
-
-# TODO: Remove this if/when the apt package is released for jazzy.
-printf "\n${BLUE}Slam Toolbox${NC}\n"
-cd ~/dev_ws/src
-if ! [[ -d ~/dev_ws/src/slam_toolbox ]]; then
-  git clone -b jazzy https://github.com/SteveMacenski/slam_toolbox.git
-else
-  cd ~/dev_ws/src/slam_toolbox
-  git checkout jazzy
-  git pull
-fi
-
-# TODO: Remove this if/when the apt package is released for jazzy.
-printf "\n${BLUE}Navigation 2${NC}\n"
-cd ~/dev_ws/src
-if ! [[ -d ~/dev_ws/src/navigation2 ]]; then
-  git clone -b jazzy https://github.com/ros-navigation/navigation2.git
-else
-  cd ~/dev_ws/src/navigation2
-  git checkout jazzy
-  git pull
-fi
-
-# TODO: Remove this if/when https://github.com/ros-navigation/navigation2/pull/4480#issuecomment-2190664979 is cleared up.
-printf "\n${BLUE}bond_core${NC}\n"
-cd ~/dev_ws/src
-if ! [[ -d ~/dev_ws/src/bond_core ]]; then
-  git clone -b ros2 https://github.com/ros/bond_core.git
-else
-  cd ~/dev_ws/src/bond_core
-  git checkout ros2
-  git pull
-fi
 
 export PIP_DISABLE_PIP_VERSION_CHECK=1
 
