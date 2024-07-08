@@ -45,7 +45,7 @@ INSTALLING_ROS_DISTRO=jazzy
 
 set -e
 
-BLUE='\033[0;34m'
+#BLUE='\033[0;34m' # This is almost impossible to read on a black background!
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 PURPLE='\033[0;35m'
@@ -92,7 +92,7 @@ fi
 version=$(lsb_release -sc)
 
 printf "\n${YELLOW}[Checking the Ubuntu version]${NC}\n"
-printf "${BLUE}Ubuntu ${version} found${NC}\n"
+printf "${LIGHTBLUE}Ubuntu ${version} found${NC}\n"
 case ${version} in
 "noble") ;;
 
@@ -106,7 +106,7 @@ DOCKER_TEST_INSTALL=false
 if [[ ! -e /etc/localtime ]]; then
   # These steps are to allow this script to work in a minimal Docker container for testing.
   printf "${YELLOW}[This looks like a Docker setup.]${NC}\n"
-  printf "${BLUE}Adding settings and basic packages for Docker based Ubuntu images.${NC}\n"
+  printf "${LIGHTBLUE}Adding settings and basic packages for Docker based Ubuntu images.${NC}\n"
   # The docker image has no /etc/localtime
   # When the prereq install installs the tzdat package,
   # It stops and asks for time zone info.
@@ -127,7 +127,7 @@ fi
 
 if ! (command -v python >/dev/null); then
   printf "\n${YELLOW}[Setting Python 3 as System Default]${NC}\n"
-  printf "${BLUE}Because currently there IS NO python otherwise!${NC}\n"
+  printf "${LIGHTBLUE}Because currently there IS NO python otherwise!${NC}\n"
   sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
 fi
 
@@ -188,14 +188,14 @@ fi
 if ! (dpkg -s ros-${INSTALLING_ROS_DISTRO}-desktop | grep "Status: install ok installed" &>/dev/null) || ! (command -v rosdep) || ! (command -v rosinstall_generator); then
   printf "\n${YELLOW}[Installing ROS]${NC}\n"
   sudo apt install -y ros-${INSTALLING_ROS_DISTRO}-desktop
-  printf "${YELLOW}[ROS installed!]${NC}\n"
-  printf "\n${BLUE}Installing ROS Dependencies for building packages${NC}\n"
+  printf "${LIGHTBLUE}ROS installed!${NC}\n"
+  printf "\n${YELLOW}[Installing ROS Dependencies for building packages]${NC}\n"
   sudo apt install -y python3-rosdep python3-colcon-common-extensions build-essential
   if ! [[ -e /etc/ros/rosdep/sources.list.d/20-default.list ]]; then
-    printf "\n${BLUE}Running rosdep init . . . ${NC}\n"
+    printf "\n${LIGHTBLUE}Running rosdep init . . . ${NC}\n"
     sudo sh -c "rosdep init"
   fi
-  printf "${BLUE}Running rosdep update . . .${NC}\n"
+  printf "${LIGHTBLUE}Running rosdep update . . .${NC}\n"
   rosdep update
   # END Official ROS Install section
 fi
@@ -242,12 +242,12 @@ function saveResponseData() {
 if ! [[ -e ${SETUP_RESPONSE_FILE} ]]; then
   echo "{}" >"${SETUP_RESPONSE_FILE}"
   printf "\n${YELLOW}You will be asked about whether or not to install several things now.${NC}\n"
-  printf "${BLUE}Your answers depend on what hardware you have.${NC}\n"
-  printf "${BLUE}It will not hurt to install things you do not need.${NC}\n\n"
-  printf "${BLUE}Your responses will be saved and used on future runs of this script.${NC}\n\n"
-  printf "${BLUE}If you want to erase your answers and answer again run:${NC}\n"
-  printf "${BLUE}rm ${SETUP_RESPONSE_FILE}${NC}\n"
-  printf "${BLUE}before running this script.${NC}\n\n"
+  printf "${LIGHTBLUE}Your answers depend on what hardware you have.${NC}\n"
+  printf "${LIGHTBLUE}It will not hurt to install things you do not need.${NC}\n\n"
+  printf "${LIGHTBLUE}Your responses will be saved and used on future runs of this script.${NC}\n\n"
+  printf "${LIGHTBLUE}If you want to erase your answers and answer again run:${NC}\n"
+  printf "${LIGHTBLUE}rm ${SETUP_RESPONSE_FILE}${NC}\n"
+  printf "${LIGHTBLUE}before running this script.${NC}\n\n"
   if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
     read -n 1 -s -r -p "Press any key to continue"
   fi
@@ -257,10 +257,10 @@ fi
 WORKSTATION_INSTALL=$(jq -r '.responseToWorkstationQuery' "${SETUP_RESPONSE_FILE}")
 if [[ ${WORKSTATION_INSTALL} == 'null' ]]; then
   printf "\n${YELLOW}Do you want this to be a WORKSTATION ONLY install?${NC}\n"
-  printf "${BLUE}A 'workstation' is a system that is NOT your robot,${NC}\n"
-  printf "${BLUE}but that you want to develop on and/or run ROS tools remotely${NC}\n\n"
-  printf "${BLUE}to operate and debug your robot.${NC}\n\n"
-  printf "${BLUE}This includes things like running RVIZ to view/control navigation and map making.${NC}\n\n"
+  printf "${LIGHTBLUE}A 'workstation' is a system that is NOT your robot,${NC}\n"
+  printf "${LIGHTBLUE}but that you want to develop on and/or run ROS tools remotely${NC}\n\n"
+  printf "${LIGHTBLUE}to operate and debug your robot.${NC}\n\n"
+  printf "${LIGHTBLUE}This includes things like running RVIZ to view/control navigation and map making.${NC}\n\n"
   if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
     read -n 1 -s -r -p "Press 'y' to set as Workstation ONLY install " WORKSTATION_INSTALL
   fi
@@ -273,9 +273,9 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   RESPONSE_TO_SWEEP_QUERY=$(jq -r '.responseToSweepQuery' "${SETUP_RESPONSE_FILE}")
   if [[ ${RESPONSE_TO_SWEEP_QUERY} == 'null' ]]; then
     printf "\n${YELLOW}Do you want to install code for Scanse Sweep?${NC}\n"
-    printf "${BLUE}The Scanse Sweep is a rotating laser scanner.${NC}\n"
-    printf "${BLUE}It is no longer available.${NC}\n\n"
-    printf "${BLUE}https://scanse.io/home/${NC}\n\n"
+    printf "${LIGHTBLUE}The Scanse Sweep is a rotating laser scanner.${NC}\n"
+    printf "${LIGHTBLUE}It is no longer available.${NC}\n\n"
+    printf "${LIGHTBLUE}https://scanse.io/home/${NC}\n\n"
     if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
       read -n 1 -s -r -p "Press 'y' to install Scanse Sweep code " RESPONSE_TO_SWEEP_QUERY
     fi
@@ -286,8 +286,8 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   RESPONSE_TO_XV11_QUERY=$(jq -r '.responseToXv11Query' "${SETUP_RESPONSE_FILE}")
   if [[ ${RESPONSE_TO_XV11_QUERY} == 'null' ]]; then
     printf "\n${YELLOW}Do you want to install code for Neato XV11?${NC}\n"
-    printf "${BLUE}The XV11 was a rotating laser scanner pulled from old vacuum cleaners.${NC}\n"
-    printf "${BLUE}If you have one you will need this code.${NC}\n\n"
+    printf "${LIGHTBLUE}The XV11 was a rotating laser scanner pulled from old vacuum cleaners.${NC}\n"
+    printf "${LIGHTBLUE}If you have one you will need this code.${NC}\n\n"
     if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
       read -n 1 -s -r -p "Press 'y' to install Neato XV11 code " RESPONSE_TO_XV11_QUERY
     fi
@@ -298,9 +298,9 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   RESPONSE_TO_RPLIDAR_QUERY=$(jq -r '.responseToRplidarQuery' "${SETUP_RESPONSE_FILE}")
   if [[ ${RESPONSE_TO_RPLIDAR_QUERY} == 'null' ]]; then
     printf "\n${YELLOW}Do you want to install code for Slamtec RPLIDAR?${NC}\n"
-    printf "${BLUE}The RPLIDAR is a series of commercially available, low cost rotating laser scanners.${NC}\n"
-    printf "${BLUE}This should work for the A1, A2, and A3 models.${NC}\n"
-    printf "${BLUE}https://www.slamtec.com/en${NC}\n\n"
+    printf "${LIGHTBLUE}The RPLIDAR is a series of commercially available, low cost rotating laser scanners.${NC}\n"
+    printf "${LIGHTBLUE}This should work for the A1, A2, and A3 models.${NC}\n"
+    printf "${LIGHTBLUE}https://www.slamtec.com/en${NC}\n\n"
     if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
       read -n 1 -s -r -p "Press 'y' to install Slamtec RPLIDAR code " RESPONSE_TO_RPLIDAR_QUERY
     fi
@@ -311,7 +311,7 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   RESPONSE_TO_KINECT_QUERY=$(jq -r '.responseToKinectQuery' "${SETUP_RESPONSE_FILE}")
   if [[ ${RESPONSE_TO_KINECT_QUERY} == 'null' ]]; then
     printf "\n${YELLOW}Do you want to install code for Xbox 360 Kinect?${NC}\n"
-    printf "${BLUE}If you are using an Xbox 360 Kinect, extra code must be installed.${NC}\n"
+    printf "${LIGHTBLUE}If you are using an Xbox 360 Kinect, extra code must be installed.${NC}\n"
     if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
       read -n 1 -s -r -p "Press 'y' to install Xbox 360 Kinect code " RESPONSE_TO_KINECT_QUERY
     fi
@@ -322,7 +322,7 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
   RESPONSE_TO_ASUS_XTION_QUERY=$(jq -r '.responseToAsusXtionQuery' "${SETUP_RESPONSE_FILE}")
   if [[ ${RESPONSE_TO_ASUS_XTION_QUERY} == 'null' ]]; then
     printf "\n${YELLOW}Do you want to install code for ASUS Xtion?${NC}\n"
-    printf "${BLUE}If you are using an ASUS Xtion, extra code must be installed.${NC}\n"
+    printf "${LIGHTBLUE}If you are using an ASUS Xtion, extra code must be installed.${NC}\n"
     if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
       read -n 1 -s -r -p "Press 'y' to install ASUS Xtion code " RESPONSE_TO_ASUS_XTION_QUERY
     fi
@@ -334,7 +334,7 @@ fi
 # End response collection section
 
 printf "\n${YELLOW}[Installing additional Ubuntu and ROS Packages for Arlo]${NC}\n"
-printf "${BLUE}This runs every time, in case new packages were added.${NC}\n"
+printf "${LIGHTBLUE}This runs every time, in case new packages were added.${NC}\n"
 
 # TODO: These packages do not exist in Jazzy:
 #       E: Unable to locate package ros-jazzy-move-base
@@ -446,7 +446,7 @@ fi
 printf "\n${YELLOW}[Cloning or Updating git repositories]${NC}\n"
 cd ~/dev_ws/src
 
-printf "${BLUE}ArloBot repository${NC}\n"
+printf "${LIGHTBLUE}ArloBot repository${NC}\n"
 if ! [[ -d ~/dev_ws/src/ArloBot ]]; then
   git clone -b jazzy https://github.com/chrisl8/ArloBot.git
 else
@@ -457,7 +457,7 @@ else
 fi
 
 if [[ "${RESPONSE_TO_XV11_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then # Always test in Travis
-  printf "\n${BLUE}Neato XV11 repository${NC}\n"
+  printf "\n${LIGHTBLUE}Neato XV11 repository${NC}\n"
   # Only needed if you have an XV-11 "Neato" Scanner
   cd ~/dev_ws/src
   if ! [[ -d ~/dev_ws/src/xv_11_laser_driver ]]; then
@@ -470,7 +470,7 @@ fi
 
 if [[ "${RESPONSE_TO_SWEEP_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
   # Always test in Travis
-  printf "\n${BLUE}Scanse Sweep repository${NC}\n"
+  printf "\n${LIGHTBLUE}Scanse Sweep repository${NC}\n"
   # Only needed if you have a Scanse Sweep
   if ! [[ -f /usr/local/lib/cmake/sweep/SweepConfig.cmake ]]; then
     cd
@@ -496,7 +496,7 @@ fi
 # TODO: Remove if they ever release freenect_stack for Noetic
 if [[ "${RESPONSE_TO_KINECT_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
   # Always test in Travis
-  printf "\n${BLUE}OpenKinect for Kinect${NC}\n"
+  printf "\n${LIGHTBLUE}OpenKinect for Kinect${NC}\n"
   # If you have a Kinect. Noetic seems to be missing the package
   # https://github.com/ros-drivers/freenect_stack/issues/48#issuecomment-514020969
   if ! [[ -f /usr/local/lib/fakenect/libfakenect.so ]]; then
@@ -520,7 +520,7 @@ fi
 
 if [[ "${RESPONSE_TO_RPLIDAR_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
   # Always test in Travis
-  printf "\n${BLUE}Slamtec RPLIDAR${NC}\n"
+  printf "\n${LIGHTBLUE}Slamtec RPLIDAR${NC}\n"
   cd ~/dev_ws/src
   if ! [[ -d ~/dev_ws/src/rplidar_ros ]]; then
     git clone -b dev-ros2 https://github.com/Slamtec/rplidar_ros.git
@@ -534,7 +534,7 @@ fi
 
 # TODO: How do we replace this in Jazzy?
 # TODO: This won't build on Jazzy.
-#printf "\n${BLUE}Costmap Converter Msgs${NC}\n"
+#printf "\n${LIGHTBLUE}Costmap Converter Msgs${NC}\n"
 #printf "${PURPLE}This is required by TEB Local Planner, but has not been released for ${INSTALLING_ROS_DISTRO}.${NC}\n"
 #cd ~/dev_ws/src
 #if ! [[ -d ~/dev_ws/src/costmap_converter ]]; then
@@ -547,7 +547,7 @@ fi
 
 # TODO: How do we replace this in Jazzy?
 # TODO: This won't build without costmap converter, which I haven't made build on Jazzy.
-#printf "\n${BLUE}TEB Local Planner${NC}\n"
+#printf "\n${LIGHTBLUE}TEB Local Planner${NC}\n"
 #printf "${PURPLE}The TEB Local Planner has not been released for ${INSTALLING_ROS_DISTRO}.${NC}\n"
 #cd ~/dev_ws/src
 #if ! [[ -d ~/dev_ws/src/teb_local_planner ]]; then
@@ -559,7 +559,7 @@ fi
 #fi
 
 # TODO: This won't build and doesn't matter either without TEB Local planner
-#printf "\n${BLUE}TEB Local Planner Tutorials${NC}\n"
+#printf "\n${LIGHTBLUE}TEB Local Planner Tutorials${NC}\n"
 #printf "${PURPLE}The TEB Local Planner tutorials have not been ported to ${INSTALLING_ROS_DISTRO}.${NC}\n"
 #printf "${PURPLE}The tutorials are not required, but handy for reference.${NC}\n"
 #cd ~/dev_ws/src
@@ -576,6 +576,7 @@ export PIP_DISABLE_PIP_VERSION_CHECK=1
 cd ~/dev_ws
 printf "\n${YELLOW}[Installing dependencies for ROS build-from-source packages.]${NC}\n"
 rosdep install -q -y -r --from-paths src --ignore-src --rosdistro ${INSTALLING_ROS_DISTRO}
+
 printf "\n${YELLOW}[(Re)Building ROS Source files.]${NC}\n"
 colcon build
 # shellcheck source=/home/chrisl8/dev_ws/install/setup.bash
@@ -648,7 +649,7 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
 
   export NVM_DIR="${HOME}/.nvm"
   export NVM_SYMLINK_CURRENT=true
-  NVM_TAG=$(curl -s curl -s https://api.github.com/repos/nvm-sh/nvm/releases/latest | grep tag_name | cut -d '"' -f 4)
+  NVM_TAG=$(curl -s curl -s https://api.github.com/repos/nvm-sh/nvm/releases/latest | grep tag_name | cut -d '"' -f 4 | cut -d 'v' -f 2)
   NVM_VERSION_LATEST="${NVM_TAG//v/}"
   NVM_VERSION=None
 
@@ -688,49 +689,12 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     fi
   fi
 
-  printf "\n${YELLOW}[Installing and Initializing the Latest Node version]${NC}\n"
-
-  printf "\n${BRIGHT_MAGENTA}Node.js Updates${NC}\n"
+  printf "\n${YELLOW}[Installing and Activating the Latest Node version]${NC}\n"
   nvm install node
-  nvm use node
-  nvm alias default node
-
-  NPM_VERSION=$(npm -v)
-  NPM_VERSION_LATEST=$(npm view npm version)
-  if [ "$NPM_VERSION" != "$NPM_VERSION_LATEST" ]; then
-    printf "\n${BRIGHT_MAGENTA}Updating NPM from ${NPM_VERSION} to ${NPM_VERSION_LATEST}${NC}\n"
-    npm i -g npm
-  fi
-
-
-
-
-  printf "${BLUE}[Installing/Updating Node Version Manager]${NC}\n"
-  if [[ -e ${HOME}/.nvm/nvm.sh ]]; then
-    printf "${BLUE}Deactivating existing Node Version Manager:${NC}\n"
-    export NVM_DIR="${HOME}/.nvm"
-    # shellcheck source=/home/chrisl8/.nvm/nvm.sh
-    [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
-    nvm deactivate
-  fi
-
-  NVM_TAG=$(curl -s curl -s https://api.github.com/repos/nvm-sh/nvm/releases/latest | grep tag_name | cut -d '"' -f 4)
-  wget -qO- "https://raw.githubusercontent.com/nvm-sh/nvm/$NVM_TAG/install.sh" | bash
-  export NVM_DIR="${HOME}/.nvm"
-  # shellcheck source=/home/chrisl8/.nvm/nvm.sh
-  [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
-
-  export NVM_SYMLINK_CURRENT=true
-  if ! (grep NVM_SYMLINK_CURRENT ~/.bashrc >/dev/null); then
-    printf "\n${YELLOW}[Setting the NVM current environment in your .bashrc file]${NC}\n"
-    sh -c "echo \"export NVM_SYMLINK_CURRENT=true\" >> ~/.bashrc"
-  fi
-  nvm install node
-  nvm use node
   nvm alias default node
 
   printf "\n${YELLOW}[Grabbing/Updating global dependencies for node packages]${NC}\n"
-  printf "${BLUE}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
+  printf "${LIGHTBLUE}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
   cd
   printf "\n${YELLOW}[PM2 for running Robot service]$NC\n"
   npm install -g pm2
@@ -741,14 +705,14 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
 
   if [[ -d ~/dev_ws/src/ArloBot/Log.io ]]; then
     printf "\n"
-    printf "${BLUE}Removing old Log.io Install${NC}\n"
+    printf "${LIGHTBLUE}Removing old Log.io Install${NC}\n"
     rm -rf "${HOME}/dev_ws/src/ArloBot/Log.io"
   fi
 fi
 
 cd "${HOME}/dev_ws/src/ArloBot/node"
 printf "\n${YELLOW}[Grabbing node dependencies for scripts]${NC}\n"
-printf "${BLUE}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
+printf "${LIGHTBLUE}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
 npm update
 
 if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
@@ -829,8 +793,8 @@ fi
 
 if ! [[ -e /usr/share/PropWare/include/arlodrive.h ]]; then
   printf "\n${YELLOW}[Setting up PropWare and PropGCC for putting code on Activity Board.]${NC}\n"
-  printf "${BLUE}Parallax no longer supports Linux so we are using some third party tools.${NC}\n"
-  printf "${BLUE}https://david.zemon.name/PropWare${NC}\n"
+  printf "${LIGHTBLUE}Parallax no longer supports Linux so we are using some third party tools.${NC}\n"
+  printf "${LIGHTBLUE}https://david.zemon.name/PropWare${NC}\n"
   cd /tmp
   # NOTE: This is the original location, but it has gone dark
   # wget -O propware_3.0.0.224-1_all.deb https://ci.zemon.name/repository/download/PropWare_Develop/3817:id/propware_3.0.0.224-1_all.deb?guest=1
@@ -863,10 +827,10 @@ if ! [[ -e ${ARLO_HOME}/per_robot_settings_for_propeller_2nd_board.h ]]; then
 fi
 
 printf "\n${YELLOW}[Test Compiling Propeller Code.]${NC}\n"
-printf "${BLUE}You will need to load this code onto your Propeller board after the setup is done.${NC}\n"
+printf "${LIGHTBLUE}You will need to load this code onto your Propeller board after the setup is done.${NC}\n"
 
 function testMake() {
-  printf " ${BLUE}- ${1}${NC}\n"
+  printf " ${LIGHTBLUE}- ${1}${NC}\n"
   cd "${HOME}/dev_ws/src/ArloBot/PropellerCodeForArloBot/${1}"
   rm -rf bin
   if ! [[ -d bin ]]; then
@@ -978,15 +942,15 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     printf "${PURPLE}-------------------------------------------------------${NC}\n"
 
     printf "${YELLOW}Diffing your param files to defaults where available:${NC}\n"
-    printf "${BLUE}teb_local_planner_params:${NC}\n"
+    printf "${LIGHTBLUE}teb_local_planner_params:${NC}\n"
     diff "${HOME}/dev_ws/src/teb_local_planner_tutorials/cfg/diff_drive/teb_local_planner_params.yaml" "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/teb_local_planner_params.yaml" || true
-    printf "${BLUE}twist_mux_locks:${NC}\n"
+    printf "${LIGHTBLUE}twist_mux_locks:${NC}\n"
     diff /opt/ros/${INSTALLING_ROS_DISTRO}/share/twist_mux/config/twist_mux_locks.yaml "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/twist_mux_locks.yaml" || true
-    printf "${BLUE}twist_mux_topics:${NC}\n"
+    printf "${LIGHTBLUE}twist_mux_topics:${NC}\n"
     diff /opt/ros/${INSTALLING_ROS_DISTRO}/share/twist_mux/config/twist_mux_topics.yaml "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/twist_mux_topics.yaml" || true
-    printf "${BLUE}mapper_params_localization:${NC}\n"
+    printf "${LIGHTBLUE}mapper_params_localization:${NC}\n"
     diff "${HOME}/dev_ws/src/slam_toolbox/slam_toolbox/config/mapper_params_localization.yaml" "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/mapper_params_localization.yaml" || true
-    printf "${BLUE}mapper_params_online_async:${NC}\n"
+    printf "${LIGHTBLUE}mapper_params_online_async:${NC}\n"
     diff "${HOME}/dev_ws/src/slam_toolbox/slam_toolbox/config/mapper_params_online_async.yaml" "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/mapper_params_online_async.yaml" || true
   fi
 
@@ -1001,9 +965,9 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
 
   printf "\n${YELLOW}------------------------------------------------------------${NC}\n"
   printf "${YELLOW}Remember: You MUST install the Propeller code on your Propeller board too!${NC}\n"
-  printf "${BLUE}You can run install_Propeller_code.sh to perform the install,${NC}\n"
-  printf "${BLUE}and PropellerSerialTest.sh to test it.${NC}\n"
-  printf "${GREEN}See: ${BLUE}https://ekpyroticfrood.net/?p=551${NC}\n"
+  printf "${LIGHTCYAN}You can run install_Propeller_code.sh to perform the install,${NC}\n"
+  printf "${LIGHTCYAN}and PropellerSerialTest.sh to test it.${NC}\n"
+  printf "${GREEN}See: ${LIGHTBLUE}https://ekpyroticfrood.net/?p=551${NC}\n"
   printf "${GREEN}for more information on installing code on your Propeller board.${NC}\n"
   printf "${YELLOW}------------------------------------------------------------${NC}\n"
 fi
