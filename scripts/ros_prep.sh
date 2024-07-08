@@ -79,26 +79,27 @@ fi
 
 chmod 777 "${HOME}/.arlobot/status/" &>/dev/null
 
-# Start roscore separately so that we can set parameters
-# before launching any ROS .launch files.
-"/opt/ros/${ROS_DISTRO}/bin/roscore" &
+# ROS2 has no concept of "roscore", but we want to use a "blackboard" to hold parameters even if ROS isn't running.
+# https://docs.ros.org/en/jazzy/Concepts/Basic/About-Parameters.html#migrating-from-ros-1
+pkill -f parameter_blackboard
+ros2 run demo_nodes_cpp parameter_blackboard &
 
-while ! (rosparam list &>/dev/null); do
-  echo "Waiting for roscore to start . . ."
+while [[ $(ros2 param list) == '' ]]; do
+  echo "Waiting for ROS parameter_blackboard to start . . ."
   sleep 1
 done
 
-rosparam set /arlobot/mapname empty
+ros2 param set /parameter_blackboard mapname empty
 
-rosparam set /arlobot/maxPingRangeAccepted "$(jq '.maxPingRangeAccepted' "${HOME}/.arlobot/personalDataForBehavior.json")"
+ros2 param set /parameter_blackboard maxPingRangeAccepted "$(jq '.maxPingRangeAccepted' "${HOME}/.arlobot/personalDataForBehavior.json")"
 
 if [[ $(jq '.monitorDoors' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-  rosparam set /arlobot/monitorDoors "$(jq '.monitorDoors' "${HOME}/.arlobot/personalDataForBehavior.json")"
+  ros2 param set /parameter_blackboard monitorDoors "$(jq '.monitorDoors' "${HOME}/.arlobot/personalDataForBehavior.json")"
   echo "Door sensing is on. If robot will not move, check doors."
 fi
 
 if [[ $(jq '.hasActivityBoard' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-  rosparam set /arlobot/port "$("${SCRIPTDIR}/find_ActivityBoard.sh")"
+  ros2 param set /parameter_blackboard arlobot/port "$("${SCRIPTDIR}/find_ActivityBoard.sh")"
 else
   YELLOW='\033[1;33m'
   NC='\033[0m' # NoColor
@@ -115,9 +116,9 @@ fi
 
 if [[ $(jq '.camera0' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
   CAMERA_NAME=$(jq '.camera0name' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
-  rosparam set /camera1 "$("${SCRIPTDIR}/find_camera.sh" "${CAMERA_NAME}")"
+  ros2 param set /parameter_blackboard camera1 "$("${SCRIPTDIR}/find_camera.sh" "${CAMERA_NAME}")"
 fi
 if [[ $(jq '.camera1' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
   CAMERA_NAME=$(jq '.camera1name' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
-  rosparam set /camera2 "$("${SCRIPTDIR}/find_camera.sh" "${CAMERA_NAME}")"
+  ros2 param set /parameter_blackboard camera2 "$("${SCRIPTDIR}/find_camera.sh" "${CAMERA_NAME}")"
 fi
