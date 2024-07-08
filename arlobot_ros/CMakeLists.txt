@@ -25,6 +25,14 @@ find_package(slam_toolbox REQUIRED)
 # TODO: What do I do for this in ROS2?
 #find_package(teb_local_planner REQUIRED)
 
+install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
+
+# Install Python executables
+install(PROGRAMS
+  scripts/propellerbot_node.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 ## Generate messages in the 'msg' folder
 
 ## Generate services in the 'srv' folder
