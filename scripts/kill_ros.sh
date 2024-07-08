@@ -55,9 +55,9 @@ if (pkill roslaunch); then
     sleep 1
   done
 fi
-if (pkill roscore); then
-  while (pgrep roscore); do
-    echo "Waiting for roscore to close . . ."
+if (pkill -f parameter_blackboard); then
+  while (pgrep -f parameter_blackboard); do
+    echo "Waiting for ROS parameter_blackboard to close . . ."
     sleep 1
   done
 fi
