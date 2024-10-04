@@ -689,9 +689,9 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
     fi
   fi
 
-  printf "\n${YELLOW}[Installing and Activating the Latest Node version]${NC}\n"
-  nvm install node
-  nvm alias default node
+  printf "\n${YELLOW}[Installing and Activating the Latest Node LTS version]${NC}\n"
+  nvm install --lts
+  nvm alias default "lts/*"
 
   printf "\n${YELLOW}[Grabbing/Updating global dependencies for node packages]${NC}\n"
   printf "${LIGHTBLUE}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
