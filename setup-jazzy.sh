@@ -350,6 +350,8 @@ PACKAGE_TO_INSTALL_LIST+=(python3-argcomplete)
 # python3-argcomplete - The Jazzy Install page recommends installing this.
 PACKAGE_TO_INSTALL_LIST+=(git)
 # git - allows for cloning of repositories
+PACKAGE_TO_INSTALL_LIST+=(vim)
+# vim - We aren't going to get very far without being able to edit some files.
 # TODO: move_base does not exist in ROS2
 #       https://navigation.ros.org/about/ros1_comparison.html
 #PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-move-base")
@@ -360,6 +362,7 @@ PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-twist-mux")
 #           to the correct topic for output.
 #      Without it, movement (twist) commands cannot be sent to the robot from ROS.
 PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-navigation2")
+PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-nav2-bringup")
 # navigation2 is the ROS2 navigation stack for robot navigation
 PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-slam-toolbox")
 # Slam-Toolbox is the official ROS2 SLAM package.
