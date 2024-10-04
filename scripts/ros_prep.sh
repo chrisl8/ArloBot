@@ -122,3 +122,10 @@ if [[ $(jq '.camera1' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]
   CAMERA_NAME=$(jq '.camera1name' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
   ros2 param set /parameter_blackboard camera2 "$("${SCRIPTDIR}/find_camera.sh" "${CAMERA_NAME}")"
 fi
+
+# TODO: Add code to build the arlobot.urdf file if it doesn't exist and run colcon build again.
+
+# TODO: Consider running colcon build every time this is started.
+
+# TODO: Is there a "clean" option for colcon build?
+

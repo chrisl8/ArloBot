@@ -9,4 +9,4 @@
 export ROS_MASTER_URI=http://localhost:11311
 ARLOBOT_MODEL=$(jq '.arlobotModel' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
 export ARLOBOT_MODEL
-roslaunch arlobot_ros model_robot.launch
+ros2 launch --debug arlobot_ros model_robot.launch.py

@@ -31,19 +31,20 @@ install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # Copy param files
 install(DIRECTORY param DESTINATION share/${PROJECT_NAME}/)
 
-# Install Python executables
+# Copy urdf file
+install(FILES
+  arlobot.urdf
+  DESTINATION share/${PROJECT_NAME}
+)
+
+# Install primary Python Propeller Node
 install(PROGRAMS
-  scripts/propellerbot_node.py
+  propellerbot_node.py
   DESTINATION lib/${PROJECT_NAME}
 )
-install(PROGRAMS
-  scripts/arlobot_safety.py
-  DESTINATION lib/${PROJECT_NAME}
-)
-install(PROGRAMS
-  scripts/arlobot_usbrelay.py
-  DESTINATION lib/${PROJECT_NAME}
-)
+
+# Copy python dependencies files
+install(DIRECTORY scripts DESTINATION lib/${PROJECT_NAME}/)
 
 ## Generate messages in the 'msg' folder
 

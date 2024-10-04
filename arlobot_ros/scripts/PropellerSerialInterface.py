@@ -27,8 +27,8 @@ import time
 import struct
 
 import six
-from PropellerSerialGateway import PropellerSerialGateway
-from PropellerSerialDataPacketTypes import PropellerSerialDataPacketTypes
+from . PropellerSerialGateway import PropellerSerialGateway
+from . PropellerSerialDataPacketTypes import PropellerSerialDataPacketTypes
 
 
 def _printOutputFunction(data):

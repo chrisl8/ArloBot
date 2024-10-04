@@ -762,7 +762,7 @@ class ArlobotExplore(object):
     def _movetoPositiononMap(self, position, quaternion, timeoutSeconds):
         result = -1
         resultText = ""
-        if not rospy.is_shutdown():
+        if rclpy.ok():
             self._MoveBaseClient.cancel_goals_at_and_before_time(rospy.Time.now())
             # NOTE: Do not use cancel_all_goals here as it can cancel future goals sometimes!
         goal = move_base_msgs.msg.MoveBaseGoal()
@@ -775,7 +775,7 @@ class ArlobotExplore(object):
         goal.target_pose.pose.orientation.z = quaternion[2]
         goal.target_pose.pose.orientation.w = quaternion[3]
         goal.target_pose.header.stamp = rospy.Time.now()
-        if not rospy.is_shutdown():
+        if rclpy.ok():
             self._MoveBaseClient.send_goal(goal)
             count = 0
             finished = False
@@ -784,7 +784,7 @@ class ArlobotExplore(object):
             while (
                 count < (timeoutSeconds * 2)
                 and not finished
-                and not rospy.is_shutdown()
+                and rclpy.ok()
             ):
                 if count > timeoutSeconds:
                     self._MoveBaseClient.cancel_goal()

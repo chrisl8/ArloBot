@@ -64,16 +64,16 @@ class ArlobotGoTo(object):
         in other words, if you don't run move_base before this, this will just wait,
         and it won't go on until move_base says "odom received!"
         """
-        rospy.loginfo("Waiting for move_base to come up . . . ")
+        node.get_logger().info("Waiting for move_base to come up . . . ")
         self._MoveBaseClient.wait_for_server()
-        rospy.loginfo("move_base is UP!")
+        node.get_logger().info("move_base is UP!")
 
         # Wait for tf_listener to be ready.
         # NOTE: I'm not sure this is required anymore or not
         # If you call self.tf_listener too soon it has no data in the listener buffer!
         # http://answers.ros.org/question/164911/move_base-and-extrapolation-errors-into-the-future/
         # We could put a static delay in here, but this is faster.
-        rospy.loginfo("Waiting for tf_listener to be ready . . . ")
+        node.get_logger().info("Waiting for tf_listener to be ready . . . ")
         tf_listener_ready = False
         # http://wiki.ros.org/tf2/Tutorials/Writing%20a%20tf2%20listener%20%28Python%29
         while not tf_listener_ready:
@@ -81,9 +81,9 @@ class ArlobotGoTo(object):
                 self.tf_Buffer.lookup_transform("map", "base_link", rospy.Time())
                 tf_listener_ready = True
             except tf2_ros.ExtrapolationException:
-                rospy.loginfo("tf_listener not ready . . . ")
+                node.get_logger().info("tf_listener not ready . . . ")
                 rospy.sleep(0.1)
-        rospy.loginfo("tf_listener READY!")
+        node.get_logger().info("tf_listener READY!")
 
         # Create a variable to hold our goal
         goal = move_base_msgs.msg.MoveBaseGoal()
@@ -97,21 +97,21 @@ class ArlobotGoTo(object):
 
         goal.target_pose.pose = new_goal.pose
 
-        rospy.loginfo("Populated goal.")
+        node.get_logger().info("Populated goal.")
 
         #######################################
         # This is the part that sends the goal!#
         #######################################
 
-        rospy.loginfo("Sending goal")
+        node.get_logger().info("Sending goal")
         # Sends the goal to the action server.
         result = -1
         timeoutSeconds = 60  # TODO: Should this be sent as part of the call?
-        if not rospy.is_shutdown():
+        if rclpy.ok():
             self._MoveBaseClient.cancel_goals_at_and_before_time(rospy.Time.now())
             # NOTE: Do not use cancel_all_goals here as it can cancel future goals sometimes!
         goal.target_pose.header.stamp = rospy.Time.now()
-        if not rospy.is_shutdown():
+        if rclpy.ok():
             self._MoveBaseClient.send_goal(goal)
             count = 0
             finished = False
@@ -120,11 +120,11 @@ class ArlobotGoTo(object):
             while (
                 count < (timeoutSeconds * 2)
                 and not finished
-                and not rospy.is_shutdown()
+                and rclpy.ok()
             ):
                 if count > timeoutSeconds:
                     finished = True
-                    rospy.loginfo(
+                    node.get_logger().info(
                         "Time-out reached while attempting to reach goal, canceling!"
                     )
                 # NOTE: If the robot tends to get stuck without moving at all,
@@ -165,7 +165,7 @@ class ArlobotGoTo(object):
                 if result == GoalStatus.LOST:
                     finished = True
                     resultText = "LOST"
-                rospy.loginfo(
+                node.get_logger().info(
                     "Pending result:"
                     + str(result)
                     + " "
@@ -182,10 +182,10 @@ class ArlobotGoTo(object):
 
         trans = self.tf_Buffer.lookup_transform("map", "base_link", rospy.Time())
 
-        rospy.loginfo("New Position: ")
-        rospy.loginfo(str(trans.transform.translation))
-        rospy.loginfo(" New Orientation: ")
-        rospy.loginfo(str(trans.transform.rotation))
+        node.get_logger().info("New Position: ")
+        node.get_logger().info(str(trans.transform.translation))
+        node.get_logger().info(" New Orientation: ")
+        node.get_logger().info(str(trans.transform.rotation))
 
         if result == GoalStatus.SUCCEEDED:
             return True
@@ -193,7 +193,7 @@ class ArlobotGoTo(object):
             return False
 
     def Stop(self):
-        rospy.loginfo("Arlobot Goto is shutting down.")
+        node.get_logger().info("Arlobot Goto is shutting down.")
         self._MoveBaseClient.cancel_goals_at_and_before_time(rospy.Time.now())
 
     def Run(self):

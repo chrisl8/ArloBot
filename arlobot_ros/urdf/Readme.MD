@@ -1,5 +1,12 @@
 # ArloBot Description
 
+## Deploy
+
+You must use the `xacro` command to convert these files int a URDF file before running `colcon build`
+`xacro common_chrisl8.urdf.xacrl > ../arlobot.urdf`
+
+## Notes
+
 This folder holds the files that "describe" the physical
 characteristics of the Arlobot.
 

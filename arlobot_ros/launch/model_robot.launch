@@ -1,9 +1,0 @@
-<launch>
-  <!-- This allows you to see the robot model without starting it up. You can run this on a machine that is not even connected to the robot, like a VirtualBox instance -->
-
-  <include file="$(find arlobot_ros)/launch/includes/publish_robot_model.xml"/>
-
-  <!-- Launch rviz with our favorite config file -->
-  <node name="rviz" pkg="rviz" type="rviz"
-        args="-d $(find arlobot_ros)/rviz/model.rviz"/>
-</launch>

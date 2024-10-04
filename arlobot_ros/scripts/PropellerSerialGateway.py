@@ -27,7 +27,8 @@ from six.moves import input
 import threading
 import serial
 import time
-import rospy
+import rclpy
+from rclpy.node import Node
 
 
 def _OnLineReceived(line):
@@ -45,7 +46,7 @@ def _printOutputFunction(data):
 
 
 # noinspection PyBroadException
-class PropellerSerialGateway(object):
+class PropellerSerialGateway(Node):
     """
     Helper class for receiving lines from a serial port
     """
@@ -111,7 +112,7 @@ class PropellerSerialGateway(object):
                 + str(self._Port)
                 + ", will retry..."
             )
-            rospy.loginfo("Unable to connect to " + str(self._Port) + ", will retry...")
+            logger.info("Unable to connect to " + str(self._Port) + ", will retry...")
 
     def Stop(self):
         # Stop the Watchdog
@@ -121,13 +122,13 @@ class PropellerSerialGateway(object):
 
     def _Disconnect(self):
         self._printOutputFunction(self._LogPrefix + "DISconnecting")
-        rospy.loginfo(self._LogPrefix + "DISconnecting")
+        logger.info(self._LogPrefix + "DISconnecting")
         try:
             self._Serial.close()
             self._ConnectedToSerialDevice = False
         except:
             self._printOutputFunction(self._LogPrefix + "Stop Error")
-            rospy.loginfo(self._LogPrefix + "Stop Error")
+            logger.info(self._LogPrefix + "Stop Error")
 
     def _Listen(self):
         data = bytearray()
@@ -136,7 +137,7 @@ class PropellerSerialGateway(object):
             # If there is no data on the line it will return ''
         except:
             self._printOutputFunction(self._LogPrefix + "Listen Error")
-            rospy.loginfo(self._LogPrefix + "Listen Error")
+            logger.info(self._LogPrefix + "Listen Error")
             self._Disconnect()
         if len(data) == 0:
             # Pause to avoid hogging the CPU
@@ -168,11 +169,11 @@ class PropellerSerialGateway(object):
             try:
                 self._Serial.write(data)
             except:
-                rospy.loginfo(self._LogPrefix + "Write Error")
+                logger.info(self._LogPrefix + "Write Error")
                 self._Disconnect()
         else:
             self._printOutputFunction(self._LogPrefix + "Not Open Yet")
-            rospy.loginfo(self._LogPrefix + "Not Open Yet")
+            logger.info(self._LogPrefix + "Not Open Yet")
 
 
 if __name__ == "__main__":

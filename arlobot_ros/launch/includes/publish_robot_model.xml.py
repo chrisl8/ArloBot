@@ -1,37 +1,37 @@
 import os
-import sys
+from ament_index_python.packages import get_package_share_directory
+from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
+from launch_ros.actions import Node
 
-import launch
-import launch_ros.actions
-
+# You must use the `xacro` command to convert the URDF stack to an xacro xml file.
 
 def generate_launch_description():
-    ld = launch.LaunchDescription([
-        launch.actions.DeclareLaunchArgument(
-            name='arlobot_model',
-            default_value=os.environ.get('ARLOBOT_MODEL', 'default')
-        ),
-        launch.actions.DeclareLaunchArgument(
-            name='urdf_file',
-            default_value=launch.substitutions.LaunchConfiguration(
-                'arlobot_model')
-        ),
-        launch_ros.actions.Node(
-            package='robot_state_publisher',
-            executable='robot_state_publisher',
-            name='robot_state_publisher',
-            parameters=[
-                {
-                    'robot_description': 'None'
-                },
-                {
-                    'publish_frequency': 5.0
-                }
-            ]
-        )
-    ])
-    return ld
 
+    urdf_file_name = 'arlobot.urdf'
+    urdf = os.path.join(
+        get_package_share_directory('arlobot_ros'),
+        urdf_file_name)
+    with open(urdf, 'r') as infp:
+        robot_description = infp.read()
+
+    return LaunchDescription([
+                   Node(
+                       package='robot_state_publisher',
+                       executable='robot_state_publisher',
+                       name='robot_state_publisher',
+                       parameters=[
+                           {
+                               'publish_frequency': 5.0
+                           },
+                           {
+                                'robot_description': robot_description,
+                           }
+                       ],
+                       output="screen",
+                   )
+               ])
 
 if __name__ == '__main__':
     generate_launch_description()

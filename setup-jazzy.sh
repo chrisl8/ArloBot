@@ -857,7 +857,7 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
       printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
       printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
       diff "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/arlobot.yaml" "${ARLO_HOME}/arlobot.yaml" || true
-      cp -i "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/arlobot.yaml" "${ARLO_HOME}/"
+      # cp -i "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/arlobot.yaml" "${ARLO_HOME}/"
       printf "\n"
     fi
   else
@@ -877,7 +877,7 @@ if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
         printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
         printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
         diff "${i}" "${ARLO_HOME}/${i##*/}" || true
-        cp -i "${i}" "${ARLO_HOME}/"
+        # cp -i "${i}" "${ARLO_HOME}/"
       fi
     else
       printf "\n"
