@@ -801,7 +801,7 @@ if ! [[ -e /usr/share/PropWare/include/arlodrive.h ]]; then
   cd /tmp
   # NOTE: This is the original location, but it has gone dark
   # wget -O propware_3.0.0.224-1_all.deb https://ci.zemon.name/repository/download/PropWare_Develop/3817:id/propware_3.0.0.224-1_all.deb?guest=1
-  wget -O propware_3.0.0.224-1_all.deb https://www.dropbox.com/s/12l51adhwge1y43/propware_3.0.0.224-1_all.deb?dl=1
+  wget -O propware_3.0.0.224-1_all.deb https://github.com/chrisl8/propeller_binary_archive/raw/refs/heads/main/propware_3.0.0.224-1_all.deb?download=1
   sudo dpkg -i /tmp/propware_3.0.0.224-1_all.deb
   rm /tmp/propware_3.0.0.224-1_all.deb
 fi
@@ -809,10 +809,9 @@ fi
 if ! [[ -d /opt/parallax ]]; then
   printf "\n${YELLOW}[Installing PropGCC, which is required by PropWare.]${NC}\n"
   cd /tmp
-  # NOTE: This is the original location, but it has gonedark
+  # NOTE: This is the original location, but it has gone dark
   # wget -O propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz https://ci.zemon.name/repository/download/PropGCC5_Gcc4linuxX64/3620:id/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz?guest=1
-  # NOTE: I also have this stored in my Dropbox. If the above link dies use:
-  wget -O propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz https://www.dropbox.com/s/sccr5cs46hgrlwd/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz?dl=1
+  wget -O propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz https://github.com/chrisl8/propeller_binary_archive/raw/refs/heads/main/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz?download=1
   sudo cp /tmp/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz /opt
   rm /tmp/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz
   cd /opt
