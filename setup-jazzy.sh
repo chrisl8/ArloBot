@@ -116,7 +116,7 @@ if [[ ! -e /etc/localtime ]]; then
   # This won't work inside of sudo though, so just install tzdata now
   # rather than letting it get picked up later as a pre-req,
   # and add the other things we know Docker is missing too while we are at it.
-  apt install -y tzdata sudo
+  apt install -y tzdata sudo cron
   # Now the rest of the script should work as if it was in a normal Ubuntu install.
 
   # Installing this now appears to prevent it from hanging up the Docker setup later.
