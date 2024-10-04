@@ -17,5 +17,5 @@ ROS_HOSTNAME=${ROS_IP}
 export ROS_HOSTNAME
 export ROS_MASTER_URI=http://localhost:11311
 export ROSLAUNCH_SSH_UNKNOWN=1
-# shellcheck source=/home/chrisl8/dev_ws/install/setup.bash
-source ~/dev_ws/install/setup.bash
+# shellcheck source=/opt/ros/jazzy/setup.bash
+source "${HOME}/dev_ws/install/setup.bash"
