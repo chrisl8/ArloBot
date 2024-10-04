@@ -55,6 +55,12 @@ if (pkill roslaunch); then
     sleep 1
   done
 fi
+if (pkill -f twist_mux); then
+  while (pgrep -f twist_mux); do
+    echo "Waiting for ROS twist_mux to close . . ."
+    sleep 1
+  done
+fi
 if (pkill -f parameter_blackboard); then
   while (pgrep -f parameter_blackboard); do
     echo "Waiting for ROS parameter_blackboard to close . . ."

@@ -55,7 +55,7 @@ class ArlobotExplore(object):
         # rospy.set_param('~ACpower', self.acPower) # Publish initial state
 
         # self.safeToGo = False # Set false as default until we check things
-        # self._safetyStatusPublisher = node.create_publisher(Bool, queue_size=1, '~safeToGo') # for publishing status of AC adapter
+        # self._safetyStatusPublisher = node.create_publisher(Bool, '~safeToGo', 1) # for publishing status of AC adapter
 
     def _SetCurrentOdom(self, currentOdom):
         self.currentOdom = currentOdom

@@ -103,7 +103,7 @@ if __name__ == "__main__":
     rclpy.init()
 
     node = rclpy.create_node("arlobot_teleop")
-    pub = node.create_publisher(Twist, queue_size=1, "~cmd_vel")
+    pub = node.create_publisher(Twist, "~cmd_vel", 1)
 
     x = 0
     th = 0

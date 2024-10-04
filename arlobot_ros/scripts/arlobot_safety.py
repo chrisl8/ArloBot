@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-import rospy
+import rclpy
+from rclpy.node import Node
 import subprocess
 import os
 import fnmatch
@@ -21,8 +22,8 @@ class ArlobotSafety(object):
     def __init__(self):
         rclpy.init()
         node = rclpy.create_node("arlobot_safety")
-        # http://wiki.ros.org/rospy_tutorials/Tutorials/WritingPublisherSubscriber
-        self.r = rospy.Rate(1)  # 1hz refresh rate
+        # http://wiki.ros.org/rclpy_tutorials/Tutorials/WritingPublisherSubscriber
+        self.r = Node.Rate(1)  # 1hz refresh rate
 
         # Global variable for whether we've been asked to unplug or not
         self._unPlug = False
@@ -33,29 +34,27 @@ class ArlobotSafety(object):
         # I am going to set the AC power status as a parameter, so that it can be checked by low priority nodes,
         # and publish the "ArloSafety" as a topic so that it can be subscribed to and acted upon immediately
         self._acPower = True  # Status of whether laptop is plugged in or not. We assume 1, connected, to start with because that is the most restrictive state.
-        rospy.set_param("~ACpower", self._acPower)  # Publish initial state
+        rclpy.set_param("~ACpower", self._acPower)  # Publish initial state
 
-        self._safetyStatusPublisher = node.create_publisher(ArloSafety, queue_size=1
-        , 
-            "~safetyStatus")  # for publishing status of AC adapter
+        self._safetyStatusPublisher = node.create_publisher(ArloSafety, "~safetyStatus", 1)  # for publishing status of AC adapter
 
         node.create_service(UnPlug, "arlobot_unplug", self._handle_unplug_request)
 
     def Stop(self):
-        rospy.loginfo("ArlobotSafety id is shutting down.")
+        rclpy.loginfo("ArlobotSafety id is shutting down.")
         # Delete plugged in status, since it is no longer a valid parameter without anyone to monitor it
-        if rospy.has_param("~ACpower"):
-            rospy.delete_param("~ACpower")
+        if rclpy.has_param("~ACpower"):
+            rclpy.delete_param("~ACpower")
 
     def Run(self):
-        while not rospy.is_shutdown():
-            # rospy.loginfo("Looping . . .")
+        while not rclpy.is_shutdown():
+            # rclpy.loginfo("Looping . . .")
 
             # Check computer's AC power status and set it as a ROS parameter
-            if rospy.has_param(
+            if rclpy.has_param(
                 "/arlobot/monitorACconnection"
             ):  # If arlobot_ros is running
-                checkAC = rospy.get_param(
+                checkAC = rclpy.get_param(
                     "/arlobot/monitorACconnection"
                 )  # Use parameter from arlobot_ros to decide if we should monitor AC or not
             else:
@@ -76,16 +75,16 @@ class ArlobotSafety(object):
                             if (
                                 self._acPower
                             ):  # Only log and set parameters if there is a change!
-                                rospy.loginfo("AC Power DISconnected.")
+                                rclpy.loginfo("AC Power DISconnected.")
                                 self._acPower = False
-                                rospy.set_param("~ACpower", self._acPower)
+                                rclpy.set_param("~ACpower", self._acPower)
                         elif upowerOutput[1] == "yes":
                             if (
                                 self._acPower is False
                             ):  # Only log and set parameters if there is a change!
-                                rospy.loginfo("AC Power Connected.")
+                                rclpy.loginfo("AC Power Connected.")
                                 self._acPower = True
-                                rospy.set_param("~ACpower", self._acPower)
+                                rclpy.set_param("~ACpower", self._acPower)
                     if "percentage" in line and not gotBatteryPercent:
                         upowerOutput = line.split()
                         self._laptopBatteryPercent = int(upowerOutput[1].rstrip("%"))
@@ -93,7 +92,7 @@ class ArlobotSafety(object):
             else:  # Just set to 0 if we were told to ignore AC power status.
                 if self._acPower:  # Only log and set parameters if there is a change!
                     self._acPower = False
-                    rospy.set_param("~ACpower", self._acPower)
+                    rclpy.set_param("~ACpower", self._acPower)
 
             # ArloSafety Status message
             safety_status = ArloSafety()
@@ -139,8 +138,8 @@ class ArlobotSafety(object):
                 safety_status.safe_to_go = False
 
             # Check for open doors
-            if rospy.has_param("/arlobot/monitorDoors"):  # If arlobot_ros is running
-                monitorDoors = rospy.get_param(
+            if rclpy.has_param("/arlobot/monitorDoors"):  # If arlobot_ros is running
+                monitorDoors = rclpy.get_param(
                     "/arlobot/monitorDoors"
                 )  # Use parameter from arlobot_ros to decide if we should monitor AC or not
             else:
@@ -165,17 +164,17 @@ class ArlobotSafety(object):
 
     def _handle_unplug_request(self, request):
         if request:
-            rospy.loginfo("Unplug requested.")
+            rclpy.loginfo("Unplug requested.")
         else:
-            rospy.loginfo("Unplug cancel requested.")
+            rclpy.loginfo("Unplug cancel requested.")
         self._unPlug = request.unplug
         return True
 
 
 if __name__ == "__main__":
     node = ArlobotSafety()
-    rospy.on_shutdown(node.Stop)
+    rclpy.on_shutdown(node.Stop)
     try:
         node.Run()
-    except rospy.ROSInterruptException:
+    except rclpy.ROSInterruptException:
         node.Stop()

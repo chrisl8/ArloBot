@@ -4,7 +4,7 @@
 # Author: Christen Lofland https://github.com/chrisl8
 # URL: https://github.com/chrisl8/ArloBot
 
-import rospy
+import rclpy
 
 from arlobot_ros.msg import UsbRelayStatus
 from arlobot_ros.srv import *
@@ -123,29 +123,29 @@ class UsbRelay(object):
     def __init__(self):
         rclpy.init()
         node = rclpy.create_node("arlobot_usbrelay")
-        # http://wiki.ros.org/rospy_tutorials/Tutorials/WritingPublisherSubscriber
-        self.r = rospy.Rate(0.25)  # 1hz refresh rate
-        # self.r = rospy.Rate(1) # 1hz refresh rate
+        # http://wiki.ros.org/rclpy_tutorials/Tutorials/WritingPublisherSubscriber
+        self.r = rclpy.Rate(0.25)  # 1hz refresh rate
+        # self.r = rclpy.Rate(1) # 1hz refresh rate
 
         # Prevent overlapping calls to the serial port
         self._Busy = False
 
         # Wait for the arlobot_ros launch file to initiate the usbRelayInstalled parameter before starting:
         while (
-            not rospy.has_param("/arlobot/usbRelayInstalled")
-            and not rospy.is_shutdown()
+            not rclpy.has_param("/arlobot/usbRelayInstalled")
+            and not rclpy.is_shutdown()
         ):
-            rospy.loginfo("arlobot_ros not started yet, waiting . . .")
-            rospy.sleep(1)
+            rclpy.loginfo("arlobot_ros not started yet, waiting . . .")
+            rclpy.sleep(1)
 
-        self.relayExists = rospy.get_param("/arlobot/usbRelayInstalled", False)
+        self.relayExists = rclpy.get_param("/arlobot/usbRelayInstalled", False)
         if self.relayExists:
             # list_devices()
             # NOTE: This will return the LAST device, so if you have multiple USB Relay boards this will have to be modified
             self.relaySerialNumber = return_device_serial_number()
 
         else:
-            rospy.loginfo("No USB Relay board installed.")
+            rclpy.loginfo("No USB Relay board installed.")
 
         # Create a service that can be called to toggle any relay by name:
         # http://wiki.ros.org/ROS/Tutorials/CreatingMsgAndSrv
@@ -154,9 +154,7 @@ class UsbRelay(object):
         node.create_service(FindRelay, "~find_relay", self._FindRelayByName)
 
         # Publishers
-        self._usbRelayStatusPublisher = node.create_publisher(UsbRelayStatus, queue_size=1
-        , 
-            "~usbRelayStatus")  # for publishing status of USB Relays
+        self._usbRelayStatusPublisher = node.create_publisher(UsbRelayStatus, "~usbRelayStatus", 1)  # for publishing status of USB Relays
 
     def _FindRelayByName(self, req):
         # This function will return the relay number for a given name based on the usbrelay.yaml loaded parameters
@@ -165,18 +163,18 @@ class UsbRelay(object):
         board_exists = False
         found_relay = False
         relay_number = 0
-        if self.relayExists and not rospy.is_shutdown():
+        if self.relayExists and not rclpy.is_shutdown():
             if self.relayExists:  # Do not do this if no relay exists.
                 # Toggle Relay
                 board_exists = True
                 for i in range(
                     1, 9
                 ):  # Walk the relays to find the one with the right name.
-                    relayEnabled = rospy.get_param("~relay" + str(i) + "enabled", False)
+                    relayEnabled = rclpy.get_param("~relay" + str(i) + "enabled", False)
                     if (
                         relayEnabled
                     ):  # Do not touch (poll or anything) Relays that are not listed as enabled.
-                        relayLabel = rospy.get_param(
+                        relayLabel = rclpy.get_param(
                             "~relay" + str(i) + "label", "No Label"
                         )
                         if relayLabel == req.relay:
@@ -194,11 +192,11 @@ class UsbRelay(object):
             for i in range(
                 1, 9
             ):  # Walk the relays to find the one with the right name.
-                relayEnabled = rospy.get_param("~relay" + str(i) + "enabled", False)
+                relayEnabled = rclpy.get_param("~relay" + str(i) + "enabled", False)
                 if (
                     relayEnabled
                 ):  # Do not touch (poll or anything) Relays that are not listed as enabled.
-                    relayLabel = rospy.get_param(
+                    relayLabel = rclpy.get_param(
                         "~relay" + str(i) + "label", "No Label"
                     )
                     if relayLabel == req.relay:
@@ -206,10 +204,10 @@ class UsbRelay(object):
                         while (
                             self._Busy
                         ):  # Prevent simultaneous polling of serial port by multiple processes within this app due to ROS threading.
-                            rospy.loginfo("BitBangDevice Busy . . .")
-                            rospy.sleep(0.5)
+                            rclpy.loginfo("BitBangDevice Busy . . .")
+                            rclpy.sleep(0.5)
                         self._Busy = True
-                        rospy.loginfo(
+                        rclpy.loginfo(
                             "Changing relay "
                             + str(self.relaySerialNumber)
                             + " to "
@@ -238,7 +236,7 @@ class UsbRelay(object):
 
     def Run(self):
         # Get and broadcast status of all USB Relays.
-        while not rospy.is_shutdown():
+        while not rclpy.is_shutdown():
             relayStatus = UsbRelayStatus()
             relayStatus.relay_on = [False] * 8  # Fill array for use.
             if self.relayExists:  # Only poll if the relay exists.
@@ -246,9 +244,9 @@ class UsbRelay(object):
                 # Gather USB Relay status for each relay and publish
                 for i in range(1, 9):
                     if (
-                        not rospy.is_shutdown()
+                        not rclpy.is_shutdown()
                     ):  # ROS tends to get shut down while this is looping and throw a lot of errors
-                        relayEnabled = rospy.get_param(
+                        relayEnabled = rclpy.get_param(
                             "~relay" + str(i) + "enabled", False
                         )
                         if (
@@ -257,8 +255,8 @@ class UsbRelay(object):
                             while (
                                 self._Busy
                             ):  # Prevent simultaneous polling of serial port by multiple processes within this app due to ROS threading.
-                                rospy.loginfo("BitBangDevice Busy . . .")
-                                rospy.sleep(1)
+                                rclpy.loginfo("BitBangDevice Busy . . .")
+                                rclpy.sleep(1)
                             self._Busy = True
                             state = get_relay_state(
                                 BitBangDevice(self.relaySerialNumber).port, str(i)
@@ -283,7 +281,7 @@ class UsbRelay(object):
         if (
             self.relayExists
         ):  # This causes errors if it tries to shut off the relay when it does not exist
-            rospy.loginfo("Shutting off all relays . . .")
+            rclpy.loginfo("Shutting off all relays . . .")
             # At this point ROS is shutting down, so any attempts to check parameters or log may crash.
             self._Busy = True  # We are shutting down, so make everyone else stall and plow ahead:
             for i in range(1, 9):  # Walk the relays
@@ -301,8 +299,8 @@ class UsbRelay(object):
 
 if __name__ == "__main__":
     node = UsbRelay()
-    rospy.on_shutdown(node.Stop)
+    rclpy.on_shutdown(node.Stop)
     try:
         node.Run()
-    except rospy.ROSInterruptException:
+    except rclpy.ROSInterruptException:
         node.Stop()

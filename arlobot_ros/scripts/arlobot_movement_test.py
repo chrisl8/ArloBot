@@ -66,7 +66,7 @@ class ArlobotExplore(object):
         # rospy.set_param('~ACpower', self.acPower) # Publish initial state
 
         # self.safeToGo = False # Set false as default until we check things
-        # self._safetyStatusPublisher = node.create_publisher(Bool, queue_size=1, '~safeToGo') # for publishing status of AC adapter
+        # self._safetyStatusPublisher = node.create_publisher(Bool, '~safeToGo', 1) # for publishing status of AC adapter
 
     def _SetCurrentOdom(self, currentOdom):
         self.currentOdom = currentOdom
@@ -79,7 +79,7 @@ class ArlobotExplore(object):
         # NOTE: Do not use cancel_all_goals here as it can cancel future goals sometimes!
         # Send a series of BE STILL commands just in case to make sure robot is left stationary
         print("Stopping . . . ")
-        pub = node.create_publisher(Twist, queue_size=5, "cmd_vel_mux/input/teleop")
+        pub = node.create_publisher(Twist, "cmd_vel_mux/input/teleop", 5)
         twist = Twist()
         twist.linear.x = 0
         twist.linear.y = 0
@@ -618,8 +618,8 @@ class ArlobotExplore(object):
         # or for this one:
         # <remap from="arlobot_explore/cmd_vel" to="cmd_vel_mux/input/teleop"/>
         # or just publish to cmd_vel_mux/input/teleop
-        # pub = node.create_publisher(Twist, queue_size=5, 'cmd_vel')
-        pub = node.create_publisher(Twist, queue_size=5, "cmd_vel_mux/input/teleop")
+        # pub = node.create_publisher(Twist, 'cmd_vel', 5)
+        pub = node.create_publisher(Twist, "cmd_vel_mux/input/teleop", 5)
         twist = Twist()
         linear_speed = 0  # Rotate in place, no liner movement
         angular_speed = 1  # This can be positive or negative

@@ -27,7 +27,7 @@ def start():
     node = rclpy.create_node("laser_filter")
     scan_topic = rospy.get_param("~scan_topic", "xv11")
     global pub
-    pub = node.create_publisher(LaserScan, queue_size=10, scan_topic + "_filtered")
+    pub = node.create_publisher(LaserScan, scan_topic + "_filtered", 10)
     node.create_subscription(LaserScan, scan_topic, callback)
     rospy.spin()
 

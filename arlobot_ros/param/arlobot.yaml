@@ -8,7 +8,9 @@
 #port: /dev/ttyUSB1
 #
 # I always use 115200 for the ActivityBoard
-baudRate: 115200
+arlobot:
+  ros__parameters:
+    baudRate: 115200
 #
 # trackWidth [m], distancePerCount [m]
 # https://learn.parallax.com/activitybot/calculating-angles-rotation
@@ -17,7 +19,7 @@ baudRate: 115200
 # HB-25 numbers;
 #driveGeometry: {trackWidth: 0.403, distancePerCount: 0.00676}
 # DHB-10 numbers:
-driveGeometry: { trackWidth: 0.403, distancePerCount: 0.00338, wheelSymmetryError: 1.0 }
+    driveGeometry: { trackWidth: 0.403, distancePerCount: 0.00338, wheelSymmetryError: 1.0 }
 # Note that updates to trackWidth & distancePerCount will be sent to the robot in real time.
 # A wheelSymmetryError of 1.0 means no error. See README.md about calibration for help on setting it,
 # but in short it accounts for a difference in left/right wheel diameter.
@@ -26,7 +28,7 @@ driveGeometry: { trackWidth: 0.403, distancePerCount: 0.00338, wheelSymmetryErro
 # In which case it will be assumed they are always on, or at least that you turn them on by hand
 # This is the board I use: http://www.sainsmart.com/sainsmart-4-channel-12-v-usb-relay-board-module-controller-for-automation-robotics-1.html
 # and there are several other models that should all work. File an issue if you need me to help modify the program to include your board
-usbRelayInstalled: False
+    usbRelayInstalled: False
 #
 # The other usbRelay... settings do not matter if usbRelayInstalled is False
 # For the port numbers and other specifics about the USB Relay setup see and change arlobot_usbrelay/param/usbrelay.yaml
@@ -35,28 +37,28 @@ usbRelayInstalled: False
 #usbRelaySerialNumber: "A9026EI5"
 # You can connect the motors to any relay you want, and just put them here.
 # I use 6 and 2 based on the wiring location and that those two do not cycle when the laptop boots
-usbLeftMotorRelay: "6"
-usbRightMotorRelay: "2"
+    usbLeftMotorRelay: "6"
+    usbRightMotorRelay: "2"
 # Labels for Left and Right motors. These are set in arlobot_usbrelay/param/usbrelay.yaml
-usbLeftMotorRelayLabel: "LeftMotor"
-usbRightMotorRelayLabel: "RightMotor"
+    usbLeftMotorRelayLabel: "LeftMotor"
+    usbRightMotorRelayLabel: "RightMotor"
 # WARNING: BY DEFAULT YOUR ROBOT WILL TRY TO MOVE EVEN WHEN IT IS PLUGGED IN!!!!
 # Set monitorACconnection to True to have ROS monitor the power connection and FREEZE
 # the robot whenever the laptop is plugged into AC power
-monitorACconnection: False
+    monitorACconnection: False
 # Set ignoreProximity to have robot ignore the proximity sensors
 # and simply operate 100% under ROS control.
 # This should also work if changed on the fly.
-ignoreProximity: False
+    ignoreProximity: False
 # If you have Cliff sensors, you can use this to tell the Activity Board
 # to ignore them.
-ignoreCliffSensors: False
+    ignoreCliffSensors: False
 # Use this to tell the Activity Board to ignore JUST the IR sensors,
 # while still utilizing the PING sensors
 # NOTE this will not ignore the IR Cliff Sensors. Use ignoreCliffSensors to do that.
-ignoreIRSensors: False
+    ignoreIRSensors: False
 # Use this to tell the Activity Board to ignore JUST the Floor sensors,
 # while still utilizing the PING sensors
-ignoreFloorSensors: False
+    ignoreFloorSensors: False
 # Velocity used for unplugging
-unpluggingVelocity: -0.1
+    unpluggingVelocity: -0.1

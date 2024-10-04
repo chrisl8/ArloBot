@@ -25,11 +25,23 @@ find_package(slam_toolbox REQUIRED)
 # TODO: What do I do for this in ROS2?
 #find_package(teb_local_planner REQUIRED)
 
+# Copy launch files
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
+
+# Copy param files
+install(DIRECTORY param DESTINATION share/${PROJECT_NAME}/)
 
 # Install Python executables
 install(PROGRAMS
   scripts/propellerbot_node.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+install(PROGRAMS
+  scripts/arlobot_safety.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+install(PROGRAMS
+  scripts/arlobot_usbrelay.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
