@@ -2,11 +2,11 @@ name: React Build Test
 
 on:
   push:
-    branches: [ noetic ]
+    branches: [ jazzy ]
     paths:
       - "website/**"
   pull_request:
-    branches: [ noetic ]
+    branches: [ jazzy ]
     paths:
       - "website/**"
   workflow_dispatch:

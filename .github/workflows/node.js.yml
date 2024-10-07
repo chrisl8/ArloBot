@@ -2,11 +2,11 @@ name: Node Script Tests
 
 on:
   push:
-    branches: [ noetic ]
+    branches: [ jazzy ]
     paths:
       - "node/**"
   pull_request:
-    branches: [ noetic ]
+    branches: [ jazzy ]
     paths:
       - "node/**"
   workflow_dispatch:

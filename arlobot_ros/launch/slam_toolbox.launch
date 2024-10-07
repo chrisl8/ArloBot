@@ -1,5 +1,5 @@
 <launch>
-  <!--  Based on /opt/ros/noetic/share/slam_toolbox/online_async.launch -->
+  <!--  Based on /opt/ros/jazzy/share/slam_toolbox/online_async.launch -->
 
   <!--  async vs. sync advice: -->
   <!--  https://github.com/SteveMacenski/slam_toolbox/pull/226#issuecomment-666630778 -->

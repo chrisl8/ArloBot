@@ -2,7 +2,7 @@ name: Setup Script Test
 
 on:
   push:
-    branches: [ noetic ]
+    branches: [ jazzy ]
   workflow_dispatch:
     inputs:
       logLevel:
