@@ -35,7 +35,6 @@ class UsbRelay {
     if (
       !personalData.demoWebSite &&
       personalData.useUSBrelay &&
-      !robotModel.masterRelayBusy &&
       !robotModel.usbRelayControlBusy
     ) {
       if (webModel.debugging && webModel.logOtherMessages) {
@@ -111,7 +110,7 @@ class UsbRelay {
       const timeout = 20; // loops
       let triedSoFar = 0;
       const checkBusyOrSwitch = () => {
-        if (!robotModel.usbRelayControlBusy && !robotModel.masterRelayBusy) {
+        if (!robotModel.usbRelayControlBusy) {
           robotModel.usbRelayControlBusy = true;
           const state = onOrOff.toLowerCase();
           if (state !== 'on' && state !== 'off') {

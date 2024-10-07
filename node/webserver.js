@@ -21,7 +21,6 @@ const WayPoints = require('./WayPoints.js');
 
 const wayPointEditor = new WayPoints();
 const rosInterface = require('./rosInterface');
-const masterRelay = require('./MasterRelay');
 const updateMapList = require('./updateMapList');
 const LCD = require('./LCD');
 
@@ -310,9 +309,6 @@ async function start() {
     });
     socket.on('toggleCamera', () => {
       camera.toggle();
-    });
-    socket.on('toggleMasterRelay', () => {
-      masterRelay('toggle');
     });
     socket.on('toggleRelay', (data) => {
       robotModel.usbRelay.toggle(data);

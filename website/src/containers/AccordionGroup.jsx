@@ -90,8 +90,6 @@ class AccordionGroup extends Component {
           toggle={this.toggle}
           openGroup={this.openGroup}
           cameraOn={this.props.cameraOn}
-          useMasterPowerRelay={this.props.useMasterPowerRelay}
-          masterRelayOn={this.props.masterRelayOn}
           clouServerExists={this.props.clouServerExists}
           cloudServerConnected={this.props.cloudServerConnected}
           sendDataToRobot={this.props.sendDataToRobot}

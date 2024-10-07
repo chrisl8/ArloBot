@@ -10,7 +10,6 @@ const personalData = require('../personalData');
 const robotModel = require('../robotModel');
 const speechEngine = require('../speechEngine');
 const checkBattery = require('../checkBattery');
-const masterRelay = require('../MasterRelay');
 const getQRcodes = require('../getQRcodes');
 const saveScreenShotForWeb = require('../saveScreenShotForWeb');
 const howManySecondsSince = require('../howManySecondsSince');
@@ -54,10 +53,6 @@ async function polling() {
       saveScreenShotForWeb();
     }
   }
-  if (webModel.checkMasterRelay) {
-    webModelFunctions.update('checkMasterRelay', false);
-    masterRelay('read');
-  }
   if (webModel.checkUsbRelayBank) {
     webModelFunctions.update('checkUsbRelayBank', false);
     robotModel.usbRelay.updateAllRelayState();
@@ -81,7 +76,6 @@ async function polling() {
     // It reduces how often zbarcam is run,
     // and prevents it from getting stuck
     robotModel.gettingQrCode = true;
-    // TODO: This doesn't work with the Master & 5volt relays off!
     getQRcodes();
   }
 

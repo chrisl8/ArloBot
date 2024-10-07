@@ -28,30 +28,11 @@ wrap_up_on_fail() {
     echo "Turning off all relays"
     "${SCRIPT_DIR}/switch_relay_name.sh" all off
   fi
-  # Master Power Relay
-  if [[ $(jq '.useMasterPowerRelay' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-    echo "Turning off Arlo Power."
-    "${SCRIPT_DIR}/switch_master_relay.sh" off
-  fi
   exit 1
 }
 
 # Initially true, in case it doesn't exist, it won't block 5 volt relay from being seen as on
 MASTER_RELAY_ALREADY_ON=true
-# Turn on Arlo Power supply if "Master Relay" exists
-if [[ $(jq '.useMasterPowerRelay' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-  # Check if it is already on
-  if [[ $("${SCRIPT_DIR}/switch_master_relay.sh" read) == "on" ]]; then
-    echo "Arlo Power supply already on."
-  else
-    MASTER_RELAY_ALREADY_ON=false
-    echo "Turning on Arlo Power supply . . ."
-    "${SCRIPT_DIR}/switch_master_relay.sh" on
-    # Give Linux time to find the devices.
-    echo "Giving it 1 second to come online . . ."
-    sleep 1
-  fi
-fi
 
 # USB Relay Controller
 if [[ $(jq '.useUSBrelay' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then

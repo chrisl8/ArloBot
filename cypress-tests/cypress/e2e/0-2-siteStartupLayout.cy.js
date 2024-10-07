@@ -85,7 +85,6 @@ describe("site initial layout and page function", () => {
     cy.contains("robotName:").should("be.visible");
     cy.contains("idleTimeoutInMinutes:").should("be.visible");
     cy.contains("rosLibDelay:").should("be.visible");
-    cy.contains("useMasterPowerRelay:").should("be.visible");
     cy.contains("masterPowerRelayUniqueString:").should("be.visible");
     cy.contains("masterPowerRelayStringLocation:").should("be.visible");
     cy.contains("useLCD:").should("be.visible");

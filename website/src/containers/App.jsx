@@ -107,8 +107,6 @@ class App extends Component {
             camera0={this.state.personalData.camera0}
             cameraOn={this.state.webModel.cameraOn}
             videoSource={this.state.webModel.videoSource}
-            useMasterPowerRelay={this.state.personalData.useMasterPowerRelay}
-            masterRelayOn={this.state.webModel.masterRelayOn}
             clouServerExists={
               this.state.personalData.cloudServer
                 ? this.state.personalData.cloudServer.exists

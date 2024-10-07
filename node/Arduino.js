@@ -10,7 +10,6 @@ const robotModel = require('./robotModel');
 const webModelFunctions = require('./webModelFunctions');
 const UsbDevice = require('./UsbDevice');
 const howManySecondsSince = require('./howManySecondsSince');
-const masterRelay = require('./MasterRelay');
 const personalData = require('./personalData');
 const wait = require('./wait');
 
@@ -92,8 +91,6 @@ class Arduino {
   }
 
   static getPortName() {
-    /** @namespace personalData.masterPowerRelayStringLocation */
-    /** @namespace personalData.masterPowerRelayUniqueString */
     const arduinoDevice = new UsbDevice(
       personalData.arduinoUniqueString,
       personalData.arduinoStringLocation,
@@ -104,10 +101,6 @@ class Arduino {
   turnOnRelays() {
     return new Promise((resolve, reject) => {
       let delay = 0;
-      if (personalData.useMasterPowerRelay && !webModel.masterRelayOn) {
-        masterRelay('on');
-        delay = 3000;
-      }
       setTimeout(() => {
         let delayTwo = 0;
         if (

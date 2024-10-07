@@ -19,10 +19,6 @@
     "port": 80,
     "password": "superSecret1234"
   },
-  "_useMasterPowerRelay": "Set to true if you have a 'Master Relay' to turn off all power to the robot.",
-  "useMasterPowerRelay": false,
-  "masterPowerRelayUniqueString": "Numato_Lab_1_Channel_USB_Powered_Relay_Module",
-  "masterPowerRelayStringLocation": "ID_MODEL",
   "_useLCD": "Set to true if you have an Adafruit LCD Display on the robot.",
   "useLCD": false,
   "LCDString": "Adafruit_Industries",

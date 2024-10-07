@@ -7,8 +7,6 @@ let busy = false; // Prevent multiple instances from running at once in the same
 let port; // Store port so we don't have to look it up every time.
 
 async function getPortName() {
-  /** @namespace personalData.masterPowerRelayStringLocation */
-  /** @namespace personalData.masterPowerRelayUniqueString */
   const relayDevice = new UsbDevice(
     personalData.LCDString,
     personalData.LCDLocation,

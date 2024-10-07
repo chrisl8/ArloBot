@@ -6,7 +6,6 @@ const ipAddress = require('./ipAddress');
 
 class Camera {
   /** @namespace personalData.relays.has_fiveVolt */
-  /** @namespace personalData.useMasterPowerRelay */
   constructor(cameraName, cameraModel) {
     this.cameraName = cameraName;
     this.cameraModel = cameraModel;

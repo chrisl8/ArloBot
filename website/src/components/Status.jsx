@@ -6,27 +6,6 @@ import boolToUpDown from '../utils/boolToUpDown';
 import './Status.css';
 
 const Status = (props) => {
-  let laptopBatteryClass = 'btn btn-success';
-  if (props.laptopBatteryPercentage < 11) {
-    laptopBatteryClass = 'btn btn-danger';
-  } else if (props.laptopBatteryPercentage < 50) {
-    laptopBatteryClass = 'btn btn-warning';
-  }
-
-  let laptopFullyChargedClass = 'btn btn-light';
-  let laptopFullyChargedBadgeClass = 'badge rounded-pill bg-secondary';
-  if (props.laptopFullyCharged === true) {
-    laptopFullyChargedClass = 'btn btn-success';
-    laptopFullyChargedBadgeClass = 'badge rounded-pill bg-dark';
-  }
-
-  let pluggedInClass = 'btn btn-light';
-  let pluggedInBadgeClass = 'badge rounded-pill bg-secondary';
-  if (props.pluggedIn) {
-    pluggedInClass = 'btn btn-danger';
-    pluggedInBadgeClass = 'badge rounded-pill bg-dark';
-  }
-
   let mapClass = 'btn btn-light';
   let mapBadgeClass = 'badge rounded-pill bg-secondary';
   let mapBadgeText = 'None';
@@ -48,13 +27,6 @@ const Status = (props) => {
   if (props.cameraOn) {
     cameraClass = 'btn btn-success';
     cameraBadgeClass = 'badge rounded-pill bg-dark';
-  }
-
-  let masterRelayClass = 'btn btn-light';
-  let masterRelayBadgeClass = 'badge rounded-pill bg-secondary';
-  if (props.masterRelayOn) {
-    masterRelayClass = 'btn btn-success';
-    masterRelayBadgeClass = 'badge rounded-pill bg-dark';
   }
 
   let cloudServerClass = 'btn btn-light';
@@ -101,19 +73,6 @@ const Status = (props) => {
               Camera&nbsp;
               <span className={cameraBadgeClass}>
                 {boolToOnOff(props.cameraOn)}
-              </span>
-            </button>
-          )}
-          {props.useMasterPowerRelay && (
-            <button
-              id="masterRelayStatusButton"
-              type="button"
-              className={masterRelayClass}
-              onClick={() => props.sendDataToRobot('toggleMasterRelay')}
-            >
-              Master Relay&nbsp;
-              <span className={masterRelayBadgeClass}>
-                {boolToOnOff(props.masterRelayOn)}
               </span>
             </button>
           )}

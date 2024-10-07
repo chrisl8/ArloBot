@@ -106,9 +106,3 @@ if [[ $(jq '.useUSBrelay' "${HOME}/.arlobot/personalDataForBehavior.json") == tr
   echo "Turning off all relays"
   "${SCRIPTDIR}/switch_relay_name.sh" all off
 fi
-
-# Master Power Relay
-if [[ $(jq '.useMasterPowerRelay' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-  echo "Turning off Arlo Power."
-  "${SCRIPTDIR}/switch_master_relay.sh" off
-fi

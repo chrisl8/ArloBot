@@ -9,7 +9,6 @@ module.exports = {
   cloudServerConnected: false,
   lastUpdateTime: 0,
   videoSource: 'xscreen.png',
-  masterRelayOn: false,
   debugging: false,
   logConsoleMessages: false, // Like debugging but ONLY for LaunchScript function
   logBehaviorMessages: false,
@@ -24,7 +23,6 @@ module.exports = {
   makeMapRunning: false,
   idleTimeout: true,
   beQuiet: false,
-  checkMasterRelay: true, // Always read once on load
   checkUsbRelayBank: true, // Always read once on load
   haltRobot: false,
   semaphoreFilesRead: false,

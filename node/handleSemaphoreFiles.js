@@ -21,7 +21,6 @@ const personalDataFolder = `${process.env.HOME}/.arlobot/`;
 const statusFolder = `${personalDataFolder}status/`;
 const quietFile = `${statusFolder}bequiet`;
 const stopFile = `${statusFolder}STOP`;
-const checkMasterRelayFile = `${statusFolder}checkMasterRelay`;
 const checkUsbRelayBankFile = `${statusFolder}checkUsbRelayBank`;
 // Note this will only work if we do not KNOW what map we are on.
 const foldersExist = {
@@ -64,9 +63,6 @@ const setFileValue = async (path, action) => {
     webModelFunctions.update('haltRobot', action === 'add');
   } else if (fileName === 'bequiet') {
     webModelFunctions.update('beQuiet', action === 'add');
-  } else if (fileName === 'checkMasterRelay') {
-    webModelFunctions.update('checkMasterRelay', true);
-    deleteFile = true;
   } else if (fileName === 'checkUsbRelayBank') {
     webModelFunctions.update('checkUsbRelayBank', true);
     deleteFile = true;
@@ -125,14 +121,6 @@ const setSemaphoreFiles = async (text) => {
     fs.writeFile(stopFile, 'STOP\n', (err) => {
       if (err) {
         console.error('Error writing haltRobot file:');
-        console.error(err);
-        foldersExist[statusFolder] = false;
-      }
-    });
-  } else if (text === 'checkMasterRelayFile') {
-    fs.writeFile(checkMasterRelayFile, text, (err) => {
-      if (err) {
-        console.error(`Error writing ${text} file:`);
         console.error(err);
         foldersExist[statusFolder] = false;
       }
