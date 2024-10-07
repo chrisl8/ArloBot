@@ -34,10 +34,6 @@ fi
 SCAN_TOPIC_SOURCE=$(jq -r '.scanTopicSource' "${HOME}/.arlobot/personalDataForBehavior.json")
 export SCAN_TOPIC_SOURCE
 
-# Set Active 3D Camera in CASE it is used.
-ACTIVE_3D_CAMERA=$(jq -r '.active3dCamera' "${HOME}/.arlobot/personalDataForBehavior.json")
-export ACTIVE_3D_CAMERA
-
 if [[ $(jq '.hasRPLIDAR' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
   export HAS_RPLIDAR=true
   RPLIDAR_USB_PORT=$("${SCRIPTDIR}/find_RPLIDAR.sh")

@@ -112,7 +112,6 @@ describe("site initial layout and page function", () => {
     cy.contains("launchBrowser:").should("be.visible");
     cy.contains("useQRcodes:").should("be.visible");
     cy.contains("qrCameraName:").should("be.visible");
-    cy.contains("batteryConsideredFullAt:").should("be.visible");
     cy.contains("maxPingRangeAccepted:").should("be.visible");
     cy.contains("socketEmitterThrottle:").should("be.visible");
     cy.contains("scanTopicSource:").should("be.visible");

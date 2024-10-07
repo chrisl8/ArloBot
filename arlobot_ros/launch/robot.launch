@@ -9,9 +9,6 @@
     <include file="$(find arlobot_ros)/launch/xbox360_teleop.launch"/>
   </group>
 
-  <arg name="active3dCamera"
-       default="$(optenv ACTIVE_3D_CAMERA none)"/>  <!-- kinect, asus_xtion_pro -->
-
   <arg name="loadRPLIDAR" value="$(optenv HAS_RPLIDAR true)"/>
   <group if="$(arg loadRPLIDAR)">
     <include file="$(find arlobot_ros)/launch/rplidar.launch"/>

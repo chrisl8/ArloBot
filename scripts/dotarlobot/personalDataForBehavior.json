@@ -55,8 +55,6 @@
   "launchBrowser": true,
   "useQRcodes": false,
   "qrCameraName": "C615",
-  "_batteryConsideredFullAt": "Percentage at which laptop battery is considered full. Some never get to 100%",
-  "batteryConsideredFullAt": 95,
   "relays": {
     "_has_fiveVolt": "Set this to true if you have a relay controlling a 5 volt power converter to run required items.",
     "has_fiveVolt": false,
@@ -88,8 +86,6 @@
   },
   "maxPingRangeAccepted": 0.5,
   "socketEmitterThrottle": 500,
-  "_active3dCamera": "Only one of kinect or asus_xtion_pro can be active.",
-  "active3dCamera": "None",
   "_hasRPLIDAR": "Set to true if you have a Slamtec RPLIDAR installed on the robot.",
   "hasRPLIDAR": false,
   "_rplidarBaudrate": "115200 for A1 and A2, 256000 for A3",
