@@ -476,11 +476,11 @@ if [ "$NVM_VERSION" != "$NVM_VERSION_LATEST" ]; then
   wget -qO- "https://raw.githubusercontent.com/nvm-sh/nvm/$NVM_TAG/install.sh" | bash
 
   export NVM_SYMLINK_CURRENT=true
-  if ! (grep NVM_SYMLINK_CURRENT ~/.bashrc >/dev/null); then
+  if [[ -e ~/.bashrc ]] && ! (grep NVM_SYMLINK_CURRENT ~/.bashrc >/dev/null); then
     printf "\n${YELLOW}[Setting the NVM current environment in your .bashrc file]${NC}\n"
     sh -c "echo \"export NVM_SYMLINK_CURRENT=true\" >> ~/.bashrc"
   fi
-  if ! (grep NVM_SYMLINK_CURRENT ~/.zshrc >/dev/null); then
+  if  [[ -e ~/.zshrc ]] && ! (grep NVM_SYMLINK_CURRENT ~/.zshrc >/dev/null); then
     printf "\n${YELLOW}[Setting the NVM current environment in your .zshrc file]${NC}\n"
     sh -c "echo \"export NVM_SYMLINK_CURRENT=true\" >> ~/.zshrc"
   fi
