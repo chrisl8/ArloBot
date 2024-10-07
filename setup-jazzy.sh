@@ -490,6 +490,8 @@ if [ "$NVM_VERSION" != "$NVM_VERSION_LATEST" ]; then
 fi
 
 printf "\n${YELLOW}[Installing and Activating the Latest Node LTS version]${NC}\n"
+# shellcheck source=/home/chrisl8/.nvm/nvm.sh
+[[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
 nvm install --lts
 nvm alias default "lts/*"
 
