@@ -75,7 +75,7 @@ fi
 
 if [[ $(jq '.hasXboxController' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
   export HAS_XBOX_JOYSTICK=true
-  #  /dev/input/js0 is the default is nothing is provided.
+  #  /dev/input/js0 is the default if nothing is provided.
   if [[ $("${SCRIPTDIR}/find_xbox_controller.sh") ]]; then
     JOY_DEVICE="$("${SCRIPTDIR}/find_xbox_controller.sh")"
     export JOY_DEVICE
