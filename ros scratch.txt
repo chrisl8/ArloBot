@@ -3,7 +3,7 @@
 
 git fetch origin pull/325/head && git checkout FETCH_HEAD
 
-# If using the setup-noetic.sh to rebuild be sure to comment out the `checkout` line for slam toolbox!
+# If using the setup-jazzy.sh to rebuild be sure to comment out the `checkout` line for slam toolbox!
 
 ----
 

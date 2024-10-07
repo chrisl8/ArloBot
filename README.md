@@ -1,6 +1,6 @@
 [![Node Script Tests](https://github.com/chrisl8/ArloBot/actions/workflows/node.js.yml/badge.svg)](https://github.com/chrisl8/ArloBot/actions/workflows/node.js.yml)
 [![React Build Test](https://github.com/chrisl8/ArloBot/actions/workflows/react.js.yml/badge.svg)](https://github.com/chrisl8/ArloBot/actions/workflows/react.js.yml)
-[![Setup Script Test](https://github.com/chrisl8/ArloBot/actions/workflows/setup-jazzy.yml/badge.svg)](https://github.com/chrisl8/ArloBot/actions/workflows/setup-noetic.yml)
+[![Setup Script Test](https://github.com/chrisl8/ArloBot/actions/workflows/setup-jazzy.yml/badge.svg)](https://github.com/chrisl8/ArloBot/actions/workflows/setup-jazzy.yml)
 
 **WARNING: The Jazzy setup branch DOES NOT WORK!!!**
 I've started dabbling with converting my robot to work with ROS2 Jazzy, but this is a long road. Nothing here works yet!
