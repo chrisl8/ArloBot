@@ -324,33 +324,11 @@
       </inertial>
     </link>
 
-    <!-- XV11 Neato Laser scanner. -->
-    <!--    NOTE: This is no longer used on my robot, only on my stationary test rig. -->
-    <joint name="neato_laser_joint" type="fixed">
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 0 0"/>
-      <parent link="base_link"/>
-      <child link="neato_laser"/>
-    </joint>
-
-    <link name="neato_laser">
-      <visual>
-        <geometry>
-          <box size="0.1 0.1 0.1"/>
-        </geometry>
-      </visual>
-      <inertial>
-        <mass value="0.001"/>
-        <origin xyz="0 0 0"/>
-        <inertia ixx="0.0001" ixy="0.0" ixz="0.0"
-                 iyy="0.0001" iyz="0.0"
-                 izz="0.0001"/>
-      </inertial>
-    </link>
-
-    <!-- Scanse Sweep rotary scanner. -->
-    <!--    NOTE: This is no longer used on my robot, only on my stationary test rig. -->
+    <!-- Scanse Sweep Sensor on top of robot -->
     <joint name="scanse_sweep_joint" type="fixed">
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 0 0"/>
+      <!-- Minor adjustments based on lining up Scanse Sweep output with 3D Sensor output -->
+      <!-- So if the 3D sensor is misaligned the Scanse Sweep is off by the same amount -->
+      <origin xyz="0.15 0.0 0.269107" rpy="0 0 3.13"/>
       <parent link="base_link"/>
       <child link="scanse_sweep"/>
     </joint>
@@ -358,7 +336,7 @@
     <link name="scanse_sweep">
       <visual>
         <geometry>
-          <box size="0.1 0.1 0.1"/>
+          <box size="0.0 0.0 0.0"/>
         </geometry>
       </visual>
       <inertial>
@@ -369,6 +347,37 @@
                  izz="0.0001"/>
       </inertial>
     </link>
+
+    <!-- RPLIDAR on top of robot -->
+    <joint name="rplidar_joint" type="fixed">
+      <!-- WARNING: The 'rpy' means Roll, Pitch, Yaw, but in the static_transform_publisher the order -->
+      <!-- is Yaw, Pitch, Roll !!!  So don't forget to translate those! -->
+      <!-- The best way to tweak this is to delete this section, start the robot, and use -->
+      <!-- staticTransformExample.sh to broadcast this transform while watching in RVIZ, -->
+      <!-- and keep tweaking the numbers and killing and restarting that transform broadcaster. -->
+      <!-- NOTE: The "FRONT" of the RPLIDAR A2/3 is the point where the cord comes out. -->
+      <!-- Hence the r of 3.1 to rotate it half way around.  -->
+      <!-- The height is set even with the top plate. It shouldn't matter really. -->
+      <origin xyz="0.125 0.0 0.269107" rpy="0.0 0.0 0.0"/>
+      <parent link="base_link"/>
+      <child link="rplidar"/>
+    </joint>
+
+    <link name="rplidar">
+      <visual>
+        <geometry>
+          <box size="0.0 0.0 0.0"/>
+        </geometry>
+      </visual>
+      <inertial>
+        <mass value="0.001"/>
+        <origin xyz="0 0 0"/>
+        <inertia ixx="0.0001" ixy="0.0" ixz="0.0"
+                 iyy="0.0001" iyz="0.0"
+                 izz="0.0001"/>
+      </inertial>
+    </link>
+
   </xacro:macro>
 
   <xacro:macro name="arlobot_standoff_5in" params="parent number x_loc y_loc z_loc">
@@ -441,12 +450,54 @@
     </link>
 
     <xacro:arlobot_standoff_5in parent="${parent}" number="0" x_loc="0.0676402" y_loc="0.1314196"
-                                z_loc="0.06825"/>
+                          z_loc="0.06825"/>
     <xacro:arlobot_standoff_5in parent="${parent}" number="1" x_loc="0.0676402" y_loc="-0.1314196"
-                                z_loc="0.06825"/>
+                          z_loc="0.06825"/>
     <xacro:arlobot_standoff_5in parent="${parent}" number="2" x_loc="-0.052832" y_loc="-0.1314196"
-                                z_loc="0.06825"/>
+                          z_loc="0.06825"/>
     <xacro:arlobot_standoff_5in parent="${parent}" number="3" x_loc="-0.052832" y_loc="0.1314196"
-                                z_loc="0.06825"/>
+                          z_loc="0.06825"/>
+
+    <joint name="plate_1_joint" type="fixed">
+      <origin xyz="0 0 0.1365" rpy="0 0 0"/>
+      <parent link="plate_0_link"/>
+      <child link="plate_1_link"/>
+    </joint>
+
+    <link name="plate_1_link">
+      <inertial>
+        <mass value="0.01"/>
+        <origin xyz="0 0 0"/>
+        <inertia ixx="0.01" ixy="0.0" ixz="0.0"
+                 iyy="0.01" iyz="0.0"
+                 izz="0.01"/>
+      </inertial>
+
+      <visual>
+        <origin xyz=" 0 0 0 " rpy="0 0 0"/>
+        <geometry>
+          <cylinder length="0.0095" radius="0.2245"/>
+        </geometry>
+        <material name="veryDarkGrey">
+          <color rgba=".2 .2 .2 1"/>
+        </material>
+      </visual>
+
+      <collision>
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+        <geometry>
+          <cylinder length="0.0095" radius="0.2245"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <xacro:arlobot_standoff_5in parent="plate_0_link" number="4" x_loc="0.0676402" y_loc="0.1314196"
+                          z_loc="0.06825"/>
+    <xacro:arlobot_standoff_5in parent="plate_0_link" number="5" x_loc="0.0676402" y_loc="-0.1314196"
+                          z_loc="0.06825"/>
+    <xacro:arlobot_standoff_5in parent="plate_0_link" number="6" x_loc="-0.052832" y_loc="-0.1314196"
+                          z_loc="0.06825"/>
+    <xacro:arlobot_standoff_5in parent="plate_0_link" number="7" x_loc="-0.052832" y_loc="0.1314196"
+                          z_loc="0.06825"/>
   </xacro:macro>
 </robot>

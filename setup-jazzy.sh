@@ -391,6 +391,9 @@ cd ~/dev_ws
 printf "\n${YELLOW}[Installing dependencies for ROS build-from-source packages.]${NC}\n"
 rosdep install -q -y -r --from-paths src --ignore-src --rosdistro ${INSTALLING_ROS_DISTRO}
 
+printf "\n${YELLOW}[Generating xacro URDF file.]${NC}\n"
+/opt/ros/jazzy/bin/xacro ~/dev_ws/src/ArloBot/arlobot_ros/urdf/common.urdf.xacro > ~/dev_ws/src/ArloBot/arlobot_ros/arlobot.urdf
+
 printf "\n${YELLOW}[(Re)Building ROS Source files.]${NC}\n"
 colcon build
 # shellcheck source=/home/chrisl8/dev_ws/install/setup.bash

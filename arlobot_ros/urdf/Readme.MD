@@ -3,7 +3,7 @@
 ## Deploy
 
 You must use the `xacro` command to convert these files int a URDF file before running `colcon build`
-`xacro common_chrisl8.urdf.xacrl > ../arlobot.urdf`
+`xacro common.urdf.xacro > ../arlobot.urdf`
 
 ## Notes
 
