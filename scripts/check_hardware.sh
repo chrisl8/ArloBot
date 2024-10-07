@@ -31,9 +31,6 @@ wrap_up_on_fail() {
   exit 1
 }
 
-# Initially true, in case it doesn't exist, it won't block 5 volt relay from being seen as on
-MASTER_RELAY_ALREADY_ON=true
-
 # USB Relay Controller
 if [[ $(jq '.useUSBrelay' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
   if ! "${SCRIPT_DIR}/drcontrol.py" -l | grep USB &>/dev/null; then
@@ -47,7 +44,7 @@ if [[ $(jq '.relays.has_fiveVolt' "${HOME}/.arlobot/personalDataForBehavior.json
   # Check if it is already on
   # NOTE This only matters if master relay was already on
   # Otherwise we still need the delay and checks as if it was first turning on.
-  if [[ ${MASTER_RELAY_ALREADY_ON} == "true" && "$("${SCRIPT_DIR}/switch_relay_name.sh" fiveVolt state)" == "ON" ]]; then
+  if [[ "$("${SCRIPT_DIR}/switch_relay_name.sh" fiveVolt state)" == "ON" ]]; then
     echo "Five Volt power converter already on."
   else
     echo "Turning on Five Volt power converter . . ."
