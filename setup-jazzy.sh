@@ -452,7 +452,13 @@ NVM_TAG=$(curl -s curl -s https://api.github.com/repos/nvm-sh/nvm/releases/lates
 NVM_VERSION_LATEST="${NVM_TAG//v/}"
 NVM_VERSION=None
 
-if [[ -e "${NVM_DIR}/nvm.sh" ]]; then
+if [[ -e ${HOME}/.nvm/nvm.sh ]]; then
+  export NVM_DIR="$HOME/.nvm"
+  # shellcheck source=/home/chrisl8/.nvm/nvm.sh
+  [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
+fi
+if [[ -e ${HOME}/.config/nvm/nvm.sh ]]; then
+  export NVM_DIR="$HOME/.config/nvm"
   # shellcheck source=/home/chrisl8/.nvm/nvm.sh
   [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
 fi
@@ -622,7 +628,7 @@ if ! [[ -e ${ARLO_HOME}/per_robot_settings_for_propeller_2nd_board.h ]]; then
   cp "${HOME}/dev_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/per_robot_settings_for_propeller_2nd_board.h" "${ARLO_HOME}"
 fi
 
-if [[ $(arch) -eq "aarch64" ]];then
+if [[ $(arch) = "aarch64" ]];then
   printf "\n${YELLOW}The Propeller code cannot be built on a Pi! It has to be done on an x86_64 system!${NC}\n"
   printf "${LIGHTBLUE}You will need to build this code on an x86_64 system and  load the code onto your Propeller board before this code can work on your robot!${NC}\n"
 else

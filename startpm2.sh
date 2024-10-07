@@ -1,7 +1,15 @@
 #!/usr/bin/env bash
-export NVM_DIR="${HOME}/.nvm"
-# shellcheck source=/home/chrisl8/.nvm/nvm.sh
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
+
+if [[ -e ${HOME}/.nvm/nvm.sh ]]; then
+  export NVM_DIR="$HOME/.nvm"
+  # shellcheck source=/home/chrisl8/.nvm/nvm.sh
+  [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
+fi
+if [[ -e ${HOME}/.config/nvm/nvm.sh ]]; then
+  export NVM_DIR="$HOME/.config/nvm"
+  # shellcheck source=/home/chrisl8/.nvm/nvm.sh
+  [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
+fi
 
 # USB Relay Controller
 if [[ "$(jq '.useUSBrelay' "${HOME}"/.arlobot/personalDataForBehavior.json)" == true ]]; then
@@ -35,4 +43,4 @@ fi
 sleep 15
 
 cd "${HOME}"/dev_ws/src/ArloBot/node/ || exit 1
-"${HOME}"/.nvm/current/bin/pm2 start "${HOME}"/dev_ws/src/ArloBot/node/pm2Config.json
+"${NVM_DIR}"/current/bin/pm2 start "${HOME}"/dev_ws/src/ArloBot/node/pm2Config.json
