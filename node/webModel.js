@@ -26,8 +26,6 @@ module.exports = {
   checkUsbRelayBank: true, // Always read once on load
   haltRobot: false,
   semaphoreFilesRead: false,
-  laptopFullyCharged: 'unknown',
-  laptopBatteryPercentage: '???',
   logStreamerRunning: false,
   shutdownRequested: false,
   status: 'Arlo behavior is not running.',
@@ -159,14 +157,6 @@ module.exports = {
     {
       rosName: 'right_motor_power',
       fancyName: 'Right Motor Power',
-      status: '',
-      btnClass: '',
-      alertOn: false,
-      alertBtnClass: 'btn-danger',
-    },
-    {
-      rosName: 'laptop_battery_percent',
-      fancyName: 'Laptop Battery %',
       status: '',
       btnClass: '',
       alertOn: false,

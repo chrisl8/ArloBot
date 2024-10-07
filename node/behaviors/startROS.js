@@ -123,7 +123,6 @@ async function startROS() {
           webModelFunctions.updateRosTopicItem('gyro_heading', 0.0);
           webModelFunctions.updateRosTopicItem('left_motor_power', true);
           webModelFunctions.updateRosTopicItem('right_motor_power', true);
-          webModelFunctions.updateRosTopicItem('laptopBatteryPercent', 85);
           webModelFunctions.updateRosTopicItem('robot_battery_level', 12.6);
           webModelFunctions.updateRosTopicItem('robot_battery_low', false);
         }

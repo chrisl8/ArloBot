@@ -212,28 +212,6 @@ const speechModel = {
         },
       },
     },
-    laptopFullyCharged: {
-      repeatInterval: 0,
-      spacing: 0,
-      true: {
-        thingsToSay: {
-          repeat: true,
-          charged: {
-            text: 'Computer battery fully charged!',
-            weight: 100,
-          },
-        },
-      },
-      false: {
-        thingsToSay: {
-          repeat: true,
-          unDone: {
-            text: 'Starting to get tired.',
-            weight: 100,
-          },
-        },
-      },
-    },
     mostRecentArrival: {
       repeatInterval: 0,
       spacing: 0,

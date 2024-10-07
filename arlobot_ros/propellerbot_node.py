@@ -63,7 +63,6 @@ class PropellerComm(Node):
         self._broadcast_static_odometry = False
         self._leftMotorPower = False
         self._rightMotorPower = False
-        self._laptop_battery_percent = 100
         # Store last x, y and heading for reuse when we reset
         # I took off the ~, because that was causing these to reset to default on every restart
         # even if roscore was still up.
@@ -264,10 +263,6 @@ class PropellerComm(Node):
         self._unPlugging = status.unplugging
         self._SafeToOperate = status.safe_to_operate
         self._safeToGo = status.safe_to_go
-
-        self._settings_from_ros["pluggedIn"] = status.ac_power
-
-        self._laptop_battery_percent = status.laptop_battery_percent
 
     # noinspection Duplicates
     def _propellerOdomDataHandler(self, data):

@@ -9,7 +9,6 @@ const webModelFunctions = require('../webModelFunctions');
 const personalData = require('../personalData');
 const robotModel = require('../robotModel');
 const speechEngine = require('../speechEngine');
-const checkBattery = require('../checkBattery');
 const getQRcodes = require('../getQRcodes');
 const saveScreenShotForWeb = require('../saveScreenShotForWeb');
 const howManySecondsSince = require('../howManySecondsSince');
@@ -44,9 +43,6 @@ async function polling() {
     // seconds
     // noinspection ES6MissingAwait
     publishRobotURL.updateRobotURL();
-  }
-  if (intervalCount === 0) {
-    checkBattery();
   }
   if (intervalCount === intervalTop) {
     if (!webModel.cameraOn) {
