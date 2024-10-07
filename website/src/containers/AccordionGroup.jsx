@@ -78,10 +78,6 @@ class AccordionGroup extends Component {
   render() {
     const displayScanSource =
       [
-        this.props.personalData.hasASUSXtion,
-        this.props.personalData.hasKinect,
-        this.props.personalData.hasXV11,
-        this.props.personalData.hasScanseSweep,
         this.props.personalData.hasRPLIDAR,
       ].filter((entry) => entry).length > 1;
     return (

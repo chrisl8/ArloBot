@@ -37,11 +37,6 @@ const rosParameters = {
     label: 'ignoreFloorSensors',
     path: '/arlobot/ignoreFloorSensors',
   },
-  monitorDoors: {
-    param: webModel.rosParameters.monitorDoors,
-    label: 'monitorDoors',
-    path: '/arlobot/monitorDoors',
-  },
   mapName: {
     param: webModel.rosParameters.mapName,
     label: 'mapName',

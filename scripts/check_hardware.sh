@@ -160,51 +160,11 @@ check_hardware() {
     fi
   fi
 
-  # XV-11
-  if [[ $(jq '.hasXV11' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-    echo "Checking XV11"
-    if ! "${SCRIPT_DIR}/find_XVLidar.sh" | grep ACM &>/dev/null; then
-      FAILURE_REASON="XV-11 missing!"
-      CHECK_GOOD=false
-      return 1
-    fi
-  fi
-
-  # Scanse Sweep
-  if [[ $(jq '.hasScanseSweep' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-    echo "Checking Scanse Sweep"
-    if ! "${SCRIPT_DIR}/find_ScanseSweep.sh" | grep ttyUSB &>/dev/null; then
-      FAILURE_REASON="Scanse Sweep missing!"
-      CHECK_GOOD=false
-      return 1
-    fi
-  fi
-
   # RPLIDAR
   if [[ $(jq '.hasRPLIDAR' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
     echo "Checking RPLIDAR"
     if ! "${SCRIPT_DIR}/find_RPLIDAR.sh" | grep ttyUSB &>/dev/null; then
       FAILURE_REASON="RPLIDAR missing!"
-      CHECK_GOOD=false
-      return 1
-    fi
-  fi
-
-  # ASUS xtion
-  if [[ $(jq '.hasASUSXtion' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-    echo "Checking ASUS Xtion Pro"
-    if ! /usr/bin/lsusb | grep ASUS &>/dev/null; then
-      FAILURE_REASON="ASUS Xtion missing!"
-      CHECK_GOOD=false
-      return 1
-    fi
-  fi
-
-  # Kinect
-  if [[ $(jq '.hasKinect' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-    echo "Checking Kinect"
-    if ! /usr/bin/lsusb | grep "Microsoft Corp. Xbox NUI Camera" &>/dev/null; then
-      FAILURE_REASON="Kinect missing!"
       CHECK_GOOD=false
       return 1
     fi

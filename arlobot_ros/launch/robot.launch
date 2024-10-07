@@ -12,55 +12,6 @@
   <arg name="active3dCamera"
        default="$(optenv ACTIVE_3D_CAMERA none)"/>  <!-- kinect, asus_xtion_pro -->
 
-  <!--  NOTE: ONLY the Asus OR Kinect can be brought up, NOT both at once.-->
-  <arg name="hasASUSXtion" value="$(optenv HAS_ASUS_XTION false)"/>
-  <group if="$(arg hasASUSXtion)">
-    <group if="$(eval arg('active3dCamera') =='asus_xtion_pro')">
-      <include file="$(find arlobot_ros)/launch/3dsensor.launch">
-        <arg name="ir_processing" value="false"/>
-        <arg name="depth_processing" value="false"/>
-        <arg name="depth_registered_processing" value="false"/>
-        <arg name="disparity_processing" value="false"/>
-        <arg name="disparity_registered_processing" value="false"/>
-        <arg name="scan_processing" value="true"/>
-        <arg name="3d_sensor" value="asus_xtion_pro"/>
-        <arg if="$(eval arg('scanTopicSource') =='asus_xtion_pro')" name="scan_topic" value="scan"/>
-        <arg unless="$(eval arg('scanTopicSource') =='asus_xtion_pro')" name="scan_topic"
-             value="asus_xtion_pro"/>
-      </include>
-    </group>
-  </group>
-
-  <arg name="hasKinect" value="$(optenv HAS_KINECT false)"/>
-  <group if="$(arg hasKinect)">
-    <group if="$(eval arg('active3dCamera') =='kinect')">
-      <include file="$(find arlobot_ros)/launch/3dsensor.launch">
-        <arg name="ir_processing" value="false"/>
-        <arg name="depth_processing" value="false"/>
-        <arg name="depth_registered_processing" value="false"/>
-        <arg name="disparity_processing" value="false"/>
-        <arg name="disparity_registered_processing" value="false"/>
-        <arg name="scan_processing" value="true"/>
-        <arg name="3d_sensor" value="kinect"/>
-        <arg if="$(eval arg('scanTopicSource') =='kinect')" name="scan_topic" value="scan"/>
-        <arg unless="$(eval arg('scanTopicSource') =='kinect')" name="scan_topic"
-             value="kinect"/>
-      </include>
-    </group>
-  </group>
-
-  <arg name="loadxv11" value="$(optenv HAS_XV11 false)"/>
-  <group if="$(arg loadxv11)">
-    <include file="$(find arlobot_ros)/launch/xv11.launch">
-      <arg if="$(eval arg('scanTopicSource') =='xv11')" name="scan_topic" value="scan"/>
-    </include>
-  </group>
-
-  <arg name="loadScanseSweep" value="$(optenv HAS_SCANSE_SWEEP false)"/>
-  <group if="$(arg loadScanseSweep)">
-    <include file="$(find arlobot_ros)/launch/sweep.launch"/>
-  </group>
-
   <arg name="loadRPLIDAR" value="$(optenv HAS_RPLIDAR true)"/>
   <group if="$(arg loadRPLIDAR)">
     <include file="$(find arlobot_ros)/launch/rplidar.launch"/>

@@ -21,6 +21,4 @@ source "${SCRIPTDIR}/ros_prep.sh"
 
 echo "Use kill_ros.sh to close."
 
-ARLOBOT_MODEL=$(jq '.arlobotModel' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
-export ARLOBOT_MODEL
 ros2 launch arlobot_ros minimal.launch.py

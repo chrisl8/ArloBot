@@ -38,27 +38,6 @@ export SCAN_TOPIC_SOURCE
 ACTIVE_3D_CAMERA=$(jq -r '.active3dCamera' "${HOME}/.arlobot/personalDataForBehavior.json")
 export ACTIVE_3D_CAMERA
 
-if [[ $(jq '.hasASUSXtion' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-  export HAS_ASUS_XTION=true
-fi
-
-if [[ $(jq '.hasKinect' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-  export HAS_KINECT=true
-fi
-
-if [[ $(jq '.hasXV11' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-  "${SCRIPTDIR}/XVLidar.sh" start
-  export HAS_XV11=true
-  XV11_SERIAL_PORT=$("${SCRIPTDIR}/find_XVLidar.sh")
-  export XV11_SERIAL_PORT
-fi
-
-if [[ $(jq '.hasScanseSweep' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-  export HAS_SCANSE_SWEEP=true
-  SCANSE_SWEEP_SERIAL_PORT=$("${SCRIPTDIR}/find_ScanseSweep.sh")
-  export SCANSE_SWEEP_SERIAL_PORT
-fi
-
 if [[ $(jq '.hasRPLIDAR' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
   export HAS_RPLIDAR=true
   RPLIDAR_USB_PORT=$("${SCRIPTDIR}/find_RPLIDAR.sh")
@@ -69,9 +48,6 @@ else
   # Set to positive false because RPLIDAR defaults to true in robot.launch
   export HAS_RPLIDAR=false
 fi
-
-ARLOBOT_MODEL=$(jq '.arlobotModel' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
-export ARLOBOT_MODEL
 
 if [[ ! -d ${HOME}/.arlobot/status/ ]]; then
   mkdir "${HOME}/.arlobot/status/"
@@ -93,11 +69,6 @@ ros2 param set /parameter_blackboard mapname empty
 
 ros2 param set /parameter_blackboard maxPingRangeAccepted "$(jq '.maxPingRangeAccepted' "${HOME}/.arlobot/personalDataForBehavior.json")"
 
-if [[ $(jq '.monitorDoors' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-  ros2 param set /parameter_blackboard monitorDoors "$(jq '.monitorDoors' "${HOME}/.arlobot/personalDataForBehavior.json")"
-  echo "Door sensing is on. If robot will not move, check doors."
-fi
-
 if [[ $(jq '.hasActivityBoard' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
   ros2 param set /parameter_blackboard arlobot/port "$("${SCRIPTDIR}/find_ActivityBoard.sh")"
 else
@@ -110,7 +81,8 @@ if [[ $(jq '.hasXboxController' "${HOME}/.arlobot/personalDataForBehavior.json")
   export HAS_XBOX_JOYSTICK=true
   #  /dev/input/js0 is the default is nothing is provided.
   if [[ $("${SCRIPTDIR}/find_xbox_controller.sh") ]]; then
-    export JOY_DEVICE="$("${SCRIPTDIR}/find_xbox_controller.sh")"
+    JOY_DEVICE="$("${SCRIPTDIR}/find_xbox_controller.sh")"
+    export JOY_DEVICE
   fi
 fi
 
