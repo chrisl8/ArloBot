@@ -472,7 +472,7 @@ if [ "$NVM_VERSION" != "$NVM_VERSION_LATEST" ]; then
     nvm deactivate
   fi
 
-  wget -qO- "https://raw.githubusercontent.com/nvm-sh/nvm/$NVM_TAG/install.sh" | bash
+  wget -qO- "https://raw.githubusercontent.com/nvm-sh/nvm/v$NVM_TAG/install.sh" | bash
 
   if [[ -e ~/.bashrc ]] && ! (grep NVM_SYMLINK_CURRENT ~/.bashrc >/dev/null); then
     printf "\n${YELLOW}[Setting the NVM current environment in your .bashrc file]${NC}\n"
