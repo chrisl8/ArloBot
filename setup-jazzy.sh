@@ -475,7 +475,6 @@ if [ "$NVM_VERSION" != "$NVM_VERSION_LATEST" ]; then
 
   wget -qO- "https://raw.githubusercontent.com/nvm-sh/nvm/$NVM_TAG/install.sh" | bash
 
-  export NVM_SYMLINK_CURRENT=true
   if [[ -e ~/.bashrc ]] && ! (grep NVM_SYMLINK_CURRENT ~/.bashrc >/dev/null); then
     printf "\n${YELLOW}[Setting the NVM current environment in your .bashrc file]${NC}\n"
     sh -c "echo \"export NVM_SYMLINK_CURRENT=true\" >> ~/.bashrc"
@@ -487,6 +486,7 @@ if [ "$NVM_VERSION" != "$NVM_VERSION_LATEST" ]; then
 fi
 
 printf "\n${YELLOW}[Installing and Activating the Latest Node LTS version]${NC}\n"
+export NVM_SYMLINK_CURRENT=true
 export NVM_DIR="${HOME}/.nvm"
 # shellcheck source=/home/chrisl8/.nvm/nvm.sh
 [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
