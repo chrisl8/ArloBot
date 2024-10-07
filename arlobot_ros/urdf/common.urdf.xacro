@@ -10,14 +10,14 @@
   <xacro:property name="M_PI" value="3.1415926535897931"/>
 
   <!-- This is where the 3D camera location is set. -->
-  <xacro:include filename="$(find arlobot_ros)/urdf/3d_camera_position.urdf.xacro"/>
+  <xacro:include filename="3d_camera_position.urdf.xacro"/>
 
   <!-- ArloBot -->
-  <xacro:include filename="$(find arlobot_ros)/urdf/arlo.urdf.xacro"/>
+  <xacro:include filename="arlo.urdf.xacro"/>
 
   <!-- 3D Sensor -->
   <!-- TODO: Why is this still here? Can I safely remove it? -->
-  <xacro:include filename="$(find arlobot_ros)/urdf/asus_xtion_pro.urdf.xacro"/>
+  <xacro:include filename="asus_xtion_pro.urdf.xacro"/>
 
   <xacro:arlobot/>
   <xacro:stack_circles parent="base_link"/>
