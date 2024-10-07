@@ -30,8 +30,8 @@ jobs:
         with:
           node-version: latest
           cache: 'npm'
-          cache-dependency-path: ./website/package-lock.json
-      - run: npm ci
+          cache-dependency-path: ./website/package.json
+      - run: npm update
         working-directory: website
       - run: npm run build --if-present
         working-directory: website
