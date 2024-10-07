@@ -617,25 +617,30 @@ if ! [[ -e ${ARLO_HOME}/per_robot_settings_for_propeller_2nd_board.h ]]; then
   cp "${HOME}/dev_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/per_robot_settings_for_propeller_2nd_board.h" "${ARLO_HOME}"
 fi
 
-printf "\n${YELLOW}[Test Compiling Propeller Code.]${NC}\n"
-printf "${LIGHTBLUE}You will need to load this code onto your Propeller board after the setup is done.${NC}\n"
+if [[ $(arch) -eq "aarch64" ]];then
+  printf "\n${YELLOW}The Propeller code cannot be built on a Pi! It has to be done on an x86_64 system!${NC}\n"
+  printf "${LIGHTBLUE}You will need to build this code on an x86_64 system and  load the code onto your Propeller board before this code can work on your robot!${NC}\n"
+else
+  printf "\n${YELLOW}[Test Compiling Propeller Code.]${NC}\n"
+  printf "${LIGHTBLUE}You will need to load this code onto your Propeller board after the setup is done.${NC}\n"
 
-function testMake() {
-  printf " ${LIGHTBLUE}- ${1}${NC}\n"
-  cd "${HOME}/dev_ws/src/ArloBot/PropellerCodeForArloBot/${1}"
-  rm -rf bin
-  if ! [[ -d bin ]]; then
-    mkdir bin
-  fi
-  cd bin
-  cmake -DCMAKE_MODULE_PATH=/usr/share/PropWare/CMakeModules -G "Unix Makefiles" ..
-  make
+  function testMake() {
+    printf " ${LIGHTBLUE}- ${1}${NC}\n"
+    cd "${HOME}/dev_ws/src/ArloBot/PropellerCodeForArloBot/${1}"
+    rm -rf bin
+    if ! [[ -d bin ]]; then
+      mkdir bin
+    fi
+    cd bin
+    cmake -DCMAKE_MODULE_PATH=/usr/share/PropWare/CMakeModules -G "Unix Makefiles" ..
+    make
 
-}
-testMake ROSInterfaceForArloBot
-testMake MotorResponseTesting
-testMake 2ndBoardCode
-testMake Calib
+  }
+  testMake ROSInterfaceForArloBot
+  testMake MotorResponseTesting
+  testMake 2ndBoardCode
+  testMake Calib
+fi
 cd
 
 if [[ -e ${ARLO_HOME}/arlobot.yaml ]]; then
