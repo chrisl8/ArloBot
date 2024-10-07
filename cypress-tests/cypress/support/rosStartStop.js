@@ -261,20 +261,6 @@ function checkInitialTelemetry() {
 
   // Sensors
   it("Sensors Panel should contain correct switches, all off", () => {
-    cy.get("#monitorACconnection").contains("AC").should("be.visible");
-    cy.get("#monitorACconnection")
-      .children("label")
-      .contains("Monitor")
-      .should("be.visible");
-    cy.get("#monitorACconnection")
-      .children("label")
-      .contains("Monitor")
-      .should("not.have.class", "brightly-positive-text");
-    cy.get("#monitorACconnection")
-      .children("label")
-      .contains("Ignore")
-      .should("have.class", "brightly-negative-text");
-
     // IR Sensors are Ignored by Default.
     cy.get("#ignoreIRSensors").contains("Infrared").should("be.visible");
     cy.get("#ignoreIRSensors")
@@ -344,36 +330,6 @@ function checkInitialTelemetry() {
     //   .contains("span", "true")
     //   .should("be.visible");
 
-    cy.get("#monitorACconnection").contains("AC").should("be.visible");
-    cy.get("#monitorACconnection")
-      .children("label")
-      .contains("Monitor")
-      .should("be.visible");
-    cy.get("#monitorACconnection")
-      .children("label")
-      .contains("Monitor")
-      .should("not.have.class", "brightly-positive-text");
-    cy.get("#monitorACconnection")
-      .children("label")
-      .contains("Ignore")
-      .should("have.class", "brightly-negative-text");
-
-    cy.get("#monitorACconnection").click();
-
-    cy.get("#monitorACconnection").contains("AC").should("be.visible");
-    cy.get("#monitorACconnection")
-      .children("label")
-      .contains("Monitor")
-      .should("be.visible");
-    cy.get("#monitorACconnection")
-      .children("label")
-      .contains("Monitor")
-      .should("have.class", "brightly-positive-text");
-    cy.get("#monitorACconnection")
-      .children("label")
-      .contains("Ignore")
-      .should("not.have.class", "brightly-negative-text");
-
     cy.get("#telemetry-card").contains("AC Power").should("be.visible");
     cy.get("#telemetry-card")
       .contains("AC Power")
@@ -382,22 +338,6 @@ function checkInitialTelemetry() {
     //   .contains("AC Power")
     //   .contains("span", "false")
     //   .should("be.visible");
-
-    cy.get("#monitorACconnection").click();
-
-    cy.get("#monitorACconnection").contains("AC").should("be.visible");
-    cy.get("#monitorACconnection")
-      .children("label")
-      .contains("Monitor")
-      .should("be.visible");
-    cy.get("#monitorACconnection")
-      .children("label")
-      .contains("Monitor")
-      .should("not.have.class", "brightly-positive-text");
-    cy.get("#monitorACconnection")
-      .children("label")
-      .contains("Ignore")
-      .should("have.class", "brightly-negative-text");
 
     cy.get("#telemetry-card").contains("AC Power").should("be.visible");
     cy.get("#telemetry-card")

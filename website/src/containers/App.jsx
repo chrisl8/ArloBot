@@ -129,9 +129,6 @@ class App extends Component {
             }
             neoPixelsOn={this.state.webModel.neoPixelsOn}
             ROSstart={this.state.webModel.ROSstart}
-            monitorACconnection={
-              !this.state.webModel.rosParameters.monitorACconnection
-            }
             ignoreIRSensors={this.state.webModel.rosParameters.ignoreIRSensors}
             ignoreCliffSensors={
               this.state.webModel.rosParameters.ignoreCliffSensors

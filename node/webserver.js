@@ -257,13 +257,6 @@ async function start() {
     });
 
     // ROS Parameters
-    socket.on('monitorAC', () => {
-      rosInterface.setParam('monitorACconnection', true);
-    });
-    socket.on('ignoreAC', () => {
-      rosInterface.setParam('monitorACconnection', false);
-    });
-
     socket.on('monitorIR', () => {
       rosInterface.setParam('ignoreIRSensors', false);
     });

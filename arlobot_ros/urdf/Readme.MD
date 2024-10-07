@@ -10,7 +10,7 @@ You must use the `xacro` command to convert these files int a URDF file before r
 This folder holds the files that "describe" the physical
 characteristics of the Arlobot.
 
-To view the robot model run this from a GUI (Xwindows) session:
+To view the robot model run this from a GUI session:
 roslaunch arlobot_ros model_robot.launch
 or use the script:
 ~/dev_ws/src/ArloBot/scripts/model-robot.sh

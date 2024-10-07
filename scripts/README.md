@@ -18,7 +18,7 @@ Many of these scripts are also used by the web site and the ROS nodes themselves
 - find_ActivityBoard.sh - This will tell you what USB port your Activity Board is on.
 - find_camera.sh - Given a camera "name" this will tell you what video device it is on.
 - find_QuickStart.sh - This will tell you what USB port an Parallax QuickStart board is on.
-- tf2pdf.sh - Run this in XWindows when ROS is running to bring up a transform map.
+- tf2pdf.sh - Run this in a GUI when ROS is running to bring up a transform map.
 - turn_off_motors.sh - This will turn off the motors using the USB Relay board.
 - turn_on_motors.sh - This will turn on the motors using the USB Relay board.
 - direct2PropSerialTest.sh - This is a shortcut to start directly listening to the Activity Board serial port.

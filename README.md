@@ -36,14 +36,6 @@ This package also includes:
 
 The [Arlo Robot System](https://www.parallax.com/product/28966) by Parallax has been discontinued. At this moment they are entirely out of stock, so this project's usefulness slowly grows to an end, although my personal implementation, which has always been the primary focus of this repository, lives on as I run my robot almost daily.
 
-Gmapping and AMCL have been **removed** in favor of [Slam Toolbox](https://github.com/SteveMacenski/slam_toolbox) for mapping.
- - Gmapping is no longer maintained.  
-
-DWA Local Planner has been **removed** in favor of [teb_local_planner](https://wiki.ros.org/teb_local_planner) for path planning.  
- - Teb Local Planner is much better behaved for me.
- - It is able to back up, which makes routing much better.
- - It seems to work very well with entirely default tuning.
- 
 # Build a Robot! #
 First you need to build a robot!
 
@@ -54,7 +46,7 @@ First you need to build a robot!
 
 **This code is based on the [Arlo Robotic Platform](https://www.parallax.com/product/28966) from Parallax.  Unfortunately, the [Arlo Robotic Platform](https://www.parallax.com/product/28966) has been DISCONTINUED.**
 
-You will also need a few other items (laptop and 3D sensor) which I have some details about on the [Parts List Wiki Page](https://github.com/chrisl8/ArloBot/wiki/Parts-List " Parts List")
+You will also need a few other items (Raspberry Pi and 3D sensor) which I have some details about on the [Parts List Wiki Page](https://github.com/chrisl8/ArloBot/wiki/Parts-List " Parts List")
 
 ## Building ##
 Follow the excellent [Arlo Robot Assembly Guide](https://learn.parallax.com/tutorials/robot/arlo/arlo-robot-assembly-guide "Assembly Guide") at Parallax to both assemble and test your Arlo Robot platform.  
@@ -70,15 +62,24 @@ Ask questions in the [Parallax Forums](https://forums.parallax.com/ "Parallax Fo
 Once your robot is built, you can use this package.
 
 ## Requirements ##
-Arlobot operates on ROS Noetic which requires Ubuntu *20.04 LTS*.
+## Operating System ##
+Arlobot operates on ROS Jazzy which requires Ubuntu *24.04 LTS*.
 
-If you put a fresh copy of Ubuntu 18.04 LTS on your robot's laptop then you can use the installation script below.
+This repository is built around running on a Raspberry Pi 4 with Ubuntu Server 24.04 LTS, which is also what [ROS2 requires](https://docs.ros.org/en/jazzy/How-To-Guides/Installing-on-Raspberry-Pi.html).
+
+If you put a fresh copy of Ubuntu Server 24.04 LTS on your robot's Raspberry Pi then you can use the installation script below.
+
+You can use Desktop instead of Server if you want, but Server will save memory by not running a desktop environment. This is your choice of course, but I'm using Server.
+
+I suggest using the [Raspberry Pi Imager](https://www.raspberrypi.com/software/) to write the Ubuntu image to your SD card. 
+
+I suggest setting a hostname, a user and password and your WiFi. The setup script and instructions should work with whatever non-root user you set up. My username is `chrisl8` so anytime you see that you can substitute your own.
 
 ## Install
 There is a script to install everything. Run:
 
 ```
-bash <(wget -qO- --no-cache -o /dev/null https://raw.githubusercontent.com/chrisl8/ArloBot/noetic/setup-noetic.sh)
+bash <(wget -qO- --no-cache -o /dev/null https://raw.githubusercontent.com/chrisl8/ArloBot/noetic/setup-jazzy.sh)
 ```
 
 Be sure to read the instructions that the script will print at the end about editing the config files in `~/.arlobot/`
@@ -124,23 +125,12 @@ and point your web browser at the URL it gives you.
 
 If you use Ubuntu there should also be a desktop icon on the robot's desktop which you can run to do the same thing and bring up this web page on the robot itself.
 
-## Workstation via [x11docker](https://github.com/mviereck/x11docker)
-If you want to run RVIZ or other ROS tools from a remote Linux workstation, you do not have to install ROS on it. Instead, try using [x11docker](https://github.com/mviereck/x11docker) via this setup script:
-
-```
-bash <(wget -qO- --no-cache -o /dev/null https://raw.githubusercontent.com/chrisl8/ArloBot/noetic/workstation-via-x11docker.sh)
-```  
-Then use these commands to run various remote functions via Docker:  
-`docker-view-navigation.sh`  
-`docker-ros-view-robot.sh`  
-`docker-ros-xterm.sh`  
-`docker-view-all-sources.sh`  
-
-The above works for me on Ubuntu 19.10.
-
 ## RViz on Windows
 
-Another option is to do a minimal instal of RViz on your windows host if that is your primary OS, just for watching and controlling navigation:  
+You can install ROS 2 with RViz on your windows host if that is your primary OS, just for watching and controlling navigation.
+
+TODO: Test this and update the instructions in the wiki below:
+https://docs.ros.org/en/jazzy/Installation/Windows-Install-Binary.html
 
 [Running Rviz on Windows](https://github.com/chrisl8/ArloBot/wiki/Running-Rviz-on-Windows)
 
@@ -157,12 +147,6 @@ Complete setup and usage instructions are at my blog:
 and then read the Readme.txt file there!
 
 ## WARNING: BY DEFAULT YOUR ROBOT WILL TRY TO MOVE EVEN WHEN IT IS PLUGGED IN!!!!
-Edit `~/.arlobot/arlobot.yaml`  
-Set `monitorACconnection: True` to have ROS monitor the power connection and FREEZE  
-the robot whenever the laptop is plugged into AC power  
-
-If you want to disable AC connection monitoring in real time, while ROS is running, run:  
-`rosparam set /arlobot/monitorACconnection False`
 
 ## NOTE: Robot may be stuck or moving in response to sensors
 The Infrared, PING, and "plugged in" state of the robot can prevent it from moving or cause it to move by itself.  
@@ -259,8 +243,6 @@ Start everything:
 `start-robot.sh`
 ### Basic TeleOp ###
 `keyboard-teleop.sh`
-### Automatically unplug itself ###
-`unPlug.sh`
 ### Remote Control with an xBox 360 Joystick ###
 This is built into the `start-robot.sh` script.
 ### Slam Toolbox (SLAM Map building) ###
@@ -308,34 +290,6 @@ Look in the scripts folder for a set of handy scripts for starting up and shutti
 
 ## Tuning
 See the [RobotTuningNotes](RobotTuningNotes.md) for guidance on tuning robot parameters.
-
-## Freenect warnings
-
-These warnings are normal if you are using a Kinect. You can ignore them.
-```
-[ WARN] [1564761452.151374277]: Could not find any compatible depth output mode for 1. Falling back to default depth output mode 1.
-[ WARN] [1564761452.222812571]: Camera calibration file /home/chrisl8/.ros/camera_info/rgb_B00$64729659136B.yaml not found.
-[ WARN] [1564761452.230197119]: Using default parameters for RGB camera calibration.   [ WARN] [1564761452.230247519]: Camera calibration file /home/chrisl8/.ros/camera_info/depth_B00364729659136B.yaml not found.
-[ WARN] [1564761452.230264691]: Using default parameters for IR camera calibration.
-```
-
-### Testing Kinect
-```
-roslaunch freenect_launch freenect.launch
-```
-```
-rosrun rqt_image_view rqt_image_view
-```
-Pick */camera/depth/image_rect*
-
-### Testing ASUS Xtion
-```
-roslaunch openni2_launch openni2.launch
-```
-```
-rosrun rqt_image_view rqt_image_view
-```
-Pick */camera/depth/image_rect*
 
 ## HB-25 Motor Controller Support Gone! ##
 Parallax has updated the Arlo platform to use their new DHB-10 Dual H-Bridge controller.  

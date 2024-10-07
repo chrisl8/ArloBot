@@ -42,10 +42,6 @@ arlobot:
 # Labels for Left and Right motors. These are set in arlobot_usbrelay/param/usbrelay.yaml
     usbLeftMotorRelayLabel: "LeftMotor"
     usbRightMotorRelayLabel: "RightMotor"
-# WARNING: BY DEFAULT YOUR ROBOT WILL TRY TO MOVE EVEN WHEN IT IS PLUGGED IN!!!!
-# Set monitorACconnection to True to have ROS monitor the power connection and FREEZE
-# the robot whenever the laptop is plugged into AC power
-    monitorACconnection: False
 # Set ignoreProximity to have robot ignore the proximity sensors
 # and simply operate 100% under ROS control.
 # This should also work if changed on the fly.

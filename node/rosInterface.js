@@ -37,11 +37,6 @@ const rosParameters = {
     label: 'ignoreFloorSensors',
     path: '/arlobot/ignoreFloorSensors',
   },
-  monitorACconnection: {
-    param: webModel.rosParameters.monitorACconnection,
-    label: 'monitorACconnection',
-    path: '/arlobot/monitorACconnection',
-  },
   monitorDoors: {
     param: webModel.rosParameters.monitorDoors,
     label: 'monitorDoors',

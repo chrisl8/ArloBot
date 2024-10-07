@@ -183,21 +183,6 @@ class RemoteControl extends Component {
                 ROS Stopped
               </button>
             )}
-            {Boolean(
-              (!this.props.monitorACconnection && this.props.pluggedIn) ||
-                this.props.pluggedIn === true,
-            ) && (
-              <button
-                type="button"
-                className="btn btn-danger"
-                onClick={() => this.props.openGroup('startupShutdown')}
-              >
-                Plugged In&nbsp;
-                <span className="badge rounded-pill bg-dark">
-                  {boolToYesNo(this.props.pluggedIn)}
-                </span>
-              </button>
-            )}
             {this.state.joystickOutput}
             <span id="virtual-joystick-result" />
             <div

@@ -224,115 +224,6 @@ fi
 
 # Collect and save responses about what to install or not
 
-SETUP_RESPONSE_FILE=${ARLO_HOME}/setupResponses.json
-
-if ! (command -v jq >/dev/null); then
-  # jq - allows shell scripts to read .json formatted config files.
-  # jq is used to read and write JSON configuration files in shell scripts
-  # for the installer script, and for many Arlobot functions.
-  sudo apt install -y jq
-fi
-
-function saveResponseData() {
-  jq --arg p "${1}" ".${2} = \$p" <"${SETUP_RESPONSE_FILE}" >"${ARLO_HOME}/setupResponses.temp"
-  mv "${ARLO_HOME}/setupResponses.temp" "${SETUP_RESPONSE_FILE}"
-}
-
-# Set up file to save responses, so that we do not have to ask on every run.
-if ! [[ -e ${SETUP_RESPONSE_FILE} ]]; then
-  echo "{}" >"${SETUP_RESPONSE_FILE}"
-  printf "\n${YELLOW}You will be asked about whether or not to install several things now.${NC}\n"
-  printf "${LIGHTBLUE}Your answers depend on what hardware you have.${NC}\n"
-  printf "${LIGHTBLUE}It will not hurt to install things you do not need.${NC}\n\n"
-  printf "${LIGHTBLUE}Your responses will be saved and used on future runs of this script.${NC}\n\n"
-  printf "${LIGHTBLUE}If you want to erase your answers and answer again run:${NC}\n"
-  printf "${LIGHTBLUE}rm ${SETUP_RESPONSE_FILE}${NC}\n"
-  printf "${LIGHTBLUE}before running this script.${NC}\n\n"
-  if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
-    read -n 1 -s -r -p "Press any key to continue"
-  fi
-fi
-
-# Ask questions
-WORKSTATION_INSTALL=$(jq -r '.responseToWorkstationQuery' "${SETUP_RESPONSE_FILE}")
-if [[ ${WORKSTATION_INSTALL} == 'null' ]]; then
-  printf "\n${YELLOW}Do you want this to be a WORKSTATION ONLY install?${NC}\n"
-  printf "${LIGHTBLUE}A 'workstation' is a system that is NOT your robot,${NC}\n"
-  printf "${LIGHTBLUE}but that you want to develop on and/or run ROS tools remotely${NC}\n\n"
-  printf "${LIGHTBLUE}to operate and debug your robot.${NC}\n\n"
-  printf "${LIGHTBLUE}This includes things like running RVIZ to view/control navigation and map making.${NC}\n\n"
-  if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
-    read -n 1 -s -r -p "Press 'y' to set as Workstation ONLY install " WORKSTATION_INSTALL
-  fi
-  printf "\n"
-fi
-saveResponseData "${WORKSTATION_INSTALL}" 'responseToWorkstationQuery'
-
-if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
-
-  RESPONSE_TO_SWEEP_QUERY=$(jq -r '.responseToSweepQuery' "${SETUP_RESPONSE_FILE}")
-  if [[ ${RESPONSE_TO_SWEEP_QUERY} == 'null' ]]; then
-    printf "\n${YELLOW}Do you want to install code for Scanse Sweep?${NC}\n"
-    printf "${LIGHTBLUE}The Scanse Sweep is a rotating laser scanner.${NC}\n"
-    printf "${LIGHTBLUE}It is no longer available.${NC}\n\n"
-    printf "${LIGHTBLUE}https://scanse.io/home/${NC}\n\n"
-    if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
-      read -n 1 -s -r -p "Press 'y' to install Scanse Sweep code " RESPONSE_TO_SWEEP_QUERY
-    fi
-    printf "\n"
-  fi
-  saveResponseData "${RESPONSE_TO_SWEEP_QUERY}" 'responseToSweepQuery'
-
-  RESPONSE_TO_XV11_QUERY=$(jq -r '.responseToXv11Query' "${SETUP_RESPONSE_FILE}")
-  if [[ ${RESPONSE_TO_XV11_QUERY} == 'null' ]]; then
-    printf "\n${YELLOW}Do you want to install code for Neato XV11?${NC}\n"
-    printf "${LIGHTBLUE}The XV11 was a rotating laser scanner pulled from old vacuum cleaners.${NC}\n"
-    printf "${LIGHTBLUE}If you have one you will need this code.${NC}\n\n"
-    if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
-      read -n 1 -s -r -p "Press 'y' to install Neato XV11 code " RESPONSE_TO_XV11_QUERY
-    fi
-    printf "\n"
-  fi
-  saveResponseData "${RESPONSE_TO_XV11_QUERY}" 'responseToXv11Query'
-
-  RESPONSE_TO_RPLIDAR_QUERY=$(jq -r '.responseToRplidarQuery' "${SETUP_RESPONSE_FILE}")
-  if [[ ${RESPONSE_TO_RPLIDAR_QUERY} == 'null' ]]; then
-    printf "\n${YELLOW}Do you want to install code for Slamtec RPLIDAR?${NC}\n"
-    printf "${LIGHTBLUE}The RPLIDAR is a series of commercially available, low cost rotating laser scanners.${NC}\n"
-    printf "${LIGHTBLUE}This should work for the A1, A2, and A3 models.${NC}\n"
-    printf "${LIGHTBLUE}https://www.slamtec.com/en${NC}\n\n"
-    if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
-      read -n 1 -s -r -p "Press 'y' to install Slamtec RPLIDAR code " RESPONSE_TO_RPLIDAR_QUERY
-    fi
-    printf "\n"
-  fi
-  saveResponseData "${RESPONSE_TO_RPLIDAR_QUERY}" 'responseToRplidarQuery'
-
-  RESPONSE_TO_KINECT_QUERY=$(jq -r '.responseToKinectQuery' "${SETUP_RESPONSE_FILE}")
-  if [[ ${RESPONSE_TO_KINECT_QUERY} == 'null' ]]; then
-    printf "\n${YELLOW}Do you want to install code for Xbox 360 Kinect?${NC}\n"
-    printf "${LIGHTBLUE}If you are using an Xbox 360 Kinect, extra code must be installed.${NC}\n"
-    if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
-      read -n 1 -s -r -p "Press 'y' to install Xbox 360 Kinect code " RESPONSE_TO_KINECT_QUERY
-    fi
-    printf "\n"
-  fi
-  saveResponseData "${RESPONSE_TO_KINECT_QUERY}" 'responseToKinectQuery'
-
-  RESPONSE_TO_ASUS_XTION_QUERY=$(jq -r '.responseToAsusXtionQuery' "${SETUP_RESPONSE_FILE}")
-  if [[ ${RESPONSE_TO_ASUS_XTION_QUERY} == 'null' ]]; then
-    printf "\n${YELLOW}Do you want to install code for ASUS Xtion?${NC}\n"
-    printf "${LIGHTBLUE}If you are using an ASUS Xtion, extra code must be installed.${NC}\n"
-    if ! [[ ${TRAVIS} == "true" ]]; then # Never ask questions in Travis test environment
-      read -n 1 -s -r -p "Press 'y' to install ASUS Xtion code " RESPONSE_TO_ASUS_XTION_QUERY
-    fi
-    printf "\n"
-  fi
-  saveResponseData "${RESPONSE_TO_ASUS_XTION_QUERY}" 'responseToAsusXtionQuery'
-fi
-
-# End response collection section
-
 printf "\n${YELLOW}[Installing additional Ubuntu and ROS Packages for Arlo]${NC}\n"
 printf "${LIGHTBLUE}This runs every time, in case new packages were added.${NC}\n"
 
@@ -346,6 +237,10 @@ printf "${LIGHTBLUE}This runs every time, in case new packages were added.${NC}\
 # TODO: Test if rosdep installs them itself.
 PACKAGE_TO_INSTALL_LIST=()
 # ### Required Packages and Why ###
+PACKAGE_TO_INSTALL_LIST+=(jq)
+# jq - allows shell scripts to read .json formatted config files.
+# jq is used to read and write JSON configuration files in shell scripts
+# for the installer script, and for many Arlobot functions.
 PACKAGE_TO_INSTALL_LIST+=(python3-argcomplete)
 # python3-argcomplete - The Jazzy Install page recommends installing this.
 PACKAGE_TO_INSTALL_LIST+=(git)
@@ -373,67 +268,48 @@ PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-cv-bridge")
 PACKAGE_TO_INSTALL_LIST+=("xvfb")
 # xvfb is required for Cypress testing to work.
 
-if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
-  # TODO: Some of these should probably be in package.xml, but that would require another round of testing.
-  PACKAGE_TO_INSTALL_LIST+=(cron)
-  # cron - required for running scheduled tasks
-  PACKAGE_TO_INSTALL_LIST+=(speech-dispatcher)
-  # speech-dispatcher contains spd-say which is used by some scripts to speak
-  PACKAGE_TO_INSTALL_LIST+=(moreutils)
-  # moreutils - sponge is used by some of my scripts
-  PACKAGE_TO_INSTALL_LIST+=(python3-pip)
-  # python3-pip - Required to install Python tools for things such as
-  #      USB Relay reader.
-  if ! [[ ${TRAVIS} == "true" ]]; then # Upgrading openssh in Travis often fails due to timeouts.
-    PACKAGE_TO_INSTALL_LIST+=(openssh-server)
-  fi
-  # openssh-server - required to SSH into robot remotely
-  PACKAGE_TO_INSTALL_LIST+=(python3-serial)
-  # python3-serial - required for ROS to talk to the Propeller board
-  PACKAGE_TO_INSTALL_LIST+=(expect)
-  # expect - required to get 'unbuffer' which is required by node to spawn ROS commands and get real time stdout data
-  # http://stackoverflow.com/a/11337310
-  # http://linux.die.net/man/1/unbuffer
-  PACKAGE_TO_INSTALL_LIST+=(imagemagick)
-  # imagemagick - used to grab screen shots of desktop for web local robot website display
-  if [[ "${RESPONSE_TO_ASUS_XTION_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
-    # Always test in Travis
-    PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-openni2-launch")
-    # ros-noetic-openni2-launch - Required for ASUS Xtion to operate
-  fi
-  if [[ "$RESPONSE_TO_ASUS_XTION_QUERY" == "y" ]] || [[ "${RESPONSE_TO_KINECT_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
-    # Always test in Travis
-    PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-depthimage-to-laserscan")
-    # "ros-${INSTALLING_ROS_DISTRO}-depthimage-to-laserscan" - Required for ASUS Xtion and Kinect to operate
-  fi
-  if [[ "${RESPONSE_TO_KINECT_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
-    # Always test in Travis
-    # TODO: Uncomment if they ever release freenect_stack for Jazzy:
-    #PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-freenect-stack")
-    echo "freenect_stack will be installed from source instead."
-    # "ros-${INSTALLING_ROS_DISTRO}-freenect-stack" - Required for Kinect to operate
-  fi
-  PACKAGE_TO_INSTALL_LIST+=(fswebcam)
-  # fswebcam - Used for streaming a camera to the website. Camera streaming will not work without it.
-  PACKAGE_TO_INSTALL_LIST+=(zbar-tools)
-  # zbar-tools - Used by node service to read QR codes via on board camera
-  PACKAGE_TO_INSTALL_LIST+=(libftdi1-dev)
-  # libftdi1-dev - required by pylibftdi for talking to USB based serial boards like relay boards, etc.
-  #           https://pylibftdi.readthedocs.io/en/0.18.0/installation.html
-  #      For 8-CH USB Relay board:
-  #           Reference: https://code.google.com/p/drcontrol/wiki/Install_RaspberryPi">https://code.google.com/p/drcontrol/wiki/Install_RaspberryPi
-  #           TEST:
-  #           python -m pylibftdi.examples.list_devices
-  #           Should return:
-  #           FTDI:FT245R USB FIFO:A9026EI5
-  #           If you have a USB Relay board attached via USB.
-
-  # TODO: Confirm that Scanse Sweep needs this and add it to the "if scanse" section:
-  # ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan - used by Scanse Sweep
-
-  # NOTE: If you are looking for a ROS package and wonder if it exists, but not for Noetic, check here:
-  # http://repositories.ros.org/status_page/compare_melodic_noetic.html
+# TODO: Some of these should probably be in package.xml, but that would require another round of testing.
+PACKAGE_TO_INSTALL_LIST+=(cron)
+# cron - required for running scheduled tasks
+PACKAGE_TO_INSTALL_LIST+=(speech-dispatcher)
+# speech-dispatcher contains spd-say which is used by some scripts to speak
+PACKAGE_TO_INSTALL_LIST+=(moreutils)
+# moreutils - sponge is used by some of my scripts
+PACKAGE_TO_INSTALL_LIST+=(python3-pip)
+# python3-pip - Required to install Python tools for things such as
+#      USB Relay reader.
+if ! [[ ${TRAVIS} == "true" ]]; then # Upgrading openssh in Travis often fails due to timeouts.
+  PACKAGE_TO_INSTALL_LIST+=(openssh-server)
 fi
+# openssh-server - required to SSH into robot remotely
+PACKAGE_TO_INSTALL_LIST+=(python3-serial)
+# python3-serial - required for ROS to talk to the Propeller board
+PACKAGE_TO_INSTALL_LIST+=(expect)
+# expect - required to get 'unbuffer' which is required by node to spawn ROS commands and get real time stdout data
+# http://stackoverflow.com/a/11337310
+# http://linux.die.net/man/1/unbuffer
+PACKAGE_TO_INSTALL_LIST+=(imagemagick)
+# imagemagick - used to grab screen shots of desktop for web local robot website display
+PACKAGE_TO_INSTALL_LIST+=(fswebcam)
+# fswebcam - Used for streaming a camera to the website. Camera streaming will not work without it.
+PACKAGE_TO_INSTALL_LIST+=(zbar-tools)
+# zbar-tools - Used by node service to read QR codes via on board camera
+PACKAGE_TO_INSTALL_LIST+=(libftdi1-dev)
+# libftdi1-dev - required by pylibftdi for talking to USB based serial boards like relay boards, etc.
+#           https://pylibftdi.readthedocs.io/en/0.18.0/installation.html
+#      For 8-CH USB Relay board:
+#           Reference: https://code.google.com/p/drcontrol/wiki/Install_RaspberryPi">https://code.google.com/p/drcontrol/wiki/Install_RaspberryPi
+#           TEST:
+#           python -m pylibftdi.examples.list_devices
+#           Should return:
+#           FTDI:FT245R USB FIFO:A9026EI5
+#           If you have a USB Relay board attached via USB.
+
+# TODO: Confirm that Scanse Sweep needs this and add it to the "if scanse" section:
+# ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan - used by Scanse Sweep
+
+# NOTE: If you are looking for a ROS package and wonder if it exists, but not for Noetic, check here:
+# http://repositories.ros.org/status_page/compare_melodic_noetic.html
 
 sudo apt install -y "${PACKAGE_TO_INSTALL_LIST[@]}"
 
@@ -459,80 +335,15 @@ else
   git pull
 fi
 
-if [[ "${RESPONSE_TO_XV11_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then # Always test in Travis
-  printf "\n${LIGHTBLUE}Neato XV11 repository${NC}\n"
-  # Only needed if you have an XV-11 "Neato" Scanner
-  cd ~/dev_ws/src
-  if ! [[ -d ~/dev_ws/src/xv_11_laser_driver ]]; then
-    git clone -b noetic-devel https://github.com/chrisl8/xv_11_laser_driver.git
-  else
-    cd ~/dev_ws/src/xv_11_laser_driver
-    git pull
-  fi
-fi
-
-if [[ "${RESPONSE_TO_SWEEP_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
-  # Always test in Travis
-  printf "\n${LIGHTBLUE}Scanse Sweep repository${NC}\n"
-  # Only needed if you have a Scanse Sweep
-  if ! [[ -f /usr/local/lib/cmake/sweep/SweepConfig.cmake ]]; then
-    cd
-    git clone https://github.com/scanse/sweep-sdk.git
-    cd "${HOME}/sweep-sdk/libsweep"
-    mkdir build
-    cd build
-    cmake .. -DCMAKE_BUILD_TYPE=Release
-    cmake --build .
-    sudo cmake --build . --target install
-    sudo ldconfig
-  fi
-  cd ~/dev_ws/src
-  if ! [[ -d ~/dev_ws/src/sweep-ros ]]; then
-    # Using my repository to fix compile issues.
-    git clone https://github.com/chrisl8/sweep-ros.git
-  else
-    cd ~/dev_ws/src/sweep-ros
-    git pull
-  fi
-fi
-
-# TODO: Remove if they ever release freenect_stack for Noetic
-if [[ "${RESPONSE_TO_KINECT_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
-  # Always test in Travis
-  printf "\n${LIGHTBLUE}OpenKinect for Kinect${NC}\n"
-  # If you have a Kinect. Noetic seems to be missing the package
-  # https://github.com/ros-drivers/freenect_stack/issues/48#issuecomment-514020969
-  if ! [[ -f /usr/local/lib/fakenect/libfakenect.so ]]; then
-    cd
-    git clone https://github.com/OpenKinect/libfreenect.git
-    cd libfreenect
-    mkdir build
-    cd build
-    cmake -L ..
-    make
-    sudo make install
-  fi
-  cd ~/dev_ws/src
-  if ! [[ -d ~/dev_ws/src/freenect_stack ]]; then
-    git clone https://github.com/ros-drivers/freenect_stack.git
-  else
-    cd ~/dev_ws/src/freenect_stack
-    git pull
-  fi
-fi
-
-if [[ "${RESPONSE_TO_RPLIDAR_QUERY}" == "y" ]] || [[ ${TRAVIS} == "true" ]]; then
-  # Always test in Travis
-  printf "\n${LIGHTBLUE}Slamtec RPLIDAR${NC}\n"
-  cd ~/dev_ws/src
-  if ! [[ -d ~/dev_ws/src/rplidar_ros ]]; then
-    git clone -b dev-ros2 https://github.com/Slamtec/rplidar_ros.git
-  else
-    cd ~/dev_ws/src/rplidar_ros
-    git fetch
-    git checkout dev-ros2
-    git pull
-  fi
+printf "\n${LIGHTBLUE}Slamtec RPLIDAR${NC}\n"
+cd ~/dev_ws/src
+if ! [[ -d ~/dev_ws/src/rplidar_ros ]]; then
+  git clone -b dev-ros2 https://github.com/Slamtec/rplidar_ros.git
+else
+  cd ~/dev_ws/src/rplidar_ros
+  git fetch
+  git checkout dev-ros2
+  git pull
 fi
 
 # TODO: How do we replace this in Jazzy?
@@ -586,14 +397,6 @@ colcon build
 source ~/dev_ws/install/setup.bash
 
 if [[ -f ~/.bashrc ]]; then
-  if [[ ${WORKSTATION_INSTALL} == "y" ]]; then
-    if ! (grep ROS_MASTER_URI ~/.bashrc >/dev/null); then
-      if ! [[ ${ROBOT_IP_ADDRESS} ]]; then
-        read -rp "What is the host name or IP of your robot? " ROBOT_IP_ADDRESS
-      fi
-      sh -c "echo \"export ROS_MASTER_URI=http://${ROBOT_IP_ADDRESS}:11311\" >> ~/.bashrc"
-    fi
-  fi
   if ! (grep ROS_HOSTNAME ~/.bashrc >/dev/null); then
     printf "\n${YELLOW}[Setting the ROS_HOSTNAME in your .bashrc file]${NC}\n"
     sh -c "echo \"export ROS_HOSTNAME=$(uname -n).local\" >> ~/.bashrc"
@@ -613,14 +416,6 @@ if [[ -f ~/.bashrc ]]; then
 fi
 
 if [[ -f ~/.zshrc ]]; then
-  if [[ ${WORKSTATION_INSTALL} == "y" ]]; then
-    if ! (grep ROS_MASTER_URI ~/.bashrc >/dev/null); then
-      if ! [[ ${ROBOT_IP_ADDRESS} ]]; then
-        read -rp "What is the host name or IP of your robot? " ROBOT_IP_ADDRESS
-      fi
-      sh -c "echo \"export ROS_MASTER_URI=http://${ROBOT_IP_ADDRESS}:11311\" >> ~/.zshrc"
-    fi
-  fi
   if ! (grep ROS_HOSTNAME ~/.zshrc >/dev/null); then
     printf "\n${YELLOW}[Setting the ROS_HOSTNAME in your .zshrc file]${NC}\n"
     sh -c "echo \"export ROS_HOSTNAME=$(uname -n).local\" >> ~/.zshrc"
@@ -639,78 +434,76 @@ if [[ -f ~/.zshrc ]]; then
   fi
 fi
 
-if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
-  # For 8-CH USB Relay board:
-  pip3 install pylibftdi --break-system-packages
-  # Required by pylibftdi
-  # https://pylibftdi.readthedocs.io/en/0.15.0/installation.html
-  if ! [[ -f /etc/udev/rules.d/99-libftdi.rules ]]; then
-    printf "\n${YELLOW}[Adding required sudo rule for pylibftdi to access USB based serial ports.]${NC}\n"
-    sudo "${HOME}/dev_ws/src/ArloBot/scripts/addRuleForUSBRelayBoard.sh"
-    printf "${RED}You may have to reboot before the USB Relay board will function!${NC}\n"
-  fi
+# For 8-CH USB Relay board:
+pip3 install pylibftdi --break-system-packages
+# Required by pylibftdi
+# https://pylibftdi.readthedocs.io/en/0.15.0/installation.html
+if ! [[ -f /etc/udev/rules.d/99-libftdi.rules ]]; then
+  printf "\n${YELLOW}[Adding required sudo rule for pylibftdi to access USB based serial ports.]${NC}\n"
+  sudo "${HOME}/dev_ws/src/ArloBot/scripts/addRuleForUSBRelayBoard.sh"
+  printf "${RED}You may have to reboot before the USB Relay board will function!${NC}\n"
+fi
 
-  export NVM_DIR="${HOME}/.nvm"
-  export NVM_SYMLINK_CURRENT=true
-  NVM_TAG=$(curl -s curl -s https://api.github.com/repos/nvm-sh/nvm/releases/latest | grep tag_name | cut -d '"' -f 4 | cut -d 'v' -f 2)
-  NVM_VERSION_LATEST="${NVM_TAG//v/}"
-  NVM_VERSION=None
+export NVM_DIR="${HOME}/.nvm"
+export NVM_SYMLINK_CURRENT=true
+NVM_TAG=$(curl -s curl -s https://api.github.com/repos/nvm-sh/nvm/releases/latest | grep tag_name | cut -d '"' -f 4 | cut -d 'v' -f 2)
+NVM_VERSION_LATEST="${NVM_TAG//v/}"
+NVM_VERSION=None
 
-  if [[ -e "${NVM_DIR}/nvm.sh" ]]; then
-    # shellcheck source=/home/chrisl8/.nvm/nvm.sh
-    [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
-  fi
+if [[ -e "${NVM_DIR}/nvm.sh" ]]; then
+  # shellcheck source=/home/chrisl8/.nvm/nvm.sh
+  [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
+fi
 
-  if (command -v nvm); then
-    NVM_VERSION=$(nvm --version)
-  fi
+if (command -v nvm); then
+  NVM_VERSION=$(nvm --version)
+fi
 
-  if [ "$NVM_VERSION" != "$NVM_VERSION_LATEST" ]; then
-    printf "\n${BRIGHT_MAGENTA}Updating NVM from ${NVM_VERSION} to ${NVM_VERSION_LATEST}${NC}\n"
+if [ "$NVM_VERSION" != "$NVM_VERSION_LATEST" ]; then
+  printf "\n${BRIGHT_MAGENTA}Updating NVM from ${NVM_VERSION} to ${NVM_VERSION_LATEST}${NC}\n"
 
-    if [[ -e ${HOME}/.nvm/nvm.sh ]]; then
-      printf "${LIGHTBLUE}Deactivating existing Node Version Manager:${NC}\n"
-      export NVM_DIR="${HOME}/.nvm"
-      # shellcheck source=/home/chrisl8/.nvm/nvm.sh
-      [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
-      nvm deactivate
-    fi
-
-    wget -qO- "https://raw.githubusercontent.com/nvm-sh/nvm/$NVM_TAG/install.sh" | bash
+  if [[ -e ${HOME}/.nvm/nvm.sh ]]; then
+    printf "${LIGHTBLUE}Deactivating existing Node Version Manager:${NC}\n"
     export NVM_DIR="${HOME}/.nvm"
     # shellcheck source=/home/chrisl8/.nvm/nvm.sh
     [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
-
-    export NVM_SYMLINK_CURRENT=true
-    if ! (grep NVM_SYMLINK_CURRENT ~/.bashrc >/dev/null); then
-      printf "\n${YELLOW}[Setting the NVM current environment in your .bashrc file]${NC}\n"
-      sh -c "echo \"export NVM_SYMLINK_CURRENT=true\" >> ~/.bashrc"
-    fi
-    if ! (grep NVM_SYMLINK_CURRENT ~/.zshrc >/dev/null); then
-      printf "\n${YELLOW}[Setting the NVM current environment in your .zshrc file]${NC}\n"
-      sh -c "echo \"export NVM_SYMLINK_CURRENT=true\" >> ~/.zshrc"
-    fi
+    nvm deactivate
   fi
 
-  printf "\n${YELLOW}[Installing and Activating the Latest Node LTS version]${NC}\n"
-  nvm install --lts
-  nvm alias default "lts/*"
+  wget -qO- "https://raw.githubusercontent.com/nvm-sh/nvm/$NVM_TAG/install.sh" | bash
+  export NVM_DIR="${HOME}/.nvm"
+  # shellcheck source=/home/chrisl8/.nvm/nvm.sh
+  [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
 
-  printf "\n${YELLOW}[Grabbing/Updating global dependencies for node packages]${NC}\n"
-  printf "${LIGHTBLUE}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
-  cd
-  printf "\n${YELLOW}[PM2 for running Robot service]$NC\n"
-  npm install -g pm2
-  printf "\n${YELLOW}[Log Streamer for Website]$NC\n"
-  npm install -g log.io
-  printf "\n${YELLOW}[Log.io File Watcher for Log.io Log Streamer]$NC\n"
-  npm install -g log.io-file-input
-
-  if [[ -d ~/dev_ws/src/ArloBot/Log.io ]]; then
-    printf "\n"
-    printf "${LIGHTBLUE}Removing old Log.io Install${NC}\n"
-    rm -rf "${HOME}/dev_ws/src/ArloBot/Log.io"
+  export NVM_SYMLINK_CURRENT=true
+  if ! (grep NVM_SYMLINK_CURRENT ~/.bashrc >/dev/null); then
+    printf "\n${YELLOW}[Setting the NVM current environment in your .bashrc file]${NC}\n"
+    sh -c "echo \"export NVM_SYMLINK_CURRENT=true\" >> ~/.bashrc"
   fi
+  if ! (grep NVM_SYMLINK_CURRENT ~/.zshrc >/dev/null); then
+    printf "\n${YELLOW}[Setting the NVM current environment in your .zshrc file]${NC}\n"
+    sh -c "echo \"export NVM_SYMLINK_CURRENT=true\" >> ~/.zshrc"
+  fi
+fi
+
+printf "\n${YELLOW}[Installing and Activating the Latest Node LTS version]${NC}\n"
+nvm install --lts
+nvm alias default "lts/*"
+
+printf "\n${YELLOW}[Grabbing/Updating global dependencies for node packages]${NC}\n"
+printf "${LIGHTBLUE}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
+cd
+printf "\n${YELLOW}[PM2 for running Robot service]$NC\n"
+npm install -g pm2
+printf "\n${YELLOW}[Log Streamer for Website]$NC\n"
+npm install -g log.io
+printf "\n${YELLOW}[Log.io File Watcher for Log.io Log Streamer]$NC\n"
+npm install -g log.io-file-input
+
+if [[ -d ~/dev_ws/src/ArloBot/Log.io ]]; then
+  printf "\n"
+  printf "${LIGHTBLUE}Removing old Log.io Install${NC}\n"
+  rm -rf "${HOME}/dev_ws/src/ArloBot/Log.io"
 fi
 
 cd "${HOME}/dev_ws/src/ArloBot/node"
@@ -718,35 +511,33 @@ printf "\n${YELLOW}[Grabbing node dependencies for scripts]${NC}\n"
 printf "${LIGHTBLUE}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
 npm update
 
-if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
-  cd "${HOME}/dev_ws/src/ArloBot/website"
-  printf "\n${YELLOW}[Grabbing node dependencies for React website]${NC}\n"
-  npm update
-  printf "\n${YELLOW}[Building React website]${NC}\n"
-  npm run build
+cd "${HOME}/dev_ws/src/ArloBot/website"
+printf "\n${YELLOW}[Grabbing node dependencies for React website]${NC}\n"
+npm update
+printf "\n${YELLOW}[Building React website]${NC}\n"
+npm run build
 
-  cd "${HOME}/dev_ws/src/ArloBot/cypress-tests"
-  printf "\n${YELLOW}[Installing Cypress.io for Tests]$NC\n"
-  npm update
+cd "${HOME}/dev_ws/src/ArloBot/cypress-tests"
+printf "\n${YELLOW}[Installing Cypress.io for Tests]$NC\n"
+npm update
 
-  if ! (command -v mjpg_streamer >/dev/null); then
-    printf "\n${YELLOW}[Installing mjpg_streamer for Web Page camera viewing]${NC}\n"
-    cd "${HOME}/dev_ws/src/ArloBot/"
-    if ! [[ -d ${HOME}/dev_ws/src/ArloBot/mjpg-streamer ]]; then
-      git clone https://github.com/jacksonliam/mjpg-streamer.git
-    else
-      cd "${HOME}/dev_ws/src/ArloBot/mjpg-streamer"
-      git pull
-    fi
-    cd "${HOME}/dev_ws/src/ArloBot/mjpg-streamer/mjpg-streamer-experimental"
-    make distclean
-    make
-    sudo make install
-    # Removing install files, as they are not needed anymore.
-    cd "${HOME}/dev_ws/src/ArloBot/"
-    rm -rf mjpg-streamer
-    # See scripts/streamVideoTest.sh for details on mjpg_streamer usage.
+if ! (command -v mjpg_streamer >/dev/null); then
+  printf "\n${YELLOW}[Installing mjpg_streamer for Web Page camera viewing]${NC}\n"
+  cd "${HOME}/dev_ws/src/ArloBot/"
+  if ! [[ -d ${HOME}/dev_ws/src/ArloBot/mjpg-streamer ]]; then
+    git clone https://github.com/jacksonliam/mjpg-streamer.git
+  else
+    cd "${HOME}/dev_ws/src/ArloBot/mjpg-streamer"
+    git pull
   fi
+  cd "${HOME}/dev_ws/src/ArloBot/mjpg-streamer/mjpg-streamer-experimental"
+  make distclean
+  make
+  sudo make install
+  # Removing install files, as they are not needed anymore.
+  cd "${HOME}/dev_ws/src/ArloBot/"
+  rm -rf mjpg-streamer
+  # See scripts/streamVideoTest.sh for details on mjpg_streamer usage.
 fi
 
 if [[ -e ${ARLO_HOME}/personalDataForBehavior.json ]]; then
@@ -758,40 +549,38 @@ else
   printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
 fi
 
-if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
-  if [[ ! -d ${ARLO_HOME}/rosmaps ]]; then
-    mkdir "${ARLO_HOME}/rosmaps"
-  fi
+if [[ ! -d ${ARLO_HOME}/rosmaps ]]; then
+  mkdir "${ARLO_HOME}/rosmaps"
+fi
 
-  if [[ ! -d ${ARLO_HOME}/sounds ]]; then
-    mkdir "${ARLO_HOME}/sounds"
-  fi
+if [[ ! -d ${ARLO_HOME}/sounds ]]; then
+  mkdir "${ARLO_HOME}/sounds"
+fi
 
-  if [[ ! -d ${ARLO_HOME}/status ]]; then
-    mkdir "${ARLO_HOME}/status"
-  fi
-  sudo chmod -R 777 "${ARLO_HOME}/status"
+if [[ ! -d ${ARLO_HOME}/status ]]; then
+  mkdir "${ARLO_HOME}/status"
+fi
+sudo chmod -R 777 "${ARLO_HOME}/status"
 
-  if ! (id | grep dialout >/dev/null); then
-    printf "\n${GREEN}Adding your user to the 'dialout' group for serial port access.${NC}\n"
-    sudo adduser "${USER}" dialout >/dev/null
-    printf "${RED}You may have to reboot before you can use the Propeller Board.${NC}\n"
-  fi
+if ! (id | grep dialout >/dev/null); then
+  printf "\n${GREEN}Adding your user to the 'dialout' group for serial port access.${NC}\n"
+  sudo adduser "${USER}" dialout >/dev/null
+  printf "${RED}You may have to reboot before you can use the Propeller Board.${NC}\n"
+fi
 
-  if ! (id | grep video >/dev/null); then
-    printf "\n${GREEN}Adding your user to the 'video' group for access to cameras.${NC}\n"
-    sudo adduser "${USER}" video >/dev/null
-  fi
+if ! (id | grep video >/dev/null); then
+  printf "\n${GREEN}Adding your user to the 'video' group for access to cameras.${NC}\n"
+  sudo adduser "${USER}" video >/dev/null
+fi
 
-  if ! (sudo -nl | grep resetUSB >/dev/null && sudo -nl | grep modprobe >/dev/null); then
-    printf "\n${YELLOW}[Setting up required sudo entries.]${NC}\n"
-    echo "${USER} ALL = NOPASSWD: ${SCRIPTDIR}/resetUSB.sh" >/tmp/arlobot_sudoers
-    echo "${USER} ALL = NOPASSWD: /sbin/modprobe" >>/tmp/arlobot_sudoers
-    chmod 0440 /tmp/arlobot_sudoers
-    sudo chown root:root /tmp/arlobot_sudoers
-    sudo mv /tmp/arlobot_sudoers /etc/sudoers.d/
-    sudo chown root:root /etc/sudoers.d/arlobot_sudoers
-  fi
+if ! (sudo -nl | grep resetUSB >/dev/null && sudo -nl | grep modprobe >/dev/null); then
+  printf "\n${YELLOW}[Setting up required sudo entries.]${NC}\n"
+  echo "${USER} ALL = NOPASSWD: ${SCRIPTDIR}/resetUSB.sh" >/tmp/arlobot_sudoers
+  echo "${USER} ALL = NOPASSWD: /sbin/modprobe" >>/tmp/arlobot_sudoers
+  chmod 0440 /tmp/arlobot_sudoers
+  sudo chown root:root /tmp/arlobot_sudoers
+  sudo mv /tmp/arlobot_sudoers /etc/sudoers.d/
+  sudo chown root:root /etc/sudoers.d/arlobot_sudoers
 fi
 
 if ! [[ -e /usr/share/PropWare/include/arlodrive.h ]]; then
@@ -849,129 +638,127 @@ testMake 2ndBoardCode
 testMake Calib
 cd
 
-if ! [[ ${WORKSTATION_INSTALL} == "y" ]]; then
-  if [[ -e ${ARLO_HOME}/arlobot.yaml ]]; then
-    if ! (diff "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/arlobot.yaml" "${ARLO_HOME}/arlobot.yaml" >/dev/null); then
-      printf "\n${GREEN}The ${RED}arlobot.yaml${GREEN} file in the repository is different from the one${NC}\n"
+if [[ -e ${ARLO_HOME}/arlobot.yaml ]]; then
+  if ! (diff "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/arlobot.yaml" "${ARLO_HOME}/arlobot.yaml" >/dev/null); then
+    printf "\n${GREEN}The ${RED}arlobot.yaml${GREEN} file in the repository is different from the one${NC}\n"
+    printf "${GREEN}in your local settings.${NC}\n"
+    printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
+    printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
+    diff "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/arlobot.yaml" "${ARLO_HOME}/arlobot.yaml" || true
+    # cp -i "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/arlobot.yaml" "${ARLO_HOME}/"
+    printf "\n"
+  fi
+else
+  printf "\n"
+  cp "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/arlobot.yaml" "${ARLO_HOME}/"
+  printf "${GREEN}A brand new ${RED}${ARLO_HOME}/arlobot.yaml${GREEN} file has been created,${NC}\n"
+  printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
+fi
+
+for i in "${HOME}/dev_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/"*; do
+  [[ -e "${i}" ]] || break # handle the case of no files
+  # https://stackoverflow.com/a/9011264/4982408
+  if [[ -e ${ARLO_HOME}/${i##*/} ]]; then
+    if ! (diff "${i}" "${ARLO_HOME}/${i##*/}" >/dev/null); then
+      printf "\n${GREEN}The ${RED}${i##*/}${GREEN} file in the repository is different from the one${NC}\n"
       printf "${GREEN}in your local settings.${NC}\n"
       printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
       printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
-      diff "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/arlobot.yaml" "${ARLO_HOME}/arlobot.yaml" || true
-      # cp -i "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/arlobot.yaml" "${ARLO_HOME}/"
-      printf "\n"
+      diff "${i}" "${ARLO_HOME}/${i##*/}" || true
+      # cp -i "${i}" "${ARLO_HOME}/"
     fi
   else
     printf "\n"
-    cp "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/arlobot.yaml" "${ARLO_HOME}/"
-    printf "${GREEN}A brand new ${RED}${ARLO_HOME}/arlobot.yaml${GREEN} file has been created,${NC}\n"
+    cp "${i}" "${ARLO_HOME}/"
+    printf "${GREEN}A brand new ${RED}${ARLO_HOME}/${i##*/}${GREEN} file has been created,${NC}\n"
     printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
   fi
+done
 
-  for i in "${HOME}/dev_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/"*; do
-    [[ -e "${i}" ]] || break # handle the case of no files
-    # https://stackoverflow.com/a/9011264/4982408
-    if [[ -e ${ARLO_HOME}/${i##*/} ]]; then
-      if ! (diff "${i}" "${ARLO_HOME}/${i##*/}" >/dev/null); then
-        printf "\n${GREEN}The ${RED}${i##*/}${GREEN} file in the repository is different from the one${NC}\n"
-        printf "${GREEN}in your local settings.${NC}\n"
-        printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
-        printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
-        diff "${i}" "${ARLO_HOME}/${i##*/}" || true
-        # cp -i "${i}" "${ARLO_HOME}/"
-      fi
-    else
-      printf "\n"
-      cp "${i}" "${ARLO_HOME}/"
-      printf "${GREEN}A brand new ${RED}${ARLO_HOME}/${i##*/}${GREEN} file has been created,${NC}\n"
-      printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
-    fi
-  done
-
-  if ! (crontab -l >/dev/null 2>&1) || ! (crontab -l | grep startpm2 >/dev/null 2>&1); then
-    printf "\n${YELLOW}[Adding cron job to start web server on system reboot.]${NC}\n"
-    # https://stackoverflow.com/questions/4880290/how-do-i-create-a-crontab-through-a-script
-    (
-      echo "@reboot ${HOME}/dev_ws/src/ArloBot/startpm2.sh > ${HOME}/crontab.log"
-    ) | crontab -
-  fi
-
-  printf "\n${LIGHTPURPLE}[Flushing PM2 logs and starting/restarting web server.]${NC}\n"
-  pm2 update
-  pm2 flush
-  if ! pm2 restart Robot; then
-    "${HOME}/dev_ws/src/ArloBot/startpm2.sh"
-  fi
-
-  if [[ "${USER}" == chrisl8 ]]; then
-    # NOTE: It is OK if this section "crashes" the script on a failure,
-    # because it ONLY runs for me, not end users.
-    if ! [[ -d /home/robotStatusUser ]]; then
-      printf "\n${YELLOW}[Adding robotStatusUser.]${NC}\n"
-      printf "${GREEN}(This is NOT required for Arlobot, just a personal thing.)${NC}\n"
-      sudo useradd -m robotStatusUser
-      printf "${GREEN}Be sure to add your key to ~robotStatusUser/.ssh/authorized_keys${NC}\n"
-      printf "${GREEN}for anyone who needs to use it!${NC}\n"
-      printf "${RED}sudo su - robotStatusUser${NC}\n"
-      printf "${RED}mkdir .ssh${NC}\n"
-      printf "${RED}vim .ssh/authorized_keys${NC}\n"
-      printf "${GREEN}(This is NOT required for Arlobot, just a personal thing.)${NC}\n"
-    fi
-
-    # Special notices for the developer himself to keep his stuff up to date. =)
-    cd "${HOME}/dev_ws/src/ArloBot/node"
-    printf "\n${RED}[Hey ${USER} please make sure the below items are up to date!]${NC}\n"
-    printf "\n${GREEN}[Hey ${USER} please make sure the below items are up to date!]${NC}\n"
-    printf "\n${PURPLE}[Hey ${USER} please make sure the below items are up to date!]${NC}\n"
-    printf "${YELLOW}Does the current version of nvm we installed:${NC} "
-    nvm --version
-    printf "${YELLOW}Match the version on github:${NC} "
-    curl -s https://api.github.com/repositories/612230/releases/latest | grep tag_name | cut -d '"' -f 4
-    printf "\n${YELLOW}You are using this version of node:${NC} "
-    node --version
-    printf "${YELLOW}and this is the current stable version of node:${NC} "
-    wget -qO- https://nodejs.org/en/download/ | grep "Latest LTS Version:" | sed "s/<\/p>//g" | sed "s/.*<strong>//" | sed "s/<.*//"
-    printf "\n${YELLOW}Checking for out of date global node modules:${NC}\n"
-    npm outdated -g || true # Informational, do not crash  script
-    printf "${YELLOW}Checking for out of date package node modules:${NC}\n"
-    printf "${YELLOW}in node/:${NC}\n"
-    npm outdated || true # Informational, do not crash  script
-    printf "${YELLOW}in website/:${NC}\n"
-    cd "${HOME}/dev_ws/src/ArloBot/website"
-    npm outdated || true # Informational, do not crash  script
-    printf "${YELLOW}in cypress tests/:${NC}\n"
-    cd "${HOME}/dev_ws/src/ArloBot/cypress-tests"
-    npm outdated || true # Informational, do not crash  script
-    printf "${PURPLE}-------------------------------------------------------${NC}\n"
-
-    printf "${YELLOW}Diffing your param files to defaults where available:${NC}\n"
-    printf "${LIGHTBLUE}teb_local_planner_params:${NC}\n"
-    diff "${HOME}/dev_ws/src/teb_local_planner_tutorials/cfg/diff_drive/teb_local_planner_params.yaml" "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/teb_local_planner_params.yaml" || true
-    printf "${LIGHTBLUE}twist_mux_locks:${NC}\n"
-    diff /opt/ros/${INSTALLING_ROS_DISTRO}/share/twist_mux/config/twist_mux_locks.yaml "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/twist_mux_locks.yaml" || true
-    printf "${LIGHTBLUE}twist_mux_topics:${NC}\n"
-    diff /opt/ros/${INSTALLING_ROS_DISTRO}/share/twist_mux/config/twist_mux_topics.yaml "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/twist_mux_topics.yaml" || true
-    printf "${LIGHTBLUE}mapper_params_localization:${NC}\n"
-    diff "${HOME}/dev_ws/src/slam_toolbox/slam_toolbox/config/mapper_params_localization.yaml" "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/mapper_params_localization.yaml" || true
-    printf "${LIGHTBLUE}mapper_params_online_async:${NC}\n"
-    diff "${HOME}/dev_ws/src/slam_toolbox/slam_toolbox/config/mapper_params_online_async.yaml" "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/mapper_params_online_async.yaml" || true
-  fi
-
-  printf "\n${PURPLE}Anytime you want to update ArloBot code from the web you can run this same script again. It will pull down and compile new code without wiping out custom configs in ~/.arlobot. I run this script myself almost every day.${NC}\n"
-
-  printf "\n${YELLOW}-----------------------------------${NC}\n"
-  printf "${YELLOW}ALL DONE! REBOOT, EDIT FILES, AND START TESTING!${NC}\n\n"
-  printf "${GREEN}Remember to edit the config files in ~/.arlobot${NC}\n\n"
-  printf "${LIGHTCYAN}Go to ${LIGHTBLUE}http://$(node "${HOME}/dev_ws/src/ArloBot/node/ipAddress.js"):$(jq '.webServerPort' "${ARLO_HOME}/personalDataForBehavior.json")${LIGHTCYAN} to see the Arlobot web interface.${NC}\n"
-  printf "\n"
-  printf "${GREEN}Look at README.md for testing ideas.${NC}\n"
-
-  printf "\n${YELLOW}------------------------------------------------------------${NC}\n"
-  printf "${YELLOW}Remember: You MUST install the Propeller code on your Propeller board too!${NC}\n"
-  printf "${LIGHTCYAN}You can run install_Propeller_code.sh to perform the install,${NC}\n"
-  printf "${LIGHTCYAN}and PropellerSerialTest.sh to test it.${NC}\n"
-  printf "${GREEN}See: ${LIGHTBLUE}https://ekpyroticfrood.net/?p=551${NC}\n"
-  printf "${GREEN}for more information on installing code on your Propeller board.${NC}\n"
-  printf "${YELLOW}------------------------------------------------------------${NC}\n"
+if ! (crontab -l >/dev/null 2>&1) || ! (crontab -l | grep startpm2 >/dev/null 2>&1); then
+  printf "\n${YELLOW}[Adding cron job to start web server on system reboot.]${NC}\n"
+  # https://stackoverflow.com/questions/4880290/how-do-i-create-a-crontab-through-a-script
+  (
+    echo "@reboot ${HOME}/dev_ws/src/ArloBot/startpm2.sh > ${HOME}/crontab.log"
+  ) | crontab -
 fi
+
+printf "\n${LIGHTPURPLE}[Flushing PM2 logs and starting/restarting web server.]${NC}\n"
+pm2 update
+pm2 flush
+if ! pm2 restart Robot; then
+  "${HOME}/dev_ws/src/ArloBot/startpm2.sh"
+fi
+
+if [[ "${USER}" == chrisl8 ]]; then
+  # NOTE: It is OK if this section "crashes" the script on a failure,
+  # because it ONLY runs for me, not end users.
+  if ! [[ -d /home/robotStatusUser ]]; then
+    printf "\n${YELLOW}[Adding robotStatusUser.]${NC}\n"
+    printf "${GREEN}(This is NOT required for Arlobot, just a personal thing.)${NC}\n"
+    sudo useradd -m robotStatusUser
+    printf "${GREEN}Be sure to add your key to ~robotStatusUser/.ssh/authorized_keys${NC}\n"
+    printf "${GREEN}for anyone who needs to use it!${NC}\n"
+    printf "${RED}sudo su - robotStatusUser${NC}\n"
+    printf "${RED}mkdir .ssh${NC}\n"
+    printf "${RED}vim .ssh/authorized_keys${NC}\n"
+    printf "${GREEN}(This is NOT required for Arlobot, just a personal thing.)${NC}\n"
+  fi
+
+  # Special notices for the developer himself to keep his stuff up to date. =)
+  cd "${HOME}/dev_ws/src/ArloBot/node"
+  printf "\n${RED}[Hey ${USER} please make sure the below items are up to date!]${NC}\n"
+  printf "\n${GREEN}[Hey ${USER} please make sure the below items are up to date!]${NC}\n"
+  printf "\n${PURPLE}[Hey ${USER} please make sure the below items are up to date!]${NC}\n"
+  printf "${YELLOW}Does the current version of nvm we installed:${NC} "
+  nvm --version
+  printf "${YELLOW}Match the version on github:${NC} "
+  curl -s https://api.github.com/repositories/612230/releases/latest | grep tag_name | cut -d '"' -f 4
+  printf "\n${YELLOW}You are using this version of node:${NC} "
+  node --version
+  printf "${YELLOW}and this is the current stable version of node:${NC} "
+  wget -qO- https://nodejs.org/en/download/ | grep "Latest LTS Version:" | sed "s/<\/p>//g" | sed "s/.*<strong>//" | sed "s/<.*//"
+  printf "\n${YELLOW}Checking for out of date global node modules:${NC}\n"
+  npm outdated -g || true # Informational, do not crash  script
+  printf "${YELLOW}Checking for out of date package node modules:${NC}\n"
+  printf "${YELLOW}in node/:${NC}\n"
+  npm outdated || true # Informational, do not crash  script
+  printf "${YELLOW}in website/:${NC}\n"
+  cd "${HOME}/dev_ws/src/ArloBot/website"
+  npm outdated || true # Informational, do not crash  script
+  printf "${YELLOW}in cypress tests/:${NC}\n"
+  cd "${HOME}/dev_ws/src/ArloBot/cypress-tests"
+  npm outdated || true # Informational, do not crash  script
+  printf "${PURPLE}-------------------------------------------------------${NC}\n"
+
+  printf "${YELLOW}Diffing your param files to defaults where available:${NC}\n"
+  printf "${LIGHTBLUE}teb_local_planner_params:${NC}\n"
+  diff "${HOME}/dev_ws/src/teb_local_planner_tutorials/cfg/diff_drive/teb_local_planner_params.yaml" "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/teb_local_planner_params.yaml" || true
+  printf "${LIGHTBLUE}twist_mux_locks:${NC}\n"
+  diff /opt/ros/${INSTALLING_ROS_DISTRO}/share/twist_mux/config/twist_mux_locks.yaml "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/twist_mux_locks.yaml" || true
+  printf "${LIGHTBLUE}twist_mux_topics:${NC}\n"
+  diff /opt/ros/${INSTALLING_ROS_DISTRO}/share/twist_mux/config/twist_mux_topics.yaml "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/twist_mux_topics.yaml" || true
+  printf "${LIGHTBLUE}mapper_params_localization:${NC}\n"
+  diff "${HOME}/dev_ws/src/slam_toolbox/slam_toolbox/config/mapper_params_localization.yaml" "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/mapper_params_localization.yaml" || true
+  printf "${LIGHTBLUE}mapper_params_online_async:${NC}\n"
+  diff "${HOME}/dev_ws/src/slam_toolbox/slam_toolbox/config/mapper_params_online_async.yaml" "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/mapper_params_online_async.yaml" || true
+fi
+
+printf "\n${PURPLE}Anytime you want to update ArloBot code from the web you can run this same script again. It will pull down and compile new code without wiping out custom configs in ~/.arlobot. I run this script myself almost every day.${NC}\n"
+
+printf "\n${YELLOW}-----------------------------------${NC}\n"
+printf "${YELLOW}ALL DONE! REBOOT, EDIT FILES, AND START TESTING!${NC}\n\n"
+printf "${GREEN}Remember to edit the config files in ~/.arlobot${NC}\n\n"
+printf "${LIGHTCYAN}Go to ${LIGHTBLUE}http://$(node "${HOME}/dev_ws/src/ArloBot/node/ipAddress.js"):$(jq '.webServerPort' "${ARLO_HOME}/personalDataForBehavior.json")${LIGHTCYAN} to see the Arlobot web interface.${NC}\n"
+printf "\n"
+printf "${GREEN}Look at README.md for testing ideas.${NC}\n"
+
+printf "\n${YELLOW}------------------------------------------------------------${NC}\n"
+printf "${YELLOW}Remember: You MUST install the Propeller code on your Propeller board too!${NC}\n"
+printf "${LIGHTCYAN}You can run install_Propeller_code.sh to perform the install,${NC}\n"
+printf "${LIGHTCYAN}and PropellerSerialTest.sh to test it.${NC}\n"
+printf "${GREEN}See: ${LIGHTBLUE}https://ekpyroticfrood.net/?p=551${NC}\n"
+printf "${GREEN}for more information on installing code on your Propeller board.${NC}\n"
+printf "${YELLOW}------------------------------------------------------------${NC}\n"
 
 INSTALL_FINISHED="true"

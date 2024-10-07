@@ -8,13 +8,6 @@ class Sensors extends Component {
     this.state = { isOpen: false };
     this.rosParameterList = [
       {
-        index: 1,
-        title: 'AC',
-        status: 'monitorACconnection',
-        sendIfTrue: 'monitorAC',
-        sendIfFalse: 'ignoreAC',
-      },
-      {
         index: 2,
         title: 'Infrared',
         status: 'ignoreIRSensors',

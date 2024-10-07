@@ -87,10 +87,6 @@ class AccordionGroup extends Component {
     return (
       <>
         <Status
-          laptopBatteryPercentage={this.props.laptopBatteryPercentage}
-          laptopFullyCharged={this.props.laptopFullyCharged}
-          monitorACconnection={this.props.monitorACconnection}
-          pluggedIn={this.props.pluggedIn}
           mapName={this.props.mapName}
           debugging={this.props.debugging}
           logConsoleMessages={this.props.logConsoleMessages}
@@ -134,7 +130,6 @@ class AccordionGroup extends Component {
         {this.props.ROSisRunning && (
           <Sensors
             ROSisRunning={this.props.ROSisRunning}
-            monitorACconnection={this.props.monitorACconnection}
             ignoreIRSensors={this.props.ignoreIRSensors}
             ignoreCliffSensors={this.props.ignoreCliffSensors}
             ignoreFloorSensors={this.props.ignoreFloorSensors}
@@ -189,7 +184,6 @@ class AccordionGroup extends Component {
             openGroup={this.openGroup}
             RosService={this.props.RosService}
             pluggedIn={this.props.pluggedIn}
-            monitorACconnection={this.props.monitorACconnection}
             sendDataToRobot={this.props.sendDataToRobot}
           />
         )}

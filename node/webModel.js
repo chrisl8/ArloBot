@@ -56,7 +56,6 @@ module.exports = {
     ignoreProximity: false,
     ignoreIRSensors: false,
     ignoreFloorSensors: false,
-    monitorACconnection: true,
     mapName: '',
   },
   rosTopicItems: [
