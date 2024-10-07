@@ -5,6 +5,22 @@
 **WARNING: The Jazzy setup branch DOES NOT WORK!!!**
 I've started dabbling with converting my robot to work with ROS2 Jazzy, but this is a long road. Nothing here works yet!
 
+**STATUS: Maintained but in flux.**  
+This code works on **my** robot, but my robot is built with parts that are no longer sold.  
+Further, the road to ROS 2 is long, so I cannot say when it will work again.  
+
+What you see here **was** a stable platform that is easy to deploy, but it is in flux at the moment.  
+The old noetic branch is stable and works, but I'm not sure using ROS 1 is a good idea for a new project.
+
+Feel free to file issues if you are trying to use this code.
+
+**Obsolete Hardware Notice**
+
+The [Arlo Robot System](https://www.parallax.com/product/28966) by Parallax has been discontinued. At this moment they are entirely out of stock, so this project's usefulness slowly grows to an end, although my personal implementation, which has always been the primary focus of this repository, lives on as I run my robot almost daily.
+
+I would love to build a new version of this robot, but I haven't the free time for it at the moment.  
+Until then, enjoy this for what it is, and understand that any commits you see will be rather focused on a set of hardware that is no longer available.
+
 ArloBot Package for ROS
 =======================
 
@@ -31,10 +47,6 @@ This package also includes:
 ![Alt text](screenshots/PropellerSerialTest.png "Serial Test Program")
 
 * A Python Curses based serial communications test program allows testing of ALL Propeller board functions over serial with zero use of ROS to more easily ensure the hardware is working before starting ROS.
-
-# Maintenance Only Status Notes
-
-The [Arlo Robot System](https://www.parallax.com/product/28966) by Parallax has been discontinued. At this moment they are entirely out of stock, so this project's usefulness slowly grows to an end, although my personal implementation, which has always been the primary focus of this repository, lives on as I run my robot almost daily.
 
 # Build a Robot! #
 First you need to build a robot!
