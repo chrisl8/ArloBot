@@ -49,9 +49,6 @@ describe("Status Panel Functions", () => {
     //   .should("be.visible");
     // cy.get("#masterRelayStatusButton").should("not.have.class", "btn-success");
 
-    // cy.get("#mycroftStatusButton").contains("span", "Up").should("be.visible");
-    // cy.get("#mycroftStatusButton").should("have.class", "btn-success");
-
     cy.get("#cloudStatusButton").contains("span", "Up").should("be.visible");
     cy.get("#cloudStatusButton").should("have.class", "btn-success");
   });

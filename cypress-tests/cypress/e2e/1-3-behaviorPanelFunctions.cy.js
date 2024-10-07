@@ -116,12 +116,6 @@ describe("Behavior Panel Functions", () => {
   //
   //   cy.contains("Ask").click();
   //
-  //   /*
-  //    * cat /opt/mycroft/skills/mycroft-configuration.mycroftai/dialog/en-us/my.name.is.dialog
-  //    * my device name is {{name}}
-  //    * I'm named {{name}}
-  //    */
-  //
   //   cy.get("#robot-said-text").contains("name").should("be.visible");
   //
   //   cy.get("#robot-said-text").contains("TwoFlower").should("be.visible");

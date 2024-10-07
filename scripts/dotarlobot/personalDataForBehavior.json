@@ -1,9 +1,8 @@
 {
-  "robotName": "Arlobot",
   "_comment": "I am using a _ instance of each field for comments.",
-  "idleTimeoutInMinutes": 15,
+  "robotName": "Arlobot",
   "_idleTimeoutInMinutes": "Use 0 to disable automatic shutdown of ROS and server reset after idle timeout",
-  "useMyCroft": false,
+  "idleTimeoutInMinutes": 15,
   "_rosLibDelay": "In Seconds. How long to delay between polling ROS for parameters. Decrease to make parameters on the web interface update faster, however it will increase the CPU/Memory load on the system. 5 to 10 is reasonable.",
   "rosLibDelay": 5,
   "_pushover": "If you use pushover include your tokens here.",

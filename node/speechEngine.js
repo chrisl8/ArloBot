@@ -90,7 +90,6 @@ const eventsToAlwaysIgnore = [
   'abd_reverse_speed_limit',
   'heading',
   'min_distance_sensor',
-  'myCroftSaid',
 ];
 
 function talkAboutEvents(key, value) {

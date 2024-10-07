@@ -9,10 +9,6 @@
     - Fun TTS and/or audio clip.
     - Track and if repeated, affect the random destination picker.
 
- - Mycroft: Set up more skills.
-     - Load Map
-   - Voice command to go to locations.
-
  - Speak when things are done like starting ROS, making maps, etc.
     - Asked to unplug
     - Uplugged

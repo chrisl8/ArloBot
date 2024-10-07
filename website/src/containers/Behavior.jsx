@@ -102,43 +102,6 @@ class Behavior extends Component {
                     />
                   </form>
                 </div>
-                {Boolean(
-                  this.props.useMyCroft && this.props.myCroftIsRunning,
-                ) && (
-                  <div className="no-flex">
-                    <form
-                      id="askRobotSomethingForm"
-                      name="askRobotSomethingForm"
-                      onSubmit={this.askRobot}
-                    >
-                      <input
-                        type="text"
-                        id="ask-something"
-                        placeholder="Ask me anything!"
-                        value={this.state.askRobot}
-                        onChange={this.handleAskRobotTextChange}
-                      />
-                      <input
-                        type="submit"
-                        value="Ask"
-                        className="btn btn-primary"
-                      />
-                    </form>
-                  </div>
-                )}
-                {Boolean(
-                  this.props.useMyCroft && this.props.myCroftIsRunning,
-                ) && (
-                  <div className="no-flex">
-                    Response:&nbsp;
-                    <div id="robot-said-text" className="robot-said-text">
-                      {this.props.myCroftSaid !== '' && (
-                        <p>{this.props.myCroftSaid}</p>
-                      )}
-                    </div>
-                  </div>
-                )}
-                {/* TODO: Can we see when mycroft heard and is thinking and let everybody know? */}
               </div>
               <div className="flex-row-wrap">
                 <div

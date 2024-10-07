@@ -109,8 +109,6 @@ class App extends Component {
             videoSource={this.state.webModel.videoSource}
             useMasterPowerRelay={this.state.personalData.useMasterPowerRelay}
             masterRelayOn={this.state.webModel.masterRelayOn}
-            useMyCroft={this.state.personalData.useMyCroft}
-            myCroftIsRunning={this.state.webModel.myCroftIsRunning}
             clouServerExists={
               this.state.personalData.cloudServer
                 ? this.state.personalData.cloudServer.exists
@@ -123,7 +121,6 @@ class App extends Component {
             relays={this.state.webModel.relays}
             idleTimeout={this.state.webModel.idleTimeout}
             beQuiet={this.state.webModel.beQuiet}
-            myCroftSaid={this.state.webModel.myCroftSaid}
             useArduinoForBlinkenLights={
               this.state.personalData.useArduinoForBlinkenLights
             }

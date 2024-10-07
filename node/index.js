@@ -91,21 +91,7 @@ async function main() {
 
   webserver.start();
 
-  if (personalData.useMyCroft) {
-    // The purpose of using myCroft to simply announce the robot's name is to validate that MyCroft is up.
-    // Also, If you use the robot's name as a wake word and send it via TTS, MyCroft hears it and tries to respond.
-    // Otherwise the normal speech engine is the better option for event based announcements.
-    // MyCroft is primarily for interactive operations, such as asking the robot to do things.
-    // eslint-disable-next-line global-require
-    const myCroft = require('./MyCroft');
-    myCroft.init();
-    setTimeout(() => {
-      // Give init time to finish.
-      tts(`Hello, my name is ${personalData.robotName}`);
-    }, 3000);
-  } else {
-    tts(`Hello, my name is ${personalData.robotName}`);
-  }
+  tts(`Hello, my name is ${personalData.robotName}`);
 
   // ## Scripts and ROS Commands that will be called by nodes ##
   // NOTE: Be sure to put 'unbuffer ' at the beginning of any ROScommand

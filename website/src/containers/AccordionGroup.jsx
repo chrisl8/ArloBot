@@ -96,8 +96,6 @@ class AccordionGroup extends Component {
           cameraOn={this.props.cameraOn}
           useMasterPowerRelay={this.props.useMasterPowerRelay}
           masterRelayOn={this.props.masterRelayOn}
-          useMyCroft={this.props.useMyCroft}
-          myCroftIsRunning={this.props.myCroftIsRunning}
           clouServerExists={this.props.clouServerExists}
           cloudServerConnected={this.props.cloudServerConnected}
           sendDataToRobot={this.props.sendDataToRobot}
@@ -120,9 +118,6 @@ class AccordionGroup extends Component {
           idleTimeout={this.props.idleTimeout}
           sendDataToRobot={this.props.sendDataToRobot}
           beQuiet={this.props.beQuiet}
-          useMyCroft={this.props.useMyCroft}
-          myCroftIsRunning={this.props.myCroftIsRunning}
-          myCroftSaid={this.props.myCroftSaid}
           ROSisRunning={this.props.ROSisRunning}
           useArduinoForBlinkenLights={this.props.useArduinoForBlinkenLights}
           neoPixelsOn={this.props.neoPixelsOn}

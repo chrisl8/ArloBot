@@ -69,7 +69,6 @@ function initialPageLoadItemsVisible() {
     cy.contains("Debugging").should("be.visible");
     // cy.contains("Camera").should("be.visible");
     // cy.contains("Master Relay").should("be.visible");
-    // cy.contains("Mycroft").should("be.visible");
     cy.contains("Cloud").should("be.visible");
     cy.contains("Relays").should("be.visible");
     cy.contains("Behavior").should("be.visible");

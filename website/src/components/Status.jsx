@@ -57,13 +57,6 @@ const Status = (props) => {
     masterRelayBadgeClass = 'badge rounded-pill bg-dark';
   }
 
-  let myCroftClass = 'btn btn-light';
-  let myCroftBadgeClass = 'badge rounded-pill bg-secondary';
-  if (props.myCroftIsRunning) {
-    myCroftClass = 'btn btn-success';
-    myCroftBadgeClass = 'badge rounded-pill bg-dark';
-  }
-
   let cloudServerClass = 'btn btn-light';
   let cloudServerBadgeClass = 'badge rounded-pill bg-secondary';
   if (props.cloudServerConnected) {
@@ -121,18 +114,6 @@ const Status = (props) => {
               Master Relay&nbsp;
               <span className={masterRelayBadgeClass}>
                 {boolToOnOff(props.masterRelayOn)}
-              </span>
-            </button>
-          )}
-          {props.useMyCroft && (
-            <button
-              id="mycroftStatusButton"
-              type="button"
-              className={myCroftClass}
-            >
-              Mycroft&nbsp;
-              <span className={myCroftBadgeClass}>
-                {boolToUpDown(props.myCroftIsRunning)}
               </span>
             </button>
           )}

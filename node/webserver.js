@@ -17,7 +17,6 @@ const arduino = new Arduino();
 const robotModel = require('./robotModel');
 const LaunchScript = require('./LaunchScript');
 const tts = require('./tts');
-const myCroft = require('./MyCroft');
 const WayPoints = require('./WayPoints.js');
 
 const wayPointEditor = new WayPoints();
@@ -193,18 +192,7 @@ async function start() {
       tts(data);
     });
     socket.on('ask', (data) => {
-      if (personalData.useMyCroft) {
-        if (webModel.beQuiet) {
-          webModelFunctions.update(
-            'myCroftSaid',
-            'I cannot reply, because I was asked to be quiet.',
-          );
-        } else {
-          myCroft.injectText(data);
-        }
-      } else {
-        tts(`I have no idea what you are talking about.`);
-      }
+      tts(`I have no idea what you are talking about.`);
     });
     socket.on('startROS', () => {
       if (webModel.logStreamerRunning) {
@@ -358,9 +346,6 @@ async function start() {
     socket.on('getPersonalData', () => {
       socket.emit('personalData', personalData);
     });
-    // socket.on('toggleMycroft', function () {
-    //     myCroft.start();
-    // });
   });
 }
 

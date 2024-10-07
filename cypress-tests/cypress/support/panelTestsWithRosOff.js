@@ -64,7 +64,6 @@ function statusPanelShouldBeOpen(trueFalse) {
     cy.contains("Debugging").should(visibilitystatus);
     // cy.contains("Camera").should(visibilitystatus);
     // cy.contains("Master Relay").should(visibilitystatus);
-    // cy.contains("Mycroft").should(visibilitystatus);
     cy.contains("Cloud").should(visibilitystatus);
   });
 }

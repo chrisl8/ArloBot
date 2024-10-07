@@ -7,7 +7,6 @@ const readFile = promisify(fs.readFile);
 const personalData = require('./personalData');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
-const myCroft = require('./MyCroft');
 const robotModel = require('./robotModel');
 
 async function tts(sound) {
@@ -37,12 +36,6 @@ async function tts(sound) {
   if (!sound) {
     console.error('I was asked to say nothing.');
   } else if (webModel.beQuiet) {
-    if (personalData.useMyCroft) {
-      webModelFunctions.update(
-        'myCroftSaid',
-        'I cannot reply, because I was asked to be quiet.',
-      );
-    }
     // Log to console
     console.log(sound);
   } else {
@@ -91,8 +84,6 @@ async function tts(sound) {
           console.error(dataHolder);
         }
       });
-    } else if (personalData.useMyCroft) {
-      myCroft.sayText(sound);
     } else if (personalData.speechProgram) {
       spawn(personalData.speechProgram, [sound]);
     }

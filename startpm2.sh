@@ -30,7 +30,7 @@ fi
 
 # Give the system a moment to finish booting before we come online.
 # Adjust as needed, or as you see fit.
-# Even as little as 5 or 10 is probably fine, or pick a process to watch, like the mycroft
+# Even as little as 5 or 10 is probably fine, or pick a process to watch
 # check does above.
 sleep 15
 

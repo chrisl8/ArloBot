@@ -43,11 +43,3 @@
 
  - Test every script in the scripts folder
  
-4. Mycroft
-
- - Ensure robot responds to basic requests
-    - Weather
-    - Time
- - Test each voice command
-    - 'start ros' or 'start robot'
-    - TODO: Add the new ones here.
