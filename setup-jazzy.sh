@@ -447,7 +447,6 @@ if ! [[ -f /etc/udev/rules.d/99-libftdi.rules ]]; then
   printf "${RED}You may have to reboot before the USB Relay board will function!${NC}\n"
 fi
 
-export NVM_DIR="${HOME}/.nvm"
 export NVM_SYMLINK_CURRENT=true
 NVM_TAG=$(curl -s curl -s https://api.github.com/repos/nvm-sh/nvm/releases/latest | grep tag_name | cut -d '"' -f 4 | cut -d 'v' -f 2)
 NVM_VERSION_LATEST="${NVM_TAG//v/}"
