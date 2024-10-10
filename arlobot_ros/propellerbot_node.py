@@ -79,9 +79,9 @@ class PropellerComm(Node):
             self.usbRightMotorRelayLabel = rclpy.get_param(
                 "~usbRightMotorRelayLabel", ""
             )
-            logger.info("Waiting for USB Relay find_relay service to start . . .")
+            self.get_logger().info("Waiting for USB Relay find_relay service to start . . .")
             rclpy.wait_for_service("/arlobot_usbrelay/find_relay")
-            logger.info("USB Relay find_relay service started.")
+            self.get_logger().info("USB Relay find_relay service started.")
             try:
                 find_relay = rclpy.ServiceProxy(
                     "/arlobot_usbrelay/find_relay", FindRelay
@@ -89,7 +89,7 @@ class PropellerComm(Node):
                 self.leftMotorRelay = find_relay(self.usbLeftMotorRelayLabel)
                 self.rightMotorRelay = find_relay(self.usbRightMotorRelayLabel)
                 if self.leftMotorRelay.found_relay and self.leftMotorRelay.found_relay:
-                    logger.info(
+                    self.get_logger().info(
                         "Left = "
                         + str(self.leftMotorRelay.relay_number)
                         + " & Right = "
@@ -98,7 +98,7 @@ class PropellerComm(Node):
                 else:
                     self.relayExists = False
             except rclpy.ServiceException as e:
-                logger.info("Service call failed: %s" % e)
+                self.get_logger().info("Service call failed: %s" % e)
             rclpy.Subscriber(
                 "arlobot_usbrelay/UsbRelayStatus",
                 UsbRelayStatus,
@@ -181,7 +181,7 @@ class PropellerComm(Node):
         port = rclpy.get_param("~port", "/dev/ttyUSB0")
         baud_rate = int(rclpy.get_param("~baudRate", 115200))
 
-        logger.info(
+        self.get_logger().info(
             "Starting with serial port: " + port + ", baud rate: " + str(baud_rate)
         )
 
@@ -209,10 +209,10 @@ class PropellerComm(Node):
         elif "Good Packet Delay:" in data:
             rclpy.logdebug(data)
         else:
-            logger.info(data)
+            self.get_logger().info(data)
 
     def TestDataResponseFunction(self, data):
-        logger.info("Test Packet Received: " + str(data))
+        self.get_logger().info("Test Packet Received: " + str(data))
 
     def _updateSettingsFromROS(self):
         self._settings_from_ros["trackWidth"] = rclpy.get_param(
@@ -738,7 +738,7 @@ class PropellerComm(Node):
         # Publish button pushes
         for entry in telemetry_buttonInputData:
             if entry == 1:
-                logger.info("Button " + str(entry) + " was pushed.")
+                self.get_logger().info("Button " + str(entry) + " was pushed.")
                 arlo_buttons = ArloButtons()
                 arlo_buttons.button_number = entry
                 arlo_buttons.button_pressed = True
@@ -750,7 +750,7 @@ class PropellerComm(Node):
 
     def startSerialPort(self):
         self.serialInterface.Start()
-        logger.info("Serial Data Gateway started by propellerbot_node.")
+        self.get_logger().info("Serial Data Gateway started by propellerbot_node.")
         self._serialAvailable = True
 
     def stop(self):
@@ -758,7 +758,7 @@ class PropellerComm(Node):
         Called by ROS on shutdown.
         Shut off motors, record position and reset serial port.
         """
-        logger.info("Stopping")
+        self.get_logger().info("Stopping")
         self._SafeToOperate = False  # Prevent threads fighting
         # Save last position in parameter server in case we come up again without restarting roscore!
         rclpy.set_param("lastX", self.lastX)
@@ -767,9 +767,9 @@ class PropellerComm(Node):
         if self.relayExists:
             time.sleep(5)  # Give the motors time to shut off
         self._serialAvailable = False
-        logger.info("Serial Interface stopping . . .")
+        self.get_logger().info("Serial Interface stopping . . .")
         self.serialInterface.Stop()
-        logger.info("Serial Interface stopped.")
+        self.get_logger().info("Serial Interface stopped.")
         self._OdomStationaryBroadcaster.Stop()
 
     def _handle_velocity_command(self, twist_command):  # This is Propeller specific
@@ -985,7 +985,7 @@ class PropellerComm(Node):
                 if not self._SafeToOperate:
                     state = False
                 rclpy.wait_for_service("/arlobot_usbrelay/toggle_relay")
-                logger.info("Switching motors.")
+                self.get_logger().info("Switching motors.")
                 try:
                     toggle_relay = rclpy.ServiceProxy(
                         "/arlobot_usbrelay/toggle_relay", ToggleRelay
@@ -1002,7 +1002,7 @@ class PropellerComm(Node):
                     else:
                         self._motorsOn = False
                 except rclpy.ServiceException as e:
-                    logger.info("Service call failed: %s" % e)
+                    self.get_logger().info("Service call failed: %s" % e)
                 self._SwitchingMotors = False
         else:  # If no automated motor control exists, just set the state blindly.
             self._motorsOn = state
@@ -1074,7 +1074,7 @@ class PropellerComm(Node):
             # Slow backup until unplugged
             # This should be a slow backward crawl
             # Minimum Linear Velocity: 0.06 m/s (18 TPS)
-            logger.info("Unplugging!")
+            self.get_logger().info("Unplugging!")
             moveData = self.dataTypes.MoveDataPacket(rclpy.get_param("~unpluggingVelocity", -0.1), 0.0)
             self.serialInterface.SendToPropellerOverSerial("move", moveData)
         # Once we are unplugged, stop the robot before returning control to handle_velocity_command
@@ -1084,7 +1084,7 @@ class PropellerComm(Node):
             and not self._settings_from_ros["pluggedIn"]
             and self._serialAvailable
         ):
-            logger.info("Unplugging complete")
+            self.get_logger().info("Unplugging complete")
             self._wasUnplugging = False
             moveData = self.dataTypes.MoveDataPacket(0.0, 0.0)
             self.serialInterface.SendToPropellerOverSerial("move", moveData)
