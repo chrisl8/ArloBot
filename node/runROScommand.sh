@@ -11,7 +11,7 @@ done
 SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 # echo "${SCRIPTDIR}" # For debugging
 
-# shellcheck source=/home/chrisl8/dev_ws/src/ArloBot/scripts/rosEnvironmentSetup.sh
-source "${SCRIPTDIR}/../scripts/rosEnvironmentSetup.sh"
+# shellcheck source=/home/chrisl8/ros2_ws/install/setup.bash
+source "${HOME}/ros2_ws/install/setup.bash"
 
 eval "${1}"

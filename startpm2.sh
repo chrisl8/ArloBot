@@ -14,7 +14,7 @@ fi
 # USB Relay Controller
 if [[ "$(jq '.useUSBrelay' "${HOME}"/.arlobot/personalDataForBehavior.json)" == true ]]; then
   echo "Turning off all relays"
-  "${HOME}"/dev_ws/src/ArloBot/scripts/switch_relay_name.sh all off
+  "${HOME}"/ArloBot/scripts/switch_relay_name.sh all off
 fi
 
 # Give the system a moment to finish booting before we come online.
@@ -23,5 +23,5 @@ fi
 # check does above.
 sleep 15
 
-cd "${HOME}"/dev_ws/src/ArloBot/node/ || exit 1
-"${NVM_DIR}"/current/bin/pm2 start "${HOME}"/dev_ws/src/ArloBot/node/pm2Config.json
+cd "${HOME}"/ArloBot/node/ || exit 1
+"${NVM_DIR}"/current/bin/pm2 start "${HOME}"/ArloBot/node/pm2Config.json
