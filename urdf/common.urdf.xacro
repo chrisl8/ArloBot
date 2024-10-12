@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<robot name="arlobot" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:include filename="arlo.urdf.xacro"/>
+  <xacro:arlobot/>
+  <xacro:stack_circles parent="base_link"/>
+</robot>

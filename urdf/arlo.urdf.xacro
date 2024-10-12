@@ -103,9 +103,9 @@
       </inertial>
 
       <visual>
-        <origin xyz="0 0 0" rpy="-1.5707 0 1.5707"/>
+        <origin xyz="0 0 -0.05" rpy="-1.5707 0 0"/>
         <geometry>
-          <mesh filename="package://arlobot_ros/meshes/28971-Caster-Wheel-Kit-v1.0_simplified.stl"/>
+          <cylinder radius="0.03" length="0.03175"/>
         </geometry>
         <material name="light_grey">
           <color rgba="0.6 0.6 0.6 1"/>
@@ -130,9 +130,9 @@
       </inertial>
 
       <visual>
-        <origin xyz="0 0 0" rpy="-1.5707 0 1.5707"/>
+        <origin xyz="0 0 -0.05" rpy="-1.5707 0 0"/>
         <geometry>
-          <mesh filename="package://arlobot_ros/meshes/28971-Caster-Wheel-Kit-v1.0_simplified.stl"/>
+          <cylinder radius="0.03" length="0.03175"/>
         </geometry>
         <material name="light_grey">
           <color rgba="0.6 0.6 0.6 1"/>
