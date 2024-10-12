@@ -11,7 +11,7 @@
 
 // =============================================== //
 // This is a companion file to
-// arlobot_ros/scripts/PropellerSerialDataPacketTypes.py
+// arlobot_ros/arlobot_ros/PropellerSerialDataPacketTypes.py
 // where the data types are defined for the ROS side
 // Python code.
 // =============================================== //
