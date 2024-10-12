@@ -2,8 +2,8 @@
 [![React Build Test](https://github.com/chrisl8/ArloBot/actions/workflows/react.js.yml/badge.svg)](https://github.com/chrisl8/ArloBot/actions/workflows/react.js.yml)
 [![Setup Script Test](https://github.com/chrisl8/ArloBot/actions/workflows/setup-jazzy.yml/badge.svg)](https://github.com/chrisl8/ArloBot/actions/workflows/setup-jazzy.yml)
 
-**WARNING: The Jazzy setup branch DOES NOT WORK!!!**
-I've started dabbling with converting my robot to work with ROS2 Jazzy, but this is a long road. Nothing here works yet!
+**WARNING: The Jazzy setup branch DOES NOT WORK YET!!!**
+I've made progress here with ROS2, but it is not functional yet.
 
 **STATUS: Maintained but in flux.**  
 This code works on **my** robot, but my robot is built with parts that are no longer sold.  
@@ -239,6 +239,84 @@ http://wiki.ros.org/ROS/NetworkSetup
 Please report an issue for any problems or if you need me to clarify anything!  
  Ask questions in the [Parallax Forums](https://forums.parallax.com/ "Parallax Forums"), on [GitHub](https://github.com/chrisl8/ArloBot/issues "Create an Issue") and on the [ROS for Arlobot Google Group](https://groups.google.com/g/ros-for-arlobot "ROS for Arlobot"). I will write more documentation as I answer questions, and I hope you will also write instructions when you do your build!
 
+# ROS2 Usage and Notes
+
+## WiFi and Ethernet
+If one of your systems is on a wired Ethernet connection and the other is on WiFi, they will likely be unable to communicate with each other.  
+It may work intermitently, but never for long.  
+The intermitent working will lead you to think that you've found solutions with alternate DDS services and/or configuration, but it is just a red hearing.
+The solution is to put all of your systems together on the same WiFi network, assuming you aren't on a school/company WiFi that isolates clients.
+
+## CLI Operation and Sourcing
+
+ - You need to source either the base install or your built code before building or running ROS
+   - For the base, such as when you want to build code run:
+     - `source /opt/ros/jazzy/setup.bash`
+   - But if you already built code and want to run it, source that code's build, which itself will include the base:
+     - ``
+
+ - Don't build and run ROS in the same terminal.
+
+Because of the issues related to building and running ROS the setup script in this repository **does not** source ROS in your login profile. Instead it is done in the shell scripts that are used to run ROS.
+
+So when running commands be sure to run the source commands first, or use the `rosEnvironmentSetup.sh` script which also sets other environment variables that I've come to find important or useful.
+
+## Windows
+https://docs.ros.org/en/jazzy/Installation/Windows-Install-Binary.html
+### Dependencies.
+ROS2 for windows is accomplished via a large download along with a lot of dependency installs.
+
+Note that ROS2 is **very** picky about the Python version. It is hardcoded in a lot of the ROS2 files.
+
+```
+choco install -y python --version 3.8.3
+choco install -y vcredist2013 vcredist140 cmake
+```
+I'm skipping OpenSSL for now, hoping I can use what I already have installed.
+
+https://aka.ms/vs/16/release/vs_community.exe
+
+#### Qt5
+Qt5 is very difficult to find and install, this seems to be the correct installer download location:
+https://download.qt.io/archive/qt/5.12/5.12.12/
+![img.png](img.png)
+
+As admin:
+```
+setx /m Qt5_DIR C:\Qt\Qt5.12.12\5.12.12\msvc2017_64
+setx /m QT_QPA_PLATFORM_PLUGIN_PATH C:\Qt\Qt5.12.12\5.12.12\msvc2017_64\plugins\platforms
+```
+### Binary Pacakge
+I renamed the extracted folder to `rso2-jazzy` and placed it in `D:\`
+
+### Environment setup
+
+```
+D:\ros2-jazzy\ros2-windows\local_setup.ps1 # Or wherever you put it.
+```
+
+### Testing Windows Environment
+This should work:
+`ros2 run turtlesim turtlesim_node`
+
+As should the other tutorials, which you can use for testing your knowledge, your Windows install and your robot install:  
+https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Configuring-ROS2-Environment.html
+
+# Testing ROS Interdevice communication
+The best test is found on the install page https://docs.ros.org/en/jazzy/Installation.html
+
+`ros2 run demo_nodes_cpp talker`
+
+`ros2 run demo_nodes_py listener`
+
+Try this both locally and across remote systems if you hope for them to speak to each other.
+
+# Linux Environment Setup
+
+```
+source ~/ros2_ws/install/setup.zsh
+ros2 topic list
+```
 
 # Scripts
 
