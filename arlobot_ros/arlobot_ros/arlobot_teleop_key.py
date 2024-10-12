@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 from __future__ import print_function
 
 import select
@@ -6,7 +5,7 @@ import sys
 import termios
 import tty
 
-import rospy
+import rclpy
 from geometry_msgs.msg import Twist
 
 # Copyright (c) 2011, Willow Garage, Inc.

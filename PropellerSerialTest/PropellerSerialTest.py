@@ -12,8 +12,6 @@ and monitoring output directly from the serial
 interface.
 """
 
-from __future__ import print_function
-
 import six
 import yaml
 import os
@@ -74,8 +72,10 @@ class PropellerSerialTest(object):
                 yamlOutput = yaml.safe_load(stream)
             except yaml.YAMLError as exc:
                 print(exc)
-        self._baudRate = yamlOutput["baudRate"]
-        self._driveGeometry = yamlOutput["driveGeometry"]
+        print("baudRate: " + str(yamlOutput["arlobot"]["ros__parameters"]["baudRate"]))
+        self._baudRate = yamlOutput["arlobot"]["ros__parameters"]["baudRate"]
+        print("driveGeometry: " + str(yamlOutput["arlobot"]["ros__parameters"]["driveGeometry"]))
+        self._driveGeometry = yamlOutput["arlobot"]["ros__parameters"]["driveGeometry"]
 
         self.serialInterface = PropellerSerialInterface(
             self._propellerReadyResponseFunction,

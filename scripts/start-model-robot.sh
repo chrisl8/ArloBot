@@ -11,9 +11,13 @@ done
 SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 # echo "${SCRIPTDIR}" # For debugging
 
-# Save time by not looking up the Relay serial number twice
+# shellcheck source=/home/chrisl8/dev_ws/src/ArloBot/scripts/rosEnvironmentSetup.sh
+source "${SCRIPTDIR}/rosEnvironmentSetup.sh"
 
-SERIAL_NUMBER=$("${SCRIPTDIR}/find_relay_serial_number.sh")
-
-"${SCRIPTDIR}/switch_relay_name.sh" leftMotor on "${SERIAL_NUMBER}"
-"${SCRIPTDIR}/switch_relay_name.sh" rightMotor on "${SERIAL_NUMBER}"
+# This will launch RVIZ and the ROS Robot Model
+# on your local system so that you can view the robot
+# model in RVIZ for tweaking the look and part location
+# without having to run the entire ROS robot stack.
+# I use this to work on the model from my desktop,
+# instead of having to do it from the laptop on the robot.
+ros2 launch --debug arlobot_ros model_robot.launch.py
