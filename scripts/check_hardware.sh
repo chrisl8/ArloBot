@@ -39,26 +39,6 @@ if [[ $(jq '.useUSBrelay' "${HOME}/.arlobot/personalDataForBehavior.json") == tr
   fi
 fi
 
-# Turn on five volt power supply if it exists
-if [[ $(jq '.relays.has_fiveVolt' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-  # Check if it is already on
-  # NOTE This only matters if master relay was already on
-  # Otherwise we still need the delay and checks as if it was first turning on.
-  if [[ "$("${SCRIPT_DIR}/switch_relay_name.sh" fiveVolt state)" == "ON" ]]; then
-    echo "Five Volt power converter already on."
-  else
-    echo "Turning on Five Volt power converter . . ."
-    "${SCRIPT_DIR}/switch_relay_name.sh" fiveVolt on
-
-    # Give Linux time for the devices to come one line.
-    echo "Giving USB devices ${USB_DELAY_TIME} seconds to come online . . ."
-    sleep ${USB_DELAY_TIME}
-
-    # Try more times if we just turned on the power
-    RETRY_COUNT=${RETRY_COUNT_RELAY_JUST_ON}
-  fi
-fi
-
 ATTEMPT_COUNT=1
 CHECK_GOOD=false
 FAILURE_REASON=""
@@ -67,41 +47,6 @@ check_hardware() {
   CHECK_GOOD=true
   echo "Checking all configured devices to make sure they are available, attempt ${ATTEMPT_COUNT}"
   ATTEMPT_COUNT=$((ATTEMPT_COUNT + 1))
-  # Camera 0
-  if [[ $(jq '.camera0' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-    echo "Checking Camera 0 . . ."
-    CAMERA_NAME=$(jq '.camera0name' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
-    if ! "${SCRIPT_DIR}/find_camera.sh" "${CAMERA_NAME}" >/dev/null; then
-      FAILURE_REASON="Camera 0 missing!"
-      CHECK_GOOD=false
-      return 1
-    fi
-    VIDEO_DEVICE=$("${SCRIPT_DIR}/find_camera.sh" "${CAMERA_NAME}")
-
-    if ! ls "${VIDEO_DEVICE}" &>/dev/null; then
-      FAILURE_REASON="Camera 0 missing!"
-      CHECK_GOOD=false
-      return 1
-    fi
-  fi
-
-  # Camera 1
-  if [[ $(jq '.camera1' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-    echo "Checking Camera 1 . . ."
-    CAMERA_NAME=$(jq '.camera1name' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
-    if ! "${SCRIPT_DIR}/find_camera.sh" "${CAMERA_NAME}" >/dev/null; then
-      FAILURE_REASON="Camera 1 missing!"
-      CHECK_GOOD=false
-      return 1
-    fi
-    VIDEO_DEVICE=$("${SCRIPT_DIR}/find_camera.sh" "${CAMERA_NAME}")
-
-    if ! ls "${VIDEO_DEVICE}" &>/dev/null; then
-      FAILURE_REASON="Camera 1 missing!"
-      CHECK_GOOD=false
-      return 1
-    fi
-  fi
 
   # Joystick
   # Changes for Ubuntu 16.04:

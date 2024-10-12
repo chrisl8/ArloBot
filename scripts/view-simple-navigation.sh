@@ -17,4 +17,4 @@ echo "set Global Options->Fixed Frame to"
 echo "'odom' in order to make this work."
 # shellcheck source=/home/chrisl8/dev_ws/install/setup.bash
 source ~/dev_ws/install/setup.bash
-roslaunch arlobot_ros view_simple_navigation.launch --screen
+ros2 launch arlobot_ros view_simple_navigation.launch

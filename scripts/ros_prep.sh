@@ -51,49 +51,20 @@ fi
 
 chmod 777 "${HOME}/.arlobot/status/" &>/dev/null
 
-# ROS2 has no concept of "roscore", but we want to use a "blackboard" to hold parameters even if ROS isn't running.
-# https://docs.ros.org/en/jazzy/Concepts/Basic/About-Parameters.html#migrating-from-ros-1
-pkill -f parameter_blackboard
-ros2 run demo_nodes_cpp parameter_blackboard &
-
-while [[ $(ros2 param list) == '' ]]; do
-  echo "Waiting for ROS parameter_blackboard to start . . ."
-  sleep 1
-done
-
-ros2 param set /parameter_blackboard mapname empty
-
-ros2 param set /parameter_blackboard maxPingRangeAccepted "$(jq '.maxPingRangeAccepted' "${HOME}/.arlobot/personalDataForBehavior.json")"
-
 if [[ $(jq '.hasActivityBoard' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-  ros2 param set /parameter_blackboard arlobot/port "$("${SCRIPTDIR}/find_ActivityBoard.sh")"
+  ACTIVITY_BOARD_PORT=$("${SCRIPTDIR}/find_ActivityBoard.sh")
+  export ACTIVITY_BOARD_PORT
 else
   YELLOW='\033[1;33m'
   NC='\033[0m' # NoColor
   printf "\n${YELLOW}Without an activity board your robot will not function!${NC}\n"
 fi
 
+JOY_DEVICE="/dev/input/js0" # default
 if [[ $(jq '.hasXboxController' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
   export HAS_XBOX_JOYSTICK=true
-  #  /dev/input/js0 is the default if nothing is provided.
   if [[ $("${SCRIPTDIR}/find_xbox_controller.sh") ]]; then
     JOY_DEVICE="$("${SCRIPTDIR}/find_xbox_controller.sh")"
-    export JOY_DEVICE
   fi
 fi
-
-if [[ $(jq '.camera0' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-  CAMERA_NAME=$(jq '.camera0name' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
-  ros2 param set /parameter_blackboard camera1 "$("${SCRIPTDIR}/find_camera.sh" "${CAMERA_NAME}")"
-fi
-if [[ $(jq '.camera1' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-  CAMERA_NAME=$(jq '.camera1name' "${HOME}/.arlobot/personalDataForBehavior.json" | tr -d '"')
-  ros2 param set /parameter_blackboard camera2 "$("${SCRIPTDIR}/find_camera.sh" "${CAMERA_NAME}")"
-fi
-
-# TODO: Add code to build the arlobot.urdf file if it doesn't exist and run colcon build again.
-
-# TODO: Consider running colcon build every time this is started.
-
-# TODO: Is there a "clean" option for colcon build?
-
+export JOY_DEVICE

@@ -22,8 +22,8 @@
 # <!-- is Yaw, Pitch, Roll !!!  So don't forget to translate those! -->
 
 # Examples:
-#rosrun tf static_transform_publisher 0.0 0.0 0.0 0.0 0.0 0.0 1.0 base_link map 1000
-#rosrun tf static_transform_publisher cam_px asus_xtion_pro_cam_py cam_pz cam_or cam_op cam_oy base_link camera_rgb_frame 1000
-#rosrun tf static_transform_publisher 0.1085 0.0205 0.17 0.0 0.0 0.0 base_link camera_rgb_frame 1000
-#rosrun tf static_transform_publisher 0.1285 0.01 0.17 0.0 0.0 0.0 1.0 base_link camera_rgb_frame 1000
-rosrun tf static_transform_publisher 0.125 0.0 0.269107 3.1 0.0 0.0 base_link rplidar 1000
+#ros2 run tf2_ros static_transform_publisher 0.0 0.0 0.0 0.0 0.0 0.0 1.0 base_link map
+#ros2 run tf2_ros static_transform_publisher cam_px asus_xtion_pro_cam_py cam_pz cam_or cam_op cam_oy base_link camera_rgb_frame
+#ros2 run tf2_ros static_transform_publisher 0.1085 0.0205 0.17 0.0 0.0 0.0 base_link camera_rgb_frame
+#ros2 run tf2_ros static_transform_publisher 0.1285 0.01 0.17 0.0 0.0 0.0 1.0 base_link camera_rgb_frame
+ros2 run tf2_ros static_transform_publisher 0.125 0.0 0.269107 3.1 0.0 0.0 base_link rplidar

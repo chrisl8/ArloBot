@@ -13,8 +13,8 @@ done
 SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 # echo "${SCRIPTDIR}" # For debugging
 
-# shellcheck source=/home/chrisl8/dev_ws/src/ArloBot/scripts/rosEnvironmentSetup.sh
-source "${SCRIPTDIR}/rosEnvironmentSetup.sh"
+# shellcheck source=/home/chrisl8/ros2_ws/install/setup.bash
+source "${HOME}/ros2_ws/install/setup.bash"
 
 # shellcheck source=/home/chrisl8/dev_ws/src/ArloBot/scripts/ros_prep.sh
 source "${SCRIPTDIR}/ros_prep.sh"
@@ -26,4 +26,4 @@ echo "Use kill_ros.sh to close."
 # which makes monitoring status impossible.
 # http://stackoverflow.com/a/11337310
 # http://linux.die.net/man/1/unbuffer
-unbuffer roslaunch arlobot_ros robot.launch --screen
+unbuffer ros2 launch arlobot_ros robot.launch.py

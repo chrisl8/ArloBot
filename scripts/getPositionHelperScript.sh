@@ -13,8 +13,8 @@ SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 
 if pgrep -f robot.launch >/dev/null; then
 
-  # shellcheck source=/home/chrisl8/dev_ws/src/ArloBot/scripts/rosEnvironmentSetup.sh
-  source "${SCRIPTDIR}/rosEnvironmentSetup.sh"
+  # shellcheck source=/home/chrisl8/ros2_ws/install/setup.bash
+  source "${HOME}/ros2_ws/install/setup.bash"
 
   rosrun tf tf_echo /map /base_link
 else

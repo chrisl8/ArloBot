@@ -16,5 +16,5 @@ echo "If you do not have a map loaded,"
 echo "set Global Options->Fixed Frame to"
 echo "'odom' in order to make this work."
 # shellcheck source=/home/chrisl8/dev_ws/install/setup.bash
-source ~/dev_ws/install/setup.bash
+source ~/ros2_ws/install/setup.bash
 roslaunch arlobot_ros view_navigation.launch --screen

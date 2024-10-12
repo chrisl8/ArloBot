@@ -13,6 +13,8 @@ SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 # echo "${SCRIPTDIR}" # For debugging
 
 echo "Killing everything, please wait..."
+source "${HOME}/ros2_ws/install/setup.bash"
+ros2 daemon stop
 if (pkill -f log.io); then
   while (pkill -f log.io); do
     echo "Waiting for log.io to close . . ."
@@ -43,15 +45,9 @@ if (pkill zbarcam); then
     sleep 1
   done
 fi
-if (pkill rostopic); then
-  while (pgrep rostopic); do
-    echo "Waiting for rostopic to close . . ."
-    sleep 1
-  done
-fi
-if (pkill roslaunch); then
-  while (pgrep roslaunch); do
-    echo "Waiting for roslaunch to close . . ."
+if (pkill -f ros2); then
+  while (pgrep ros2); do
+    echo "Waiting for ros2 to close . . ."
     sleep 1
   done
 fi
@@ -98,7 +94,7 @@ fi
 
 # Shut off Scanse Sweep
 if [[ $(jq '.hasScanseSweep' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-  node "${HOME}/dev_ws/src/ArloBot/node/ScanseSweepControl.js" stop
+  node "${HOME}/ArloBot/node/ScanseSweepControl.js" stop
 fi
 
 # USB Relay Controller

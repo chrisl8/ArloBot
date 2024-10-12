@@ -14,8 +14,8 @@ SCRIPTDIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 if pgrep -f robot.launch >/dev/null; then
   echo "${1}"
 
-  # shellcheck source=/home/chrisl8/dev_ws/src/ArloBot/scripts/rosEnvironmentSetup.sh
-  source "${SCRIPTDIR}/rosEnvironmentSetup.sh"
+  # shellcheck source=/home/chrisl8/ros2_ws/install/setup.bash
+  source "${HOME}/ros2_ws/install/setup.bash"
 
   unbuffer rosservice call /arlobot_goto/GoToGoal "${1}"
 else

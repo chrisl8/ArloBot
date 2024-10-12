@@ -25,10 +25,10 @@ if [[ ! -f ${MAP_FILE_NAME}.data ]]; then
 fi
 
 if pgrep -f robot.launch >/dev/null; then
-  # shellcheck source=/home/chrisl8/dev_ws/src/ArloBot/scripts/rosEnvironmentSetup.sh
-  source "${SCRIPTDIR}/rosEnvironmentSetup.sh"
+  # shellcheck source=/home/chrisl8/ros2_ws/install/setup.bash
+  source "${HOME}/ros2_ws/install/setup.bash"
 
-  unbuffer roslaunch arlobot_ros slam_toolbox.launch
+  unbuffer ros2 launch arlobot_ros slam_toolbox.launch
 else
   echo "Robot must be running to start this."
   exit 1
