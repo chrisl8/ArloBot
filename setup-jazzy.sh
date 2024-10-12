@@ -15,7 +15,7 @@ INSTALLING_ROS_DISTRO=jazzy
 #
 # You can Test this with Docker by installing Docker, then pulling down the Ubuntu 20.04 image:
 # sudo docker pull ubuntu:20.04
-# cd ~/dev_ws/src/ArloBot
+# cd ${HOME}/${ROS2_WS}/ArloBot
 #
 # Then either kick it off all in one shot:
 # sudo docker run -ti -v $PWD:/home/user ubuntu:20.04 /bin/bash -c "/home/user/setup-jazzy.sh"
@@ -135,7 +135,6 @@ if ! [[ ${DOCKER_TEST_INSTALL=true} == "true" ]]; then # This does not work on D
   printf "\n${YELLOW}[Updating Root CA Certificates from Ubuntu]${NC}\n"
   # Sometimes this has to be done by hand on new Ubuntu installs.
   sudo update-ca-certificates
-  printf "\n"
 fi
 
 if ! (locale | grep "en_US.UTF-8" >/dev/null); then
@@ -215,7 +214,7 @@ fi
 if [[ ! -d ${ARLO_HOME} ]]; then
   printf "\n${YELLOW}[Creating .arlobot folder]${NC}\n"
   printf "${GREEN}This holds personal data for your robot.${NC}\n"
-  # We will use ~/.arlobot to store "private" data
+  # We will use ${HOME}/.arlobot to store "private" data
   # That is data that doesn't need to be part of
   # the public github repo like user tokens,
   # sounds, and room maps and per robot settings
@@ -313,48 +312,66 @@ PACKAGE_TO_INSTALL_LIST+=(libftdi1-dev)
 
 sudo apt install -y "${PACKAGE_TO_INSTALL_LIST[@]}"
 
-if ! [[ -d ~/dev_ws/src ]]; then
+ROS2_WS=ros2_ws
+
+if ! [[ -d ${HOME}/${ROS2_WS}/src ]]; then
   printf "\n${YELLOW}[Creating the ROS Development workspace and testing with colcon]${NC}\n"
-  mkdir -p ~/dev_ws/src
-  cd ~/dev_ws/
-  colcon build
-  # shellcheck source=/home/chrisl8/dev_ws/install/setup.bash
-  source ~/dev_ws/install/setup.bash
+  mkdir -p "${HOME}/${ROS2_WS}/src"
+  cd "${HOME}/${ROS2_WS}"
+  # https://robotics.stackexchange.com/a/113133
+  PYTHONWARNINGS="ignore:easy_install command is deprecated,ignore:setup.py install is deprecated"
+  export PYTHONWARNINGS
+  colcon build --symlink-install
+  # shellcheck source=/home/chrisl8/${ROS2_WS}/install/setup.bash
+  source "${HOME}/${ROS2_WS}/install/setup.bash"
 fi
 
 printf "\n${YELLOW}[Cloning or Updating git repositories]${NC}\n"
-cd ~/dev_ws/src
 
 printf "${LIGHTBLUE}ArloBot repository${NC}\n"
-if ! [[ -d ~/dev_ws/src/ArloBot ]]; then
+if ! [[ -d "${HOME}/ArloBot" ]]; then
+  cd "${HOME}"
   git clone -b jazzy https://github.com/chrisl8/ArloBot.git
 else
-  cd ~/dev_ws/src/ArloBot
+  cd "${HOME}/ArloBot"
   git fetch
   git checkout jazzy
   git pull
 fi
 
+if ! [[ -e ${HOME}/${ROS2_WS}/src/arlobot_ros ]]; then
+  ln -s "${HOME}/ArloBot/arlobot_ros" "${HOME}/${ROS2_WS}/src/"
+fi
+
+if ! [[ -e ${HOME}/${ROS2_WS}/src/arlobot_interfaces ]]; then
+  ln -s "${HOME}/ArloBot/arlobot_interfaces" "${HOME}/${ROS2_WS}/src/"
+fi
+
 printf "\n${LIGHTBLUE}Slamtec RPLIDAR${NC}\n"
-cd ~/dev_ws/src
-if ! [[ -d ~/dev_ws/src/rplidar_ros ]]; then
+cd "${HOME}/${ROS2_WS}/src"
+if ! [[ -d ${HOME}/rplidar_ros ]]; then
+  cd "${HOME}"
   git clone -b dev-ros2 https://github.com/Slamtec/rplidar_ros.git
 else
-  cd ~/dev_ws/src/rplidar_ros
+  cd "${HOME}/rplidar_ros"
   git fetch
   git checkout dev-ros2
   git pull
+fi
+
+if ! [[ -e ${HOME}/${ROS2_WS}/src/rplidar_ros ]]; then
+  ln -s "${HOME}/rplidar_ros" "${HOME}/${ROS2_WS}/src/rplidar_ros"
 fi
 
 # TODO: How do we replace this in Jazzy?
 # TODO: This won't build on Jazzy.
 #printf "\n${LIGHTBLUE}Costmap Converter Msgs${NC}\n"
 #printf "${PURPLE}This is required by TEB Local Planner, but has not been released for ${INSTALLING_ROS_DISTRO}.${NC}\n"
-#cd ~/dev_ws/src
-#if ! [[ -d ~/dev_ws/src/costmap_converter ]]; then
+#cd ${HOME}/${ROS2_WS}/src
+#if ! [[ -d ${HOME}/${ROS2_WS}/src/costmap_converter ]]; then
 #  git clone -b ros2 https://github.com/rst-tu-dortmund/costmap_converter.git
 #else
-#  cd ~/dev_ws/src/costmap_converter
+#  cd ${HOME}/${ROS2_WS}/src/costmap_converter
 #  git checkout ros2
 #  git pull
 #fi
@@ -363,11 +380,11 @@ fi
 # TODO: This won't build without costmap converter, which I haven't made build on Jazzy.
 #printf "\n${LIGHTBLUE}TEB Local Planner${NC}\n"
 #printf "${PURPLE}The TEB Local Planner has not been released for ${INSTALLING_ROS_DISTRO}.${NC}\n"
-#cd ~/dev_ws/src
-#if ! [[ -d ~/dev_ws/src/teb_local_planner ]]; then
+#cd ${HOME}/${ROS2_WS}/src
+#if ! [[ -d ${HOME}/${ROS2_WS}/src/teb_local_planner ]]; then
 #  git clone -b ros2-master https://github.com/rst-tu-dortmund/teb_local_planner.git
 #else
-#  cd ~/dev_ws/src/teb_local_planner
+#  cd ${HOME}/${ROS2_WS}/src/teb_local_planner
 #  git checkout ros2-master
 #  git pull
 #fi
@@ -376,64 +393,44 @@ fi
 #printf "\n${LIGHTBLUE}TEB Local Planner Tutorials${NC}\n"
 #printf "${PURPLE}The TEB Local Planner tutorials have not been ported to ${INSTALLING_ROS_DISTRO}.${NC}\n"
 #printf "${PURPLE}The tutorials are not required, but handy for reference.${NC}\n"
-#cd ~/dev_ws/src
-#if ! [[ -d ~/dev_ws/src/teb_local_planner_tutorials ]]; then
+#cd ${HOME}/${ROS2_WS}/src
+#if ! [[ -d ${HOME}/${ROS2_WS}/src/teb_local_planner_tutorials ]]; then
 #  git clone -b noetic-devel https://github.com/rst-tu-dortmund/teb_local_planner_tutorials.git
 #else
-#  cd ~/dev_ws/src/teb_local_planner_tutorials
+#  cd ${HOME}/${ROS2_WS}/src/teb_local_planner_tutorials
 #  git checkout noetic-devel
 #  git pull
 #fi
 
 export PIP_DISABLE_PIP_VERSION_CHECK=1
 
-cd ~/dev_ws
 printf "\n${YELLOW}[Installing dependencies for ROS build-from-source packages.]${NC}\n"
+cd "${HOME}/${ROS2_WS}"
 rosdep install -q -y -r --from-paths src --ignore-src --rosdistro ${INSTALLING_ROS_DISTRO}
 
 printf "\n${YELLOW}[Generating xacro URDF file.]${NC}\n"
-/opt/ros/jazzy/bin/xacro ~/dev_ws/src/ArloBot/arlobot_ros/urdf/common.urdf.xacro > ~/dev_ws/src/ArloBot/arlobot_ros/arlobot.urdf
+/opt/ros/jazzy/bin/xacro "${HOME}/ArloBot/urdf/common.urdf.xacro" > "${HOME}/ArloBot/arlobot_ros/arlobot.urdf"
 
 printf "\n${YELLOW}[(Re)Building ROS Source files.]${NC}\n"
-colcon build
-# shellcheck source=/home/chrisl8/dev_ws/install/setup.bash
-source ~/dev_ws/install/setup.bash
+cd "${HOME}/${ROS2_WS}"
+# https://robotics.stackexchange.com/a/113133
+PYTHONWARNINGS="ignore:easy_install command is deprecated,ignore:setup.py install is deprecated"
+export PYTHONWARNINGS
+colcon build --symlink-install
+# shellcheck source=/home/chrisl8/${ROS2_WS}/install/setup.bash
+source "${HOME}/${ROS2_WS}/install/setup.bash"
 
-if [[ -f ~/.bashrc ]]; then
-  if ! (grep ROS_HOSTNAME ~/.bashrc >/dev/null); then
-    printf "\n${YELLOW}[Setting the ROS_HOSTNAME in your .bashrc file]${NC}\n"
-    sh -c "echo \"export ROS_HOSTNAME=$(uname -n).local\" >> ~/.bashrc"
-  fi
-  if ! (grep ROSLAUNCH_SSH_UNKNOWN ~/.bashrc >/dev/null); then
-    printf "\n${YELLOW}[Setting the ROSLAUNCH_SSH_UNKNOWN in your .bashrc file]${NC}\n"
-    sh -c "echo \"export ROSLAUNCH_SSH_UNKNOWN=1\" >> ~/.bashrc"
-  fi
-  if ! (grep "dev_ws/install/setup.bash" ~/.bashrc >/dev/null); then
-    printf "\n${YELLOW}[Setting the ROS setup.bash source call in your .bashrc file]${NC}\n"
-    sh -c "echo \"source ~/dev_ws/install/setup.bash\" >> ~/.bashrc"
-  fi
-  if ! (grep "${HOME}/dev_ws/src/ArloBot/scripts" ~/.bashrc >/dev/null); then
+if [[ -f ${HOME}/.bashrc ]]; then
+  if ! (grep "${HOME}/ArloBot/scripts" "${HOME}/.bashrc" >/dev/null); then
     printf "\n${YELLOW}[Adding ArloBot Scripts folder to your path in .bashrc]${NC}\n"
-    sh -c "echo \"export PATH=\\\$PATH:${HOME}/dev_ws/src/ArloBot/scripts\" >> ~/.bashrc"
+    sh -c "echo \"export PATH=\\\$PATH:${HOME}/ArloBot/scripts\" >> ${HOME}/.bashrc"
   fi
 fi
 
-if [[ -f ~/.zshrc ]]; then
-  if ! (grep ROS_HOSTNAME ~/.zshrc >/dev/null); then
-    printf "\n${YELLOW}[Setting the ROS_HOSTNAME in your .zshrc file]${NC}\n"
-    sh -c "echo \"export ROS_HOSTNAME=$(uname -n).local\" >> ~/.zshrc"
-  fi
-  if ! (grep ROSLAUNCH_SSH_UNKNOWN ~/.zshrc >/dev/null); then
-    printf "\n${YELLOW}[Setting the ROSLAUNCH_SSH_UNKNOWN in your .zshrc file]${NC}\n"
-    sh -c "echo \"export ROSLAUNCH_SSH_UNKNOWN=1\" >> ~/.zshrc"
-  fi
-  if ! (grep "dev_ws/install/setup.zsh" ~/.zshrc >/dev/null); then
-    printf "\n${YELLOW}[Setting the ROS setup.zsh source call in your .zshrc file]${NC}\n"
-    sh -c "echo \"source ~/dev_ws/install/setup.zsh\" >> ~/.zshrc"
-  fi
-  if ! (grep "${HOME}/dev_ws/src/ArloBot/scripts" ~/.zshrc >/dev/null); then
+if [[ -f ${HOME}/.zshrc ]]; then
+  if ! (grep "${HOME}/ArloBot/scripts" "${HOME}/.zshrc" >/dev/null); then
     printf "\n${YELLOW}[Adding ArloBot Scripts folder to your path in .zshrc]${NC}\n"
-    sh -c "echo \"export PATH=\\\$PATH:${HOME}/dev_ws/src/ArloBot/scripts\" >> ~/.zshrc"
+    sh -c "echo \"export PATH=\\\$PATH:${HOME}/ArloBot/scripts\" >> ${HOME}/.zshrc"
   fi
 fi
 
@@ -443,7 +440,7 @@ pip3 install pylibftdi --break-system-packages
 # https://pylibftdi.readthedocs.io/en/0.15.0/installation.html
 if ! [[ -f /etc/udev/rules.d/99-libftdi.rules ]]; then
   printf "\n${YELLOW}[Adding required sudo rule for pylibftdi to access USB based serial ports.]${NC}\n"
-  sudo "${HOME}/dev_ws/src/ArloBot/scripts/addRuleForUSBRelayBoard.sh"
+  sudo "${HOME}/ArloBot/scripts/addRuleForUSBRelayBoard.sh"
   printf "${RED}You may have to reboot before the USB Relay board will function!${NC}\n"
 fi
 
@@ -479,13 +476,13 @@ if [ "$NVM_VERSION" != "$NVM_VERSION_LATEST" ]; then
 
   wget -qO- "https://raw.githubusercontent.com/nvm-sh/nvm/v$NVM_TAG/install.sh" | bash
 
-  if [[ -e ~/.bashrc ]] && ! (grep NVM_SYMLINK_CURRENT ~/.bashrc >/dev/null); then
+  if [[ -e ${HOME}/.bashrc ]] && ! (grep NVM_SYMLINK_CURRENT "${HOME}/.bashrc" >/dev/null); then
     printf "\n${YELLOW}[Setting the NVM current environment in your .bashrc file]${NC}\n"
-    sh -c "echo \"export NVM_SYMLINK_CURRENT=true\" >> ~/.bashrc"
+    sh -c "echo \"export NVM_SYMLINK_CURRENT=true\" >> ${HOME}/.bashrc"
   fi
-  if  [[ -e ~/.zshrc ]] && ! (grep NVM_SYMLINK_CURRENT ~/.zshrc >/dev/null); then
+  if  [[ -e ${HOME}/.zshrc ]] && ! (grep NVM_SYMLINK_CURRENT "${HOME}/.zshrc" >/dev/null); then
     printf "\n${YELLOW}[Setting the NVM current environment in your .zshrc file]${NC}\n"
-    sh -c "echo \"export NVM_SYMLINK_CURRENT=true\" >> ~/.zshrc"
+    sh -c "echo \"export NVM_SYMLINK_CURRENT=true\" >> ${HOME}/.zshrc"
   fi
 fi
 
@@ -511,51 +508,51 @@ npm install -g log.io
 printf "\n${YELLOW}[Log.io File Watcher for Log.io Log Streamer]$NC\n"
 npm install -g log.io-file-input
 
-if [[ -d ~/dev_ws/src/ArloBot/Log.io ]]; then
+if [[ -d ${HOME}/ArloBot/Log.io ]]; then
   printf "\n"
   printf "${LIGHTBLUE}Removing old Log.io Install${NC}\n"
-  rm -rf "${HOME}/dev_ws/src/ArloBot/Log.io"
+  rm -rf "${HOME}/ArloBot/Log.io"
 fi
 
-cd "${HOME}/dev_ws/src/ArloBot/node"
+cd "${HOME}/ArloBot/node"
 printf "\n${YELLOW}[Grabbing node dependencies for scripts]${NC}\n"
 printf "${LIGHTBLUE}You may get some errors here, that is normal. As long as things work, it is OK.$NC\n"
 npm update
 
-cd "${HOME}/dev_ws/src/ArloBot/website"
+cd "${HOME}/ArloBot/website"
 printf "\n${YELLOW}[Grabbing node dependencies for React website]${NC}\n"
 npm update
 printf "\n${YELLOW}[Building React website]${NC}\n"
 npm run build
 
-cd "${HOME}/dev_ws/src/ArloBot/cypress-tests"
+cd "${HOME}/ArloBot/cypress-tests"
 printf "\n${YELLOW}[Installing Cypress.io for Tests]$NC\n"
 npm update
 
 if ! (command -v mjpg_streamer >/dev/null); then
   printf "\n${YELLOW}[Installing mjpg_streamer for Web Page camera viewing]${NC}\n"
-  cd "${HOME}/dev_ws/src/ArloBot/"
-  if ! [[ -d ${HOME}/dev_ws/src/ArloBot/mjpg-streamer ]]; then
+  cd "${HOME}/ArloBot/"
+  if ! [[ -d ${HOME}/ArloBot/mjpg-streamer ]]; then
     git clone https://github.com/jacksonliam/mjpg-streamer.git
   else
-    cd "${HOME}/dev_ws/src/ArloBot/mjpg-streamer"
+    cd "${HOME}/ArloBot/mjpg-streamer"
     git pull
   fi
-  cd "${HOME}/dev_ws/src/ArloBot/mjpg-streamer/mjpg-streamer-experimental"
+  cd "${HOME}/ArloBot/mjpg-streamer/mjpg-streamer-experimental"
   make distclean
   make
   sudo make install
   # Removing install files, as they are not needed anymore.
-  cd "${HOME}/dev_ws/src/ArloBot/"
+  cd "${HOME}/ArloBot/"
   rm -rf mjpg-streamer
   # See scripts/streamVideoTest.sh for details on mjpg_streamer usage.
 fi
 
 if [[ -e ${ARLO_HOME}/personalDataForBehavior.json ]]; then
-  node "${HOME}/dev_ws/src/ArloBot/node/personalData.js"
+  node "${HOME}/ArloBot/node/personalData.js"
 else
   printf "\n"
-  cp "${HOME}/dev_ws/src/ArloBot/scripts/dotarlobot/personalDataForBehavior.json" "${ARLO_HOME}/"
+  cp "${HOME}/ArloBot/scripts/dotarlobot/personalDataForBehavior.json" "${ARLO_HOME}/"
   printf "${GREEN}A brand new ${RED}${ARLO_HOME}/personalDataForBehavior.json${GREEN} file has been created,${NC}\n"
   printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
 fi
@@ -621,11 +618,11 @@ if ! [[ -d /opt/parallax ]]; then
 fi
 
 if ! [[ -e ${ARLO_HOME}/per_robot_settings_for_propeller_c_code.h ]]; then
-  cp "${HOME}/dev_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/per_robot_settings_for_propeller_c_code.h" "${ARLO_HOME}"
+  cp "${HOME}/ArloBot/PropellerCodeForArloBot/dotfiles/per_robot_settings_for_propeller_c_code.h" "${ARLO_HOME}"
 fi
 
 if ! [[ -e ${ARLO_HOME}/per_robot_settings_for_propeller_2nd_board.h ]]; then
-  cp "${HOME}/dev_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/per_robot_settings_for_propeller_2nd_board.h" "${ARLO_HOME}"
+  cp "${HOME}/ArloBot/PropellerCodeForArloBot/dotfiles/per_robot_settings_for_propeller_2nd_board.h" "${ARLO_HOME}"
 fi
 
 if [[ $(arch) = "aarch64" ]];then
@@ -637,7 +634,7 @@ else
 
   function testMake() {
     printf " ${LIGHTBLUE}- ${1}${NC}\n"
-    cd "${HOME}/dev_ws/src/ArloBot/PropellerCodeForArloBot/${1}"
+    cd "${HOME}/ArloBot/PropellerCodeForArloBot/${1}"
     rm -rf bin
     if ! [[ -d bin ]]; then
       mkdir bin
@@ -655,23 +652,23 @@ fi
 cd
 
 if [[ -e ${ARLO_HOME}/arlobot.yaml ]]; then
-  if ! (diff "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/arlobot.yaml" "${ARLO_HOME}/arlobot.yaml" >/dev/null); then
+  if ! (diff "${HOME}/${ROS2_WS}/src/arlobot_ros/param/arlobot.yaml" "${ARLO_HOME}/arlobot.yaml" >/dev/null); then
     printf "\n${GREEN}The ${RED}arlobot.yaml${GREEN} file in the repository is different from the one${NC}\n"
     printf "${GREEN}in your local settings.${NC}\n"
     printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
     printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
-    diff "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/arlobot.yaml" "${ARLO_HOME}/arlobot.yaml" || true
-    # cp -i "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/arlobot.yaml" "${ARLO_HOME}/"
+    diff "${HOME}/${ROS2_WS}/src/arlobot_ros/param/arlobot.yaml" "${ARLO_HOME}/arlobot.yaml" || true
+    # cp -i "${HOME}/${ROS2_WS}/src/arlobot_ros/param/arlobot.yaml" "${ARLO_HOME}/"
     printf "\n"
   fi
 else
   printf "\n"
-  cp "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/arlobot.yaml" "${ARLO_HOME}/"
+  cp "${HOME}/${ROS2_WS}/src/arlobot_ros/param/arlobot.yaml" "${ARLO_HOME}/"
   printf "${GREEN}A brand new ${RED}${ARLO_HOME}/arlobot.yaml${GREEN} file has been created,${NC}\n"
   printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
 fi
 
-for i in "${HOME}/dev_ws/src/ArloBot/PropellerCodeForArloBot/dotfiles/"*; do
+for i in "${HOME}/ArloBot/PropellerCodeForArloBot/dotfiles/"*; do
   [[ -e "${i}" ]] || break # handle the case of no files
   # https://stackoverflow.com/a/9011264/4982408
   if [[ -e ${ARLO_HOME}/${i##*/} ]]; then
@@ -695,7 +692,7 @@ if ! (crontab -l >/dev/null 2>&1) || ! (crontab -l | grep startpm2 >/dev/null 2>
   printf "\n${YELLOW}[Adding cron job to start web server on system reboot.]${NC}\n"
   # https://stackoverflow.com/questions/4880290/how-do-i-create-a-crontab-through-a-script
   (
-    echo "@reboot ${HOME}/dev_ws/src/ArloBot/startpm2.sh > ${HOME}/crontab.log"
+    echo "@reboot ${HOME}/ArloBot/startpm2.sh > ${HOME}/crontab.log"
   ) | crontab -
 fi
 
@@ -703,7 +700,7 @@ printf "\n${LIGHTPURPLE}[Flushing PM2 logs and starting/restarting web server.]$
 pm2 update
 pm2 flush
 if ! pm2 restart Robot; then
-  "${HOME}/dev_ws/src/ArloBot/startpm2.sh"
+  "${HOME}/ArloBot/startpm2.sh"
 fi
 
 if [[ "${USER}" == chrisl8 ]]; then
@@ -713,7 +710,7 @@ if [[ "${USER}" == chrisl8 ]]; then
     printf "\n${YELLOW}[Adding robotStatusUser.]${NC}\n"
     printf "${GREEN}(This is NOT required for Arlobot, just a personal thing.)${NC}\n"
     sudo useradd -m robotStatusUser
-    printf "${GREEN}Be sure to add your key to ~robotStatusUser/.ssh/authorized_keys${NC}\n"
+    printf "${GREEN}Be sure to add your key to ${HOME}robotStatusUser/.ssh/authorized_keys${NC}\n"
     printf "${GREEN}for anyone who needs to use it!${NC}\n"
     printf "${RED}sudo su - robotStatusUser${NC}\n"
     printf "${RED}mkdir .ssh${NC}\n"
@@ -722,7 +719,7 @@ if [[ "${USER}" == chrisl8 ]]; then
   fi
 
   # Special notices for the developer himself to keep his stuff up to date. =)
-  cd "${HOME}/dev_ws/src/ArloBot/node"
+  cd "${HOME}/ArloBot/node"
   printf "\n${RED}[Hey ${USER} please make sure the below items are up to date!]${NC}\n"
   printf "\n${GREEN}[Hey ${USER} please make sure the below items are up to date!]${NC}\n"
   printf "\n${PURPLE}[Hey ${USER} please make sure the below items are up to date!]${NC}\n"
@@ -740,32 +737,32 @@ if [[ "${USER}" == chrisl8 ]]; then
   printf "${YELLOW}in node/:${NC}\n"
   npm outdated || true # Informational, do not crash  script
   printf "${YELLOW}in website/:${NC}\n"
-  cd "${HOME}/dev_ws/src/ArloBot/website"
+  cd "${HOME}/ArloBot/website"
   npm outdated || true # Informational, do not crash  script
   printf "${YELLOW}in cypress tests/:${NC}\n"
-  cd "${HOME}/dev_ws/src/ArloBot/cypress-tests"
+  cd "${HOME}/ArloBot/cypress-tests"
   npm outdated || true # Informational, do not crash  script
   printf "${PURPLE}-------------------------------------------------------${NC}\n"
 
   printf "${YELLOW}Diffing your param files to defaults where available:${NC}\n"
   printf "${LIGHTBLUE}teb_local_planner_params:${NC}\n"
-  diff "${HOME}/dev_ws/src/teb_local_planner_tutorials/cfg/diff_drive/teb_local_planner_params.yaml" "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/teb_local_planner_params.yaml" || true
+  diff "${HOME}/${ROS2_WS}/src/teb_local_planner_tutorials/cfg/diff_drive/teb_local_planner_params.yaml" "${HOME}/${ROS2_WS}/src/arlobot_ros/param/teb_local_planner_params.yaml" || true
   printf "${LIGHTBLUE}twist_mux_locks:${NC}\n"
-  diff /opt/ros/${INSTALLING_ROS_DISTRO}/share/twist_mux/config/twist_mux_locks.yaml "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/twist_mux_locks.yaml" || true
+  diff /opt/ros/${INSTALLING_ROS_DISTRO}/share/twist_mux/config/twist_mux_locks.yaml "${HOME}/${ROS2_WS}/src/arlobot_ros/param/twist_mux_locks.yaml" || true
   printf "${LIGHTBLUE}twist_mux_topics:${NC}\n"
-  diff /opt/ros/${INSTALLING_ROS_DISTRO}/share/twist_mux/config/twist_mux_topics.yaml "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/twist_mux_topics.yaml" || true
+  diff /opt/ros/${INSTALLING_ROS_DISTRO}/share/twist_mux/config/twist_mux_topics.yaml "${HOME}/${ROS2_WS}/src/arlobot_ros/param/twist_mux_topics.yaml" || true
   printf "${LIGHTBLUE}mapper_params_localization:${NC}\n"
-  diff "${HOME}/dev_ws/src/slam_toolbox/slam_toolbox/config/mapper_params_localization.yaml" "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/mapper_params_localization.yaml" || true
+  diff "${HOME}/${ROS2_WS}/src/slam_toolbox/slam_toolbox/config/mapper_params_localization.yaml" "${HOME}/${ROS2_WS}/src/arlobot_ros/param/mapper_params_localization.yaml" || true
   printf "${LIGHTBLUE}mapper_params_online_async:${NC}\n"
-  diff "${HOME}/dev_ws/src/slam_toolbox/slam_toolbox/config/mapper_params_online_async.yaml" "${HOME}/dev_ws/src/ArloBot/arlobot_ros/param/mapper_params_online_async.yaml" || true
+  diff "${HOME}/${ROS2_WS}/src/slam_toolbox/slam_toolbox/config/mapper_params_online_async.yaml" "${HOME}/${ROS2_WS}/src/arlobot_ros/param/mapper_params_online_async.yaml" || true
 fi
 
-printf "\n${PURPLE}Anytime you want to update ArloBot code from the web you can run this same script again. It will pull down and compile new code without wiping out custom configs in ~/.arlobot. I run this script myself almost every day.${NC}\n"
+printf "\n${PURPLE}Anytime you want to update ArloBot code from the web you can run this same script again. It will pull down and compile new code without wiping out custom configs in ${HOME}/.arlobot. I run this script myself almost every day.${NC}\n"
 
 printf "\n${YELLOW}-----------------------------------${NC}\n"
 printf "${YELLOW}ALL DONE! REBOOT, EDIT FILES, AND START TESTING!${NC}\n\n"
-printf "${GREEN}Remember to edit the config files in ~/.arlobot${NC}\n\n"
-printf "${LIGHTCYAN}Go to ${LIGHTBLUE}http://$(node "${HOME}/dev_ws/src/ArloBot/node/ipAddress.js"):$(jq '.webServerPort' "${ARLO_HOME}/personalDataForBehavior.json")${LIGHTCYAN} to see the Arlobot web interface.${NC}\n"
+printf "${GREEN}Remember to edit the config files in ${HOME}/.arlobot${NC}\n\n"
+printf "${LIGHTCYAN}Go to ${LIGHTBLUE}http://$(node "${HOME}/ArloBot/node/ipAddress.js"):$(jq '.webServerPort' "${ARLO_HOME}/personalDataForBehavior.json")${LIGHTCYAN} to see the Arlobot web interface.${NC}\n"
 printf "\n"
 printf "${GREEN}Look at README.md for testing ideas.${NC}\n"
 
