@@ -150,7 +150,7 @@ class PropellerSerialTest(object):
             "ignoreCliffSensors": 1 - self._settings["ignoreCliffSensors"],
             "ignoreIRSensors": 1 - self._settings["ignoreIRSensors"],
             "ignoreFloorSensors": 1 - self._settings["ignoreFloorSensors"],
-            "pluggedIn": 1 - self._settings["pluggedIn"],
+            "z": 1 - self._settings["pluggedIn"],
         }
         # Telemetry is stuff that updates rapidly from sensors on the robot
         self._telemetry = {

@@ -21,12 +21,13 @@ and
 http://forum.arduino.cc/index.php?topic=225329
 """
 
-from __future__ import print_function
-
 import time
 import struct
 
 import six
+
+# TODO: The ". " has to be removed from the next two lines to run PropellerSerialTest
+# TODO: Is there a way to make this work otherwise?
 from . PropellerSerialGateway import PropellerSerialGateway
 from . PropellerSerialDataPacketTypes import PropellerSerialDataPacketTypes
 
@@ -108,6 +109,7 @@ class PropellerSerialInterface(object):
         self._SerialDataGateway.Stop()
 
     def SendToPropellerOverSerial(self, packetType, data, debug=False):
+        self._output('SendToPropellerOverSerial ' + packetType)
         waiting = 0
         while self._serialWriteInProgress:
             if waiting > self._serialWriteTimeout:
@@ -240,6 +242,7 @@ class PropellerSerialInterface(object):
         return outBytes
 
     def HandleSerialDataInput(self, receivedByte):
+        #self._output('HandleSerialDataInput')
         # This kind of mirrors PropellerCodeForArloBot/ReceiveSerialData.h
         if self._serialReceiveInProgress:
             if six.byte2int(receivedByte) != self._serialDataEndMarker:

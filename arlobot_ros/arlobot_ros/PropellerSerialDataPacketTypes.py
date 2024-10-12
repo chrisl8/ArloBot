@@ -151,7 +151,7 @@ class PropellerSerialDataPacketTypes(object):
                 ignoreCliffSensors=0,
                 ignoreIRSensors=0,
                 ignoreFloorSensors=0,
-                pluggedIn=1,
+                pluggedIn=0,
             ):
                 self.trackWidth = trackWidth
                 self.distancePerCount = distancePerCount
