@@ -279,7 +279,7 @@ https://aka.ms/vs/16/release/vs_community.exe
 #### Qt5
 Qt5 is very difficult to find and install, this seems to be the correct installer download location:
 https://download.qt.io/archive/qt/5.12/5.12.12/
-![img.png](img.png)
+![Qt 5 Install Screen](screenshots/qt5.png "Qt5 Install Selections")
 
 As admin:
 ```
