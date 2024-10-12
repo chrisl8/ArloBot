@@ -32,4 +32,4 @@ cmake-build-none/
 /cypress-tests/package-lock.json
 /node/package-lock.json
 /website/package-lock.json
-/arlobot_ros/arlobot.urdf
+arlobot.urdf
