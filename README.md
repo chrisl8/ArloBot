@@ -21,6 +21,29 @@ The [Arlo Robot System](https://www.parallax.com/product/28966) by Parallax has 
 I would love to build a new version of this robot, but I haven't the free time for it at the moment.  
 Until then, enjoy this for what it is, and understand that any commits you see will be rather focused on a set of hardware that is no longer available.
 
+## ROS2 ToDo:
+ - Get cmd_vel input working so that robot moves.
+ - Get SLAM Toolbox working so that robot makes maps again.
+ - Find a planner, either get teb working or another one.
+ - Convert propeller_node variables to environment variables from .personalData json file like the RPLIDAR values
+   - Params were never meant to be populated before a node starts, nor to be passed between them
+   - The purpose of them being params was to allow real-time modification of them during calibration. If this becomes a need again a service should be created with messages to do this.
+ - Consider dropping "watchdog" from propeller_node
+   - I don't think that I need the stationary odometry publisher anymore?
+ - Convert propeller_node to be more ROS2 like
+   - I'm not sure how the "spin" works as it should be 100% event driven:
+     - It outputs when it gets data from the propeller board
+     - It encodes to the propeller board upon receiving twist messages
+     - Nothing else
+ - Get propeller_node and entire project to shut down cleanly upon kill_ros call
+   - RPLidar should shut off
+ - Finish conversion of anything left in my arlobot_ros1 folder and remove them.
+ - Clean up unused convenience scripts
+ - Clean up unused bits of code in the node service
+ - Clean up unused bits of code in the website
+ - Fully test and make work the rest of the website and node code
+ - Update cypress to test what is left and only what is left
+
 ArloBot Package for ROS
 =======================
 
