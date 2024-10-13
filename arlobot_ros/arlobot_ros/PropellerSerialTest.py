@@ -21,10 +21,10 @@ import time
 import curses
 import threading
 from math import sqrt, pow, radians, pi
-from PropellerSerialInterface import PropellerSerialInterface
-from PropellerSerialDataPacketTypes import PropellerSerialDataPacketTypes
-from PropellerSerialTestCursesInterface import Screen
-from checkPropellerCodeVersionNumber import checkPropellerCodeVersionNumber
+from . PropellerSerialInterface import PropellerSerialInterface
+from . PropellerSerialDataPacketTypes import PropellerSerialDataPacketTypes
+from . PropellerSerialTestCursesInterface import Screen
+from . checkPropellerCodeVersionNumber import checkPropellerCodeVersionNumber
 
 
 class Linear(object):

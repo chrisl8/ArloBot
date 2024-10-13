@@ -45,4 +45,5 @@ source "${HOME}/ros2_ws/install/setup.bash"
 
 export PYTHONPATH=${HOME}/ArloBot/arlobot_ros/arlobot_ros
 
-python "${SCRIPTDIR}/../PropellerSerialTest/PropellerSerialTest.py" "${USB_PORT}"
+cd "${SCRIPTDIR}/../arlobot_ros" || exit
+python -m arlobot_ros.PropellerSerialTest "${USB_PORT}"
