@@ -206,7 +206,6 @@ class Arduino {
   }
 
   init() {
-    // See Camera.js for example
     let inputStream = '';
     const inputArray = [];
     this.currentCommandArray = this.ledTestCommandArray;
