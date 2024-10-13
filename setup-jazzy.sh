@@ -408,8 +408,8 @@ printf "\n${YELLOW}[Installing dependencies for ROS build-from-source packages.]
 cd "${HOME}/${ROS2_WS}"
 rosdep install -q -y -r --from-paths src --ignore-src --rosdistro ${INSTALLING_ROS_DISTRO}
 
-printf "\n${YELLOW}[Generating xacro URDF file.]${NC}\n"
-/opt/ros/jazzy/bin/xacro "${HOME}/ArloBot/urdf/common.urdf.xacro" > "${HOME}/ArloBot/arlobot_ros/arlobot.urdf"
+printf "\n${YELLOW}[Generating URDF file with xacro.]${NC}\n"
+/opt/ros/jazzy/bin/xacro "${HOME}/ArloBot/urdf-xacro-source/common.urdf.xacro" > "${HOME}/ArloBot/arlobot_ros/arlobot.urdf"
 
 printf "\n${YELLOW}[(Re)Building ROS Source files.]${NC}\n"
 cd "${HOME}/${ROS2_WS}"

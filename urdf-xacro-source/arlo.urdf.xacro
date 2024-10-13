@@ -23,7 +23,7 @@
     <!-- base_footprint is a fictitious link(frame) that is on the ground right below base_link origin, navigation stack depends on this frame -->
     <link name="base_footprint">
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
           <box size="0.001 0.001 0.001"/>
         </geometry>
@@ -31,7 +31,7 @@
       </visual>
 
       <collision>
-        <origin xyz="0 0 0.017" rpy="0 0 0"/>
+      <origin rpy="0 0 0" xyz="0 0 0.017"/>
         <geometry>
           <box size="0.001 0.001 0.001"/>
         </geometry>
@@ -47,7 +47,7 @@
       </inertial>
 
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
           <cylinder length="0.0095" radius="0.2245"/>
         </geometry>
@@ -55,7 +55,7 @@
       </visual>
 
       <collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
           <cylinder length="0.0095" radius="0.2245"/>
         </geometry>
@@ -72,7 +72,7 @@
       </inertial>
 
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
           <box size="0.1778 0.3366 0.0762"/>
         </geometry>
@@ -80,7 +80,7 @@
       </visual>
 
       <collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
           <box size="0.1778 0.3366 0.0762"/>
         </geometry>
@@ -88,7 +88,7 @@
     </link>
 
     <joint name="battery_box_joint" type="fixed">
-      <origin xyz="0 0 -0.04285" rpy="0 0 0"/>
+    <origin rpy="0 0 0" xyz="0 0 -0.04285"/>
       <parent link="base_link"/>
       <child link="battery_box"/>
     </joint>
@@ -103,9 +103,9 @@
       </inertial>
 
       <visual>
-        <origin xyz="0 0 -0.05" rpy="-1.5707 0 0"/>
+      <origin rpy="-1.5707 0 0" xyz="0 0 -0.05"/>
         <geometry>
-          <cylinder radius="0.03" length="0.03175"/>
+        <cylinder length="0.03175" radius="0.03"/>
         </geometry>
         <material name="light_grey">
           <color rgba="0.6 0.6 0.6 1"/>
@@ -115,7 +115,7 @@
     </link>
 
     <joint name="front_caster_joint" type="fixed">
-      <origin xyz="0.18745 0 -0.00475" rpy="0 0 0"/>
+    <origin rpy="0 0 0" xyz="0.18745 0 -0.00475"/>
       <parent link="base_link"/>
       <child link="front_caster"/>
     </joint>
@@ -130,9 +130,9 @@
       </inertial>
 
       <visual>
-        <origin xyz="0 0 -0.05" rpy="-1.5707 0 0"/>
+      <origin rpy="-1.5707 0 0" xyz="0 0 -0.05"/>
         <geometry>
-          <cylinder radius="0.03" length="0.03175"/>
+        <cylinder length="0.03175" radius="0.03"/>
         </geometry>
         <material name="light_grey">
           <color rgba="0.6 0.6 0.6 1"/>
@@ -142,13 +142,13 @@
     </link>
 
     <joint name="rear_caster_joint" type="fixed">
-      <origin xyz="-0.18745 0 -0.00475" rpy="0 0 0"/>
+    <origin rpy="0 0 0" xyz="-0.18745 0 -0.00475"/>
       <parent link="base_link"/>
       <child link="rear_caster"/>
     </joint>
 
     <joint name="base_footprint_joint" type="fixed">
-      <origin xyz="0 0 0.10125" rpy="0 0 0"/>
+    <origin rpy="0 0 0" xyz="0 0 0.10125"/>
       <parent link="base_footprint"/>
       <child link="base_link"/>
     </joint>
@@ -162,23 +162,23 @@
       </inertial>
 
       <visual>
-        <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+      <origin rpy="0 1.5707 1.5707" xyz="0 0 0"/>
         <geometry>
-          <cylinder radius="0.00635" length="0.00635"/>
+        <cylinder length="0.00635" radius="0.00635"/>
         </geometry>
         <material name="light_grey"/>
       </visual>
 
       <collision>
-        <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+      <origin rpy="0 1.5707 1.5707" xyz="0 0 0"/>
         <geometry>
-          <cylinder radius="0.00635" length="0.00635"/>
+        <cylinder length="0.00635" radius="0.00635"/>
         </geometry>
       </collision>
     </link>
 
     <joint name="left_axle_joint" type="fixed">
-      <origin xyz="0 0.171475 0.0178" rpy="0 0 0"/>
+    <origin rpy="0 0 0" xyz="0 0.171475 0.0178"/>
       <parent link="battery_box"/>
       <child link="left_axle_link"/>
       <axis xyz="0 1 0"/>
@@ -193,23 +193,23 @@
       </inertial>
 
       <visual>
-        <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+      <origin rpy="0 1.5707 1.5707" xyz="0 0 0"/>
         <geometry>
-          <cylinder radius="0.00635" length="0.00635"/>
+        <cylinder length="0.00635" radius="0.00635"/>
         </geometry>
         <material name="light_grey"/>
       </visual>
 
       <collision>
-        <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+      <origin rpy="0 1.5707 1.5707" xyz="0 0 0"/>
         <geometry>
-          <cylinder radius="0.00635" length="0.00635"/>
+        <cylinder length="0.00635" radius="0.00635"/>
         </geometry>
       </collision>
     </link>
 
     <joint name="right_axle_joint" type="fixed">
-      <origin xyz="0 -0.171475 0.0178" rpy="0 0 0"/>
+    <origin rpy="0 0 0" xyz="0 -0.171475 0.0178"/>
       <parent link="battery_box"/>
       <child link="right_axle_link"/>
       <axis xyz="0 1 0"/>
@@ -224,17 +224,17 @@
       </inertial>
 
       <visual>
-        <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+      <origin rpy="0 1.5707 1.5707" xyz="0 0 0"/>
         <geometry>
-          <cylinder radius="0.0762" length="0.03175"/>
+        <cylinder length="0.03175" radius="0.0762"/>
         </geometry>
         <material name="black"/>
       </visual>
 
       <collision>
-        <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+      <origin rpy="0 1.5707 1.5707" xyz="0 0 0"/>
         <geometry>
-          <cylinder radius="0.0762" length="0.03175"/>
+        <cylinder length="0.03175" radius="0.0762"/>
         </geometry>
       </collision>
     </link>
@@ -242,7 +242,7 @@
     <!-- Fixed because we never rotate it anyway, it is just for show -->
     <!-- NOTE This may prevent gazebo from working with this model -->
     <joint name="left_wheel_joint" type="fixed">
-      <origin xyz="0 0.01905 0" rpy="0 0 0"/>
+    <origin rpy="0 0 0" xyz="0 0.01905 0"/>
       <parent link="left_axle_link"/>
       <child link="left_wheel_link"/>
       <axis xyz="0 1 0"/>
@@ -257,17 +257,17 @@
       </inertial>
 
       <visual>
-        <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+      <origin rpy="0 1.5707 1.5707" xyz="0 0 0"/>
         <geometry>
-          <cylinder radius="0.0762" length="0.03175"/>
+        <cylinder length="0.03175" radius="0.0762"/>
         </geometry>
         <material name="black"/>
       </visual>
 
       <collision>
-        <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+      <origin rpy="0 1.5707 1.5707" xyz="0 0 0"/>
         <geometry>
-          <cylinder radius="0.0762" length="0.03175"/>
+        <cylinder length="0.03175" radius="0.0762"/>
         </geometry>
       </collision>
     </link>
@@ -275,7 +275,7 @@
     <!-- Fixed because we never rotate it anyway, it is just for show -->
     <!-- NOTE This may prevent gazebo from working with this model -->
     <joint name="right_wheel_joint" type="fixed">
-      <origin xyz="0 -0.01905 0" rpy="0 0 0"/>
+    <origin rpy="0 0 0" xyz="0 -0.01905 0"/>
       <parent link="right_axle_link"/>
       <child link="right_wheel_link"/>
       <axis xyz="0 1 0"/>
@@ -283,7 +283,7 @@
 
     <!-- This pretends to be in the center in order to aid in calculating degrees from multiple sensors on one fake laser scan -->
     <joint name="ping_array_joint" type="fixed">
-      <origin xyz="0 0 0.03695" rpy="0 0 0"/>
+    <origin rpy="0 0 0" xyz="0 0 0.03695"/>
       <parent link="base_link"/>
       <child link="ping_sensor_array"/>
     </joint>
@@ -304,7 +304,7 @@
     </link>
 
     <joint name="ir_array_joint" type="fixed">
-      <origin xyz="0 0 0.03695" rpy="0 0 0"/>
+    <origin rpy="0 0 0" xyz="0 0 0.03695"/>
       <parent link="base_link"/>
       <child link="ir_sensor_array"/>
     </joint>
@@ -328,7 +328,7 @@
     <joint name="scanse_sweep_joint" type="fixed">
       <!-- Minor adjustments based on lining up Scanse Sweep output with 3D Sensor output -->
       <!-- So if the 3D sensor is misaligned the Scanse Sweep is off by the same amount -->
-      <origin xyz="0.15 0.0 0.269107" rpy="0 0 3.13"/>
+    <origin rpy="0 0 3.13" xyz="0.15 0.0 0.269107"/>
       <parent link="base_link"/>
       <child link="scanse_sweep"/>
     </joint>
@@ -358,7 +358,7 @@
       <!-- NOTE: The "FRONT" of the RPLIDAR A2/3 is the point where the cord comes out. -->
       <!-- Hence the r of 3.1 to rotate it half way around.  -->
       <!-- The height is set even with the top plate. It shouldn't matter really. -->
-      <origin xyz="0.125 0.0 0.269107" rpy="0.0 0.0 0.0"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.125 0.0 0.269107"/>
       <parent link="base_link"/>
       <child link="rplidar"/>
     </joint>
@@ -397,7 +397,7 @@
       </inertial>
 
       <visual>
-        <origin xyz=" 0 0 0 " rpy="0 0 0"/>
+      <origin rpy="0 0 0" xyz=" 0 0 0 "/>
         <geometry>
           <cylinder length="0.127" radius="0.00635"/>
         </geometry>
@@ -407,7 +407,7 @@
       </visual>
 
       <collision>
-        <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
         <geometry>
           <cylinder length="0.127" radius="0.00635"/>
         </geometry>
@@ -459,7 +459,7 @@
                           z_loc="0.06825"/>
 
     <joint name="plate_1_joint" type="fixed">
-      <origin xyz="0 0 0.1365" rpy="0 0 0"/>
+    <origin rpy="0 0 0" xyz="0 0 0.1365"/>
       <parent link="plate_0_link"/>
       <child link="plate_1_link"/>
     </joint>
@@ -474,7 +474,7 @@
       </inertial>
 
       <visual>
-        <origin xyz=" 0 0 0 " rpy="0 0 0"/>
+      <origin rpy="0 0 0" xyz=" 0 0 0 "/>
         <geometry>
           <cylinder length="0.0095" radius="0.2245"/>
         </geometry>
@@ -484,7 +484,7 @@
       </visual>
 
       <collision>
-        <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
         <geometry>
           <cylinder length="0.0095" radius="0.2245"/>
         </geometry>
