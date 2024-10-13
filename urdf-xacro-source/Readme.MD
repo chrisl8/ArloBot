@@ -5,8 +5,8 @@
 This is a `urdf` XML file with Macros in it. The macros are expanded by a tool called `xacro`.
 
 You must use the `xacro` command to convert these files int a URDF file before running:  
-`colcon build`
-`xacro common.urdf.xacro > ../arlobot_ros/arlobot.urdf`
+` source ~/ros2_ws/install/setup.zsh;/opt/ros/jazzy/bin/xacro ~/ArloBot/urdf/arlo.urdf.xacro > ~/ArloBot/arlobot_ros/arlobot.urdf`
+
 
 The `setup-jazzy.sh` file does this automatically.
 

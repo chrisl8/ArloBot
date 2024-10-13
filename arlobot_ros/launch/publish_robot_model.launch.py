@@ -4,7 +4,7 @@ from launch import LaunchDescription
 from launch_ros.actions import Node
 
 # You must use the `xacro` command to convert the URDF stack to an xacro xml file.
-# `xacro common.urdf.xacro > ../arlobot.urdf`
+# ` source ~/ros2_ws/install/setup.zsh;/opt/ros/jazzy/bin/xacro ~/ArloBot/urdf/arlo.urdf.xacro > ~/ArloBot/arlobot_ros/arlobot.urdf`
 
 def generate_launch_description():
 
