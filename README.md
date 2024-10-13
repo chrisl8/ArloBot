@@ -43,6 +43,7 @@ Until then, enjoy this for what it is, and understand that any commits you see w
  - Clean up unused bits of code in the website
  - Fully test and make work the rest of the website and node code
  - Update cypress to test what is left and only what is left
+ - Move all web bookmarks into relevant comments in my code or this Readme
 
 ArloBot Package for ROS
 =======================
