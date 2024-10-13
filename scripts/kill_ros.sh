@@ -75,12 +75,6 @@ if (pkill -f prime); then
     sleep 1
   done
 fi
-if (pkill -f mjpg_streamer); then
-  while (pgrep -f mjpg_streamer); do
-    echo "Waiting for mjpg_streamer (Video Stream) to close . . ."
-    sleep 1
-  done
-fi
 echo "Everything Killed."
 if [[ -f nohup.out ]]; then
   rm nohup.out

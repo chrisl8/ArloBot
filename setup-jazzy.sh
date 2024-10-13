@@ -529,25 +529,6 @@ cd "${HOME}/ArloBot/cypress-tests"
 printf "\n${YELLOW}[Installing Cypress.io for Tests]$NC\n"
 npm update
 
-if ! (command -v mjpg_streamer >/dev/null); then
-  printf "\n${YELLOW}[Installing mjpg_streamer for Web Page camera viewing]${NC}\n"
-  cd "${HOME}/ArloBot/"
-  if ! [[ -d ${HOME}/ArloBot/mjpg-streamer ]]; then
-    git clone https://github.com/jacksonliam/mjpg-streamer.git
-  else
-    cd "${HOME}/ArloBot/mjpg-streamer"
-    git pull
-  fi
-  cd "${HOME}/ArloBot/mjpg-streamer/mjpg-streamer-experimental"
-  make distclean
-  make
-  sudo make install
-  # Removing install files, as they are not needed anymore.
-  cd "${HOME}/ArloBot/"
-  rm -rf mjpg-streamer
-  # See scripts/streamVideoTest.sh for details on mjpg_streamer usage.
-fi
-
 if [[ -e ${ARLO_HOME}/personalDataForBehavior.json ]]; then
   node "${HOME}/ArloBot/node/personalData.js"
 else

@@ -14,7 +14,6 @@ module.exports = {
   logBehaviorMessages: false,
   logOtherMessages: false,
   logTalkAboutEvents: false,
-  cameraOn: false,
   ROSstart: false,
   ROSisRunning: false,
   killRosHasRun: false,

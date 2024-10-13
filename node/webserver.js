@@ -8,9 +8,6 @@ const socketIo = require('socket.io');
 const personalData = require('./personalData');
 const webModel = require('./webModel');
 const webModelFunctions = require('./webModelFunctions');
-const Camera = require('./Camera');
-/** @namespace personalData.camera0name */
-const camera = new Camera('Camera', personalData.camera0name);
 const Arduino = require('./Arduino');
 
 const arduino = new Arduino();
@@ -306,9 +303,6 @@ async function start() {
     });
     socket.on('toggleLogOtherMessages', () => {
       webModelFunctions.toggle('logOtherMessages');
-    });
-    socket.on('toggleCamera', () => {
-      camera.toggle();
     });
     socket.on('toggleRelay', (data) => {
       robotModel.usbRelay.toggle(data);
