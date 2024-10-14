@@ -25,11 +25,9 @@ Until then, enjoy this for what it is, and understand that any commits you see w
  - Get cmd_vel input working so that robot moves.
  - Get SLAM Toolbox working so that robot makes maps again.
  - Find a planner, either get teb working or another one.
- - Convert propeller_node variables to environment variables from .personalData json file like the RPLIDAR values
-   - Params were never meant to be populated before a node starts, nor to be passed between them
-   - The purpose of them being params was to allow real-time modification of them during calibration. If this becomes a need again a service should be created with messages to do this.
  - Consider dropping "watchdog" from propeller_node
    - I don't think that I need the stationary odometry publisher anymore?
+   - Although it currenty also watches for and updates mismatches between ROS params and Propeller board.
  - Convert propeller_node to be more ROS2 like
    - I'm not sure how the "spin" works as it should be 100% event driven:
      - It outputs when it gets data from the propeller board
@@ -37,6 +35,7 @@ Until then, enjoy this for what it is, and understand that any commits you see w
      - Nothing else
  - Get propeller_node and entire project to shut down cleanly upon kill_ros call
    - RPLidar should shut off
+   - It complains about logging during shutdown, not sure if that can be fixed or not?
  - Finish conversion of anything left in my arlobot_ros1 folder and remove them.
  - Clean up unused convenience scripts
  - Clean up unused bits of code in the node service
@@ -44,6 +43,8 @@ Until then, enjoy this for what it is, and understand that any commits you see w
  - Fully test and make work the rest of the website and node code
  - Update cypress to test what is left and only what is left
  - Move all web bookmarks into relevant comments in my code or this Readme
+ - Use vcgencmd get_throttled to detect and alarm on voltage and thermal issues
+ - Monitor battery power from the activity board and alarm/act on low voltage
 
 ArloBot Package for ROS
 =======================
@@ -417,3 +418,38 @@ If you have HB-25 controllers, you can try using the last release that I made th
 All code contributions are greatly welcomed! I almost always accept pull requests. Worst case, I accept it, find an issue, and fix it, but even code that I have to fix up is better than code I have to write from scratch!  
 Feel free to use this repository for [Hacktoberfest](https://hacktoberfest.digitalocean.com/) or other code contribution events, or just to get your feet wet using git. I'm happy to get spelling corrections and documentation improvements.  
 I use [prettier](https://prettier.io/) on my JavaScript code, [Black](https://pypi.org/project/black/) on my Python code, and [shfmt](https://github.com/mvdan/sh) on my Bash code to format it. However, I won't let code formatting prevent me from accepting a pull request. I can tidy it up later.
+
+---
+
+# Post install Testing
+Most of this was covered above, but here it is again for myself.
+
+## Hardware
+Run `PropellerSerialTest.sh` to ensure hardware communication is working.
+
+## ROS Basic Turn-Up works
+ - Terminal One:  
+`start-arlbot-only.sh`
+ - Terminal Two:  
+`source ~/ros2_ws/install/setup.zsh` (Or setup.bash if you use Bash)
+`ros2 topic list`
+Should look like this:  
+```
+/arlo_status
+/arlobot_safety/safetyStatus
+/buttons
+/cmd_vel
+/infrared_scan
+/joint_states
+/odom
+/parameter_events
+/robot_description
+/rosout
+/tf
+/tf_static
+/ultrasonic_scan
+```
+
+`ros2 topic echo /odom`
+Should spew a steady stream of text too quickly to read, this is the odom coming from the Propeller board.
+

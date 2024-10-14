@@ -1,12 +1,7 @@
 #!/usr/bin/env bash
 
 # Tweak these numbers if it keeps failing
-# Give Linux time for the devices to come one line after a fresh power on of a relay
-USB_DELAY_TIME=1
-# How many retries to give normally
-RETRY_COUNT=2
-# How many retries to give if the relay was just turned on
-RETRY_COUNT_RELAY_JUST_ON=10
+
 # How long to delay between attempts
 DELAY_BETWEEN_ATTEMPTS=2
 
@@ -33,6 +28,7 @@ wrap_up_on_fail() {
 
 # USB Relay Controller
 if [[ $(jq '.useUSBrelay' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
+  echo "Checking USB Relay Controller . . ."
   if ! "${SCRIPT_DIR}/drcontrol.py" -l | grep USB &>/dev/null; then
     echo "USB Relay Controller missing!"
     wrap_up_on_fail

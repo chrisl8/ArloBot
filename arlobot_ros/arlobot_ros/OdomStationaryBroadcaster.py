@@ -41,7 +41,7 @@ class OdomStationaryBroadcaster(Node):
             #self.r.sleep()  # Sleep long enough to maintain the rate set in __init__
 
     def Stop(self):
-        rclpy.loginfo("Stopping OdomStationaryBroadcaster")
+        self._printOutputFunction("Stopping OdomStationaryBroadcaster")
         self._KeepRunning = False
 
 

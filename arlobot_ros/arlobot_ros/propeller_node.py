@@ -45,7 +45,6 @@ class PropellerComm(Node):
     def __init__(self, args=None):
         # https://answers.ros.org/question/358343/rate-and-sleep-function-in-rclpy-library-for-ros2/
         self.r = node.create_rate(1)  # 1hz refresh rate
-        node.get_logger().info(args)
         self._motorsOn = (
             False  # Set to True if the motors are on, used with USB Relay Control board
         )
@@ -71,16 +70,14 @@ class PropellerComm(Node):
                 ('lastX', 0.0),
                 ('lastY', 0.0),
                 ('lastHeading', 0.0),
-                ('usbRelayInstalled', False),
-                ('usbLeftMotorRelayLabel', ""),
-                ('usbRightMotorRelayLabel', ""),
-                ("driveGeometry/trackWidth", "0.403"),
-                ("driveGeometry/distancePerCount", "0.00338"),
-                ("driveGeometry/wheelSymmetryError", "1.0"),
+                ("driveGeometry/trackWidth", 0.403),
+                ("driveGeometry/distancePerCount", 0.00338),
+                ("driveGeometry/wheelSymmetryError", 1.0),
                 ("ignoreProximity", False),
                 ("ignoreCliffSensors", False),
                 ("ignoreIRSensors", False),
                 ("ignoreFloorSensors", False),
+                ("pluggedIn", False), # No-longer used, but the Propeller board expects it.
                 ("port", "/dev/ttyUSB1"),
                 ("baudRate", 115200),
                 ("maxPingRangeAccepted", 0.5),
@@ -92,25 +89,14 @@ class PropellerComm(Node):
         self.lastHeading = node.get_parameter("lastHeading").get_parameter_value().double_value
         self.alternate_heading = self.lastHeading
 
-        # Store the data from ROS
-        self._settings_from_ros = {
-            "trackWidth": 0.403,
-            "distancePerCount": 0.00338,
-            "wheelSymmetryError": 1.0,
-            "ignoreProximity": False,
-            "ignoreCliffSensors": False,
-            "ignoreIRSensors": False,
-            "ignoreFloorSensors": False,
-            "pluggedIn": False,
-        }
-
-        # TODO: I'm not sure this works, skipping for now.
-        # self._updateSettingsFromROS()
+        # Store the data from ROS for comparison later
+        self._settings_from_ros = {}
+        self._updateSettingsFromROS()
 
         # Store the incoming data from the Propeller board
         self._config_from_propeller = {
-            "trackWidth": 0.403,
-            "distancePerCount": 0.00338,
+            "trackWidth": 0.0,
+            "distancePerCount": 0.0,
             "wheelSymmetryError": 1.0,
             # Set to opposites of self._settings
             # to ensure _settingsUpdateRequired stays true
@@ -207,13 +193,12 @@ class PropellerComm(Node):
         node.get_logger().info("Test Packet Received: " + str(data))
 
     def _updateSettingsFromROS(self):
-        # self.forwardTextToRosLog("_updateSettingsFromROS")
         self._settings_from_ros["trackWidth"] = node.get_parameter(
-            "driveGeometry/trackWidth").get_parameter_value().integer_value
+            "driveGeometry/trackWidth").get_parameter_value().double_value
         self._settings_from_ros["distancePerCount"] = node.get_parameter(
-            "driveGeometry/distancePerCount").get_parameter_value().integer_value
+            "driveGeometry/distancePerCount").get_parameter_value().double_value
         self._settings_from_ros["wheelSymmetryError"] = node.get_parameter(
-            "driveGeometry/wheelSymmetryError").get_parameter_value().integer_value
+            "driveGeometry/wheelSymmetryError").get_parameter_value().double_value
         self._settings_from_ros["ignoreProximity"] = node.get_parameter(
             "ignoreProximity").get_parameter_value().bool_value
         self._settings_from_ros["ignoreCliffSensors"] = node.get_parameter(
@@ -222,6 +207,8 @@ class PropellerComm(Node):
             "ignoreIRSensors").get_parameter_value().bool_value
         self._settings_from_ros["ignoreFloorSensors"] = node.get_parameter(
             "ignoreFloorSensors").get_parameter_value().bool_value
+        self._settings_from_ros["pluggedIn"] = node.get_parameter("pluggedIn").get_parameter_value().bool_value
+
 
     def _safety_shutdown(self, status):
         """
@@ -720,14 +707,17 @@ class PropellerComm(Node):
         Called by ROS on shutdown.
         Shut off motors, record position and reset serial port.
         """
-        self.forwardTextToRosLog("Stopping")
+        node.get_logger().info("Stopping")
         self._SafeToOperate = False  # Prevent threads fighting
         # Save last position in parameter server in case we come up again without restarting roscore!
-        rclpy.set_param("lastX", self.lastX)
-        rclpy.set_param("lastY", self.lastY)
-        rclpy.set_param("lastHeading", self.lastHeading)
-        if self.relayExists:
-            time.sleep(5)  # Give the motors time to shut off
+        # TODO: This won't work as ROS is going down, instead update the local environment variables.
+        # node.set_parameters(
+        #     [
+        #         rclpy.parameter.Parameter('lastX', rclpy.Parameter.Type.DOUBLE, self.lastX),
+        #         rclpy.parameter.Parameter('lastY', rclpy.Parameter.Type.DOUBLE, self.lastY),
+        #         rclpy.parameter.Parameter('lastHeading', rclpy.Parameter.Type.DOUBLE, self.lastHeading),
+        #     ]
+        # )
         self._serialAvailable = False
         node.get_logger().info("Serial Interface stopping . . .")
         self.serialInterface.Stop()
@@ -835,7 +825,6 @@ class PropellerComm(Node):
         ]
 
     def _propellerConfigDataHandler(self, data):
-        self.forwardTextToRosLog("_propellerConfigDataHandler")
         self.forwardTextToRosLog(data)
         if len(data) > 7:  # Ignore short packets
             # Round these to the same precision as the input was given at
@@ -941,8 +930,7 @@ class PropellerComm(Node):
             if self._odometry_broadcast_timeout > self._odometry_broadcast_timeout_max:
                 self._broadcast_static_odometry = True
 
-            # TODO: I'm not sure this works, skipping for now.
-            # self._updateSettingsFromROS()
+            self._updateSettingsFromROS()
 
             # self.forwardTextToRosLog(str(self._config_from_propeller))
 
@@ -966,6 +954,7 @@ class PropellerComm(Node):
                     or self._config_from_propeller["pluggedIn"]
                     != self._settings_from_ros["pluggedIn"]
             ):
+                node.get_logger().info("Sending settings from ROS to Propeller due to mismatch")
                 settingsData = self.dataTypes.SettingsDataPacket(
                     self._settings_from_ros["trackWidth"],
                     self._settings_from_ros["distancePerCount"],

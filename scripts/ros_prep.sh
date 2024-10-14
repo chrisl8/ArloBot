@@ -54,6 +54,32 @@ chmod 777 "${HOME}/.arlobot/status/" &>/dev/null
 if [[ $(jq '.hasActivityBoard' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
   ACTIVITY_BOARD_PORT=$("${SCRIPTDIR}/find_ActivityBoard.sh")
   export ACTIVITY_BOARD_PORT
+  maxPingRangeAccepted=$(jq '.maxPingRangeAccepted' "${HOME}/.arlobot/personalDataForBehavior.json")
+  export maxPingRangeAccepted
+  trackWidth=$(jq '.driveGeometry.trackWidth' "${HOME}/.arlobot/personalDataForBehavior.json")
+  export trackWidth
+  distancePerCount=$(jq '.driveGeometry.distancePerCount' "${HOME}/.arlobot/personalDataForBehavior.json")
+  export distancePerCount
+  wheelSymmetryError=$(jq '.driveGeometry.wheelSymmetryError' "${HOME}/.arlobot/personalDataForBehavior.json")
+  export wheelSymmetryError
+  ignoreProximity=$(jq '.ignoreProximity' "${HOME}/.arlobot/personalDataForBehavior.json")
+  export ignoreProximity
+  ignoreCliffSensors=$(jq '.ignoreCliffSensors' "${HOME}/.arlobot/personalDataForBehavior.json")
+  export ignoreCliffSensors
+  ignoreIRSensors=$(jq '.ignoreIRSensors' "${HOME}/.arlobot/personalDataForBehavior.json")
+  export ignoreIRSensors
+  ignoreFloorSensors=$(jq '.ignoreFloorSensors' "${HOME}/.arlobot/personalDataForBehavior.json")
+  export ignoreFloorSensors
+  pluggedIn=$(jq '.pluggedIn' "${HOME}/.arlobot/personalDataForBehavior.json")
+  export pluggedIn
+  activityBoardbaudRate=$(jq '.activityBoardbaudRate' "${HOME}/.arlobot/personalDataForBehavior.json")
+  export activityBoardbaudRate
+  lastX=0.0
+  export lastX
+  lastY=0.0
+  export lastY
+  lastHeading=0.0
+  export lastHeading
 else
   YELLOW='\033[1;33m'
   NC='\033[0m' # NoColor
