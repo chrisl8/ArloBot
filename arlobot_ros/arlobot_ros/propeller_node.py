@@ -45,9 +45,6 @@ class PropellerComm(Node):
     def __init__(self, args=None):
         # https://answers.ros.org/question/358343/rate-and-sleep-function-in-rclpy-library-for-ros2/
         self.r = node.create_rate(1)  # 1hz refresh rate
-        self._motorsOn = (
-            False  # Set to True if the motors are on, used with USB Relay Control board
-        )
         self._safeToGo = True  # Use arlobot_safety to set this
         self._SafeToOperate = True  # Use arlobot_safety to set this
         self._unPlugging = True  # Used for when arlobot_safety tells us to "UnPlug"!
@@ -77,7 +74,7 @@ class PropellerComm(Node):
                 ("ignoreCliffSensors", False),
                 ("ignoreIRSensors", False),
                 ("ignoreFloorSensors", False),
-                ("pluggedIn", False), # No-longer used, but the Propeller board expects it.
+                ("pluggedIn", False),  # No-longer used, but the Propeller board expects it.
                 ("port", "/dev/ttyUSB1"),
                 ("baudRate", 115200),
                 ("maxPingRangeAccepted", 0.5),
@@ -208,7 +205,6 @@ class PropellerComm(Node):
         self._settings_from_ros["ignoreFloorSensors"] = node.get_parameter(
             "ignoreFloorSensors").get_parameter_value().bool_value
         self._settings_from_ros["pluggedIn"] = node.get_parameter("pluggedIn").get_parameter_value().bool_value
-
 
     def _safety_shutdown(self, status):
         """
@@ -734,7 +730,7 @@ class PropellerComm(Node):
             moveData = self.dataTypes.MoveDataPacket(
                 twist_command.linear.x, twist_command.angular.z
             )
-            self.serialInterface.SendToPropellerOverSerial("move", moveData)
+            self.serialInterface.SendToPropellerOverSerial("move", moveData, True)
             # For debugging
             # node.get_logger().warn(
             #     "SENT MOVE: "
@@ -744,7 +740,7 @@ class PropellerComm(Node):
             # )
         elif self._clear_to_go("to_stop"):
             moveData = self.dataTypes.MoveDataPacket(0.0, 0.0)
-            self.serialInterface.SendToPropellerOverSerial("move", moveData)
+            self.serialInterface.SendToPropellerOverSerial("move", moveData, True)
 
     def _toggleLED(self, LED):
         self.forwardTextToRosLog("_toggleLED")
@@ -824,8 +820,10 @@ class PropellerComm(Node):
             "pluggedIn"
         ]
 
+        self._getRosSettingsCompareAndSendToProp()
+
     def _propellerConfigDataHandler(self, data):
-        self.forwardTextToRosLog(data)
+        node.get_logger().info("Propeller Config Data Received. Will read and compare to ROS data.")
         if len(data) > 7:  # Ignore short packets
             # Round these to the same precision as the input was given at
             # noinspection PyTypeChecker
@@ -855,6 +853,8 @@ class PropellerComm(Node):
                 True if data[6] == 1 else False
             )
             self._config_from_propeller["pluggedIn"] = True if data[7] == 1 else False
+
+        self._getRosSettingsCompareAndSendToProp()
 
     def _broadcast_odometry(self, x, y, theta, vx, omega, now):
 
@@ -922,6 +922,46 @@ class PropellerComm(Node):
             omega = 0
             self._broadcast_odometry(x, y, theta, vx, omega, node.get_clock().now().to_msg())
 
+    def _getRosSettingsCompareAndSendToProp(self):
+        self._updateSettingsFromROS()
+
+        # self.forwardTextToRosLog(str(self._config_from_propeller))
+
+        # Check if any settings need to be updated
+        # noinspection Duplicates
+        if (
+                self._config_from_propeller["trackWidth"]
+                != self._settings_from_ros["trackWidth"]
+                or self._config_from_propeller["distancePerCount"]
+                != self._settings_from_ros["distancePerCount"]
+                or self._config_from_propeller["wheelSymmetryError"]
+                != self._settings_from_ros["wheelSymmetryError"]
+                or self._config_from_propeller["ignoreProximity"]
+                != self._settings_from_ros["ignoreProximity"]
+                or self._config_from_propeller["ignoreCliffSensors"]
+                != self._settings_from_ros["ignoreCliffSensors"]
+                or self._config_from_propeller["ignoreIRSensors"]
+                != self._settings_from_ros["ignoreIRSensors"]
+                or self._config_from_propeller["ignoreFloorSensors"]
+                != self._settings_from_ros["ignoreFloorSensors"]
+                or self._config_from_propeller["pluggedIn"]
+                != self._settings_from_ros["pluggedIn"]
+        ):
+            node.get_logger().info("Sending settings from ROS to Propeller due to mismatch")
+            settingsData = self.dataTypes.SettingsDataPacket(
+                self._settings_from_ros["trackWidth"],
+                self._settings_from_ros["distancePerCount"],
+                self._settings_from_ros["wheelSymmetryError"],
+                1 if self._settings_from_ros["ignoreProximity"] else 0,
+                1 if self._settings_from_ros["ignoreCliffSensors"] else 0,
+                1 if self._settings_from_ros["ignoreIRSensors"] else 0,
+                1 if self._settings_from_ros["ignoreFloorSensors"] else 0,
+                1 if self._settings_from_ros["pluggedIn"] else 0,
+            )
+            self.serialInterface.SendToPropellerOverSerial(
+                "settings", settingsData, True
+            )
+
     def watchDog(self):
         while rclpy.ok():
             # self.forwardTextToRosLog("watchDog")
@@ -930,44 +970,7 @@ class PropellerComm(Node):
             if self._odometry_broadcast_timeout > self._odometry_broadcast_timeout_max:
                 self._broadcast_static_odometry = True
 
-            self._updateSettingsFromROS()
-
-            # self.forwardTextToRosLog(str(self._config_from_propeller))
-
-            # Check if any settings need to be updated
-            # noinspection Duplicates
-            if (
-                    self._config_from_propeller["trackWidth"]
-                    != self._settings_from_ros["trackWidth"]
-                    or self._config_from_propeller["distancePerCount"]
-                    != self._settings_from_ros["distancePerCount"]
-                    or self._config_from_propeller["wheelSymmetryError"]
-                    != self._settings_from_ros["wheelSymmetryError"]
-                    or self._config_from_propeller["ignoreProximity"]
-                    != self._settings_from_ros["ignoreProximity"]
-                    or self._config_from_propeller["ignoreCliffSensors"]
-                    != self._settings_from_ros["ignoreCliffSensors"]
-                    or self._config_from_propeller["ignoreIRSensors"]
-                    != self._settings_from_ros["ignoreIRSensors"]
-                    or self._config_from_propeller["ignoreFloorSensors"]
-                    != self._settings_from_ros["ignoreFloorSensors"]
-                    or self._config_from_propeller["pluggedIn"]
-                    != self._settings_from_ros["pluggedIn"]
-            ):
-                node.get_logger().info("Sending settings from ROS to Propeller due to mismatch")
-                settingsData = self.dataTypes.SettingsDataPacket(
-                    self._settings_from_ros["trackWidth"],
-                    self._settings_from_ros["distancePerCount"],
-                    self._settings_from_ros["wheelSymmetryError"],
-                    1 if self._settings_from_ros["ignoreProximity"] else 0,
-                    1 if self._settings_from_ros["ignoreCliffSensors"] else 0,
-                    1 if self._settings_from_ros["ignoreIRSensors"] else 0,
-                    1 if self._settings_from_ros["ignoreFloorSensors"] else 0,
-                    1 if self._settings_from_ros["pluggedIn"] else 0,
-                )
-                self.serialInterface.SendToPropellerOverSerial(
-                    "settings", settingsData, True
-                )
+            self._getRosSettingsCompareAndSendToProp()
 
             # self.r.sleep()
             # TODO: This is NOT the right way to do this, but it works for now.
@@ -975,40 +978,24 @@ class PropellerComm(Node):
 
     # Consolidate "clear to go" requirements here.
     def _clear_to_go(self, forWhat):
-        self.forwardTextToRosLog("_clear_to_go")
-        return_value = False
         # Required for all operations
         if (
                 self._serialAvailable
                 and self._SafeToOperate
                 and self._safeToGo
-                and self._motorsOn
                 and self._leftMotorPower
                 and self._rightMotorPower
         ):
-            return_value = True
-        # Negations by use case
-        if forWhat == "forUnplugging":
-            # Unplugging should only happen if AC is connected
-            if not self._settings_from_ros["pluggedIn"]:
-                return_value = False
-        if forWhat == "forGeneralUse":
-            # The handle_velocity_command should only operate if the robot is unplugged,
-            # and the unplugging function of the Watchdog process is not in control
-            if self._settings_from_ros["pluggedIn"] or self._wasUnplugging:
-                return_value = False
-        # Special Cases
-        if forWhat == "to_stop":
-            # handle_velocity_command can send a STOP if it is unsafe to do anything else,
-            # but the serial connection is up,
-            # as long as the unplugging operation is not in progress
-            # This should bring the robot to a halt in response to any other request,
-            # if anything is amiss.
-            if self._serialAvailable and not self._wasUnplugging:
-                return_value = True
-            else:
-                return_value = False
-        return return_value
+            return True
+        node.get_logger().info("Not clear to go:")
+        node.get_logger().info(
+            "_serialAvailable: " + str(self._serialAvailable) + ' ' +
+            "_SafeToOperate: " + str(self._SafeToOperate) + ' ' +
+            "_safeToGo: " + str(self._safeToGo) + ' ' +
+            "_leftMotorPower: " + str(self._leftMotorPower) + ' ' +
+            "_rightMotorPower: " + str(self._rightMotorPower) + ' '
+        )
+        return False
 
 
 def main(args=None):
@@ -1018,8 +1005,19 @@ def main(args=None):
     try:
         propellerComm.start()
         node.get_logger().info("Propellerbot_node has started.")
-        propellerComm.watchDog()
-        node.spin()
+        # TODO Putting this watchDog here prevents spin from ever running.
+        # propellerComm.watchDog()
+        # TODO: Without spin running, subscribers don't work.
+        rclpy.spin(node)
+
+        # TODO: Perhaps we can move all code OUT of the watchdog to other places?
+
+        # TODO: After that this may be able to be refactored a bit to better replicate the example ROS2 nodes
+        # TODO: In these `self` seems to BE node and the node is initialized in main
+
+        # TODO: it is possible to stop propeller node but not ROS, not sure how that affects odometry?
+
+        # TODO: A stop command is NOT sent upon shutdown (although propeller board stops runaway after its own timeout)
 
     except KeyboardInterrupt:
         propellerComm.stop()
