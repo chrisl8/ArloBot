@@ -1,14 +1,11 @@
-import os
-import sys
-
-import launch
-import launch_ros.actions
+from launch import LaunchDescription
+from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 
 
 def generate_launch_description():
-    ld = launch.LaunchDescription([
-        launch_ros.actions.Node(
+    return LaunchDescription([
+        Node(
             package='twist_mux',
             executable='twist_mux',
             name='twist_mux',
@@ -18,10 +15,12 @@ def generate_launch_description():
                     'arlobot_ros') + '/param/twist_mux_topics.yaml',
                 get_package_share_directory(
                     'arlobot_ros') + '/param/twist_mux_locks.yaml'
+            ],
+            remappings=[
+                ('/cmd_vel_out', '/cmd_vel'),
             ]
         )
     ])
-    return ld
 
 
 if __name__ == '__main__':

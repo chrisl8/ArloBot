@@ -1,7 +1,9 @@
 import os
+import launch
 from launch import LaunchDescription
 from launch_ros.actions import Node
 from launch.substitutions import EnvironmentVariable
+from ament_index_python.packages import get_package_share_directory
 
 
 # To test alone:
@@ -45,12 +47,12 @@ def generate_launch_description():
                 {"maxPingRangeAccepted": EnvironmentVariable('maxPingRangeAccepted')},
             ]
         ),
-        # launch.actions.IncludeLaunchDescription(
-        #     launch.launch_description_sources.PythonLaunchDescriptionSource(
-        #         os.path.join(get_package_share_directory(
-        #             'arlobot_ros'), 'launch/twist_mux.launch.py')
-        #     )
-        # )
+        launch.actions.IncludeLaunchDescription(
+            launch.launch_description_sources.PythonLaunchDescriptionSource(
+                os.path.join(get_package_share_directory(
+                    'arlobot_ros'), 'launch/twist_mux.launch.py')
+            )
+        )
     ])
 
 
