@@ -13,10 +13,6 @@ def generate_launch_description():
             default_value=os.environ.get('SCAN_TOPIC_SOURCE', 'rplidar')
         ),
         launch.actions.DeclareLaunchArgument(
-            name='loadJoystick',
-            default_value=os.environ.get('HAS_XBOX_JOYSTICK', 'false')
-        ),
-        launch.actions.DeclareLaunchArgument(
             name='loadRPLIDAR',
             default_value=os.environ.get('HAS_RPLIDAR', 'true')
         ),

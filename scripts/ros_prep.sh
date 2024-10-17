@@ -85,12 +85,3 @@ else
   NC='\033[0m' # NoColor
   printf "\n${YELLOW}Without an activity board your robot will not function!${NC}\n"
 fi
-
-JOY_DEVICE="/dev/input/js0" # default
-if [[ $(jq '.hasXboxController' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-  export HAS_XBOX_JOYSTICK=true
-  if [[ $("${SCRIPTDIR}/find_xbox_controller.sh") ]]; then
-    JOY_DEVICE="$("${SCRIPTDIR}/find_xbox_controller.sh")"
-  fi
-fi
-export JOY_DEVICE
