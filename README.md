@@ -13,7 +13,26 @@ What you see here **was** a stable platform that is easy to deploy, but it is in
 The old noetic branch is stable and works, but I'm not sure using ROS 1 is a good idea for a new project.
 
 Feel free to file issues if you are trying to use this code.
+---
+# IT WORKS! . . . mostly.
 
+Here is the current bring-up state for map making on ROS2:  
+_These are just notes for myself so I can remember as I get it fully functional._
+
+1. In Terminal One run: `start-robot.sh`
+
+2. In Terminal Two run:  
+   `source ~/ros2_ws/install/setup.zsh;ros2 launch nav2_bringup navigation_launch.py`
+
+3. In Terminal Three run:  
+   `source ~/ros2_ws/install/setup.zsh;ros2 launch slam_toolbox online_async_launch.py`
+
+4. On a remote system (Windows, on the same WiFi network as the robot):
+```
+D:\ros2-jazzy\ros2-windows\local_setup.ps1 # Or wherever you put it.
+ros2 run rviz2 rviz2
+```
+---
 **Obsolete Hardware Notice**
 
 The [Arlo Robot System](https://www.parallax.com/product/28966) by Parallax has been discontinued. At this moment they are entirely out of stock, so this project's usefulness slowly grows to an end, although my personal implementation, which has always been the primary focus of this repository, lives on as I run my robot almost daily.
