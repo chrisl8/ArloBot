@@ -2,43 +2,41 @@
 # shellcheck disable=SC2059 disable=SC2129
 # ROS Arlobot Automated Install
 
-# TODO: Remove all noetic references.
-
 INSTALLING_ROS_DISTRO=jazzy
 
 # Run this straight off of github like this:
-# bash <(wget -qO- --no-cache https://raw.githubusercontent.com/chrisl8/ArloBot/noetic/setup-jazzy.sh)
+# bash <(wget -qO- --no-cache -o /dev/null https://raw.githubusercontent.com/chrisl8/ArloBot/jazzy/setup-jazzy.sh)
 
 #   TESTING
 #
 # Testing install with Docker:
 #
 # You can Test this with Docker by installing Docker, then pulling down the Ubuntu 24.04 image:
-# sudo docker pull ubuntu:24.04
-# cd ${HOME}/${ROS2_WS}/ArloBot
+# docker pull ubuntu:24.04
+# cd ${HOME}/ArloBot # Or wherever you cloned the code to.
 #
 # Then either kick it off all in one shot:
-# sudo docker run -ti -v $PWD:/home/user ubuntu:24.04 /bin/bash -c "/home/user/setup-jazzy.sh"
+# docker run -ti -v $PWD:/home/user ubuntu:24.04 /bin/bash -c "/home/user/setup-jazzy.sh"
 #
 # Or start an interactive shell in Docker and run it, with the ability to make changes and start it again when it finishes:
-# sudo docker run -ti -v $PWD:/home/user ubuntu:24.04 /bin/bash
+# docker run -ti -v $PWD:/home/user ubuntu:24.04 /bin/bash
 # /home/user/setup-jazzy.sh
 #
 # If you started a non-interactive ("one shot") build and then it crashed and you want to get in and look around:
 # https://docs.docker.com/engine/reference/commandline/commit/
 # Find the name of the container:
-# sudo docker ps -a
-# sudo docker commit $CONTAINER_ID mytestimage
-# sudo docker run -ti -v $PWD:/home/user mytestimage /bin/bash
+# docker ps -a
+# docker commit $CONTAINER_ID mytestimage
+# docker run -ti -v $PWD:/home/user mytestimage /bin/bash
 #
 # and when you are done delete the image:
-# sudo docker image rm mytestimage
+# docker image rm mytestimage
 #
 # Then you can look around and try running the script if you want again.
 #
 #
 # To clean up Docker when you are done run:
-# sudo docker system prune
+# docker system prune
 #
 # Also note that if you add --rm to the run command on any docker command above, it will automatically remove the container
 # after you leave it, instead of leaving it hanging around.
@@ -109,7 +107,9 @@ if [[ ! -e /etc/localtime ]]; then
   # This won't work inside of sudo though, so just install tzdata now
   # rather than letting it get picked up later as a pre-req,
   # and add the other things we know Docker is missing too while we are at it.
-  apt install -y tzdata sudo cron
+  apt update # Docker doesn't have the latest package lists by default.
+  #apt install -y tzdata sudo cron
+  apt install -y sudo python3
   # Now the rest of the script should work as if it was in a normal Ubuntu install.
 
   # Installing this now appears to prevent it from hanging up the Docker setup later.
@@ -172,11 +172,10 @@ if ! [[ ${TRAVIS} == "true" ]]; then # Upgrading packages in Travis often fails 
 fi
 
 # This should follow the official ROS install instructions closely.
-#      http://wiki.ros.org/noetic/Installation/Ubuntu
+#      http://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html
 # That is why there is a separate section for extra packages that I need for Arlo.
 # Note, while we are NOT building ROS from source, we are building SOME THINGS from source,
-# and hence must also follow the the instructions to set up a build environment
-#      http://wiki.ros.org/noetic/Installation/Source
+# and hence must also follow the the instructions to set up a build environment.
 if ! (dpkg -s ros-${INSTALLING_ROS_DISTRO}-desktop | grep "Status: install ok installed" &>/dev/null) || ! (command -v rosdep) || ! (command -v rosinstall_generator); then
   printf "\n${YELLOW}[Installing ROS]${NC}\n"
   sudo apt install -y ros-${INSTALLING_ROS_DISTRO}-desktop
@@ -192,7 +191,7 @@ if ! (dpkg -s ros-${INSTALLING_ROS_DISTRO}-desktop | grep "Status: install ok in
   # END Official ROS Install section
 fi
 
-# shellcheck source=/opt/ros/noetic/setup.bash
+# shellcheck source=/opt/ros/jazzy/setup.bash
 source /opt/ros/${INSTALLING_ROS_DISTRO}/setup.bash
 
 if [[ -z ${USER} ]]; then
@@ -219,14 +218,8 @@ fi
 printf "\n${YELLOW}[Installing additional Ubuntu and ROS Packages for Arlo]${NC}\n"
 printf "${LIGHTBLUE}This runs every time, in case new packages were added.${NC}\n"
 
-# TODO: These packages do not exist in Jazzy:
-#       E: Unable to locate package ros-jazzy-move-base
-
 # TODO: Try removing some ROS packages that do not need to be installed independently,
 #       because they are already dependencies of other things.
-
-# TODO: Ensure these are also properly required by the Arlobot package,
-# TODO: Test if rosdep installs them itself.
 PACKAGE_TO_INSTALL_LIST=()
 # ### Required Packages and Why ###
 PACKAGE_TO_INSTALL_LIST+=(jq)
@@ -239,9 +232,6 @@ PACKAGE_TO_INSTALL_LIST+=(git)
 # git - allows for cloning of repositories
 PACKAGE_TO_INSTALL_LIST+=(vim)
 # vim - We aren't going to get very far without being able to edit some files.
-# TODO: move_base does not exist in ROS2
-#       https://navigation.ros.org/about/ros1_comparison.html
-#PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-move-base")
 # "ros-${INSTALLING_ROS_DISTRO}-move-base" - Required to build and use Arlobot ROS code.
 PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-twist-mux")
 # twist-mux is used by the Arlobot cmd_vel_mux input controller.
@@ -259,8 +249,6 @@ PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-cv-bridge")
 # cv-bridge is required by the costmap converter package
 PACKAGE_TO_INSTALL_LIST+=("xvfb")
 # xvfb is required for Cypress testing to work.
-
-# TODO: Some of these should probably be in package.xml, but that would require another round of testing.
 PACKAGE_TO_INSTALL_LIST+=(cron)
 # cron - required for running scheduled tasks
 PACKAGE_TO_INSTALL_LIST+=(speech-dispatcher)
@@ -296,12 +284,6 @@ PACKAGE_TO_INSTALL_LIST+=(libftdi1-dev)
 #           Should return:
 #           FTDI:FT245R USB FIFO:A9026EI5
 #           If you have a USB Relay board attached via USB.
-
-# TODO: Confirm that Scanse Sweep needs this and add it to the "if scanse" section:
-# ros-${INSTALLING_ROS_DISTRO}-pointcloud-to-laserscan - used by Scanse Sweep
-
-# NOTE: If you are looking for a ROS package and wonder if it exists, but not for Noetic, check here:
-# http://repositories.ros.org/status_page/compare_melodic_noetic.html
 
 sudo apt install -y "${PACKAGE_TO_INSTALL_LIST[@]}"
 
@@ -355,45 +337,6 @@ fi
 if ! [[ -e ${HOME}/${ROS2_WS}/src/rplidar_ros ]]; then
   ln -s "${HOME}/rplidar_ros" "${HOME}/${ROS2_WS}/src/rplidar_ros"
 fi
-
-# TODO: How do we replace this in Jazzy?
-# TODO: This won't build on Jazzy.
-#printf "\n${LIGHTBLUE}Costmap Converter Msgs${NC}\n"
-#printf "${PURPLE}This is required by TEB Local Planner, but has not been released for ${INSTALLING_ROS_DISTRO}.${NC}\n"
-#cd ${HOME}/${ROS2_WS}/src
-#if ! [[ -d ${HOME}/${ROS2_WS}/src/costmap_converter ]]; then
-#  git clone -b ros2 https://github.com/rst-tu-dortmund/costmap_converter.git
-#else
-#  cd ${HOME}/${ROS2_WS}/src/costmap_converter
-#  git checkout ros2
-#  git pull
-#fi
-
-# TODO: How do we replace this in Jazzy?
-# TODO: This won't build without costmap converter, which I haven't made build on Jazzy.
-#printf "\n${LIGHTBLUE}TEB Local Planner${NC}\n"
-#printf "${PURPLE}The TEB Local Planner has not been released for ${INSTALLING_ROS_DISTRO}.${NC}\n"
-#cd ${HOME}/${ROS2_WS}/src
-#if ! [[ -d ${HOME}/${ROS2_WS}/src/teb_local_planner ]]; then
-#  git clone -b ros2-master https://github.com/rst-tu-dortmund/teb_local_planner.git
-#else
-#  cd ${HOME}/${ROS2_WS}/src/teb_local_planner
-#  git checkout ros2-master
-#  git pull
-#fi
-
-# TODO: This won't build and doesn't matter either without TEB Local planner
-#printf "\n${LIGHTBLUE}TEB Local Planner Tutorials${NC}\n"
-#printf "${PURPLE}The TEB Local Planner tutorials have not been ported to ${INSTALLING_ROS_DISTRO}.${NC}\n"
-#printf "${PURPLE}The tutorials are not required, but handy for reference.${NC}\n"
-#cd ${HOME}/${ROS2_WS}/src
-#if ! [[ -d ${HOME}/${ROS2_WS}/src/teb_local_planner_tutorials ]]; then
-#  git clone -b noetic-devel https://github.com/rst-tu-dortmund/teb_local_planner_tutorials.git
-#else
-#  cd ${HOME}/${ROS2_WS}/src/teb_local_planner_tutorials
-#  git checkout noetic-devel
-#  git pull
-#fi
 
 export PIP_DISABLE_PIP_VERSION_CHECK=1
 

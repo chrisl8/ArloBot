@@ -46,7 +46,6 @@ Until then, enjoy this for what it is, and understand that any commits you see w
  - Move all web bookmarks into relevant comments in my code or this Readme
  - Use vcgencmd get_throttled to detect and alarm on voltage and thermal issues
  - Monitor battery power from the activity board and alarm/act on low voltage
- - Clean up any remaining noetic references
  - Test and build docker test method listed in setup-jazzy
  - Get github actions working
  - arlobot.yaml is gone, so fix up anything that depends on it
@@ -477,7 +476,7 @@ This should make wheels go, theoretically drive in a circle, but I put the robot
 
 # Some Tuning Notes
 
-## Noetic Parameters
+## Old Noetic Parameters
 
 I've started on ROS2 by sticking with defaults, as those tend to work best, however  
 it is probably worth looking at the old  Noetic branch [launch](https://github.com/chrisl8/ArloBot/tree/noetic/arlobot_ros/launch) and [param](https://github.com/chrisl8/ArloBot/tree/noetic/arlobot_ros/param) folders when starting to tweak anything to see if there are old lessons learned that I should carry over.
