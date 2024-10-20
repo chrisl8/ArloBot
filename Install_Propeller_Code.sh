@@ -35,6 +35,11 @@ else
   git pull
 fi
 
+ARLO_HOME=${HOME}/.arlobot
+if ! [[ -d "${ARLO_HOME}" ]]; then
+  mkdir "${ARLO_HOME}"
+fi
+
 for i in "${HOME}/ArloBot/PropellerCodeForArloBot/dotfiles/"*; do
   [[ -e "${i}" ]] || break # handle the case of no files
   # https://stackoverflow.com/a/9011264/4982408
