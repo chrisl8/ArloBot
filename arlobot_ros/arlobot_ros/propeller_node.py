@@ -369,12 +369,6 @@ class PropellerComm(Node):
         # js.position = [3]
         # self._JointStatePublisher.publish(js)
 
-        # Fake laser from "PING" Ultrasonic Sensor and IR Distance Sensor input:
-        # http://wiki.ros.org/navigation/Tutorials/RobotSetup/TF
-        # Use:
-        # roslaunch arlobot_ros view_robot_launch.py
-        # to view this well for debugging and testing.
-
         # The purpose of this is two fold:
         # 1. It REALLY helps adjusting values in the Propeller and ROS
         # when I can visualize the sensor output in RVIZ!
@@ -444,10 +438,6 @@ class PropellerComm(Node):
         # artificial_far_distance to a distance greater than the planner uses.
         # So while it clears things, it shouldn't cause a problem, and the Kinect should override it for things
         # in between.
-
-        # Use:
-        # roslaunch arlobot_ros view_robot.launch
-        # to view this well for debugging and testing.
 
         # Note that sensor orientation is important here!
         # If you have a different number or aim them differently this will not work!
