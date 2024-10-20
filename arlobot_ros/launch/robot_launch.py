@@ -10,7 +10,7 @@ from ament_index_python.packages import get_package_share_directory
 # This launch file, and its child propeller_node_launch.py require many environment variables to be set.
 # The script ros_start.sh does this for you.
 
-# To test alone without running a shell script:
+# To test alone without running a shell script you must set these environment variables like so:
 # source ~/ros2_ws/install/setup.bash
 # RPLIDAR_USB_PORT=$(find_RPLIDAR.sh)
 # RPLIDAR_BAUDRATE=256000

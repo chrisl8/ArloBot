@@ -3,7 +3,7 @@ from launch_ros.actions import Node
 from launch.substitutions import EnvironmentVariable
 
 
-# To test alone:
+# To test alone you must set these environment variables like so:
 # source ~/ros2_ws/install/setup.bash
 # ACTIVITY_BOARD_PORT=$("find_ActivityBoard.sh")
 # maxPingRangeAccepted=$(jq '.maxPingRangeAccepted' "${HOME}/.arlobot/personalDataForBehavior.json")
