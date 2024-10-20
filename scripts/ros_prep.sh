@@ -30,19 +30,11 @@ if ! ("${SCRIPTDIR}/check_hardware.sh"); then
   exit 1
 fi
 
-# Set /scan topic source.
-SCAN_TOPIC_SOURCE=$(jq -r '.scanTopicSource' "${HOME}/.arlobot/personalDataForBehavior.json")
-export SCAN_TOPIC_SOURCE
-
 if [[ $(jq '.hasRPLIDAR' "${HOME}/.arlobot/personalDataForBehavior.json") == true ]]; then
-  export HAS_RPLIDAR=true
   RPLIDAR_USB_PORT=$("${SCRIPTDIR}/find_RPLIDAR.sh")
   export RPLIDAR_USB_PORT
   RPLIDAR_BAUDRATE=$(jq '.rplidarBaudrate' "${HOME}/.arlobot/personalDataForBehavior.json")
   export RPLIDAR_BAUDRATE
-else
-  # Set to positive false because RPLIDAR defaults to true in robot.launch
-  export HAS_RPLIDAR=false
 fi
 
 if [[ ! -d ${HOME}/.arlobot/status/ ]]; then

@@ -1,13 +1,10 @@
-import os
-import launch
 from launch import LaunchDescription
 from launch_ros.actions import Node
 from launch.substitutions import EnvironmentVariable
-from ament_index_python.packages import get_package_share_directory
 
 
 # To test alone:
-# source ~/ros2_ws/install/setup.zsh
+# source ~/ros2_ws/install/setup.bash
 # ACTIVITY_BOARD_PORT=$("find_ActivityBoard.sh")
 # maxPingRangeAccepted=$(jq '.maxPingRangeAccepted' "${HOME}/.arlobot/personalDataForBehavior.json")
 # trackWidth=$(jq '.driveGeometry.trackWidth' "${HOME}/.arlobot/personalDataForBehavior.json")
@@ -22,7 +19,7 @@ from ament_index_python.packages import get_package_share_directory
 # lastX=0.0
 # lastY=0.0
 # lastHeading=0.0
-# ros2 launch arlobot_ros mobile_base.launch.py
+# ros2 launch arlobot_ros propeller_node.launch.py
 
 def generate_launch_description():
     return LaunchDescription([
@@ -47,12 +44,6 @@ def generate_launch_description():
                 {"maxPingRangeAccepted": EnvironmentVariable('maxPingRangeAccepted')},
             ]
         ),
-        launch.actions.IncludeLaunchDescription(
-            launch.launch_description_sources.PythonLaunchDescriptionSource(
-                os.path.join(get_package_share_directory(
-                    'arlobot_ros'), 'launch/twist_mux.launch.py')
-            )
-        )
     ])
 
 

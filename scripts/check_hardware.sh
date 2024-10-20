@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+GREEN='\033[0;32m'
+NC='\033[0m' # NoColor
+
 # Tweak these numbers if it keeps failing
 
 # How long to delay between attempts
@@ -102,5 +105,5 @@ if [[ ${CHECK_GOOD} == "false" ]]; then
   wrap_up_on_fail
 fi
 
-echo "Hardware Check SUCCESS! All devices found."
+printf "${GREEN}Hardware Check SUCCESS! All devices found.${NC}\n"
 exit 0

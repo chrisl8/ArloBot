@@ -10,6 +10,7 @@
 
 twist_mux:
   ros__parameters:
+    use_stamped: false # Not sure what this is for or whether to set it true or false, just that it is needed.
     locks:
       pause:
         topic   : pause_navigation
