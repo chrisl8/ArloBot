@@ -1,37 +1,29 @@
 [![Node Script Tests](https://github.com/chrisl8/ArloBot/actions/workflows/node.js.yml/badge.svg)](https://github.com/chrisl8/ArloBot/actions/workflows/node.js.yml)
 [![React Build Test](https://github.com/chrisl8/ArloBot/actions/workflows/react.js.yml/badge.svg)](https://github.com/chrisl8/ArloBot/actions/workflows/react.js.yml)
 [![Setup Script Test](https://github.com/chrisl8/ArloBot/actions/workflows/setup-jazzy.yml/badge.svg)](https://github.com/chrisl8/ArloBot/actions/workflows/setup-jazzy.yml)
+[![Propeller Code Build Test](https://github.com/chrisl8/ArloBot/actions/workflows/propeller-code-build.yml/badge.svg)](https://github.com/chrisl8/ArloBot/actions/workflows/propeller-code-build.yml)
 
-**WARNING: The Jazzy setup branch DOES NOT WORK YET!!!**
-I've made progress here with ROS2, but it is not functional yet.
+## _NOW ON ROS2 Jazzy!_
 
-**STATUS: Maintained but in flux.**  
-This code works on **my** robot, but my robot is built with parts that are no longer sold.  
-Further, the road to ROS 2 is long, so I cannot say when it will work again.  
 
-What you see here **was** a stable platform that is easy to deploy, but it is in flux at the moment.  
-The old noetic branch is stable and works, but I'm not sure using ROS 1 is a good idea for a new project.
+### Quick Start
 
-Feel free to file issues if you are trying to use this code.
----
-# IT WORKS! . . . mostly.
+0. Install Ubuntu 24.04 on a Rapsberry Pi using the Rasbery Pi Imager
+1. Run the install script for this package on the Pi: `bash <(wget -qO- --no-cache -o /dev/null https://raw.githubusercontent.com/chrisl8/ArloBot/jazzy/setup-jazzy.sh)`
+2. SSH into the Pi and run: `ros_start.sh`
 
-Here is the current bring-up state for map making on ROS2:  
-_These are just notes for myself so I can remember as I get it fully functional._
-
-1. In Terminal One run: `start-robot.sh`
-
-2. In Terminal Two run:  
+3. SSH into the Pi **again** and also run:  
    `source ~/ros2_ws/install/setup.bash;ros2 launch nav2_bringup navigation_launch.py`
 
-3. In Terminal Three run:  
+4. SSH into the Pi **again** and also run:  
    `source ~/ros2_ws/install/setup.bash;ros2 launch slam_toolbox online_async_launch.py`
 
-4. On a remote system (Windows, on the same WiFi network as the robot):
+5. On a remote system (like on Windows, on the same WiFi network as the robot):
 ```
 D:\ros2-jazzy\ros2-windows\local_setup.ps1 # Or wherever you put it.
 ros2 run rviz2 rviz2 -d \\wsl.localhost\Ubuntu\home\chrisl8\Dev\ArloBot\navigation.rviz
-```
+``` 
+
 ---
 **Obsolete Hardware Notice**
 
@@ -41,7 +33,6 @@ I would love to build a new version of this robot, but I haven't the free time f
 Until then, enjoy this for what it is, and understand that any commits you see will be rather focused on a set of hardware that is no longer available.
 
 ## ROS2 ToDo:
- - Get cmd_vel input working so that robot moves.
  - Get SLAM Toolbox working so that robot makes maps again.
  - Find a planner, either get teb working or another one.
  - Consider dropping "watchdog" from propeller_node
@@ -52,11 +43,9 @@ Until then, enjoy this for what it is, and understand that any commits you see w
      - It outputs when it gets data from the propeller board
      - It encodes to the propeller board upon receiving twist messages
      - Nothing else
- - Get propeller_node and entire project to shut down cleanly upon kill_ros call
-   - RPLidar should shut off
-   - It complains about logging during shutdown, not sure if that can be fixed or not?
  - Finish conversion of anything left in my arlobot_ros1 folder and remove them.
  - Clean up unused convenience scripts
+   - Make sure they all still work. Some might just not work anymore and should be removed.
  - Clean up unused bits of code in the node service
  - Clean up unused bits of code in the website
  - Fully test and make work the rest of the website and node code
@@ -67,8 +56,8 @@ Until then, enjoy this for what it is, and understand that any commits you see w
  - Clean up any remaining noetic references
  - Test and build docker test method listed in setup-jazzy
  - Get github actions working
- - Set up a script to pull/build propeller code on x86, since it cannot be done on the Pi, which is the target architecture for the setup file.
  - arlobot.yaml is gone, so fix up anything that depends on it
+ - Reorganize old documentation into its own folder
 
 ArloBot Package for ROS
 =======================
