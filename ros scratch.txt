@@ -7,19 +7,19 @@ git fetch origin pull/325/head && git checkout FETCH_HEAD
 
 ----
 
-source ~/catkin_ws/devel/setup.zsh;rosbag filter part1.bag part1_filtered.bag 'topic == "/scan" or topic == "/odom" or topic == "/tf_static" or topic == "/tf" and m.transforms[0].header.frame_id == "odom" and m.transforms[0].child_frame_id == "base_footprint"'
+source ~/ros2_ws/install/setup.bash;rosbag filter part1.bag part1_filtered.bag 'topic == "/scan" or topic == "/odom" or topic == "/tf_static" or topic == "/tf" and m.transforms[0].header.frame_id == "odom" and m.transforms[0].child_frame_id == "base_footprint"'
 
 ----
 
-source ~/catkin_ws/devel/setup.zsh;export ROS_HOSTNAME=localhost;export ROS_MASTER_URI=http://localhost:11311;roscore
+source ~/ros2_ws/install/setup.bash;export ROS_HOSTNAME=localhost;export ROS_MASTER_URI=http://localhost:11311;roscore
 
-source ~/catkin_ws/devel/setup.zsh;export ROS_HOSTNAME=localhost;export ROS_MASTER_URI=http://localhost:11311;rosparam set /use_sim_time true && roslaunch slam_toolbox online_async.launch
+source ~/ros2_ws/install/setup.bash;export ROS_HOSTNAME=localhost;export ROS_MASTER_URI=http://localhost:11311;rosparam set /use_sim_time true && roslaunch slam_toolbox online_async.launch
 
-source ~/catkin_ws/devel/setup.zsh;export ROS_HOSTNAME=localhost;export ROS_MASTER_URI=http://localhost:11311;rosbag play --clock ~/Dev/turtlebot_slam_testing/bags/part1_filtered.bag
+source ~/ros2_ws/install/setup.bash;export ROS_HOSTNAME=localhost;export ROS_MASTER_URI=http://localhost:11311;rosbag play --clock ~/Dev/turtlebot_slam_testing/bags/part1_filtered.bag
 
 # Start x410 or another X Server
 
-export DISPLAY=192.168.1.88:0.0;source ~/catkin_ws/devel/setup.zsh;export ROS_IP=192.168.1.88;export ROS_MASTER_URI=http://twoflower:11311;roslaunch arlobot_ros view_navigation.launch --screen
+export DISPLAY=192.168.1.88:0.0;source ~/ros2_ws/install/setup.bash;export ROS_IP=192.168.1.88;export ROS_MASTER_URI=http://twoflower:11311;roslaunch arlobot_ros view_navigation.launch --screen
 
 ---
 

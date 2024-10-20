@@ -22,15 +22,15 @@ _These are just notes for myself so I can remember as I get it fully functional.
 1. In Terminal One run: `start-robot.sh`
 
 2. In Terminal Two run:  
-   `source ~/ros2_ws/install/setup.zsh;ros2 launch nav2_bringup navigation_launch.py`
+   `source ~/ros2_ws/install/setup.bash;ros2 launch nav2_bringup navigation_launch.py`
 
 3. In Terminal Three run:  
-   `source ~/ros2_ws/install/setup.zsh;ros2 launch slam_toolbox online_async_launch.py`
+   `source ~/ros2_ws/install/setup.bash;ros2 launch slam_toolbox online_async_launch.py`
 
 4. On a remote system (Windows, on the same WiFi network as the robot):
 ```
 D:\ros2-jazzy\ros2-windows\local_setup.ps1 # Or wherever you put it.
-ros2 run rviz2 rviz2
+ros2 run rviz2 rviz2 -d \\wsl.localhost\Ubuntu\home\chrisl8\Dev\ArloBot\navigation.rviz
 ```
 ---
 **Obsolete Hardware Notice**
@@ -64,6 +64,11 @@ Until then, enjoy this for what it is, and understand that any commits you see w
  - Move all web bookmarks into relevant comments in my code or this Readme
  - Use vcgencmd get_throttled to detect and alarm on voltage and thermal issues
  - Monitor battery power from the activity board and alarm/act on low voltage
+ - Clean up any remaining noetic references
+ - Test and build docker test method listed in setup-jazzy
+ - Get github actions working
+ - Set up a script to pull/build propeller code on x86, since it cannot be done on the Pi, which is the target architecture for the setup file.
+ - arlobot.yaml is gone, so fix up anything that depends on it
 
 ArloBot Package for ROS
 =======================
@@ -358,7 +363,7 @@ Try this both locally and across remote systems if you hope for them to speak to
 # Linux Environment Setup
 
 ```
-source ~/ros2_ws/install/setup.zsh
+source ~/ros2_ws/install/setup.bash
 ros2 topic list
 ```
 
@@ -450,7 +455,7 @@ Run `PropellerSerialTest.sh` to ensure hardware communication is working.
  - Terminal One:  
 `start-arlbot-only.sh`
  - Terminal Two:  
-`source ~/ros2_ws/install/setup.zsh` (Or setup.bash if you use Bash)
+`source ~/ros2_ws/install/setup.bash`
 `ros2 topic list`
 Should look like this:  
 ```
