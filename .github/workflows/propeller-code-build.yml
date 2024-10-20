@@ -1,4 +1,4 @@
-name: Setup Script Test
+name: Propeller Code Build Test
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
         default: 'warning'
       tags:
         required: false
-        description: 'Manually run Setup test'
+        description: 'Propeller Code Build Test'
 jobs:
   build:
 
