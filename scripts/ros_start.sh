@@ -6,8 +6,13 @@ YELLOW='\033[1;33m'
 LIGHT_PURPLE='\033[1;35m'
 NC='\033[0m' # NoColor
 
+DID_KILL=0
+
 function finish() {
-  ros_kill.sh
+  if [ ${DID_KILL} -eq 0 ]; then
+    DID_KILL=1
+    ros_kill.sh
+  fi
 }
 trap finish EXIT
 
@@ -38,18 +43,10 @@ printf "${LIGHT_PURPLE}Use ros_kill.sh to close.${NC}\n"
 # which makes monitoring status impossible.
 # http://stackoverflow.com/a/11337310
 # http://linux.die.net/man/1/unbuffer
-# Add -d to the end of this line to put it into "debug" mode.
-ros2 launch arlobot_ros robot_launch.py &
-
-while ! ros2 node list | grep arlobot > /dev/null 2>&1; do
-  # Wait for Arlobot to start
-  sleep 10
-done
-
-while ros2 node list | grep arlobot > /dev/null 2>&1; do
-  # Now wait for Arlobot to stop
-  sleep 10
-done
+# Debug launch
+#ros2 launch arlobot_ros robot_launch.py -d
+# Normal launch
+ros2 launch arlobot_ros robot_launch.py
 
 # Then wrap up
 finish

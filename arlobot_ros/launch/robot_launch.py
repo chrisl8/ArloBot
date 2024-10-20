@@ -1,11 +1,12 @@
 import os
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
+from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration, TextSubstitution, EnvironmentVariable
+from launch.substitutions import TextSubstitution, EnvironmentVariable, PathJoinSubstitution
 from launch_ros.actions import Node, SetRemap, SetParametersFromFile
-from launch_xml.launch_description_sources import XMLLaunchDescriptionSource
+from launch_ros.substitutions import FindPackageShare
 from ament_index_python.packages import get_package_share_directory
+
 
 # This launch file, and its child propeller_node_launch.py require many environment variables to be set.
 # The script ros_start.sh does this for you.
@@ -54,12 +55,12 @@ def generate_launch_description():
 
     return LaunchDescription([
         # Websocket bridge for web interface with Robot.
-        IncludeLaunchDescription(
-            XMLLaunchDescriptionSource(
-                os.path.join(get_package_share_directory(
-                    'rosbridge_server'), 'launch/rosbridge_websocket_launch.xml')
-            )
-        ),
+        # IncludeLaunchDescription(
+        #     XMLLaunchDescriptionSource(
+        #         os.path.join(get_package_share_directory(
+        #             'rosbridge_server'), 'launch/rosbridge_websocket_launch.xml')
+        #     )
+        # ),
         # Robot model publisher for RVIZ, etc.
         Node(
             package='robot_state_publisher',
@@ -148,6 +149,40 @@ def generate_launch_description():
                     'scan_frequency': 10.0
                 },
             ]
+        ),
+        # Navigation via NAV2
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                os.path.join(get_package_share_directory(
+                    'nav2_bringup'), 'launch/navigation_launch.py')
+            ),
+            launch_arguments={
+                'use_sim_time ': 'false',
+                'use_respawn': 'true',
+                'slam_params_file': TextSubstitution(text=str(PathJoinSubstitution([
+                    FindPackageShare('arlobot_ros'),
+                    'param',
+                    'nav2_params.yaml'
+                ])))
+            }.items()
+        ),
+
+        # SLAM via slam_toolbox
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([
+                PathJoinSubstitution([
+                    FindPackageShare('slam_toolbox'),
+                    'launch',
+                    'online_async_launch.py'
+                ])
+            ]),
+            launch_arguments={
+                'slam_params_file': TextSubstitution(text=str(PathJoinSubstitution([
+                    FindPackageShare('arlobot_ros'),
+                    'param',
+                    'mapper_params_online_async.yaml'
+                ])))
+            }.items()
         ),
     ])
 

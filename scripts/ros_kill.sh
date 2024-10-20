@@ -40,11 +40,11 @@ if (pkill --ignore-ancestors -f robot.launch); then
     pkill --signal 9 --ignore-ancestors -f robot.launch
   done
 fi
-while pgrep --ignore-ancestors -f ros2cli.daemon > /dev/null; do
+if pgrep --ignore-ancestors -f ros2cli.daemon > /dev/null; then
   echo "Stopping ROS2 daemon . . ."
   source "${HOME}/ros2_ws/install/setup.bash"
-  ros2 daemon stop
-done
+  timeout 20 ros2 daemon stop
+fi
 if (pkill --ignore-ancestors -f ros); then
   while (pgrep --ignore-ancestors -f ros); do
     echo "Waiting for leftover ROS nodes to close . . ."

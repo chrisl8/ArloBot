@@ -1,9 +1,0 @@
-# https://wiki.ros.org/global_planner
-#
-# If using default, just do NOT include anything, to make it clear,
-# and also ensure we update to new defaults as the come.
-
-GlobalPlanner:
-  # https://kaiyuzheng.me/documents/navguide.pdf
-  neutral_cost: 66                              # default 50
-  cost_factor: 0.55                             # Factor to multiply each cost from costmap by, default 3.0

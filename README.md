@@ -12,13 +12,7 @@
 1. Run the install script for this package on the Pi: `bash <(wget -qO- --no-cache -o /dev/null https://raw.githubusercontent.com/chrisl8/ArloBot/jazzy/setup-jazzy.sh)`
 2. SSH into the Pi and run: `ros_start.sh`
 
-3. SSH into the Pi **again** and also run:  
-   `source ~/ros2_ws/install/setup.bash;ros2 launch nav2_bringup navigation_launch.py`
-
-4. SSH into the Pi **again** and also run:  
-   `source ~/ros2_ws/install/setup.bash;ros2 launch slam_toolbox online_async_launch.py`
-
-5. On a remote system (like on Windows, on the same WiFi network as the robot):
+3. On a remote system (like on Windows, on the same WiFi network as the robot):
 ```
 D:\ros2-jazzy\ros2-windows\local_setup.ps1 # Or wherever you put it.
 ros2 run rviz2 rviz2 -d \\wsl.localhost\Ubuntu\home\chrisl8\Dev\ArloBot\navigation.rviz
@@ -33,8 +27,7 @@ I would love to build a new version of this robot, but I haven't the free time f
 Until then, enjoy this for what it is, and understand that any commits you see will be rather focused on a set of hardware that is no longer available.
 
 ## ROS2 ToDo:
- - Get SLAM Toolbox working so that robot makes maps again.
- - Find a planner, either get teb working or another one.
+ - Reproduce the former ability to save and re-use old maps.
  - Consider dropping "watchdog" from propeller_node
    - I don't think that I need the stationary odometry publisher anymore?
    - Although it currenty also watches for and updates mismatches between ROS params and Propeller board.
@@ -58,6 +51,15 @@ Until then, enjoy this for what it is, and understand that any commits you see w
  - Get github actions working
  - arlobot.yaml is gone, so fix up anything that depends on it
  - Reorganize old documentation into its own folder
+ - Rebuild my robot's Pi from scratch and ensure it still works
+ - Currently launching NAV2 with **no** customizations, but my old ROS1 setup had many customizations.
+   - Check to see if any of these customizations from ROS1 should be carried over
+ - Test and tun slam toolbox parameters as well
+ - Could the PING and IR sensors be mapped into the "Collision Monitor" so as to be used by ROS but without affecting the map?
+ - Re-implement old functions that might be built into NAV2 now if I can sort out how to use them:
+   - Go to waypoints
+   - Go "home" (dock?)
+   - Go to a specific location
 
 ArloBot Package for ROS
 =======================
@@ -364,15 +366,12 @@ All of the functions above also have quick launch scripts.
 `cd ~/dev_ws/src/ArloBot/scripts`
 
 ### Start ROS ###
-Start just the most basic pieces  
-`start-arlobot-only.sh`  
-OR  
-Start everything:  
-`start-robot.sh`
-### Basic TeleOp ###
-`keyboard-teleop.sh`
+Start the robot ROS code:  
+`ros_start.sh`
+### Basic TeleOp with Keyboard ###
+`start-keyboard-teleop.sh`
 ### Remote Control with an xBox 360 Joystick ###
-This is built into the `start-robot.sh` script.
+This is built into the `ros_start.sh` script.
 ### Slam Toolbox (SLAM Map building) ###
 `make-map.sh`  
 View with rviz:  
@@ -387,7 +386,7 @@ Load the map:
 View with rviz:
 `view-navigation.sh`
 ### Shut down ROS and everything related to it ###
-`kill_ros.sh`
+`ros_kill.sh`
 
 The scripts call ROS files, so you can modify the ROS files listed in the scripts to modify how ROS operates.
 
@@ -418,6 +417,10 @@ Look in the scripts folder for a set of handy scripts for starting up and shutti
 
 ## Tuning
 See the [RobotTuningNotes](RobotTuningNotes.md) for guidance on tuning robot parameters.
+
+## List Parameters in use by Slam Toolbox now
+
+`ros2 param dump slam_toolbox`
 
 ## HB-25 Motor Controller Support Gone! ##
 Parallax has updated the Arlo platform to use their new DHB-10 Dual H-Bridge controller.  
@@ -469,3 +472,12 @@ Should spew a steady stream of text too quickly to read, this is the odom coming
 ## Wheels go?
 This should make wheels go, theoretically drive in a circle, but I put the robot up on blocks at this point:
 `ros2 topic pub /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 2.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 1.8}}"`
+
+---
+
+# Some Tuning Notes
+
+## Noetic Parameters
+
+I've started on ROS2 by sticking with defaults, as those tend to work best, however  
+it is probably worth looking at the old  Noetic branch [launch](https://github.com/chrisl8/ArloBot/tree/noetic/arlobot_ros/launch) and [param](https://github.com/chrisl8/ArloBot/tree/noetic/arlobot_ros/param) folders when starting to tweak anything to see if there are old lessons learned that I should carry over.

@@ -109,7 +109,6 @@ class PropellerSerialInterface(object):
         self._SerialDataGateway.Stop()
 
     def SendToPropellerOverSerial(self, packetType, data, debug=False):
-        self._output('SendToPropellerOverSerial ' + packetType)
         waiting = 0
         while self._serialWriteInProgress:
             if waiting > self._serialWriteTimeout:

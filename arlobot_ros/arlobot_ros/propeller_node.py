@@ -26,7 +26,7 @@ from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 from arlobot_interfaces.msg import ArloStatus, ArloSafety, ArloButtons
-from arlobot_interfaces.srv import FindRelay, ToggleRelay, ToggleLED
+from arlobot_interfaces.srv import ToggleLED
 
 from .checkPropellerCodeVersionNumber import checkPropellerCodeVersionNumber
 from .PropellerSerialInterface import PropellerSerialInterface
@@ -712,7 +712,6 @@ class PropellerComm(Node):
 
     def _handle_velocity_command(self, twist_command):  # This is Propeller specific
         """ Handle movement requests. """
-        self.forwardTextToRosLog("_handle_velocity_command")
         # NOTE: turtlebot_node has a lot of code under its cmd_vel function
         # to deal with maximum and minimum speeds,
         # which are dealt with in ArloBot on the Propeller Board itself in the c code.
@@ -720,7 +719,7 @@ class PropellerComm(Node):
             moveData = self.dataTypes.MoveDataPacket(
                 twist_command.linear.x, twist_command.angular.z
             )
-            self.serialInterface.SendToPropellerOverSerial("move", moveData, True)
+            self.serialInterface.SendToPropellerOverSerial("move", moveData, False)
             # For debugging
             # node.get_logger().warn(
             #     "SENT MOVE: "
@@ -730,7 +729,7 @@ class PropellerComm(Node):
             # )
         elif self._clear_to_go("to_stop"):
             moveData = self.dataTypes.MoveDataPacket(0.0, 0.0)
-            self.serialInterface.SendToPropellerOverSerial("move", moveData, True)
+            self.serialInterface.SendToPropellerOverSerial("move", moveData, False)
 
     def _toggleLED(self, LED):
         self.forwardTextToRosLog("_toggleLED")
