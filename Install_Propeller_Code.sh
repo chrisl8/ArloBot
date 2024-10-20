@@ -51,6 +51,9 @@ fi
 if ! (command -v git >/dev/null); then
   sudo apt install -y git
 fi
+if [[ ${CI} == "true" ]]; then # Why does it not see that cmake isn't installed here?
+  sudo apt install -y cmake
+fi
 if ! (command -v cmake >/dev/null); then
   sudo apt install -y cmake
 fi
