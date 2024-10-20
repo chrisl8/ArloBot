@@ -152,7 +152,7 @@ testMake MotorResponseTesting
 testMake 2ndBoardCode
 testMake Calib
 
-if ! [[ ${DOCKER_TEST_INSTALL=true} == "true" ]]; then # This does not work on Docker
+if ! [[ ${DOCKER_TEST_INSTALL} == "true" ]] && ! [[ ${CI} == "true" ]]; then # This does not work on Docker
   "${SCRIPT_DIR}/scripts/check_hardware.sh"
   cd "${SCRIPT_DIR}/PropellerCodeForArloBot/ROSInterfaceForArloBot/bin"
   rm -rf ./*
