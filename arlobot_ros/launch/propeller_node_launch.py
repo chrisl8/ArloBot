@@ -19,7 +19,7 @@ from launch.substitutions import EnvironmentVariable
 # lastX=0.0
 # lastY=0.0
 # lastHeading=0.0
-# ros2 launch arlobot_ros propeller_node.launch.py
+# ros2 launch arlobot_ros propeller_node_launch.py
 
 def generate_launch_description():
     return LaunchDescription([

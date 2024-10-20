@@ -78,7 +78,7 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
                 os.path.join(get_package_share_directory(
-                    'arlobot_ros'), 'launch/propeller_node.launch.py')
+                    'arlobot_ros'), 'launch/propeller_node_launch.py')
             )
         ),
         # TODO: Put this back.

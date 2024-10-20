@@ -372,7 +372,7 @@ class PropellerComm(Node):
         # Fake laser from "PING" Ultrasonic Sensor and IR Distance Sensor input:
         # http://wiki.ros.org/navigation/Tutorials/RobotSetup/TF
         # Use:
-        # roslaunch arlobot_ros view_robot.launch.py
+        # roslaunch arlobot_ros view_robot_launch.py
         # to view this well for debugging and testing.
 
         # The purpose of this is two fold:

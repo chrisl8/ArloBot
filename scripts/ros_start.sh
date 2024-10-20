@@ -39,7 +39,7 @@ printf "${LIGHT_PURPLE}Use ros_kill.sh to close.${NC}\n"
 # http://stackoverflow.com/a/11337310
 # http://linux.die.net/man/1/unbuffer
 # Add -d to the end of this line to put it into "debug" mode.
-ros2 launch arlobot_ros robot.launch.py &
+ros2 launch arlobot_ros robot_launch.py &
 
 while ! ros2 node list | grep arlobot > /dev/null 2>&1; do
   # Wait for Arlobot to start
