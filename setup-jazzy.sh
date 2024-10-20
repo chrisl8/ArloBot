@@ -13,15 +13,15 @@ INSTALLING_ROS_DISTRO=jazzy
 #
 # Testing install with Docker:
 #
-# You can Test this with Docker by installing Docker, then pulling down the Ubuntu 20.04 image:
-# sudo docker pull ubuntu:20.04
+# You can Test this with Docker by installing Docker, then pulling down the Ubuntu 24.04 image:
+# sudo docker pull ubuntu:24.04
 # cd ${HOME}/${ROS2_WS}/ArloBot
 #
 # Then either kick it off all in one shot:
-# sudo docker run -ti -v $PWD:/home/user ubuntu:20.04 /bin/bash -c "/home/user/setup-jazzy.sh"
+# sudo docker run -ti -v $PWD:/home/user ubuntu:24.04 /bin/bash -c "/home/user/setup-jazzy.sh"
 #
 # Or start an interactive shell in Docker and run it, with the ability to make changes and start it again when it finishes:
-# sudo docker run -ti -v $PWD:/home/user ubuntu:20.04 /bin/bash
+# sudo docker run -ti -v $PWD:/home/user ubuntu:24.04 /bin/bash
 # /home/user/setup-jazzy.sh
 #
 # If you started a non-interactive ("one shot") build and then it crashed and you want to get in and look around:
@@ -53,14 +53,7 @@ LIGHT_PURPLE='\033[1;35m'
 YELLOW='\033[1;33m'
 LIGHTCYAN='\033[1;36m'
 LIGHTBLUE='\033[1;34m'
-LIGHTPURPLE='\033[1;35m'
 NC='\033[0m' # NoColor
-
-printf "\n"
-printf "${RED}THIS IS NOT MEANT FOR USE!!! It is just me testing.${NC}\n"
-printf "This script is part of my personal attempt to make Jazzy work on this robot,\n"
-printf "but it doesn't work and possibly never will.\n"
-#exit 1
 
 ARLO_HOME=${HOME}/.arlobot
 
@@ -282,7 +275,7 @@ if ! [[ ${TRAVIS} == "true" ]]; then # Upgrading openssh in Travis often fails d
 fi
 # openssh-server - required to SSH into robot remotely
 PACKAGE_TO_INSTALL_LIST+=(python3-serial)
-# python3-serial - required for ROS to talk to the Propeller board
+# python3-serial - required for ROS to talk to the Propeller Activity Board
 PACKAGE_TO_INSTALL_LIST+=(expect)
 # expect - required to get 'unbuffer' which is required by node to spawn ROS commands and get real time stdout data
 # http://stackoverflow.com/a/11337310
@@ -351,11 +344,11 @@ printf "\n${LIGHTBLUE}Slamtec RPLIDAR${NC}\n"
 cd "${HOME}/${ROS2_WS}/src"
 if ! [[ -d ${HOME}/rplidar_ros ]]; then
   cd "${HOME}"
-  git clone -b dev-ros2 https://github.com/Slamtec/rplidar_ros.git
+  git clone -b ros2 https://github.com/Slamtec/rplidar_ros.git
 else
   cd "${HOME}/rplidar_ros"
   git fetch
-  git checkout dev-ros2
+  git checkout ros2
   git pull
 fi
 
@@ -554,7 +547,7 @@ sudo chmod -R 777 "${ARLO_HOME}/status"
 if ! (id | grep dialout >/dev/null); then
   printf "\n${GREEN}Adding your user to the 'dialout' group for serial port access.${NC}\n"
   sudo adduser "${USER}" dialout >/dev/null
-  printf "${RED}You may have to reboot before you can use the Propeller Board.${NC}\n"
+  printf "${RED}You may have to reboot before you can use the Propeller Activity Board.${NC}\n"
 fi
 
 if ! (id | grep video >/dev/null); then
@@ -572,103 +565,6 @@ if ! (sudo -nl | grep resetUSB >/dev/null && sudo -nl | grep modprobe >/dev/null
   sudo chown root:root /etc/sudoers.d/arlobot_sudoers
 fi
 
-if ! [[ -e /usr/share/PropWare/include/arlodrive.h ]]; then
-  printf "\n${YELLOW}[Setting up PropWare and PropGCC for putting code on Activity Board.]${NC}\n"
-  printf "${LIGHTBLUE}Parallax no longer supports Linux so we are using some third party tools.${NC}\n"
-  printf "${LIGHTBLUE}https://david.zemon.name/PropWare${NC}\n"
-  cd /tmp
-  # NOTE: This is the original location, but it has gone dark
-  # wget -O propware_3.0.0.224-1_all.deb https://ci.zemon.name/repository/download/PropWare_Develop/3817:id/propware_3.0.0.224-1_all.deb?guest=1
-  wget -O propware_3.0.0.224-1_all.deb https://github.com/chrisl8/propeller_binary_archive/raw/refs/heads/main/propware_3.0.0.224-1_all.deb?download=1
-  sudo dpkg -i /tmp/propware_3.0.0.224-1_all.deb
-  rm /tmp/propware_3.0.0.224-1_all.deb
-fi
-
-if ! [[ -d /opt/parallax ]]; then
-  printf "\n${YELLOW}[Installing PropGCC, which is required by PropWare.]${NC}\n"
-  cd /tmp
-  # NOTE: This is the original location, but it has gone dark
-  # wget -O propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz https://ci.zemon.name/repository/download/PropGCC5_Gcc4linuxX64/3620:id/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz?guest=1
-  wget -O propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz https://github.com/chrisl8/propeller_binary_archive/raw/refs/heads/main/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz?download=1
-  sudo cp /tmp/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz /opt
-  rm /tmp/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz
-  cd /opt
-  sudo tar xf propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz
-  sudo rm /opt/propellergcc-alpha_v1_9_0-gcc4-linux-x64.tar.gz
-  cd # Get out of /opt just for safety
-fi
-
-if ! [[ -e ${ARLO_HOME}/per_robot_settings_for_propeller_c_code.h ]]; then
-  cp "${HOME}/ArloBot/PropellerCodeForArloBot/dotfiles/per_robot_settings_for_propeller_c_code.h" "${ARLO_HOME}"
-fi
-
-if ! [[ -e ${ARLO_HOME}/per_robot_settings_for_propeller_2nd_board.h ]]; then
-  cp "${HOME}/ArloBot/PropellerCodeForArloBot/dotfiles/per_robot_settings_for_propeller_2nd_board.h" "${ARLO_HOME}"
-fi
-
-if [[ $(arch) = "aarch64" ]];then
-  printf "\n${YELLOW}The Propeller code cannot be built on a Pi! It has to be done on an x86_64 system!${NC}\n"
-  printf "${LIGHTBLUE}You will need to build this code on an x86_64 system and  load the code onto your Propeller board before this code can work on your robot!${NC}\n"
-else
-  printf "\n${YELLOW}[Test Compiling Propeller Code.]${NC}\n"
-  printf "${LIGHTBLUE}You will need to load this code onto your Propeller board after the setup is done.${NC}\n"
-
-  function testMake() {
-    printf " ${LIGHTBLUE}- ${1}${NC}\n"
-    cd "${HOME}/ArloBot/PropellerCodeForArloBot/${1}"
-    rm -rf bin
-    if ! [[ -d bin ]]; then
-      mkdir bin
-    fi
-    cd bin
-    cmake -DCMAKE_MODULE_PATH=/usr/share/PropWare/CMakeModules -G "Unix Makefiles" ..
-    make
-
-  }
-  testMake ROSInterfaceForArloBot
-  testMake MotorResponseTesting
-  testMake 2ndBoardCode
-  testMake Calib
-fi
-cd
-
-if [[ -e ${ARLO_HOME}/arlobot.yaml ]]; then
-  if ! (diff "${HOME}/${ROS2_WS}/src/arlobot_ros/param/arlobot.yaml" "${ARLO_HOME}/arlobot.yaml" >/dev/null); then
-    printf "\n${GREEN}The ${RED}arlobot.yaml${GREEN} file in the repository is different from the one${NC}\n"
-    printf "${GREEN}in your local settings.${NC}\n"
-    printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
-    printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
-    diff "${HOME}/${ROS2_WS}/src/arlobot_ros/param/arlobot.yaml" "${ARLO_HOME}/arlobot.yaml" || true
-    # cp -i "${HOME}/${ROS2_WS}/src/arlobot_ros/param/arlobot.yaml" "${ARLO_HOME}/"
-    printf "\n"
-  fi
-else
-  printf "\n"
-  cp "${HOME}/${ROS2_WS}/src/arlobot_ros/param/arlobot.yaml" "${ARLO_HOME}/"
-  printf "${GREEN}A brand new ${RED}${ARLO_HOME}/arlobot.yaml${GREEN} file has been created,${NC}\n"
-  printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
-fi
-
-for i in "${HOME}/ArloBot/PropellerCodeForArloBot/dotfiles/"*; do
-  [[ -e "${i}" ]] || break # handle the case of no files
-  # https://stackoverflow.com/a/9011264/4982408
-  if [[ -e ${ARLO_HOME}/${i##*/} ]]; then
-    if ! (diff "${i}" "${ARLO_HOME}/${i##*/}" >/dev/null); then
-      printf "\n${GREEN}The ${RED}${i##*/}${GREEN} file in the repository is different from the one${NC}\n"
-      printf "${GREEN}in your local settings.${NC}\n"
-      printf "${GREEN}This is expected, but just in case, please look over the differences,${NC}\n"
-      printf "${GREEN}and see if you need to copy in any new settings, or overwrite the file completely:${NC}\n"
-      diff "${i}" "${ARLO_HOME}/${i##*/}" || true
-      # cp -i "${i}" "${ARLO_HOME}/"
-    fi
-  else
-    printf "\n"
-    cp "${i}" "${ARLO_HOME}/"
-    printf "${GREEN}A brand new ${RED}${ARLO_HOME}/${i##*/}${GREEN} file has been created,${NC}\n"
-    printf "${LIGHT_PURPLE}Please edit this file to customize according to your robot!${NC}\n"
-  fi
-done
-
 if ! (crontab -l >/dev/null 2>&1) || ! (crontab -l | grep startpm2 >/dev/null 2>&1); then
   printf "\n${YELLOW}[Adding cron job to start web server on system reboot.]${NC}\n"
   # https://stackoverflow.com/questions/4880290/how-do-i-create-a-crontab-through-a-script
@@ -677,7 +573,7 @@ if ! (crontab -l >/dev/null 2>&1) || ! (crontab -l | grep startpm2 >/dev/null 2>
   ) | crontab -
 fi
 
-printf "\n${LIGHTPURPLE}[Flushing PM2 logs and starting/restarting web server.]${NC}\n"
+printf "\n${LIGHT_PURPLE}[Flushing PM2 logs and starting/restarting web server.]${NC}\n"
 pm2 update
 pm2 flush
 if ! pm2 restart Robot; then
@@ -748,11 +644,15 @@ printf "\n"
 printf "${GREEN}Look at README.md for testing ideas.${NC}\n"
 
 printf "\n${YELLOW}------------------------------------------------------------${NC}\n"
-printf "${YELLOW}Remember: You MUST install the Propeller code on your Propeller board too!${NC}\n"
-printf "${LIGHTCYAN}You can run install_Propeller_code.sh to perform the install,${NC}\n"
-printf "${LIGHTCYAN}and PropellerSerialTest.sh to test it.${NC}\n"
+printf "${YELLOW}Remember: You MUST install the Propeller code on your Propeller Activity Board too!${NC}\n"
+printf "\n${YELLOW}The Propeller code cannot be built on a Pi! It has to be done on an x86_64 system!${NC}\n"
+printf "${LIGHTBLUE}You will need to build this code on an x86_64 system and  load the code onto your Propeller Activity Board before this code can work on your robot!${NC}\n"
+printf "${LIGHTCYAN}You can run${NC}\n"
+printf "${LIGHTCYAN}bash <(wget -qO- --no-cache -o /dev/null https://raw.githubusercontent.com/chrisl8/ArloBot/jazzy/Install_Propeller_Code.sh)${NC}\n"
+printf "${LIGHTCYAN}to perform the install,${NC}\n"
+printf "${LIGHTCYAN}and then use PropellerSerialTest.sh back on the Pi here to test it.${NC}\n"
 printf "${GREEN}See: ${LIGHTBLUE}https://ekpyroticfrood.net/?p=551${NC}\n"
-printf "${GREEN}for more information on installing code on your Propeller board.${NC}\n"
+printf "${GREEN}for more information on installing code on your Propeller Activity Board.${NC}\n"
 printf "${YELLOW}------------------------------------------------------------${NC}\n"
 
 INSTALL_FINISHED="true"
