@@ -28,7 +28,7 @@ jobs:
     - name: Use Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: latest
+        node-version: lts/*
         cache: 'npm'
         cache-dependency-path: ./node/package.json
     - run: npm update
@@ -37,10 +37,10 @@ jobs:
       working-directory: node
     - name: Copy required config files for testing
       run: |
-        mkdir -p ~/.arlobot/rosmaps ~/dev_ws/src ~/.arlobot/status
+        mkdir -p ~/.arlobot/rosmaps ~/ros2_ws/src ~/.arlobot/status
         touch ~/.arlobot/rosmaps/dummymap.data ~/.arlobot/rosmaps/dummymap.posegraph
         cp ${{ github.workspace }}/scripts/dotarlobot/personalDataForBehavior.json ~/.arlobot/
-        ln -s ${{ github.workspace }} ~/dev_ws/src/ArloBot
+        ln -s ${{ github.workspace }} ~/ArloBot
         cd node
     - run: npm test
       working-directory: node
