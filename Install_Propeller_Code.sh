@@ -24,6 +24,40 @@ function finish() {
 }
 trap finish EXIT
 
+# Grab and save the path to this script
+# http://stackoverflow.com/a/246128
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+SCRIPT_DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+#echo "${SCRIPT_DIR}" # For debugging
+
+printf "\n${YELLOW}[Installing Ubuntu Dependencies]${NC}\n"
+
+DOCKER_TEST_INSTALL=false
+if [[ ! -e /etc/localtime ]]; then
+  # These steps are to allow this script to work in a minimal Docker container for testing.
+  printf "${YELLOW}[This looks like a Docker setup.]${NC}\n"
+  printf "${LIGHTBLUE}Adding settings and basic packages for Docker based Ubuntu images.${NC}\n"
+  apt update # Docker doesn't have the latest package lists by default.
+  apt install -y sudo
+  # Now the rest of the script should work as if it was in a normal Ubuntu install.
+  DOCKER_TEST_INSTALL=true
+fi
+
+if ! (command -v git >/dev/null); then
+  sudo apt install -y git
+fi
+if ! (command -v cmake >/dev/null); then
+  sudo apt install -y cmake
+fi
+if ! (command -v wget >/dev/null); then
+  sudo apt install -y wget
+fi
+
 printf "\n${YELLOW}[Cloning or Updating Arlobot git repositories]${NC}\n"
 if ! [[ -d "${HOME}/ArloBot" ]]; then
   cd "${HOME}"
@@ -115,8 +149,11 @@ testMake MotorResponseTesting
 testMake 2ndBoardCode
 testMake Calib
 
-"${HOME}/ArloBot/Scripts/check_hardware.sh"
-cd "${HOME}/ArloBot/PropellerCodeForArloBot/ROSInterfaceForArloBot/bin"
-rm -rf ./*
-cmake -G "Unix Makefiles" ..
-PROPELLER_LOAD_PORT=$(find_ActivityBoard.sh) make run
+if ! [[ ${DOCKER_TEST_INSTALL=true} == "true" ]]; then # This does not work on Docker
+  "${SCRIPT_DIR}/scripts/check_hardware.sh"
+  cd "${SCRIPT_DIR}/PropellerCodeForArloBot/ROSInterfaceForArloBot/bin"
+  rm -rf ./*
+  cmake -G "Unix Makefiles" ..
+  PROPELLER_LOAD_PORT=$(find_ActivityBoard.sh) make run
+fi
+INSTALL_FINISHED="true"
