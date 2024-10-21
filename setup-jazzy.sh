@@ -16,11 +16,11 @@ INSTALLING_ROS_DISTRO=jazzy
 # cd ${HOME}/ArloBot # Or wherever you cloned the code to.
 #
 # Then either kick it off all in one shot:
-# docker run -ti -v $PWD:/home/user ubuntu:24.04 /bin/bash -c "/home/user/setup-jazzy.sh"
+# docker run -ti -v $PWD:/root/ArloBot ubuntu:24.04 /bin/bash -c "~/ArloBot/setup-jazzy.sh"
 #
 # Or start an interactive shell in Docker and run it, with the ability to make changes and start it again when it finishes:
-# docker run -ti -v $PWD:/home/user ubuntu:24.04 /bin/bash
-# /home/user/setup-jazzy.sh
+# docker run -ti -v $PWD:/root/ArloBot ubuntu:24.04 /bin/bash
+# ~/ArloBot/setup-jazzy.sh
 #
 # If you started a non-interactive ("one shot") build and then it crashed and you want to get in and look around:
 # https://docs.docker.com/engine/reference/commandline/commit/
@@ -74,6 +74,30 @@ printf "\n${YELLOW}SETTING UP ROS ${INSTALLING_ROS_DISTRO} FOR YOUR ARLOBOT!${NC
 printf "${YELLOW}---------------------------------------------------${NC}\n"
 printf "${GREEN}You will be asked for your password for running commands as root!${NC}\n"
 
+DOCKER_TEST_INSTALL=false
+if [[ ! -e /etc/localtime ]]; then
+  # These steps are to allow this script to work in a minimal Docker container for testing.
+  printf "${YELLOW}[This looks like a Docker setup.]${NC}\n"
+  printf "${LIGHTBLUE}Adding settings and basic packages for Docker based Ubuntu images.${NC}\n"
+  # The docker image has no /etc/localtime
+  # When the prereq install installs the tzdat package,
+  # It stops and asks for time zone info.
+  # This should prevent that.
+  # https://bugs.launchpad.net/ubuntu/+source/tzdata/+bug/1773687
+  export DEBIAN_FRONTEND=noninteractive
+  # This won't work inside of sudo though, so just install tzdata now
+  # rather than letting it get picked up later as a pre-req,
+  # and add the other things we know Docker is missing too while we are at it.
+  apt update # Docker doesn't have the latest package lists by default.
+  apt install -y sudo python3
+  # Now the rest of the script should work as if it was in a normal Ubuntu install.
+
+  # Installing this now appears to prevent it from hanging up the Docker setup later.
+  apt install -y keyboard-configuration
+
+  DOCKER_TEST_INSTALL=true
+fi
+
 printf "${YELLOW}[Updating local pacakge list.]${NC}\n"
 sudo apt update
 
@@ -92,31 +116,6 @@ case ${version} in
   exit 1
   ;;
 esac
-
-DOCKER_TEST_INSTALL=false
-if [[ ! -e /etc/localtime ]]; then
-  # These steps are to allow this script to work in a minimal Docker container for testing.
-  printf "${YELLOW}[This looks like a Docker setup.]${NC}\n"
-  printf "${LIGHTBLUE}Adding settings and basic packages for Docker based Ubuntu images.${NC}\n"
-  # The docker image has no /etc/localtime
-  # When the prereq install installs the tzdat package,
-  # It stops and asks for time zone info.
-  # This should prevent that.
-  # https://bugs.launchpad.net/ubuntu/+source/tzdata/+bug/1773687
-  export DEBIAN_FRONTEND=noninteractive
-  # This won't work inside of sudo though, so just install tzdata now
-  # rather than letting it get picked up later as a pre-req,
-  # and add the other things we know Docker is missing too while we are at it.
-  apt update # Docker doesn't have the latest package lists by default.
-  #apt install -y tzdata sudo cron
-  apt install -y sudo python3
-  # Now the rest of the script should work as if it was in a normal Ubuntu install.
-
-  # Installing this now appears to prevent it from hanging up the Docker setup later.
-  apt install -y keyboard-configuration
-
-  DOCKER_TEST_INSTALL=true
-fi
 
 if ! (command -v python >/dev/null); then
   printf "\n${YELLOW}[Setting Python 3 as System Default]${NC}\n"
@@ -166,17 +165,15 @@ fi
 
 printf "\n${YELLOW}[Updating & upgrading all existing Ubuntu packages]${NC}\n"
 sudo apt update
-if ! [[ ${TRAVIS} == "true" ]]; then # Upgrading packages in Travis often fails due to timeouts.
-  sudo apt upgrade -y
-  sudo apt autoremove -y
-fi
+sudo apt upgrade -y
+sudo apt autoremove -y
 
 # This should follow the official ROS install instructions closely.
 #      http://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html
 # That is why there is a separate section for extra packages that I need for Arlo.
 # Note, while we are NOT building ROS from source, we are building SOME THINGS from source,
 # and hence must also follow the the instructions to set up a build environment.
-if ! (dpkg -s ros-${INSTALLING_ROS_DISTRO}-desktop | grep "Status: install ok installed" &>/dev/null) || ! (command -v rosdep) || ! (command -v rosinstall_generator); then
+if ! (dpkg -s ros-${INSTALLING_ROS_DISTRO}-desktop | grep "Status: install ok installed" &>/dev/null) || ! (command -v rosdep); then
   printf "\n${YELLOW}[Installing ROS]${NC}\n"
   sudo apt install -y ros-${INSTALLING_ROS_DISTRO}-desktop
   printf "${LIGHTBLUE}ROS installed!${NC}\n"
@@ -218,8 +215,6 @@ fi
 printf "\n${YELLOW}[Installing additional Ubuntu and ROS Packages for Arlo]${NC}\n"
 printf "${LIGHTBLUE}This runs every time, in case new packages were added.${NC}\n"
 
-# TODO: Try removing some ROS packages that do not need to be installed independently,
-#       because they are already dependencies of other things.
 PACKAGE_TO_INSTALL_LIST=()
 # ### Required Packages and Why ###
 PACKAGE_TO_INSTALL_LIST+=(jq)
@@ -232,22 +227,7 @@ PACKAGE_TO_INSTALL_LIST+=(git)
 # git - allows for cloning of repositories
 PACKAGE_TO_INSTALL_LIST+=(vim)
 # vim - We aren't going to get very far without being able to edit some files.
-# "ros-${INSTALLING_ROS_DISTRO}-move-base" - Required to build and use Arlobot ROS code.
-PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-twist-mux")
-# twist-mux is used by the Arlobot cmd_vel_mux input controller.
-#      It allows multiple cmd_vel topics to all coexist, and remaps the active on one
-#           to the correct topic for output.
-#      Without it, movement (twist) commands cannot be sent to the robot from ROS.
-PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-navigation2")
-PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-nav2-bringup")
-# navigation2 is the ROS2 navigation stack for robot navigation
-PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-slam-toolbox")
-# Slam-Toolbox is the official ROS2 SLAM package.
-PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-rosbridge-server")
-# rosbridge is required for the Web interface to communicate with ROS
-PACKAGE_TO_INSTALL_LIST+=("ros-${INSTALLING_ROS_DISTRO}-cv-bridge")
-# cv-bridge is required by the costmap converter package
-PACKAGE_TO_INSTALL_LIST+=("xvfb")
+PACKAGE_TO_INSTALL_LIST+=(xvfb)
 # xvfb is required for Cypress testing to work.
 PACKAGE_TO_INSTALL_LIST+=(cron)
 # cron - required for running scheduled tasks
@@ -258,9 +238,7 @@ PACKAGE_TO_INSTALL_LIST+=(moreutils)
 PACKAGE_TO_INSTALL_LIST+=(python3-pip)
 # python3-pip - Required to install Python tools for things such as
 #      USB Relay reader.
-if ! [[ ${TRAVIS} == "true" ]]; then # Upgrading openssh in Travis often fails due to timeouts.
-  PACKAGE_TO_INSTALL_LIST+=(openssh-server)
-fi
+PACKAGE_TO_INSTALL_LIST+=(openssh-server)
 # openssh-server - required to SSH into robot remotely
 PACKAGE_TO_INSTALL_LIST+=(python3-serial)
 # python3-serial - required for ROS to talk to the Propeller Activity Board
@@ -303,15 +281,17 @@ fi
 
 printf "\n${YELLOW}[Cloning or Updating git repositories]${NC}\n"
 
-printf "${LIGHTBLUE}ArloBot repository${NC}\n"
-if ! [[ -d "${HOME}/ArloBot" ]]; then
-  cd "${HOME}"
-  git clone -b jazzy https://github.com/chrisl8/ArloBot.git
-else
-  cd "${HOME}/ArloBot"
-  git fetch
-  git checkout jazzy
-  git pull
+if ! [[ ${DOCKER_TEST_INSTALL=true} == "true" ]]; then # This does not work on Docker
+  printf "${LIGHTBLUE}ArloBot repository${NC}\n"
+  if ! [[ -d "${HOME}/ArloBot" ]]; then
+    cd "${HOME}"
+    git clone -b jazzy https://github.com/chrisl8/ArloBot.git
+  else
+    cd "${HOME}/ArloBot"
+    git fetch
+    git checkout jazzy
+    git pull
+  fi
 fi
 
 if ! [[ -e ${HOME}/${ROS2_WS}/src/arlobot_ros ]]; then
@@ -342,6 +322,8 @@ export PIP_DISABLE_PIP_VERSION_CHECK=1
 
 printf "\n${YELLOW}[Installing dependencies for ROS build-from-source packages.]${NC}\n"
 cd "${HOME}/${ROS2_WS}"
+printf "${LIGHTBLUE}Running rosdep update . . .${NC}\n"
+rosdep update
 rosdep install -q -y -r --from-paths src --ignore-src --rosdistro ${INSTALLING_ROS_DISTRO}
 
 printf "\n${YELLOW}[Generating URDF file with xacro.]${NC}\n"
