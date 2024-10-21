@@ -36,7 +36,6 @@ Until then, enjoy this for what it is, and understand that any commits you see w
      - It outputs when it gets data from the propeller board
      - It encodes to the propeller board upon receiving twist messages
      - Nothing else
- - Finish conversion of anything left in my arlobot_ros1 folder and remove them.
  - Clean up unused convenience scripts
    - Make sure they all still work. Some might just not work anymore and should be removed.
  - Clean up unused bits of code in the node service
@@ -46,14 +45,9 @@ Until then, enjoy this for what it is, and understand that any commits you see w
  - Move all web bookmarks into relevant comments in my code or this Readme
  - Use vcgencmd get_throttled to detect and alarm on voltage and thermal issues
  - Monitor battery power from the activity board and alarm/act on low voltage
- - Test and build docker test method listed in setup-jazzy
- - Get github actions working
  - arlobot.yaml is gone, so fix up anything that depends on it
- - Reorganize old documentation into its own folder
+ - Reorganize old documentation into its own folder or delete it
  - Rebuild my robot's Pi from scratch and ensure it still works
- - Currently launching NAV2 with **no** customizations, but my old ROS1 setup had many customizations.
-   - Check to see if any of these customizations from ROS1 should be carried over
- - Test and tun slam toolbox parameters as well
  - Could the PING and IR sensors be mapped into the "Collision Monitor" so as to be used by ROS but without affecting the map?
  - Re-implement old functions that might be built into NAV2 now if I can sort out how to use them:
    - Go to waypoints
