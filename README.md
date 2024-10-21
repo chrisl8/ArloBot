@@ -53,6 +53,8 @@ Until then, enjoy this for what it is, and understand that any commits you see w
    - Go to waypoints
    - Go "home" (dock?)
    - Go to a specific location
+ - Clean up this readme and other docs that it links to
+ - Build a new robot using off-the-shelf parts
 
 ArloBot Package for ROS
 =======================
