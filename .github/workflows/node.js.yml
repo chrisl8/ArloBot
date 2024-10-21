@@ -37,10 +37,11 @@ jobs:
       working-directory: node
     - name: Copy required config files for testing
       run: |
-        mkdir -p ~/.arlobot/rosmaps ~/ros2_ws/src ~/.arlobot/status
-        touch ~/.arlobot/rosmaps/dummymap.data ~/.arlobot/rosmaps/dummymap.posegraph
-        cp ${{ github.workspace }}/scripts/dotarlobot/personalDataForBehavior.json ~/.arlobot/
-        ln -s ${{ github.workspace }} ~/ArloBot
+        mkdir -p $HOME/.arlobot/rosmaps $HOME/ros2_ws/src $HOME/.arlobot/status
+        touch $HOME/.arlobot/rosmaps/dummymap.data $HOME/.arlobot/rosmaps/dummymap.posegraph
+        cp ${{ github.workspace }}/scripts/dotarlobot/personalDataForBehavior.json $HOME/.arlobot/
+        ln -s ${{ github.workspace }} $HOME/ArloBot
+        ls $HOME
         cd node
     - run: npm test
       working-directory: node
